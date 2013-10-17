@@ -1,0 +1,761 @@
+<% content_for :header do %>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
+<script type="text/javascript">
+
+// フルスクリーンを表示するボタン定義
+function FullScreenControl(map) {
+	var controlDiv = document.createElement('div');
+	controlDiv.index = 1;
+	controlDiv.style.padding = '5px';
+
+	// Set CSS for the control border.
+	var controlUI = document.createElement('div');
+	controlUI.style.backgroundColor = 'white';
+	controlUI.style.borderStyle = 'solid';
+	controlUI.style.borderWidth = '1px';
+	controlUI.style.borderColor = '#717b87';
+	controlUI.style.cursor = 'pointer';
+	controlUI.style.textAlign = 'center';
+	controlUI.style.boxShadow = '0px 2px 4px rgba(0,0,0,0.4)';
+	controlDiv.appendChild(controlUI);
+
+	// Set CSS for the control interior.
+	var controlText = document.createElement('div');
+	controlText.style.fontFamily = 'Arial,sans-serif';
+	controlText.style.fontSize = '13px';
+	controlText.style.paddingTop = '1px';
+	controlText.style.paddingBottom = '1px';
+	controlText.style.paddingLeft = '6px';
+	controlText.style.paddingRight = '6px';
+	controlText.innerHTML = '<strong>Full Screen</strong>';
+	controlUI.appendChild(controlText);
+
+	var fullScreen = false;
+	var mapDiv = map.getDiv();
+	var divStyle = mapDiv.style;
+	if (mapDiv.runtimeStyle)
+		divStyle = mapDiv.runtimeStyle;
+	var originalPos = divStyle.position;
+	var originalWidth = divStyle.width;
+	var originalHeight = divStyle.height;
+	var originalTop = divStyle.top;
+	var originalLeft = divStyle.left;
+	var originalZIndex = divStyle.zIndex;
+
+	var bodyStyle = document.body.style;
+	if (document.body.runtimeStyle)
+		bodyStyle = document.body.runtimeStyle;
+	var originalOverflow = bodyStyle.overflow;
+
+	// Setup the click event listener
+	google.maps.event.addDomListener(controlUI, 'click', function() {
+		var center = map.getCenter();
+		if (!fullScreen) {
+			divStyle.position = "fixed";
+			divStyle.width = "100%";
+			divStyle.height = "100%";
+			divStyle.top = "0";
+			divStyle.left = "0";
+			divStyle.zIndex = "100";
+			bodyStyle.overflow = "hidden";
+			controlText.innerHTML = '<strong>Exit full screen</strong>';
+		}
+		else {
+			if (originalPos == "")
+				divStyle.position = "relative";
+			else
+				divStyle.position = originalPos;
+			divStyle.width = originalWidth;
+			divStyle.height = originalHeight;
+			divStyle.top = originalTop;
+			divStyle.left = originalLeft;
+			divStyle.zIndex = originalZIndex;
+			bodyStyle.overflow = originalOverflow;
+			controlText.innerHTML = '<strong>Full Screen</strong>';
+		}
+		fullScreen = !fullScreen;
+		google.maps.event.trigger(map, 'resize');
+		map.setCenter(center);
+	});
+
+	return controlDiv;
+}
+
+
+  function win_owner(id) {
+    window.open('/managements/popup_owner/' + id   , "", "width=400,height=450");
+  }
+
+  function win_building(id){
+    window.open('/managements/popup_building/' + id   , "", "width=400,height=450");
+  }
+
+  function createMarker(opts){
+    var marker = new google.maps.Marker(opts);
+    google.maps.event.addListener(marker, "click", function(){
+      // write_build(opts.info_msg);
+
+      infoWnd.close();
+      infoWnd.setContent(opts.html);
+      infoWnd.open(opts.map, marker);
+
+      panorama.setPosition(opts.position);
+      panorama.setPov(panoramaOptionsPov);
+
+      opts.map.panTo(opts.position);
+    });
+
+    return marker;
+  }
+
+  // ストリートビューを閉じます
+  function sv_init(){
+    init_display();
+  }
+
+  // 管理委託契約と建物・貸主の紐付け（このように関数で呼び出すようにする必要がある）
+  function create_relation_listener(trust_ev, owner_ev, build_ev){
+
+//    google.maps.event.addDomListener(owner_ev, "dblclick", function(){
+//      trust_ev.set("visible", !trust_ev.get("visible"));
+//    });
+
+//    google.maps.event.addDomListener(build_ev, "dblclick", function(){
+//      trust_ev.set("visible", !trust_ev.get("visible"));
+//    });
+
+    // 貸主マーカーにて委託契約ONのイベント
+    google.maps.event.addDomListener(owner_ev, "trust_on", function(){
+      trust_ev.set("visible", true);
+      build_ev.set("visible", true);
+    });
+
+    // 貸主マーカーにて委託契約OFFのイベント
+    google.maps.event.addDomListener(owner_ev, "trust_off", function(){
+      trust_ev.set("visible", false);
+      build_ev.set("visible", false);
+    });
+
+
+    // 建物マーカーにて委託契約ONのイベント
+    google.maps.event.addDomListener(build_ev, "trust_on", function(){
+      trust_ev.set("visible", true);
+      owner_ev.set("visible", true);
+    });
+
+    // 建物マーカーにて委託契約OFFのイベント
+    google.maps.event.addDomListener(build_ev, "trust_off", function(){
+      trust_ev.set("visible", false);
+      owner_ev.set("visible", false);
+    });
+
+  }
+
+  // infoWindowで委託ライン有無を押下された時に動作します。(貸主)
+  function owner_trust_disp(id, flg){
+    if(flg == true){
+     google.maps.event.trigger(owner_arr[id], "trust_on");
+    }else{
+     google.maps.event.trigger(owner_arr[id], "trust_off");
+    }
+  }
+
+  // infoWindowで委託ライン有無を押下された時に動作します。(建物)
+  function building_trust_disp(id, flg){
+    if(flg == true){
+     google.maps.event.trigger(build_arr[id], "trust_on");
+    }else{
+     google.maps.event.trigger(build_arr[id], "trust_off");
+    }
+  }
+
+  // 建物リンクをクリックした時の動きを定義します。
+  function link_building_click(num, lat, lng)
+  {
+    google.maps.event.trigger(build_arr[num], "click");
+    panorama.setPosition(new google.maps.LatLng(lat,lng));
+    panorama.setPov(panoramaOptionsPov);
+  }
+
+  // 貸主リンクをクリックした時の動きを定義します。
+  function link_owner_click(num, lat, lng)
+  {
+    google.maps.event.trigger(owner_arr[num], "click");
+    panorama.setPosition(new google.maps.LatLng(lat,lng));
+    panorama.setPov(panoramaOptionsPov);
+  }
+
+  // 営業所リンクをクリックした時の動きを定義します。
+  function link_shop_click(num)
+  {
+    google.maps.event.trigger(shop_arr[num], "click");
+  }
+
+
+  function sel_itaku_owner(obj, id){
+    obj_value = obj.options[obj.selectedIndex].value;
+    if(obj_value == "on"){
+      owner_trust_disp(id, true);
+    }else{
+      owner_trust_disp(id, false);
+    }
+  }
+
+  function sel_itaku_building(obj, id){
+    obj_value = obj.options[obj.selectedIndex].value;
+    if(obj_value == "on"){
+      building_trust_disp(id, true);
+    }else{
+      building_trust_disp(id, false);
+    }
+  }
+
+  function sel_view(obj, lat, lng){
+    obj_value = obj.options[obj.selectedIndex].value;
+    if(obj_value == "on"){
+      view_disp(true, lat, lng);
+    }else{
+      view_disp(false, lat, lng);
+    }
+  }
+
+  // ストリートビューを表示
+  function view_disp(disp_flg, lat, lng){
+
+    if(disp_flg == true){
+      // ストリートビュー　表示設定
+      document.getElementById("map_canvas").style.height = "450px";
+      document.getElementById("panowide").style.height = "350px";
+      document.getElementById("panowide").style.display = "block";
+
+      panorama.setPosition(new google.maps.LatLng(lat,lng));
+      panorama.setPov(panoramaOptionsPov);
+
+    }else{
+      // ストリートビューを非表示に設定
+      init_display();
+    }
+  }
+
+  // ストリートビューを非表示にして map_canvasの高さを設定
+  function init_display(){
+      document.getElementById("map_canvas").style.height = "700px";
+      document.getElementById("panowide").style.height = "0px";
+      document.getElementById("panowide").style.display = "none";
+  }
+
+  // 管理方式のICONを返します。
+  function get_manage_icon(manage_id){
+    switch(manage_id){
+      case 1:
+        break;
+      default:
+        break;
+    }
+  }
+
+  function setInfoWnd(marker, msg){
+    google.maps.event.addListener(marker, "click", function(){
+      infoWnd.setContent(msg);
+      infoWnd.open(marker.getMap(), marker);
+    });
+  }
+
+  function getCoords(position) {
+    return new google.maps.LatLng(position.latitude, position.longitude);
+  }
+
+
+  function write_build(biru)
+  {
+    document.getElementById("m_name").innerText=biru;
+  }
+
+  function create_circle(size, mapCanvas, pos){
+    var myCircle = new google.maps.Circle({
+      map : mapCanvas
+      ,center : pos
+      ,strokeColor: '#0000FF' /* ストロークの色 */
+      ,strokeOpacity: 0.8 /* ストロークの透明度 */
+      ,strokeWeight: 2 /* ストロークの幅 */
+      ,fillColor: '#0000FF' /* フィルの色 */
+      ,fillOpacity: 0.35 /* フィルの透明度 */
+      ,fillColor: "#0000FF"
+    });
+
+    myCircle.setRadius(size); // メートル単位で指定
+    myCircle.set("visible",false);
+
+    return myCircle
+  }
+
+  //-------------------
+  // グローバル変数定義
+  //-------------------
+  var infoWnd;  // 吹き出しウィンドウ
+  var panoramaOptionsPov; // ストリートビュー定義
+
+  function initialize(){
+
+    /* 地図を作成 */
+    var mapDiv = document.getElementById("map_canvas");
+    var mapCanvas = new google.maps.Map(mapDiv, {
+      mapTypeId : google.maps.MapTypeId.ROADMAP
+    });
+    
+    // フルスクリーンラベルを設定
+    mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new FullScreenControl(mapCanvas));
+
+    // ストリートビューオプション定義（これはcreate markerを呼び出す前に定義する。）
+    panoramaOptionsPov = {heading: 180,pitch:0,zoom:0}
+    var center = mapCanvas.getCenter();
+    var panoramaOptions = {
+      position:center,
+      pov:panoramaOptionsPov
+    };
+
+    // infoウィンドウを１つだけ作成
+    infoWnd = new google.maps.InfoWindow();
+
+    // 初期表示位置を調整
+    var bounds = new google.maps.LatLngBounds();
+
+    /* 営業所の情報を表示する */
+    shop_arr = {}; // varを消してグローバル化
+    var shop_circle01_arr = {};
+    var shop_circle02_arr = {};
+    var distination = new google.maps.MVCArray();
+    var distination_arr = [];
+
+    var shops = gon.shops
+    for(var i in shops){
+
+      pos = new google.maps.LatLng(shops[i].latitude, shops[i].longitude);
+      bounds.extend(pos);
+
+      shop_arr[shops[i].id] = createMarker({
+        position : pos
+        ,map : mapCanvas
+        ,animation: google.maps.Animation.DROP
+        ,icon : shops[i].icon
+        ,info_msg : shops[i].name
+        ,html : shops[i].name
+      });
+
+      /* 営業所の円を作成 */
+      shop_circle01_arr[shops[i].id] = create_circle(1000, mapCanvas, pos);
+      shop_circle02_arr[shops[i].id] = create_circle(2000, mapCanvas, pos);
+
+      /* 距離を測る対象を設定 */
+      distination.push({name:shops[i].name, latLng:[shops[i].latitude,shops[i].longitude]});
+      distination_arr.push(pos);
+    }
+
+    /* 建物オブジェクトを作成 */
+    build_arr = {}; // グローバル
+    kyori_text = ""
+    var pos;
+    var idx = 0;
+    var biru_latlngs = [];
+    var populations = [];
+
+    var building_to_owners = gon.building_to_owners
+
+    var buildings = gon.buildings
+    for(var i in buildings){
+        pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
+
+        // infoWndに表示するHTMLを作成する。
+        var inner_text;
+        var building_owners;
+
+        inner_text = ""
+        building_owners = building_to_owners[buildings[i].id]
+
+        for(var j in building_owners){
+          inner_text = inner_text +
+            '<li>' +
+            '  <a href="javascript:link_owner_click(' + building_owners[j].id + ',' + building_owners[j].latitude + ',' + building_owners[j].longitude + ')">' + building_owners[j].name + '</a></td>' +
+            '</li>'
+        }
+
+        var vhtml = '<div><b>' + buildings[i].name + '（<a href="javascript:win_building(' + buildings[i].id + ');">詳細</a>）</b><br>' +
+          '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
+
+
+          '<hr/>' +
+          '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
+          '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="building_trust_disp(' + buildings[i].id  + ', this.checked);" />&nbsp;委託</label>' +
+          '</div>' +
+          '<div style="padding-left:80px;">' +
+          '  <a href="javascript:void(0)" onClick="view_disp( true, ' + buildings[i].latitude + ',' + buildings[i].longitude  + '); return false;"> ストリートビュー</a>' +
+          '</div>' +
+          '</div>';
+
+        <% if @search_type == 2 # 貸主の時、初期状態で非表示%>
+          var build_disp = false
+        <% else %>
+          var build_disp = true
+        <% end %>
+
+        build_arr[buildings[i].id] = createMarker({
+          position : pos
+          ,map : mapCanvas
+//          ,animation: google.maps.Animation.DROP
+          ,icon : buildings[i].tmp_build_type_icon
+          ,manage_icon : buildings[i].tmp_manage_type_icon
+          ,build_type_icon : buildings[i].tmp_build_type_icon
+          ,shadow : '/assets/marker_shadow.png'
+          ,info_msg : buildings[i].name
+          ,html : vhtml
+          ,visible : build_disp
+        });
+
+
+        /* 距離を測る */
+        /*
+        var origins = [];
+        origins.push(pos)
+        var request = {
+           origins : origins
+          ,destinations : distination_arr
+          ,travelMode : google.maps.TravelMode.WALKING
+        };
+
+        var distanceMatrix = new google.maps.DistanceMatrixService();
+        var x, ele;
+        distanceMatrix.getDistanceMatrix(request, function(result, status){
+          kyori_text = '<%#= biru.name %>' + "<hr>";
+          for(x=0; x<distination_arr.length; x++){
+            ele = result.rows[0].elements[x];
+            kyori_text += distination.getAt(x).name + "まで" + ele.distance.text + "(" + ele.duration.text + ")<br>";
+          }
+
+          setInfoWnd(build_arr[<%#= biru.id %>], kyori_text);
+
+        });
+        */
+
+        /* 戸数別のヒートマップを作る為のオブジェクト */
+        populations.push({
+          location : pos
+          ,weight : buildings[i].room_num
+        })
+
+        biru_latlngs[idx] = pos;
+        idx = idx + 1;
+
+      <% if @search_type == 1 # 建物検索の時のみ追加する %>
+        bounds.extend(pos);
+      <% end %>
+
+    }
+
+    var heatmap_biru = new google.maps.visualization.HeatmapLayer();
+    heatmap_biru.setData(biru_latlngs);
+
+    var heatmap_room = new google.maps.visualization.HeatmapLayer();
+    heatmap_room.setData(populations);
+
+    /* ヒートマップイベント登録 */
+    var hiatmap00Radio = document.getElementById("hiatmap00Radio");
+    google.maps.event.addDomListener(hiatmap00Radio, "click", function(){
+      heatmap_biru.setMap(null);
+      heatmap_room.setMap(null);
+    });
+
+    var hiatmap01Radio = document.getElementById("hiatmap01Radio");
+    google.maps.event.addDomListener(hiatmap01Radio, "click", function(){
+      heatmap_biru.setMap(mapCanvas);
+      heatmap_room.setMap(null);
+    });
+
+    var hiatmap02Radio = document.getElementById("hiatmap02Radio");
+    google.maps.event.addDomListener(hiatmap02Radio, "click", function(){
+      heatmap_biru.setMap(null);
+      heatmap_room.setMap(mapCanvas);
+    });
+
+    /* 貸主オブジェクトを作成 */
+    owner_arr = {}; // varを外してグローバル化
+    var owners = gon.owners
+    var owner_to_buildings = gon.owner_to_buildings
+
+    for(var i in owners){
+      pos = new google.maps.LatLng(owners[i].latitude, owners[i].longitude);
+
+      <% if @search_type == 2 # 貸主検索の時のみ追加する%>
+        bounds.extend(pos);
+      <% end %>
+
+      // infoWndに表示するHTMLを作成する。
+      var inner_text;
+      var owner_buildings;
+
+      inner_text = ""
+      owner_buildings = owner_to_buildings[owners[i].id]
+      for(var j in owner_buildings){
+        inner_text = inner_text +
+          '<li>' +
+          '  <a href="javascript:link_building_click(' + owner_buildings[j].id + ',' + owner_buildings[j].latitude + ',' + owner_buildings[j].longitude + ')">' + owner_buildings[j].name + '</a></td>' +
+          '</li>'
+      }
+
+      var vhtml = '<div><b>' + owners[i].name + '（<a href="javascript:win_owner(' + owners[i].id + ');">詳細</a>）</b><br>' +
+        '<div>住所：' +  +'</div>'
+        '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
+        '<div>' +
+        '<select name="itaku" style="width:100px" onchange="sel_itaku_owner(this, ' + owners[i].id  + ')">/' +
+        '<option value="*" selected>委託</option>' +
+        '<option value="on">ON</option>' +
+        '<option value="off">OFF</option>' +
+        '</select>' +
+        '<span style="width:5px;">&nbsp;</span>' +
+        '<select name="itaku" style="width:100px" onchange="sel_view(this, ' + owners[i].latitude + ',' + owners[i].longitude  + ')">/' +
+        '<option value="*" selected>ビュー</option>' +
+        '<option value="on">ON</option>' +
+        '<option value="off">OFF</option>' +
+        '</select>' +
+        '</div>' +
+        '</div>';
+
+
+      <% if @search_type == 1 # 建物検索の時、初期状態で非表示%>
+        var owner_disp = false
+      <% else %>
+        var owner_disp = true
+      <% end %>
+
+      owner_arr[owners[i].id] = createMarker({
+        position : pos
+        ,map : mapCanvas
+        ,icon : "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
+        ,info_msg : owners[i].name
+        ,html : vhtml
+        ,visible : owner_disp
+
+      });
+    }
+
+    /* 委託契約CDのラインを引く */
+    var trust_arr = {};
+    var trusts = gon.trusts
+    for(var i in trusts){
+
+      // 貸主マスタ・建物マスタに委託で指定した貸主CD・建物CDが存在することを確認
+      if ( !owner_arr[trusts[i].owner_id] ){
+          continue;
+      }
+
+      if ( !build_arr[trusts[i].building_id]){
+          continue;
+      }
+
+      trust_arr[trusts[i].id] = new google.maps.Polyline({
+         map : mapCanvas
+        ,path : [owner_arr[trusts[i].owner_id].position, build_arr[trusts[i].building_id].position]
+        ,strokeColor: trusts[i].line_color
+        ,strokeOpacity:0.5
+        ,strokeWeight:3
+        ,zIndex:1
+      });
+
+      // 初期状態は非表示
+      trust_arr[trusts[i].id].set("visible", false);
+
+      // ダブルクリック時のイベント登録
+      trust_ev = trust_arr[trusts[i].id]
+      owner_ev = owner_arr[trusts[i].owner_id]
+      build_ev = build_arr[trusts[i].building_id]
+
+      // クリックした時のオブジェクトを保存するために、イベントは関数呼び出しで登録する。
+      create_relation_listener(trust_ev, owner_ev, build_ev)
+
+    }
+
+    mapCanvas.fitBounds(bounds);
+
+    /* すべての委託契約の表示をON または OFF にする。 */
+    var trustChkbox = document.getElementById("trustChkbox");
+    google.maps.event.addDomListener(trustChkbox, "click", function(){
+        // console.log(trust_arr);
+        for(var item in trust_arr){
+          trust_arr[item].set("visible", trustChkbox.checked);
+        };
+    });
+
+    /* すべての貸主を表示・非表示にする */
+    var ownerChkbox = document.getElementById("ownerChkbox");
+    google.maps.event.addDomListener(ownerChkbox, "click", function(){
+        for(var item in owner_arr){
+          owner_arr[item].set("visible", ownerChkbox.checked);
+        };
+    });
+
+    /* すべての建物を表示・非表示にする */
+    var buildChkbox = document.getElementById("buildChkbox");
+    google.maps.event.addDomListener(buildChkbox, "click", function(){
+        // console.log(trust_arr);
+        for(var item in build_arr){
+          build_arr[item].set("visible", buildChkbox.checked);
+        };
+    });
+
+    /* すべての営業所を表示・非表示にする */
+    var storeChkbox = document.getElementById("storeChkbox");
+    google.maps.event.addDomListener(storeChkbox, "click", function(){
+        // console.log(trust_arr);
+        for(var item in shop_arr){
+          shop_arr[item].set("visible", storeChkbox.checked);
+        };
+    });
+
+    /* 管理方式をチェックした時、建物のマークを変更する */
+     var kanriRadio = document.getElementById("kanriRadio");
+    google.maps.event.addDomListener(kanriRadio, "click", function(){
+        for(var item in build_arr){
+          build_arr[item].setIcon(build_arr[item].manage_icon );
+//          build_arr[item].setIcon(build_arr[item].icon );
+        };
+    });
+
+    /* 物件種別をチェックした時、建物のマークを変更する */
+     var bukkenRadio = document.getElementById("bukkenRadio");
+    google.maps.event.addDomListener(bukkenRadio, "click", function(){
+        for(var item in build_arr){
+          build_arr[item].setIcon(build_arr[item].build_type_icon );
+         // console.log(build_arr[item].manage_icon)
+        };
+    });
+
+    /* 営業所の範囲サークルの表示１ */
+    var circle01Check = document.getElementById("circle01Check");
+    google.maps.event.addDomListener(circle01Check, "click", function(){
+      for(var item in shop_circle01_arr){
+        shop_circle01_arr[item].set("visible", circle01Check.checked);
+      };
+    });
+
+    /* 営業所の範囲サークルの表示２ */
+    var circle02Check = document.getElementById("circle02Check");
+    google.maps.event.addDomListener(circle02Check, "click", function(){
+      for(var item in shop_circle02_arr){
+        shop_circle02_arr[item].set("visible", circle02Check.checked);
+      };
+    });
+
+    /*------------------------------*/
+    /* ストリートビューオブジェクトを作成 */
+    /*------------------------------*/
+    panorama = new  google.maps.StreetViewPanorama(document.getElementById("panowide"), panoramaOptions);
+
+    //青い道路（ImageMapType）をオーバーレイ
+    //mapCanvas.overlayMapTypes.insertAt(0, StreetViewType);
+    mapCanvas.setStreetView(panorama);
+
+    //ペグマン位置変更イベント
+    google.maps.event.addListener(panorama, 'position_changed', function()
+    {
+      positionPegman = panorama.getPosition();
+      mapCanvas.panTo(positionPegman);
+    });
+
+    // 初期表示は非表示
+    init_display();
+
+
+
+  } // end initialize
+
+  google.maps.event.addDomListener(window, "load", initialize);
+</script>
+
+  <style type="text/css">
+    html, body{
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+  </style>
+
+<% end %>
+
+<% content_for :sidebar_map do %>
+
+  <!-- ここは span3で呼び出されている -->
+
+    <div>
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_search" data-toggle="tab">条件を指定して検索</a></li>
+        <li><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
+      </ul>
+
+      <div id="myTabContent_search" class="tab-content">
+
+        <!-- 検索条件設定 -->
+        <div class="tab-pane fade active in" id="tab_search">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab1" data-toggle="tab">建物検索</a></li>
+            <li><a href="#tab2" data-toggle="tab">貸主検索</a></li>
+            <li><a href="#tab3" data-toggle="tab">バルク検索</a></li>
+          </ul>
+
+          <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade active in" id="tab1">
+               <%= render :partial=>'search_build' %>
+            </div>
+            <div class="tab-pane fade" id="tab2">
+               <%= render :partial=>'search_owner' %>
+            </div>
+            <div class="tab-pane fade" id="tab3">
+               <%= render :partial=>'search_bulk' %>
+            </div>
+          </div>
+        </div>
+
+        <!-- 検索結果確認 -->
+        <div class="tab-pane fade active in" id="tab_result">
+          <ul class="nav nav-tabs">
+            <li><a href="#tab4" data-toggle="tab">建物</a></li>
+            <li><a href="#tab5" data-toggle="tab">貸主</a></li>
+            <li><a href="#tab6" data-toggle="tab">営業所</a></li>
+            <li><a href="#tab7" data-toggle="tab">表示設定</a></li>
+          </ul>
+
+          <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade" id="tab4">
+               <%= render :partial=>'result_buildings' %>
+            </div>
+            <div class="tab-pane fade" id="tab5">
+               <%= render :partial=>'result_owners' %>
+            </div>
+            <div class="tab-pane fade" id="tab6">
+               <%= render :partial=>'result_shops' %>
+            </div>
+            <div class="tab-pane fade" id="tab7">
+               <%= render :partial=>'disp' %>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+<% end %>
+
+<!-- ここは span9で呼び出されているので合計も9に合わせる -->
+  <div class="span12" style="float:left;padding-left:10px;">
+    <div style="border-width : 3px;border-style : solid;border-color : silver;">
+      <div id="map_canvas" style="width: 100%; "></div>
+      <div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;">
+         <input type="button" value="閉じる" onclick="sv_init();" style="top: 10px;right: 20px;position:absolute;z-index: 500;" />
+      </div>
+    </div>
+  </div>
+
+
+

@@ -1,0 +1,33 @@
+
+<%= form_for(@building, :url=>{:action=>'popup_building_update', :id=>@building}, :html=>{:class=>"form-horizontal"}) do |f|%>
+<fieldset>
+  <legend><%= @building.name %></legend>
+
+  <div class="control-group">
+    <label class="control-label" for="input01">住所</label>
+    <div class="controls" >
+        <%= @building.address %>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="input01">ランク</label>
+    <div class="controls">
+      <% blank_flg = @building.building_rank_id.present? ? false : true %>
+      <%= f.collection_select :building_rank_id, BuildingRank.all, :id, :name, :size=>2, :include_blank=>blank_flg %>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="input01">備考</label>
+    <div class="controls">
+        <%= f.text_area :memo,  :size => "3x2", :class=>"form-control"  %>
+    </div>
+  </div>
+  <div class="form-actions" style="padding-left:120px;">
+    <%= f.submit '更新', :class=>"btn btn-primary" %>
+    <button type="reset" class="btn" onClick="window.close();return false;">閉じる</button>
+  </div>
+</fieldset>
+<% end %>
+
+

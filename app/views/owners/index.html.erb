@@ -1,0 +1,54 @@
+<h1>貸主専用ページ</h1>
+<p>ここでは貸主が以下のようなことを確認できるようにしたい</p>
+<ul>
+  <li>送金明細の内容</li>
+  <li>現在の入居者の情報</li>
+  <li>カベコレといったキャンペーンのちらしの確認</li>
+</ul>
+
+<div style="padding-top:100px;">aaa</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.multiselect').multiselect({
+      buttonClass: 'btn btn-small',
+      buttonWidth: 'auto',
+      buttonContainer: '<div class="btn-group" />',
+      maxHeight: false,
+      buttonText: function(options) {
+        if (options.length == 0) {
+          return 'None selected <b class="caret"></b>';
+        }
+        else if (options.length > 3) {
+          return options.length + ' selected  <b class="caret"></b>';
+        }
+        else {
+          var selected = '';
+          options.each(function() {
+            selected += $(this).text() + ', ';
+          });
+          return selected.substr(0, selected.length -2) + ' <b class="caret"></b>';
+        }
+      }
+    });
+
+    $('#example2').multiselect();
+    window.prettyPrint() && prettyPrint();
+
+  });
+</script>
+
+			<table class="table table-striped">
+				<tr>
+                                  <td>
+                                    <select id="example2" multiple="multiple">
+			                <option value="cheese" selected>Cheese</option>
+			                <option value="tomatoes" selected>Tomatoes</option>
+			                <option value="mozarella" selected>Mozzarella</option>
+			                <option value="mushrooms">Mushrooms</option>
+			                <option value="pepperoni">Pepperoni</option>
+			                <option value="onions">Onions</option>
+			            </select>
+                                  </td>
+				</tr>
+                        </table>

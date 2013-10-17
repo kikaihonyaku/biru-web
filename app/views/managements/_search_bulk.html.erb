@@ -1,0 +1,30 @@
+<div>
+
+</div>
+
+<div class="row" style="margin-left:0px;">
+
+  <div class="col-lg-12" >
+    <div style="padding-bottom:10px;">建物：<%= radio_button_tag :bulk_file, :building %>&nbsp;&nbsp;&nbsp;&nbsp;アタック建物：<%= radio_button_tag :bulk_file, :attack_building %></div>
+    <div style="padding-bottom:10px;">貸主：<%= radio_button_tag :bulk_file, :owner %>&nbsp;&nbsp;&nbsp;&nbsp;アタック貸主：<%= radio_button_tag :bulk_file, :attack_owner %></div>
+
+    <%= form_tag bulk_search_text_path  do %>
+      <%= text_area_tag('bulk_search_text', @bulk_text, :size => "50x10", :class=>'span12') %>
+      <%= submit_tag "一括検索" %>
+    <% end %>
+
+  </div>
+  <div style="height:20px;">&nbsp;</div>
+
+  <div class="col-lg-12">
+    <%= form_tag bulk_search_file_path, multipart: true  do %>
+
+      <div><%= file_field_tag :file %></div>
+      
+      <%= submit_tag "ファイル一括検索" %>
+    <% end %>
+  </div>
+
+
+
+</div>

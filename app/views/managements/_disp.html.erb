@@ -1,0 +1,83 @@
+<!-- ここはspan3で呼び出されているから、span3ピッタリでグリッドを作る必要がある。 -->
+
+<table class="table table-striped table-bordered table-condensed" >
+  <thead>
+    <tr>
+      <th width="50" style="text-align:center;"><label>物件<br/><input type="checkbox" id="buildChkbox" checked/></label></th>
+      <th width="100" style="text-align:center;"><label>物件種別<br/><input type="radio" name="dispcheck" id="bukkenRadio" value="2" checked /></label></th>
+      <th width="90" style="text-align:center;"><label>管理方式<br/><input type="radio" name="dispcheck" id="kanriRadio" value="1" /></label></th>
+      <th width="80" style="text-align:center;"><label>自他<br/><input type="radio" name="dispcheck" id="kanriRadio" value="3" /></label></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align:center"><%= image_tag('marker_blue.png') %></td>
+      <td style="text-align:center">アパート</td>
+      <td style="text-align:center">B管理</td>
+      <td style="text-align:center">自社</td>
+    </tr>
+    <tr>
+      <td style="text-align:center"><%= image_tag('marker_yellow.png') %></td>
+      <td style="text-align:center">マンション</td>
+      <td style="text-align:center">一般</td>
+      <td style="text-align:center">一般</td>
+    </tr>
+    <tr>
+      <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
+      <td style="text-align:center">分譲M</td>
+      <td style="text-align:center">D管理</td>
+      <td style="text-align:center">−</td>
+    </tr>
+    <tr>
+      <td style="text-align:center"><%= image_tag('marker_red.png') %></td>
+      <td style="text-align:center">戸建て</td>
+      <td style="text-align:center">A管理</td>
+      <td style="text-align:center">A管理</td>
+    </tr>
+    <tr>
+      <td style="text-align:center"><%= image_tag('marker_orange.png') %></td>
+      <td style="text-align:center">テラス</td>
+      <td style="text-align:center">業務君</td>
+      <td style="text-align:center">−</td>
+    </tr>
+    <tr>
+      <td style="text-align:center"><%= image_tag('marker_green.png') %></td>
+      <td style="text-align:center">メゾネット</td>
+      <td style="text-align:center">総務君</td>
+      <td style="text-align:center">−</td>
+    </tr>
+    <tr>
+      <td style="text-align:center"><%= image_tag('marker_gray.png') %></td>
+      <td style="text-align:center">店舗等</td>
+      <td style="text-align:center">特有賃</td>
+      <td style="text-align:center">−</td>
+    </tr>
+    <tr>
+      <td style="text-align:center"><%= image_tag('marker_gray.png') %></td>
+      <td style="text-align:center">事務所等</td>
+      <td style="text-align:center">定期借家</td>
+      <td style="text-align:center">−</td>
+    </tr>
+    <tr>
+      <td style="text-align:center"><%= image_tag('marker_white.png') %></td>
+      <td style="text-align:center">その他</td>
+      <td style="text-align:center">管理外</td>
+      <td style="text-align:center">他社</td>
+    </tr>
+  </tbody>
+</table>
+<div style="font-size:x-small">
+  ※ここをコンボボックスにして徒歩分数別や、空室日数別、受託見込み別のような出し方をしても面白いかも。その場合はを選択する度に凡例をrenderすればいい。
+</div>
+
+
+
+<div style="padding-top:10px;">
+   <label><input type="checkbox" id="ownerChkbox" />&nbsp;貸主マーカー</label>
+<div style="font-size:x-small">
+  ※貸主マーカーもランク別とか担当者別とかでマーカーを分けて表示するのもあり。
+</div>
+   <label><input type="checkbox" id="trustChkbox" />&nbsp;管理委託契約ライン</label>
+   <label><input type="checkbox" id="storeChkbox" checked/>営業所</label><span style="margin-left:50px;"><input type="checkbox" name="dispcheck01" id="circle01Check"  /> 半径1Km&nbsp;&nbsp;&nbsp;<input type="checkbox" name="dispcheck01" id="circle02Check"  /> 半径2Km</span>
+   <label class="inline">ヒートマップ</label><span style="margin-left:50px;"><input type="radio" name="heatMaps" id="hiatmap00Radio" value="0" checked/> なし&nbsp;&nbsp;&nbsp;<input type="radio" name="heatMaps" id="hiatmap01Radio" value="1" /> 物件別&nbsp;&nbsp;&nbsp;<input type="radio" name="heatMaps" id="hiatmap02Radio" value="2"/> 戸数別</span>
+</div>

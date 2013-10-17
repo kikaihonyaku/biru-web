@@ -1,0 +1,33 @@
+<!-- 所持物件／管理方式を表示する -->
+<%= form_for(@owner, :url=>{:action=>'popup_owner_update', :id=>@owner}, :html=>{:class=>"form-horizontal"}) do |f|%>
+<fieldset>
+  <legend><%= @owner.name %></legend>
+
+  <div class="control-group">
+    <label class="control-label" for="input01">住所</label>
+    <div class="controls" >
+        <%= @owner.address %>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="input01">ランク</label>
+    <div class="controls">
+      <% blank_flg = @owner.owner_rank_id.present? ? false : true %>
+      <%= f.collection_select :owner_rank_id, OwnerRank.all, :id, :name, :size=>2, :include_blank=>blank_flg %>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="input01">備考</label>
+    <div class="controls">
+        <%= f.text_area :memo,  :size => "3x2", :class=>"form-control"  %>
+    </div>
+  </div>
+  <div class="form-actions" style="padding-left:120px;">
+    <%= f.submit '更新', :class=>"btn btn-primary" %>
+    <button type="reset" class="btn" onClick="window.close();return false;">閉じる</button>
+  </div>
+</fieldset>
+<% end %>
+
+
