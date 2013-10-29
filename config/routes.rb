@@ -73,6 +73,8 @@ BiruWeb::Application.routes.draw do
 
 #  get "managements/popup_owner/:id", :as => :popup_owner
 
+  get "/recruitments/search_around", :as =>:search_around
+
   match "managements/bulk_search_file", :as => :bulk_search_file
   match "managements/bulk_search_text", :as => :bulk_search_text
 

@@ -75,10 +75,14 @@ class ManagementsController < ApplicationController
     @owner_ad = ""
 
     # 検索種別（建物検索：１　貸主検索：２）
-    @search_type = nil
+    @search_type = 1
 
     # バルク検索用の文字列
     @bulk_text = ""
+
+    # タブ表示
+    @tab_search = "active in"
+    @tab_result = ""
     
   end
 
@@ -112,7 +116,6 @@ class ManagementsController < ApplicationController
 
     render :action=>'popup_building', :layout => 'popup'
   end
-
 
   def index
     # 営業所のみ表示
@@ -161,13 +164,15 @@ class ManagementsController < ApplicationController
 
     @search_type = 1
 
+    @tab_search = ""
+    @tab_result = "active in"
+
     # 委託契約がされてないものも削除フラグが立っていない建物ならば出力する。
     tmp_buildings = Building.scoped
     tmp_buildings = tmp_buildings.includes(:build_type)
     tmp_buildings = tmp_buildings.includes(:trusts)
     tmp_buildings = tmp_buildings.includes(:trusts => :owner)
     tmp_buildings = tmp_buildings.includes(:shop)
-
 
     # 建物名の絞り込み
     word = params[:biru_name]
@@ -224,17 +229,36 @@ class ManagementsController < ApplicationController
     render 'index'
 
   end
+
+  # 物件種別のiconを変更する時のコントローラ
+  def change_biru_icon
+    
+  end
   
   # 指定した建物情報を元に、出力用のjavascriptオブジェクトを作成します。
   def buildings_to_gon(buildings)
-    
-      set_biru_obj(buildings)
-      @buildings = buildings
+
+      if buildings.size == 0
+        # 表示する建物が存在しない時
+        @owners = []
+        @trusts = []
+        @owner_to_buildings = []
+        @building_to_owners = []
+
+        @shops =  Shop.find(:all)
+      
+      else
+
+        # 建物にマーカーを設定
+        set_biru_obj(buildings)
+        @buildings = buildings
+
+        # 建物に紐づく貸主／委託契約を取得(合わせて管理方式の絞り込み)
+        @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(buildings)
+
+      end
+
       gon.buildings = @buildings
-
-      # 建物に紐づく貸主／委託契約を取得(合わせて管理方式の絞り込み)
-      @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(buildings)
-
       gon.owners = @owners # 関連する貸主
       gon.trusts = @trusts # 関連する委託契約
       gon.shops = @shops    # 関連する営業所
@@ -306,41 +330,40 @@ class ManagementsController < ApplicationController
 
   end
 
-
   #########################
   # ファイル一括検索を行います。
   #########################
   def bulk_search_text
-
+    @search_type = 1 # 建物を初期表示
     @bulk_text = params[:bulk_search_text]
     buildings_to_gon(parse_buildings(@bulk_text))
     render 'index'
   end
 
   def bulk_search_file
+    @search_type = 1 # 建物を初期表示
     buildings_to_gon(parse_buildings(params[:file].read))
     render 'index'
   end
 
   # 文字列から建物情報を作成する
   def parse_buildings(str)
-
     buildings = []
+    codes = []
 
     # 改行・タブ・「、」は全て「,」にする。
     str.gsub("、",",").gsub(/(\r\n|\r|\n)/, ",").gsub(/\t/,",").split(",").each do |code|
-      
-      if code.size > 0
-        biru = Building.find_by_code(code)
-        if biru
-          buildings << biru
-        end
+      if code.length > 0
+        codes << code
       end
     end
+
+    if codes.length > 0
+      buildings = Building.where(:code=>codes)
+    end
+
+    return buildings
     
-    buildings
-
   end
-
 end
 

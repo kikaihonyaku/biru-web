@@ -4,83 +4,135 @@
 
 // フルスクリーンを表示するボタン定義
 function FullScreenControl(map) {
-	var controlDiv = document.createElement('div');
-	controlDiv.index = 1;
-	controlDiv.style.padding = '5px';
+    var controlDiv = document.createElement('div');
+    controlDiv.index = 1;
+    controlDiv.style.padding = '5px';
 
-	// Set CSS for the control border.
-	var controlUI = document.createElement('div');
-	controlUI.style.backgroundColor = 'white';
-	controlUI.style.borderStyle = 'solid';
-	controlUI.style.borderWidth = '1px';
-	controlUI.style.borderColor = '#717b87';
-	controlUI.style.cursor = 'pointer';
-	controlUI.style.textAlign = 'center';
-	controlUI.style.boxShadow = '0px 2px 4px rgba(0,0,0,0.4)';
-	controlDiv.appendChild(controlUI);
+    // Set CSS for the control border.
+    var controlUI = document.createElement('div');
+    controlUI.style.backgroundColor = 'white';
+    controlUI.style.borderStyle = 'solid';
+    controlUI.style.borderWidth = '1px';
+    controlUI.style.borderColor = '#717b87';
+    controlUI.style.cursor = 'pointer';
+    controlUI.style.textAlign = 'center';
+    controlUI.style.boxShadow = '0px 2px 4px rgba(0,0,0,0.4)';
+    controlDiv.appendChild(controlUI);
 
-	// Set CSS for the control interior.
-	var controlText = document.createElement('div');
-	controlText.style.fontFamily = 'Arial,sans-serif';
-	controlText.style.fontSize = '13px';
-	controlText.style.paddingTop = '1px';
-	controlText.style.paddingBottom = '1px';
-	controlText.style.paddingLeft = '6px';
-	controlText.style.paddingRight = '6px';
-	controlText.innerHTML = '<strong>Full Screen</strong>';
-	controlUI.appendChild(controlText);
+    // Set CSS for the control interior.
+    var controlText = document.createElement('div');
+    controlText.style.fontFamily = 'Arial,sans-serif';
+    controlText.style.fontSize = '13px';
+    controlText.style.paddingTop = '1px';
+    controlText.style.paddingBottom = '1px';
+    controlText.style.paddingLeft = '6px';
+    controlText.style.paddingRight = '6px';
+    controlText.innerHTML = '<strong>Full Screen</strong>';
+    controlUI.appendChild(controlText);
 
-	var fullScreen = false;
-	var mapDiv = map.getDiv();
-	var divStyle = mapDiv.style;
-	if (mapDiv.runtimeStyle)
-		divStyle = mapDiv.runtimeStyle;
-	var originalPos = divStyle.position;
-	var originalWidth = divStyle.width;
-	var originalHeight = divStyle.height;
-	var originalTop = divStyle.top;
-	var originalLeft = divStyle.left;
-	var originalZIndex = divStyle.zIndex;
+    var fullScreen = false;
+    var mapDiv = map.getDiv();
+    var divStyle = mapDiv.style;
+    if (mapDiv.runtimeStyle)
+            divStyle = mapDiv.runtimeStyle;
+    var originalPos = divStyle.position;
+    var originalWidth = divStyle.width;
+    var originalHeight = divStyle.height;
+    var originalTop = divStyle.top;
+    var originalLeft = divStyle.left;
+    var originalZIndex = divStyle.zIndex;
 
-	var bodyStyle = document.body.style;
-	if (document.body.runtimeStyle)
-		bodyStyle = document.body.runtimeStyle;
-	var originalOverflow = bodyStyle.overflow;
+    var bodyStyle = document.body.style;
+    if (document.body.runtimeStyle)
+            bodyStyle = document.body.runtimeStyle;
+    var originalOverflow = bodyStyle.overflow;
 
-	// Setup the click event listener
-	google.maps.event.addDomListener(controlUI, 'click', function() {
-		var center = map.getCenter();
-		if (!fullScreen) {
-			divStyle.position = "fixed";
-			divStyle.width = "100%";
-			divStyle.height = "100%";
-			divStyle.top = "0";
-			divStyle.left = "0";
-			divStyle.zIndex = "100";
-			bodyStyle.overflow = "hidden";
-			controlText.innerHTML = '<strong>Exit full screen</strong>';
-		}
-		else {
-			if (originalPos == "")
-				divStyle.position = "relative";
-			else
-				divStyle.position = originalPos;
-			divStyle.width = originalWidth;
-			divStyle.height = originalHeight;
-			divStyle.top = originalTop;
-			divStyle.left = originalLeft;
-			divStyle.zIndex = originalZIndex;
-			bodyStyle.overflow = originalOverflow;
-			controlText.innerHTML = '<strong>Full Screen</strong>';
-		}
-		fullScreen = !fullScreen;
-		google.maps.event.trigger(map, 'resize');
-		map.setCenter(center);
-	});
+    // Setup the click event listener
+    google.maps.event.addDomListener(controlUI, 'click', function() {
+            var center = map.getCenter();
+            if (!fullScreen) {
+                    divStyle.position = "fixed";
+                    divStyle.width = "100%";
+                    divStyle.height = "100%";
+                    divStyle.top = "0";
+                    divStyle.left = "0";
+                    divStyle.zIndex = "100";
+                    bodyStyle.overflow = "hidden";
+                    controlText.innerHTML = '<strong>Exit full screen</strong>';
+            }
+            else {
+                    if (originalPos == "")
+                            divStyle.position = "relative";
+                    else
+                            divStyle.position = originalPos;
+                    divStyle.width = originalWidth;
+                    divStyle.height = originalHeight;
+                    divStyle.top = originalTop;
+                    divStyle.left = originalLeft;
+                    divStyle.zIndex = originalZIndex;
+                    bodyStyle.overflow = originalOverflow;
+                    controlText.innerHTML = '<strong>Full Screen</strong>';
+            }
+            fullScreen = !fullScreen;
+            google.maps.event.trigger(map, 'resize');
+            map.setCenter(center);
+    });
 
-	return controlDiv;
+    return controlDiv;
 }
 
+
+/* マーカーを作成 */
+function createMarker(opts){
+  var marker = new google.maps.Marker(opts);
+  google.maps.event.addListener(marker, "click", function(){
+  // write_build(opts.info_msg);
+
+  infoWnd.close();
+  infoWnd.setContent(opts.html);
+  infoWnd.open(opts.map, marker);
+
+  panorama.setPosition(opts.position);
+  panorama.setPov(panoramaOptionsPov);
+
+  opts.map.panTo(opts.position);
+});
+
+
+return marker;
+}
+
+
+// Infoウィンドウに設定します
+function setInfoWnd(marker, msg){
+    google.maps.event.addListener(marker, "click", function(){
+      infoWnd.setContent(msg);
+      infoWnd.open(marker.getMap(), marker);
+    });
+}
+
+// posからpositionオブジェクトを返します。
+function getCoords(position) {
+    return new google.maps.LatLng(position.latitude, position.longitude);
+}
+
+function create_circle(size, mapCanvas, pos){
+  var myCircle = new google.maps.Circle({
+    map : mapCanvas
+    ,center : pos
+    ,strokeColor: '#0000FF' /* ストロークの色 */
+    ,strokeOpacity: 0.8 /* ストロークの透明度 */
+    ,strokeWeight: 2 /* ストロークの幅 */
+    ,fillColor: '#0000FF' /* フィルの色 */
+    ,fillOpacity: 0.35 /* フィルの透明度 */
+    ,fillColor: "#0000FF"
+  });
+
+  myCircle.setRadius(size); // メートル単位で指定
+  myCircle.set("visible",false);
+
+  return myCircle
+}
 
   function win_owner(id) {
     window.open('/managements/popup_owner/' + id   , "", "width=400,height=450");
@@ -90,39 +142,8 @@ function FullScreenControl(map) {
     window.open('/managements/popup_building/' + id   , "", "width=400,height=450");
   }
 
-  function createMarker(opts){
-    var marker = new google.maps.Marker(opts);
-    google.maps.event.addListener(marker, "click", function(){
-      // write_build(opts.info_msg);
-
-      infoWnd.close();
-      infoWnd.setContent(opts.html);
-      infoWnd.open(opts.map, marker);
-
-      panorama.setPosition(opts.position);
-      panorama.setPov(panoramaOptionsPov);
-
-      opts.map.panTo(opts.position);
-    });
-
-    return marker;
-  }
-
-  // ストリートビューを閉じます
-  function sv_init(){
-    init_display();
-  }
-
   // 管理委託契約と建物・貸主の紐付け（このように関数で呼び出すようにする必要がある）
   function create_relation_listener(trust_ev, owner_ev, build_ev){
-
-//    google.maps.event.addDomListener(owner_ev, "dblclick", function(){
-//      trust_ev.set("visible", !trust_ev.get("visible"));
-//    });
-
-//    google.maps.event.addDomListener(build_ev, "dblclick", function(){
-//      trust_ev.set("visible", !trust_ev.get("visible"));
-//    });
 
     // 貸主マーカーにて委託契約ONのイベント
     google.maps.event.addDomListener(owner_ev, "trust_on", function(){
@@ -135,7 +156,6 @@ function FullScreenControl(map) {
       trust_ev.set("visible", false);
       build_ev.set("visible", false);
     });
-
 
     // 建物マーカーにて委託契約ONのイベント
     google.maps.event.addDomListener(build_ev, "trust_on", function(){
@@ -191,7 +211,6 @@ function FullScreenControl(map) {
     google.maps.event.trigger(shop_arr[num], "click");
   }
 
-
   function sel_itaku_owner(obj, id){
     obj_value = obj.options[obj.selectedIndex].value;
     if(obj_value == "on"){
@@ -219,23 +238,6 @@ function FullScreenControl(map) {
     }
   }
 
-  // ストリートビューを表示
-  function view_disp(disp_flg, lat, lng){
-
-    if(disp_flg == true){
-      // ストリートビュー　表示設定
-      document.getElementById("map_canvas").style.height = "450px";
-      document.getElementById("panowide").style.height = "350px";
-      document.getElementById("panowide").style.display = "block";
-
-      panorama.setPosition(new google.maps.LatLng(lat,lng));
-      panorama.setPov(panoramaOptionsPov);
-
-    }else{
-      // ストリートビューを非表示に設定
-      init_display();
-    }
-  }
 
   // ストリートビューを非表示にして map_canvasの高さを設定
   function init_display(){
@@ -254,39 +256,32 @@ function FullScreenControl(map) {
     }
   }
 
-  function setInfoWnd(marker, msg){
-    google.maps.event.addListener(marker, "click", function(){
-      infoWnd.setContent(msg);
-      infoWnd.open(marker.getMap(), marker);
-    });
+  // ストリートビューを表示
+  function view_disp(disp_flg, lat, lng){
+    
+    if(disp_flg == true){
+      // ストリートビュー　表示設定
+      document.getElementById("map_canvas").style.height = "450px";
+      document.getElementById("panowide").style.height = "350px";
+      document.getElementById("panowide").style.display = "block";
+
+      panorama.setPosition(new google.maps.LatLng(lat,lng));
+      panorama.setPov(panoramaOptionsPov);
+
+    }else{
+      // ストリートビューを非表示に設定
+      init_display();
+    }
   }
 
-  function getCoords(position) {
-    return new google.maps.LatLng(position.latitude, position.longitude);
+  // ストリートビューを閉じます
+  function sv_init(){
+    init_display();
   }
-
 
   function write_build(biru)
   {
     document.getElementById("m_name").innerText=biru;
-  }
-
-  function create_circle(size, mapCanvas, pos){
-    var myCircle = new google.maps.Circle({
-      map : mapCanvas
-      ,center : pos
-      ,strokeColor: '#0000FF' /* ストロークの色 */
-      ,strokeOpacity: 0.8 /* ストロークの透明度 */
-      ,strokeWeight: 2 /* ストロークの幅 */
-      ,fillColor: '#0000FF' /* フィルの色 */
-      ,fillOpacity: 0.35 /* フィルの透明度 */
-      ,fillColor: "#0000FF"
-    });
-
-    myCircle.setRadius(size); // メートル単位で指定
-    myCircle.set("visible",false);
-
-    return myCircle
   }
 
   //-------------------
@@ -296,6 +291,9 @@ function FullScreenControl(map) {
   var panoramaOptionsPov; // ストリートビュー定義
 
   function initialize(){
+
+    // 初期表示は非表示
+    init_display();
 
     /* 地図を作成 */
     var mapDiv = document.getElementById("map_canvas");
@@ -380,9 +378,8 @@ function FullScreenControl(map) {
         }
 
         var vhtml = '<div><b>' + buildings[i].name + '（<a href="javascript:win_building(' + buildings[i].id + ');">詳細</a>）</b><br>' +
+          '<div>住所：' + buildings[i].address +'</div>' +
           '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
-
-
           '<hr/>' +
           '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
           '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="building_trust_disp(' + buildings[i].id  + ', this.checked);" />&nbsp;委託</label>' +
@@ -448,7 +445,6 @@ function FullScreenControl(map) {
       <% if @search_type == 1 # 建物検索の時のみ追加する %>
         bounds.extend(pos);
       <% end %>
-
     }
 
     var heatmap_biru = new google.maps.visualization.HeatmapLayer();
@@ -502,7 +498,7 @@ function FullScreenControl(map) {
       }
 
       var vhtml = '<div><b>' + owners[i].name + '（<a href="javascript:win_owner(' + owners[i].id + ');">詳細</a>）</b><br>' +
-        '<div>住所：' +  +'</div>'
+        '<div>住所：' + owners[i].address +'</div>' +
         '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
         '<div>' +
         '<select name="itaku" style="width:100px" onchange="sel_itaku_owner(this, ' + owners[i].id  + ')">/' +
@@ -518,7 +514,6 @@ function FullScreenControl(map) {
         '</select>' +
         '</div>' +
         '</div>';
-
 
       <% if @search_type == 1 # 建物検索の時、初期状態で非表示%>
         var owner_disp = false
@@ -615,7 +610,6 @@ function FullScreenControl(map) {
     google.maps.event.addDomListener(kanriRadio, "click", function(){
         for(var item in build_arr){
           build_arr[item].setIcon(build_arr[item].manage_icon );
-//          build_arr[item].setIcon(build_arr[item].icon );
         };
     });
 
@@ -624,7 +618,6 @@ function FullScreenControl(map) {
     google.maps.event.addDomListener(bukkenRadio, "click", function(){
         for(var item in build_arr){
           build_arr[item].setIcon(build_arr[item].build_type_icon );
-         // console.log(build_arr[item].manage_icon)
         };
     });
 
@@ -660,11 +653,6 @@ function FullScreenControl(map) {
       mapCanvas.panTo(positionPegman);
     });
 
-    // 初期表示は非表示
-    init_display();
-
-
-
   } // end initialize
 
   google.maps.event.addDomListener(window, "load", initialize);
@@ -677,7 +665,6 @@ function FullScreenControl(map) {
       width: 100%;
       height: 100%;
     }
-
   </style>
 
 <% end %>
@@ -688,21 +675,21 @@ function FullScreenControl(map) {
 
     <div>
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab_search" data-toggle="tab">条件を指定して検索</a></li>
-        <li><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
+        <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab">検索をする</a></li>
+        <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
       </ul>
 
       <div id="myTabContent_search" class="tab-content">
 
         <!-- 検索条件設定 -->
-        <div class="tab-pane fade active in" id="tab_search">
+        <div class="tab-pane fade <%= @tab_search %> " id="tab_search">
           <ul class="nav nav-tabs">
             <li class="active"><a href="#tab1" data-toggle="tab">建物検索</a></li>
             <li><a href="#tab2" data-toggle="tab">貸主検索</a></li>
             <li><a href="#tab3" data-toggle="tab">バルク検索</a></li>
           </ul>
 
-          <div id="myTabContent" class="tab-content">
+          <div id="myTabContent1" class="tab-content">
             <div class="tab-pane fade active in" id="tab1">
                <%= render :partial=>'search_build' %>
             </div>
@@ -716,15 +703,15 @@ function FullScreenControl(map) {
         </div>
 
         <!-- 検索結果確認 -->
-        <div class="tab-pane fade active in" id="tab_result">
+        <div class="tab-pane fade <%= @tab_result %>" id="tab_result">
           <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab7" data-toggle="tab">表示設定</a></li>
             <li><a href="#tab4" data-toggle="tab">建物</a></li>
             <li><a href="#tab5" data-toggle="tab">貸主</a></li>
             <li><a href="#tab6" data-toggle="tab">営業所</a></li>
-            <li><a href="#tab7" data-toggle="tab">表示設定</a></li>
           </ul>
 
-          <div id="myTabContent" class="tab-content">
+          <div id="myTabContent2" class="tab-content">
             <div class="tab-pane fade" id="tab4">
                <%= render :partial=>'result_buildings' %>
             </div>
@@ -734,7 +721,7 @@ function FullScreenControl(map) {
             <div class="tab-pane fade" id="tab6">
                <%= render :partial=>'result_shops' %>
             </div>
-            <div class="tab-pane fade" id="tab7">
+            <div class="tab-pane active in fade" id="tab7">
                <%= render :partial=>'disp' %>
             </div>
           </div>
@@ -750,7 +737,7 @@ function FullScreenControl(map) {
 <!-- ここは span9で呼び出されているので合計も9に合わせる -->
   <div class="span12" style="float:left;padding-left:10px;">
     <div style="border-width : 3px;border-style : solid;border-color : silver;">
-      <div id="map_canvas" style="width: 100%; "></div>
+      <div id="map_canvas" style="width: 100%;"></div>
       <div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;">
          <input type="button" value="閉じる" onclick="sv_init();" style="top: 10px;right: 20px;position:absolute;z-index: 500;" />
       </div>

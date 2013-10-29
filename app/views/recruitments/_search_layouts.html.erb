@@ -1,0 +1,60 @@
+<!-- 間取りを検索します -->
+<div class="row" style="margin-left:0px;">
+
+  <div class="col-lg-12 well" >
+
+      <!-- 1R〜1LDK -->
+      <div style="padding-bottom:5px;"><label><%= check_box_tag('group[siten01]', 99, false, {}) %><span style="font-weight: bolder;">1R〜1LDK</span></label></div>
+      <div id="shop_list" class="checkbox" style="padding-bottom:20px;">
+
+        <div id="tobu_siten" style="float:left;">
+          <div id="tobu_soth" >
+            <label><%= check_box_tag('layout[t100]', '18100', {}) %>1R</label>
+            <label><%= check_box_tag('layout[t120]', '18120', {}) %>1LDK</label>
+          </div>
+        </div>
+
+        <div id="sai_siten" style="padding-left:50px;float:left;">
+          <div id="sai_soth">
+            <label><%= check_box_tag('layout[t105]', '18105', {}) %>1K</label>
+            <label><%= check_box_tag('layout[t125]', '18125', {}) %>1SLDK</label>
+          </div>
+        </div>
+
+        <div id="chiba_siten" style="padding-left:170px;">
+          <div id="chiba_center">
+            <label><%= check_box_tag('layout[t110]', '18110', {}) %>1DK</label>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 2R〜1LDK -->
+      <div style="padding-bottom:5px;padding-top:30px;float: none;"><label><%= check_box_tag('group[siten02]', 99, false, {}) %><span style="font-weight: bolder;">2K〜2LDK</span></label></div>
+      <div id="shop_list" class="checkbox" style="padding-bottom:20px;">
+
+        <div id="tobu_siten" style="float:left;">
+          <div id="tobu_soth" >
+            <label><%= check_box_tag('layout[t0xx]', '18200', {}) %>2K</label>
+            <label><%= check_box_tag('layout[t0xx]', '18215', {}) %>2LDK</label>
+          </div>
+        </div>
+
+        <div id="sai_siten" style="padding-left:50px;float:left;">
+          <div id="sai_soth">
+            <label><%= check_box_tag('layout[t0xx]', '18205', {}) %>2DK</label>
+            <label><%= check_box_tag('layout[t0xx]', '18220', {}) %>2SLDK</label>
+          </div>
+        </div>
+
+        <div id="chiba_siten" style="padding-left:170px;">
+          <div id="chiba_center">
+            <label><%= check_box_tag('layout[t0xx]', '18210', {}) %>2SDK</label>
+          </div>
+        </div>
+      </div>
+
+
+  </div>
+
+</div>

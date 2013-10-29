@@ -8,3 +8,611 @@
   <li>動画を再生できる</li>
 </ul>
 -->
+
+<!--
+<h1>募集に使用する画面</h1>
+<p>来店客に物件を紹介する時に使う</p>
+
+<ul>
+  <li>google mapで募集中の物件をダブルクリックするとそこのルートとgoogleストリートビューで道が表示される</li>
+  <li>室内写真がストリートビューの形式で確認できる</li>
+  <li>動画を再生できる</li>
+</ul>
+-->
+
+<% content_for :header do %>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+<script type="text/javascript">
+
+/* プレイスタイプ */
+var places_types={
+    "accounting":"会計事務所",
+    "airport":"空港",
+    "amusement_park":"遊園地",
+    "aquarium":"水族館",
+    "art_gallery":"アート ギャラリー",
+    "atm":"ATM",
+    "bakery":"ベーカリー、パン屋",
+    "bank":"銀行",
+    "bar":"居酒屋",
+    "beauty_salon":"ビューティー サロン",
+    "bicycle_store":"自転車店",
+    "book_store":"書店",
+    "bowling_alley":"ボウリング場",
+    "bus_station":"バスターミナル",
+    "cafe":"カフェ",
+    "campground":"キャンプ場",
+    "car_dealer":"カー ディーラー",
+    "car_rental":"レンタカー",
+    "car_repair":"車の修理",
+    "car_wash":"洗車場",
+    "casino":"カジノ",
+    "cemetery":"墓地",
+    "church":"教会",
+    "city_hall":"市役所",
+    "clothing_store":"衣料品店",
+    "convenience_store":"コンビニエンス ストア",
+    "courthouse":"裁判所",
+    "dentist":"歯科医",
+    "department_store":"百貨店",
+    "doctor":"医者",
+    "electrician":"電気工",
+    "electronics_store":"電器店",
+    "embassy":"大使館",
+    "establishment":"施設",
+    "finance":"金融業",
+    "fire_station":"消防署",
+    "florist":"花屋",
+    "food":"食料品店",
+    "funeral_home":"葬儀場",
+    "furniture_store":"家具店",
+    "gas_station":"ガソリンスタンド",
+    "general_contractor":"建設会社",
+    "geocode":"ジオコード",
+    "grocery_or_supermarket":"スーパー",
+    "gym":"スポーツクラブ",
+    "hair_care":"ヘアケア",
+    "hardware_store":"金物店",
+    "health":"健康",
+    "hindu_temple":"ヒンドゥー寺院",
+    "home_goods_store":"インテリア ショップ",
+    "hospital":"病院",
+    "insurance_agency":"保険代理店",
+    "jewelry_store":"宝飾店",
+    "laundry":"クリーニング店",
+    "lawyer":"弁護士",
+    "library":"図書館",
+    "liquor_store":"酒店",
+    "local_government_office":"役場",
+    "locksmith":"錠屋",
+    "lodging":"宿泊施設",
+    "meal_delivery":"出前",
+    "meal_takeaway":"テイクアウト",
+    "mosque":"モスク",
+    "movie_rental":"DVD レンタル",
+    "movie_theater":"映画館",
+    "moving_company":"引越会社",
+    "museum":"美術館/博物館",
+    "night_club":"ナイト クラブ",
+    "painter":"塗装業",
+    "park":"公園",
+    "parking":"駐車場",
+    "pet_store":"ペット ショップ",
+    "pharmacy":"薬局",
+    "physiotherapist":"理学療法士",
+    "place_of_worship":"礼拝所",
+    "plumber":"配管工",
+    "police":"警察",
+    "post_office":"郵便局",
+    "real_estate_agency":"不動産業",
+    "restaurant":"レストラン",
+    "roofing_contractor":"防水工事業",
+    "rv_park":"オート キャンプ場",
+    "school":"学校",
+    "shoe_store":"靴屋",
+    "shopping_mall":"ショッピング モール",
+    "spa":"温泉、スパ",
+    "stadium":"スタジアム",
+    "storage":"倉庫",
+    "store":"小売店",
+    "subway_station":"地下鉄駅",
+    "synagogue":"シナゴーグ",
+    "taxi_stand":"タクシー乗り場",
+    "train_station":"駅",
+    "travel_agency":"旅行代理店",
+    "university":"大学",
+    "veterinary_care":"獣医",
+    "zoo":"動物園",
+    "administrative_area_level_1":"行政区画レベル 1",
+    "administrative_area_level_2":"行政区画レベル 2",
+    "administrative_area_level_3":"行政区画レベル 3",
+    "colloquial_area":"非公式地域",
+    "country":"国",
+    "floor":"階",
+    "intersection":"交差点",
+    "locality":"地区",
+    "natural_feature":"地勢",
+    "neighborhood":"周辺地域",
+    "political":"政治",
+    "point_of_interest":"スポット",
+    "post_box":"ポスト",
+    "postal_code":"郵便番号",
+    "postal_code_prefix":"郵便番号のプレフィックス",
+    "postal_town":"郵便番号に対応する都市",
+    "premise":"建物名",
+    "room":"部屋",
+    "route":"ルート",
+    "street_address":"住所",
+    "street_number":"番地",
+    "sublocality":"下位地区",
+    "sublocality_level_4":"下位地区レベル 4",
+    "sublocality_level_5":"下位地区レベル 5",
+    "sublocality_level_3":"下位地区レベル 3",
+    "sublocality_level_2":"下位地区レベル 2",
+    "sublocality_level_1":"下位地区レベル 1",
+    "subpremise":"区画",
+    "transit_station":"駅、停留所"
+};
+
+
+  var point,openFLG=[],overlays=[],iterator=0,current;
+  var openFLG=[],iterator=0;
+  var picmaxWidth=200; //スポット画像の最大幅
+  var picmaxHeight=200; //スポット画像の最大高さ
+
+function create_circle(size, mapCanvas, pos){
+  var myCircle = new google.maps.Circle({
+    map : mapCanvas
+    ,center : pos
+    ,strokeColor: '#0000FF' /* ストロークの色 */
+    ,strokeOpacity: 0.8 /* ストロークの透明度 */
+    ,strokeWeight: 2 /* ストロークの幅 */
+    ,fillColor: '#0000FF' /* フィルの色 */
+    ,fillOpacity: 0.35 /* フィルの透明度 */
+    ,fillColor: "#0000FF"
+  });
+
+  myCircle.setRadius(size); // メートル単位で指定
+  myCircle.set("visible",false);
+
+  return myCircle
+}
+
+// 指定した物件の周辺検索をします。
+function search_around(biru_id){
+ document.aaaa.around.value = biru_id;
+  document.aaaa.submit();
+}
+
+function fGetPlaceInfo(chk_flg, lat, lng){
+
+    if(chk_flg == false){
+      exit;
+    }
+
+    // チェックされた場所を選択
+    var places=[];
+    $('[name="place"]:checked').each(function(){
+      places.push($(this).val());
+    });
+
+    resetOverlay(1);
+
+    // チェックされた範囲を選択
+    var p_size;
+    p_size = $('#place_size').val();
+
+    var place_pos;
+    place_pos = new google.maps.LatLng(lat, lng);
+
+
+    // 検索範囲の円を描く
+//    var myCircle = new google.maps.Circle({
+//      map : mapCanvas
+//      ,center : place_pos
+//      ,strokeColor: '#0000FF' /* ストロークの色 */
+//      ,strokeOpacity: 0.8 /* ストロークの透明度 */
+//      ,strokeWeight: 2 /* ストロークの幅 */
+//      ,fillColor: '#0000FF' /* フィルの色 */
+//      ,fillOpacity: 0.35 /* フィルの透明度 */
+//      ,fillColor: "#0000FF"
+//    });
+
+//    myCircle.setRadius(p_size); // メートル単位で指定
+//    myCircle.set("visible",true);
+
+    // 周辺施設を検索する。
+    var request={
+        location: place_pos,
+        radius:p_size, /* 指定した座標から半径1000m(1km)以内 */
+         types: places
+    };
+    service.search(request, callback);
+}
+
+function dbg(str){
+    try{
+        if(window.console && console.log){
+            console.log(str);
+        }
+    }catch(err){
+        //alert("error:"+err);
+    }
+}
+
+//-------------------
+// グローバル変数定義
+//-------------------
+var infoWnd;  // 吹き出しウィンドウ
+var panoramaOptionsPov; // ストリートビュー定義
+
+// ストリートビューを非表示にして map_canvasの高さを設定
+function init_display(){
+    document.getElementById("map_canvas").style.height = "700px";
+}
+
+function callback(results, status) {
+  if (status == google.maps.places.PlacesServiceStatus.OK) {
+
+    var bounds_place = new google.maps.LatLngBounds();
+
+    for (var i = 0; i < results.length; i++) {
+      //createMarker_place(results[i]);
+      createMarker_place2(results[i], bounds_place);
+    }
+
+    mapCanvas.fitBounds(bounds_place);
+
+  }
+}
+
+function createMarker_place(place) {
+  var placeLoc = place.geometry.location;
+
+  // iconのサイズ調整
+  var custum_icon = new google.maps.MarkerImage(
+    place.icon,
+    null,
+    null,
+    null,
+    new google.maps.Size(20, 20));
+
+  var marker = new google.maps.Marker({
+    map: mapCanvas,
+    position: place.geometry.location,
+    icon: custum_icon
+  });
+
+  google.maps.event.addListener(marker, 'click', function() {
+    infoWnd.setContent(place.name + '<br/><br/>' + place.vicinity);
+    infoWnd.open(mapCanvas, this);
+  });
+}
+
+/* オーバーレイ全削除 */
+function resetOverlay(deleteFLG){
+    if(overlays.length>0){
+        for(i in overlays){
+            overlays[i][1].close();
+            if(deleteFLG==1){
+                openFLG[i]=0;
+                overlays[i][0].setMap(null);
+            }
+        }
+        if(deleteFLG==1) overlays.length=0;
+        if(deleteFLG==1) iterator=0;
+    }
+}
+
+function createMarker_place2(place, bounds_place) {
+  var placeLoc=place.geometry.location;
+  var place_pos = new google.maps.LatLng(placeLoc.lat(), placeLoc.lng());
+  bounds_place.extend(place_pos);
+
+  var custum_icon = new google.maps.MarkerImage(
+    place.icon,
+    null,
+    null,
+    null,
+    new google.maps.Size(20, 20));
+
+    var marker=new google.maps.Marker({
+        map: mapCanvas,
+        position: place_pos,
+        icon :custum_icon
+    });
+    /* 情報ウィンドウ */
+    var infowindow=new google.maps.InfoWindow({
+        maxWidth:320
+    });
+    /* ID、フラグセット */
+    marker.set("id",iterator);
+    infowindow.set("id",iterator);
+    overlays.push([marker,infowindow]);
+    /* 情報ウィンドウの×ボタンと押した時 */
+    google.maps.event.addListener(infowindow,"closeclick",function(){
+        openFLG[infowindow.get("id")]=0;
+    });
+    /* マーカークリックで情報ウィンドウを開閉 */
+    google.maps.event.addListener(marker, "click", function(){
+
+        var id=this.get("id");
+        if(current>=0 && current!=id){
+            openFLG[current]=0;
+        }
+        resetOverlay(0);
+        var s ="";
+        /* アイコン+場所名 */
+        s+="<div class='ttl cf'>";
+        s+=(place.icon)?"<img width='32' height='32' src='"+place.icon+"' style='float:left;margin-right:5px;' />":"";
+        s+=(place.name)?"<b>"+place.name+"</b>":"不明";
+        s+="</div>";
+        s+="<div class='detail'>";
+        /* 住所 */
+        if(place.vicinity){
+            s+="<p>"+place.vicinity+"</p>";
+        }
+        /* 場所タイプ */
+        if(place.types){
+            s+="<p>";
+            $.each(place.types,function(x,type){
+                s+=(places_types[type])?places_types[type]+"　":"";
+            });
+            s+="</p>";
+        }
+        /* 営業中か */
+        if(place.opening_hours){
+            s+="<p>只今営業中！</p>";
+        }
+        /* 評価 */
+        if(place.rating){
+            s+="<p>評価："+place.rating+"</p>";
+        }
+        /* 写真 */
+        if(place.photos && place.photos.length>=1){
+            s+="<p class='picframe'><img src='"+place.photos[0].getUrl({"maxWidth":picmaxWidth,"maxHeight":picmaxHeight})+"' class='shadow size' /></p>";
+        }
+        current=id;
+        var infowindow=overlays[id][1];
+        infowindow.setContent("<div class='infowin'>"+s+"</div>");
+        if(openFLG[id]!=1){
+            infowindow.open(mapCanvas, this);
+            openFLG[id]=1;
+        }else{
+            infowindow.close();
+            openFLG[id]=0;
+        }
+    });
+}
+
+/* マーカーを作成 */
+function createMarker(opts){
+var marker = new google.maps.Marker(opts);
+google.maps.event.addListener(marker, "click", function(){
+  // write_build(opts.info_msg);
+
+  infoWnd.close();
+  infoWnd.setContent(opts.html);
+  infoWnd.open(opts.map, marker);
+
+});
+
+
+
+return marker;
+}
+
+function initialize(){
+
+    // 初期表示は非表示
+    init_display();
+
+    /* 地図を作成 */
+    var mapDiv = document.getElementById("map_canvas");
+    mapCanvas = new google.maps.Map(mapDiv, {
+      mapTypeId : google.maps.MapTypeId.ROADMAP
+    });
+
+    // infoウィンドウを１つだけ作成
+    infoWnd = new google.maps.InfoWindow();
+
+    // 初期表示位置を調整
+    bounds = new google.maps.LatLngBounds();
+
+    /* 営業所の情報を表示する */
+    shop_arr = {}; // varを消してグローバル化
+    var shops = gon.shops
+    for(var i in shops){
+
+      pos = new google.maps.LatLng(shops[i].latitude, shops[i].longitude);
+      bounds.extend(pos);
+
+      shop_arr[shops[i].id] = new google.maps.Marker({
+        position : pos
+        ,map : mapCanvas
+        ,animation: google.maps.Animation.DROP
+        ,icon : shops[i].icon
+        ,info_msg : shops[i].name
+        ,html : shops[i].name
+      });
+    }
+
+    /* 検索に一致した物件を表示する */
+    build_arr = {}; // グローバル
+    kyori_text = ""
+    var pos;
+    var idx = 0;
+    var biru_latlngs = [];
+    var populations = [];
+
+    var buildings = gon.buildings
+    for(var i in buildings){
+        pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
+        bounds.extend(pos);
+
+        // infoWndに表示するHTMLを作成する。
+        var inner_text;
+
+        var rooms = gon.room_of_building[buildings[i].id];
+
+
+        inner_text = ""
+       for(var j in rooms){
+          inner_text = inner_text + '<li>' + rooms[j].name + '</li>'
+        }
+
+        var vhtml = '<div><b>' + buildings[i].name + '（<a href="javascript:win_building(' + buildings[i].id + ');">詳細</a>）</b><br>' +
+          '<div>住所：' + buildings[i].address +'</div>' +
+          '<div><a href="javascript:search_around(' + buildings[i].id + ');">この物件の周辺情報を検索：</a></div>' +
+          '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
+          '<hr/>' +
+          '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
+          '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="fGetPlaceInfo( this.checked, ' + buildings[i].latitude + ',' + buildings[i].longitude  + ');" />&nbsp;周辺施設</label>' +
+          '</div>' +
+          '<div style="padding-left:80px;">' +
+          '  <a href="javascript:void(0)" onClick="view_disp( true, ' + buildings[i].latitude + ',' + buildings[i].longitude  + '); return false;"> ストリートビュー</a>' +
+          '</div>' +
+          '</div>';
+
+
+        build_arr[buildings[i].id] = createMarker({
+          position : pos
+          ,map : mapCanvas
+//          ,animation: google.maps.Animation.DROP
+          ,icon : buildings[i].tmp_build_type_icon
+          ,manage_icon : buildings[i].tmp_manage_type_icon
+          ,build_type_icon : buildings[i].tmp_build_type_icon
+          ,shadow : '/assets/marker_shadow.png'
+          ,info_msg : buildings[i].name
+          ,html : vhtml
+        });
+
+        // 周辺の検索
+        if(gon.around_flg == true){
+
+          var request = {
+            location: pos,
+            radius: '500',
+            types: ['store']
+          };
+
+          service = new google.maps.places.PlacesService(mapCanvas);
+          service.search(request, callback);
+
+        }
+
+    }
+
+    // google places用のサービスを指定
+    service=new google.maps.places.PlacesService(mapCanvas);
+    
+    // ここで格納していたPosition情報を展開
+    mapCanvas.fitBounds(bounds);
+
+} // end initialize
+
+google.maps.event.addDomListener(window, "load", initialize);
+
+
+
+</script>
+
+<style type="text/css">
+  html, body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<% end %>
+
+<% content_for :sidebar_map do %>
+
+  <!-- ここは span3で呼び出されている -->
+
+    <div>
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_search" data-toggle="tab">条件を指定して検索</a></li>
+        <li><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
+      </ul>
+
+      <div id="myTabContent_search" class="tab-content">
+
+        <!-- 検索条件設定 -->
+        <div class="tab-pane fade active in" id="tab_search">
+
+          <%= form_tag('/recruitments/search') do %>
+
+            <div style="text-align: center;padding-bottom:15px;">
+              <%= submit_tag "検索する", :class=>'btn btn-large btn-primary'  %>
+            </div>
+
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab1" data-toggle="tab">間取り</a></li>
+              <li><a href="#tab2" data-toggle="tab">最寄り駅</a></li>
+              <li><a href="#tab3" data-toggle="tab">家賃</a></li>
+              <li><a href="#tab4" data-toggle="tab">その他</a></li>
+            </ul>
+
+            <div id="myTabContent1" class="tab-content">
+              <div class="tab-pane fade active in" id="tab1">
+                 <%= render :partial=>'search_layouts' %>
+              </div>
+              <div class="tab-pane fade" id="tab2">
+                 <%#= render :partial=>'search_layouts' %>
+              </div>
+              <div class="tab-pane fade" id="tab3">
+                 <%#= render :partial=>'search_layouts' %>
+              </div>
+              <div class="tab-pane fade" id="tab4">
+                 <%#= render :partial=>'search_layouts' %>
+              </div>
+            </div>
+
+          <% end %>
+        </div>
+
+        <!-- 検索結果確認 -->
+        <div class="tab-pane fade in" id="tab_result">
+          <ul class="nav nav-tabs">
+            <li><a class="active" href="#tab5" data-toggle="tab">建物</a></li>
+            <li><a href="#tab6" data-toggle="tab">営業所</a></li>
+            <li><a href="#tab7" data-toggle="tab">表示設定</a></li>
+          </ul>
+
+          <div id="myTabContent2" class="tab-content">
+            <div class="tab-pane fade" id="tab5">
+               <%= render :partial=>'result_buildings' %>
+            </div>
+            <div class="tab-pane fade" id="tab6">
+               <%= render :partial=>'result_shops' %>
+            </div>
+            <div class="tab-pane fade" id="tab7">
+               <%= render :partial=>'disp' %>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+<% end %>
+
+<!-- ここは span9で呼び出されているので合計も9に合わせる -->
+  <div class="span12" style="float:left;padding-left:10px;">
+    <div style="border-width : 3px;border-style : solid;border-color : silver;">
+      <div id="map_canvas" style="width: 100%;"></div>
+    </div>
+  </div>
+
+<!-- 周辺検索する為の、ダミー用の表示 -->
+<div>
+<%= form_tag('/recruitments/search_around', :name=>'aaaa', :id=>'vvvv') do %>
+  <%= hidden_field_tag 'around' %>
+<% end %>
+</div>

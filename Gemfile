@@ -45,3 +45,4 @@ gem 'jquery-ui-rails'
 gem 'gmaps4rails'
 gem 'gon' # active_recordのデータをjavascript化する
 #gem 'roo' # excelなどのスプレッドシートを読めるようにする。
+gem 'spinjs-rails'
