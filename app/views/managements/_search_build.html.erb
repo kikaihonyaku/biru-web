@@ -44,81 +44,53 @@
       }
     });
 
+    /* 自社チェック */
+    $("#jita_kbn_ji_only").change(function(){
+      
+      $("#manage_type_kanri_i").prop("checked", true);
+      $("#manage_type_kanri_a").prop("checked", true);
+      $("#manage_type_kanri_b").prop("checked", true);
+      $("#manage_type_kanri_c").prop("checked", true);
+      $("#manage_type_kanri_d").prop("checked", true);
+      $("#manage_type_kanri_soumu").prop("checked", true);
+      $("#manage_type_kanri_toku").prop("checked", true);
+      $("#manage_type_kanri_teiki").prop("checked", true);
+      $("#manage_type_kanri_gyoumu").prop("checked", true);
+
+      $("#manage_type_kanri_gai").attr("checked", false);
+      
+    });
+
+    $("#jita_kbn_ta_only").change(function(){
+      $("#manage_type_kanri_i").attr("checked", false);
+      $("#manage_type_kanri_a").attr("checked", false);
+      $("#manage_type_kanri_b").attr("checked", false);
+      $("#manage_type_kanri_c").attr("checked", false);
+      $("#manage_type_kanri_d").attr("checked", false);
+      $("#manage_type_kanri_soumu").attr("checked", false);
+      $("#manage_type_kanri_toku").attr("checked", false);
+      $("#manage_type_kanri_teiki").attr("checked", false);
+      $("#manage_type_kanri_gyoumu").attr("checked", false);
+
+      $("#manage_type_kanri_gai").prop("checked", true);
+    });
+
+    $("#jita_kbn_jita_both").change(function(){
+      
+      $("#manage_type_kanri_i").attr("checked", false);
+      $("#manage_type_kanri_a").attr("checked", false);
+      $("#manage_type_kanri_b").attr("checked", false);
+      $("#manage_type_kanri_c").attr("checked", false);
+      $("#manage_type_kanri_d").attr("checked", false);
+      $("#manage_type_kanri_soumu").attr("checked", false);
+      $("#manage_type_kanri_toku").attr("checked", false);
+      $("#manage_type_kanri_teiki").attr("checked", false);
+      $("#manage_type_kanri_gyoumu").attr("checked", false);
+      $("#manage_type_kanri_gai").attr("checked", false);
+    });
+
+
   });
-
-// // function buttonTextCustom(options, title){
-//    if (options.length == 0) {
-//      return title + '<b class="caret"></b>';
-//    }
-//    else if (options.length > 3) {
-//      return options.length + ' selected  <b class="caret"></b>';
-//    }
-//    else {
-//      var selected = '';
-//      options.each(function() {
-//        selected += $(this).text() + ', ';
-//      });
-//      return selected.substr(0, selected.length -2) + ' <b class="caret"></b>';
-//    }
-//  }
-
-//  $(document).ready(function() {
-
-//    $('.multiselect').multiselect({
-//      buttonClass: 'btn btn-small',
-//      buttonWidth: 'auto',
-//      buttonContainer: '<div class="btn-group" />',
-//      maxHeight: false,
-//      buttonText: function(options) {
-//         return buttonTextCustom(options, 'None selected <b class="caret"></b>');
-//      }
-//    });
-
-//    $('#siten').multiselect({
-//       buttonText: function(options) {
-//         return buttonTextCustom(options, "支店");
-//      }
-//    });
-
-
-//    $('#area_tobu').multiselect({
-//       buttonText: function(options) {
-//         return buttonTextCustom(options, "東武");
-//      }
-//    });
-
-//    $('#area_saitama').multiselect({
-//       buttonText: function(options) {
-//         return buttonTextCustom(options, "さいたま");
-//      }
-//    });
-
-//    $('#area_chiba').multiselect({
-//       buttonText: function(options) {
-//         return buttonTextCustom(options, "千葉");
-//      }
-//    });
-
-//    $('#shop_tobu').multiselect({
-//       buttonText: function(options) {
-//         return buttonTextCustom(options, "東武");
-//      }
-//    });
-
-//    $('#shop_saitama').multiselect({
-//       buttonText: function(options) {
-//         return buttonTextCustom(options, "さいたま");
-//      }
-//    });
-
-//    $('#shop_chiba').multiselect({
-//       buttonText: function(options) {
-//         return buttonTextCustom(options, "千葉");
-//      }
-//    });
-//    window.prettyPrint() && prettyPrint();
-
-//  });
 
 </script>
 
@@ -127,13 +99,21 @@
     <div class="well">
       <%= form_tag('/managements/search_buildings') do %>
 
+        <div style="padding-top:10px;text-align: center;">
+          <%= submit_tag "検索を実行", :class=>'btn btn-large btn-primary'  %>
+        </div>
+
+        <div class="control-group" style="padding-top:15px;padding-bottom: 10px;" >
+            <div class="controls" >
+                <label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'ji_only' %>自社のみ</label>
+                <label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'ta_only' %>他社のみ</label>
+                <label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'jita_both', true %>両方</label>
+            </div>
+        </div>
 
         <%= text_field_tag 'biru_name', @building_nm, :placeholder=>'建物名' %>
         <%= text_field_tag 'biru_address', @building_ad, :placeholder=>'住所' %>
 
-        <div style="padding-top:10px;text-align: center;">
-          <%= submit_tag "検索を実行", :class=>'btn btn-large btn-primary'  %>
-        </div>
 
         <br/>
         <legend>営業所<span style="font-size:x-small;padding-left:20px;">※全て未チェックは全選択</span></legend>

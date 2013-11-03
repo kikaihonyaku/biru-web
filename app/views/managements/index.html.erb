@@ -81,25 +81,48 @@ function FullScreenControl(map) {
     return controlDiv;
 }
 
+// 建物のアイコンを変更します。
+function change_biru_icon(type){
+  
+  /* 管理方式をチェックした時、建物のマークを変更する */
+
+  if(type == "biru_kind" ){
+
+    // 管理方式のアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].build_type_icon );
+    };
+  } else if( type == "manage_type") {
+    // 建物種別のアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].manage_icon );
+    };
+
+  } else {
+    // 何もしない
+  }
+
+}
+
 
 /* マーカーを作成 */
 function createMarker(opts){
   var marker = new google.maps.Marker(opts);
+  
   google.maps.event.addListener(marker, "click", function(){
-  // write_build(opts.info_msg);
+    // write_build(opts.info_msg);
 
-  infoWnd.close();
-  infoWnd.setContent(opts.html);
-  infoWnd.open(opts.map, marker);
+    infoWnd.close();
+    infoWnd.setContent(opts.html);
+    infoWnd.open(opts.map, marker);
 
-  panorama.setPosition(opts.position);
-  panorama.setPov(panoramaOptionsPov);
+    panorama.setPosition(opts.position);
+    panorama.setPov(panoramaOptionsPov);
 
-  opts.map.panTo(opts.position);
-});
+    opts.map.panTo(opts.position);
+  });
 
-
-return marker;
+  return marker;
 }
 
 
@@ -398,7 +421,6 @@ function create_circle(size, mapCanvas, pos){
         build_arr[buildings[i].id] = createMarker({
           position : pos
           ,map : mapCanvas
-//          ,animation: google.maps.Animation.DROP
           ,icon : buildings[i].tmp_build_type_icon
           ,manage_icon : buildings[i].tmp_manage_type_icon
           ,build_type_icon : buildings[i].tmp_build_type_icon
@@ -605,21 +627,21 @@ function create_circle(size, mapCanvas, pos){
         };
     });
 
-    /* 管理方式をチェックした時、建物のマークを変更する */
-     var kanriRadio = document.getElementById("kanriRadio");
-    google.maps.event.addDomListener(kanriRadio, "click", function(){
-        for(var item in build_arr){
-          build_arr[item].setIcon(build_arr[item].manage_icon );
-        };
-    });
+//    /* 管理方式をチェックした時、建物のマークを変更する */
+//     var kanriRadio = document.getElementById("kanriRadio");
+//    google.maps.event.addDomListener(kanriRadio, "click", function(){
+//        for(var item in build_arr){
+//          build_arr[item].setIcon(build_arr[item].manage_icon );
+//        };
+//    });
 
     /* 物件種別をチェックした時、建物のマークを変更する */
-     var bukkenRadio = document.getElementById("bukkenRadio");
-    google.maps.event.addDomListener(bukkenRadio, "click", function(){
-        for(var item in build_arr){
-          build_arr[item].setIcon(build_arr[item].build_type_icon );
-        };
-    });
+//    var bukkenRadio = document.getElementById("bukkenRadio");
+//    google.maps.event.addDomListener(bukkenRadio, "click", function(){
+//        for(var item in build_arr){
+//          build_arr[item].setIcon(build_arr[item].build_type_icon );
+//        };
+//    });
 
     /* 営業所の範囲サークルの表示１ */
     var circle01Check = document.getElementById("circle01Check");
@@ -735,14 +757,14 @@ function create_circle(size, mapCanvas, pos){
 <% end %>
 
 <!-- ここは span9で呼び出されているので合計も9に合わせる -->
-  <div class="span12" style="float:left;padding-left:10px;">
-    <div style="border-width : 3px;border-style : solid;border-color : silver;">
-      <div id="map_canvas" style="width: 100%;"></div>
-      <div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;">
-         <input type="button" value="閉じる" onclick="sv_init();" style="top: 10px;right: 20px;position:absolute;z-index: 500;" />
-      </div>
+<div class="span12" style="float:left;padding-left:10px;">
+  <div style="border-width : 3px;border-style : solid;border-color : silver;">
+    <div id="map_canvas" style="width: 100%;"></div>
+    <div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;">
+       <input type="button" value="閉じる" onclick="sv_init();" style="top: 10px;right: 20px;position:absolute;z-index: 500;" />
     </div>
   </div>
+</div>
 
 
 

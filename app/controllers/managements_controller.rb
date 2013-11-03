@@ -232,7 +232,8 @@ class ManagementsController < ApplicationController
 
   # 物件種別のiconを変更する時のコントローラ
   def change_biru_icon
-    
+    p params[:disp_type]
+    @biru_icon = params[:disp_type]
   end
   
   # 指定した建物情報を元に、出力用のjavascriptオブジェクトを作成します。

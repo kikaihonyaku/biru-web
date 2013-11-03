@@ -1,14 +1,28 @@
 <!-- ここはspan3で呼び出されているから、span3ピッタリでグリッドを作る必要がある。 -->
 
+<script type="text/javascript">
+
+  // アイコンを変更します。
+  function change_icon(){
+
+    // ajaxで凡例を変更
+    document.forms['biru_icon'].s_commit.click();
+
+    // コンボボックスで選択されたものにgooglemapのアイコンを変更
+    change_biru_icon($('#biru_icon_id [name=disp_type]').val());
+
+  }
+
+</script>
 <div>
-  <%= form_tag('/managements/change_biru_icon', :remote => true, :format => 'js') do %>
-  <%= select_tag 'disp_type', options_for_select({"Railsの基礎" => "rails_base", "Rubyの基礎" => "ruby_base"}) %>
-  <%= submit_tag "更新" %>
+  <%= form_tag('/managements/change_biru_icon', :remote => true, :format => 'js', :name=>'biru_icon', :id=>'biru_icon_id') do %>
+  <%= select_tag 'disp_type', options_for_select({"建物種別" => "biru_kind", "管理方式" => "manage_type", "空室数" => "aki", "築年数" => "age", "戸数"=>"num", "自他"=>"jita", "アタックランク"=>"atk"}), :onChange=>'change_icon();' %>
+  <%= submit_tag "", :name=>'s_commit', :style=>"display:none;" %>
   <% end %>
 </div>
 
 <div id="biru_icon">
-aaaaa
+<%= render 'biru_icon_kind', :biru_icon => "biru_kind" %>
 </div>
 
 
