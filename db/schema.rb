@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131014092711) do
+ActiveRecord::Schema.define(:version => 20131106093724) do
 
   create_table "backup_buildings", :force => true do |t|
     t.string   "code",                 :limit => nil
@@ -71,6 +71,10 @@ ActiveRecord::Schema.define(:version => 20131014092711) do
     t.datetime "updated_at",                              :null => false
     t.string   "tmp_build_type_icon"
     t.string   "tmp_manage_type_icon"
+    t.integer  "kanri_room_num",       :default => 0
+    t.integer  "free_num",             :default => 0
+    t.integer  "owner_stop_num",       :default => 0
+    t.integer  "biru_age",             :default => 0
   end
 
   add_index "buildings", ["build_type_id"], :name => "index_buildings_on_build_type_id"
@@ -100,6 +104,8 @@ ActiveRecord::Schema.define(:version => 20131014092711) do
     t.string  "owner_kana"
     t.string  "owner_address"
     t.string  "owner_tel"
+    t.string  "building_address"
+    t.string  "building_type_code"
   end
 
   create_table "manage_types", :force => true do |t|
@@ -144,9 +150,12 @@ ActiveRecord::Schema.define(:version => 20131014092711) do
     t.integer  "manage_type_id"
     t.integer  "building_id"
     t.integer  "rent"
-    t.boolean  "delete_flg",     :default => false
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.boolean  "delete_flg",       :default => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
+    t.boolean  "free_state",       :default => true
+    t.boolean  "owner_stop_state", :default => false
+    t.boolean  "advertise_state",  :default => false
   end
 
   create_table "shops", :force => true do |t|

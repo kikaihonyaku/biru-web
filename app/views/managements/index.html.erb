@@ -83,8 +83,6 @@ function FullScreenControl(map) {
 
 // 建物のアイコンを変更します。
 function change_biru_icon(type){
-  
-  /* 管理方式をチェックした時、建物のマークを変更する */
 
   if(type == "biru_kind" ){
 
@@ -261,7 +259,6 @@ function create_circle(size, mapCanvas, pos){
     }
   }
 
-
   // ストリートビューを非表示にして map_canvasの高さを設定
   function init_display(){
       document.getElementById("map_canvas").style.height = "700px";
@@ -307,12 +304,88 @@ function create_circle(size, mapCanvas, pos){
     document.getElementById("m_name").innerText=biru;
   }
 
+  // 建物のInfoBoxを登録する。
+  function info_msg_biru(biru, owners){
+    var inner_text = "";
+    var vhtml;
+    var code_msg;
+
+    if(biru.code != null){
+      // 通常建物CDの時
+      code_msg = "建物CD：" + biru.code;
+    }else{
+      // 他社建物CDの時
+      code_msg = "他社建物CD：" + biru.attack_code;
+    }
+
+    for(var j in owners){
+      inner_text = inner_text +
+        '<li>' +
+        '  <a href="javascript:link_owner_click(' + owners[j].id + ',' + owners[j].latitude + ',' + owners[j].longitude + ')">' + owners[j].name + '</a></td>' +
+        '</li>'
+    }
+
+    vhtml = '<div><b>' + biru.name + '（<a href="javascript:win_building(' + biru.id + ');">詳細</a>）</b><br>' +
+      '<div>住所：' + biru.address +'</div>' +
+      '<div>' + code_msg +'</div>' +
+      '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
+      '<hr/>' +
+      '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
+      '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="building_trust_disp(' + biru.id  + ', this.checked);" />&nbsp;委託</label>' +
+      '</div>' +
+      '<div style="padding-left:80px;">' +
+      '  <a href="javascript:void(0)" onClick="view_disp( true, ' + biru.latitude + ',' + biru.longitude  + '); return false;"> ストリートビュー</a>' +
+      '</div>' +
+      '</div>';
+
+    return vhtml;
+
+  }
+
+  // 貸主のInfoBoxのメッセージを作成する。
+  function info_msg_owner(owner, buildings){
+
+    var inner_text = "";
+    for(var j in buildings){
+      inner_text = inner_text +
+        '<li>' +
+        '  <a href="javascript:link_building_click(' + buildings[j].id + ',' + buildings[j].latitude + ',' + buildings[j].longitude + ')">' + buildings[j].name + '</a></td>' +
+        '</li>'
+    }
+
+    var code_msg;
+    if(owner.code != null){
+      // 通常建物CDの時
+      code_msg = "貸主CD：" + owner.code;
+    }else{
+      // 他社建物CDの時
+      code_msg = "他社貸主CD：" + owner.attack_code;
+    }
+
+    var vhtml = '<div><b>' + owner.name + '（<a href="javascript:win_owner(' + owner.id + ');">詳細</a>）</b><br>' +
+      '<div>住所：' + owner.address +'</div>' +
+      '<div>' + code_msg +'</div>' +
+      '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
+      '<hr/>' +
+      '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
+      '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="owner_trust_disp(' + owner.id  + ', this.checked);" />&nbsp;委託</label>' +
+      '</div>' +
+      '<div style="padding-left:80px;">' +
+      '  <a href="javascript:void(0)" onClick="view_disp( true, ' + owner.latitude + ',' + owner.longitude  + '); return false;"> ストリートビュー</a>' +
+      '</div>' +
+      '</div>';
+
+    return vhtml;
+
+  }
+
   //-------------------
   // グローバル変数定義
   //-------------------
   var infoWnd;  // 吹き出しウィンドウ
   var panoramaOptionsPov; // ストリートビュー定義
-
+  var panorama;
+  
   function initialize(){
 
     // 初期表示は非表示
@@ -334,6 +407,7 @@ function create_circle(size, mapCanvas, pos){
       position:center,
       pov:panoramaOptionsPov
     };
+    panorama = new  google.maps.StreetViewPanorama(document.getElementById("panowide"), panoramaOptions);
 
     // infoウィンドウを１つだけ作成
     infoWnd = new google.maps.InfoWindow();
@@ -387,31 +461,6 @@ function create_circle(size, mapCanvas, pos){
         pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
 
         // infoWndに表示するHTMLを作成する。
-        var inner_text;
-        var building_owners;
-
-        inner_text = ""
-        building_owners = building_to_owners[buildings[i].id]
-
-        for(var j in building_owners){
-          inner_text = inner_text +
-            '<li>' +
-            '  <a href="javascript:link_owner_click(' + building_owners[j].id + ',' + building_owners[j].latitude + ',' + building_owners[j].longitude + ')">' + building_owners[j].name + '</a></td>' +
-            '</li>'
-        }
-
-        var vhtml = '<div><b>' + buildings[i].name + '（<a href="javascript:win_building(' + buildings[i].id + ');">詳細</a>）</b><br>' +
-          '<div>住所：' + buildings[i].address +'</div>' +
-          '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
-          '<hr/>' +
-          '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
-          '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="building_trust_disp(' + buildings[i].id  + ', this.checked);" />&nbsp;委託</label>' +
-          '</div>' +
-          '<div style="padding-left:80px;">' +
-          '  <a href="javascript:void(0)" onClick="view_disp( true, ' + buildings[i].latitude + ',' + buildings[i].longitude  + '); return false;"> ストリートビュー</a>' +
-          '</div>' +
-          '</div>';
-
         <% if @search_type == 2 # 貸主の時、初期状態で非表示%>
           var build_disp = false
         <% else %>
@@ -425,8 +474,7 @@ function create_circle(size, mapCanvas, pos){
           ,manage_icon : buildings[i].tmp_manage_type_icon
           ,build_type_icon : buildings[i].tmp_build_type_icon
           ,shadow : '/assets/marker_shadow.png'
-          ,info_msg : buildings[i].name
-          ,html : vhtml
+          ,html : info_msg_biru(buildings[i], building_to_owners[buildings[i].id])
           ,visible : build_disp
         });
 
@@ -498,59 +546,32 @@ function create_circle(size, mapCanvas, pos){
     owner_arr = {}; // varを外してグローバル化
     var owners = gon.owners
     var owner_to_buildings = gon.owner_to_buildings
+    var owner_icon;
+    var owner_disp;
 
     for(var i in owners){
       pos = new google.maps.LatLng(owners[i].latitude, owners[i].longitude);
 
-      <% if @search_type == 2 # 貸主検索の時のみ追加する%>
+      <% if @search_type == 1 # 建物検索の時、初期状態で非表示%>
+        owner_disp = false
+      <% else %>
+        owner_disp = true
         bounds.extend(pos);
       <% end %>
 
-      // infoWndに表示するHTMLを作成する。
-      var inner_text;
-      var owner_buildings;
-
-      inner_text = ""
-      owner_buildings = owner_to_buildings[owners[i].id]
-      for(var j in owner_buildings){
-        inner_text = inner_text +
-          '<li>' +
-          '  <a href="javascript:link_building_click(' + owner_buildings[j].id + ',' + owner_buildings[j].latitude + ',' + owner_buildings[j].longitude + ')">' + owner_buildings[j].name + '</a></td>' +
-          '</li>'
+      // 貸主かどうかでアタックを決める。
+      if( owners[i].code == null){
+        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
+      } else {
+        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
       }
-
-      var vhtml = '<div><b>' + owners[i].name + '（<a href="javascript:win_owner(' + owners[i].id + ');">詳細</a>）</b><br>' +
-        '<div>住所：' + owners[i].address +'</div>' +
-        '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
-        '<div>' +
-        '<select name="itaku" style="width:100px" onchange="sel_itaku_owner(this, ' + owners[i].id  + ')">/' +
-        '<option value="*" selected>委託</option>' +
-        '<option value="on">ON</option>' +
-        '<option value="off">OFF</option>' +
-        '</select>' +
-        '<span style="width:5px;">&nbsp;</span>' +
-        '<select name="itaku" style="width:100px" onchange="sel_view(this, ' + owners[i].latitude + ',' + owners[i].longitude  + ')">/' +
-        '<option value="*" selected>ビュー</option>' +
-        '<option value="on">ON</option>' +
-        '<option value="off">OFF</option>' +
-        '</select>' +
-        '</div>' +
-        '</div>';
-
-      <% if @search_type == 1 # 建物検索の時、初期状態で非表示%>
-        var owner_disp = false
-      <% else %>
-        var owner_disp = true
-      <% end %>
 
       owner_arr[owners[i].id] = createMarker({
         position : pos
         ,map : mapCanvas
-        ,icon : "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
-        ,info_msg : owners[i].name
-        ,html : vhtml
+        ,icon : owner_icon
+        ,html : info_msg_owner(owners[i], owner_to_buildings[owners[i].id])
         ,visible : owner_disp
-
       });
     }
 
@@ -571,7 +592,7 @@ function create_circle(size, mapCanvas, pos){
       trust_arr[trusts[i].id] = new google.maps.Polyline({
          map : mapCanvas
         ,path : [owner_arr[trusts[i].owner_id].position, build_arr[trusts[i].building_id].position]
-        ,strokeColor: trusts[i].line_color
+        ,strokeColor: gon.manage_line_color[trusts[i].manage_type_id]
         ,strokeOpacity:0.5
         ,strokeWeight:3
         ,zIndex:1
@@ -606,15 +627,6 @@ function create_circle(size, mapCanvas, pos){
     google.maps.event.addDomListener(ownerChkbox, "click", function(){
         for(var item in owner_arr){
           owner_arr[item].set("visible", ownerChkbox.checked);
-        };
-    });
-
-    /* すべての建物を表示・非表示にする */
-    var buildChkbox = document.getElementById("buildChkbox");
-    google.maps.event.addDomListener(buildChkbox, "click", function(){
-        // console.log(trust_arr);
-        for(var item in build_arr){
-          build_arr[item].set("visible", buildChkbox.checked);
         };
     });
 
@@ -662,7 +674,6 @@ function create_circle(size, mapCanvas, pos){
     /*------------------------------*/
     /* ストリートビューオブジェクトを作成 */
     /*------------------------------*/
-    panorama = new  google.maps.StreetViewPanorama(document.getElementById("panowide"), panoramaOptions);
 
     //青い道路（ImageMapType）をオーバーレイ
     //mapCanvas.overlayMapTypes.insertAt(0, StreetViewType);

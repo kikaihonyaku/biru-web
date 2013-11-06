@@ -105,9 +105,9 @@
 
         <div class="control-group" style="padding-top:15px;padding-bottom: 10px;" >
             <div class="controls" >
-                <label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'ji_only' %>自社のみ</label>
-                <label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'ta_only' %>他社のみ</label>
-                <label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'jita_both', true %>両方</label>
+                <label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'ji_only' ,@ji_only_flg %>自社のみ</label>
+                <label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'ta_only' ,@ta_only_flg %>他社のみ</label>
+                <label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'jita_both', @jita_both_flg %>両方</label>
             </div>
         </div>
 

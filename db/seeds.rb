@@ -83,22 +83,6 @@ end
 def init_biru_type
   type_arr = []
 
-#  type_arr.push({:name=>'マンション', :code=>'1010', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e3%83%9e|FF6600|FFFFFF'})
-#  type_arr.push({:name=>'分譲マンション', :code=>'1015', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e5%88%86|99FF00|000000'})
-#  type_arr.push({:name=>'アパート', :code=>'1020', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e3%82%a2|0033FF|FFFFFF'})
-#  type_arr.push({:name=>'一戸建貸家', :code=>'1025', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e6%88%b8|6600FF|FFFFFF'})
-#  type_arr.push({:name=>'テラスハウス', :code=>'1030', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e3%83%86|FF0099|FFFFFF'})
-#  type_arr.push({:name=>'メゾネット', :code=>'1035', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e3%83%a1|00FF33|000000'})
-#  type_arr.push({:name=>'店舗', :code=>'1040', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e5%ba%97|003300|FFFFFF'})
-#  type_arr.push({:name=>'店舗付住宅', :code=>'1045', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e4%bb%98|660066|FFFFFF'})
-#  type_arr.push({:name=>'事務所', :code=>'1050', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e4%ba%8b|6600FF|FFFFFF'})
-#  type_arr.push({:name=>'工場', :code=>'1055', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e5%b7%a5|33CCCC|FFFFFF'})
-#  type_arr.push({:name=>'倉庫', :code=>'1060', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e5%80%89|99FFFF|000000'})
-#  type_arr.push({:name=>'倉庫事務所', :code=>'1065', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e5%80%89|FF0000|FFFFFF'})
-#  type_arr.push({:name=>'工場倉庫', :code=>'1070', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e5%b7%a5|663300|FFFFFF'})
-#  type_arr.push({:name=>'定期借地権', :code=>'1085', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e5%ae%9a|996633|FFFFFF'})
-#  type_arr.push({:name=>'その他', :code=>'1998', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e4%bb%96|000000|FFFFFF'})
-
   type_arr.push({:name=>'マンション', :code=>'01010', :icon=>'/assets/marker_yellow.png'})
   type_arr.push({:name=>'分譲マンション', :code=>'01015', :icon=>'/assets/marker_purple.png'})
   type_arr.push({:name=>'アパート', :code=>'01020', :icon=>'/assets/marker_blue.png'})
@@ -129,28 +113,17 @@ end
 def init_manage_type
 
   manage_arr = []
-#  manage_arr.push(:name=>'一般', :code=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e4%b8%80|00FF33|000000', :line_color=>'darkred')
-#  manage_arr.push(:name=>'A管理', :code=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|99FFFF|000000', :line_color=>'darkgreen')
-#  manage_arr.push(:name=>'B管理', :code=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|0000CC|FFFFFF', :line_color=>'darkblue')
-#  manage_arr.push(:name=>'C管理', :code=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF33|000000', :line_color=>'darkviolet')
-#  manage_arr.push(:name=>'D管理', :code=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|0033FF|FFFFFF', :line_color=>'red')
-#  manage_arr.push(:name=>'総務君', :code=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e7%b7%8f|99FF00|000000', :line_color=>'green')
-#  manage_arr.push(:name=>'特優賃', :code=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e7%89%b9|FF6600|FFFFFF', :line_color=>'chocolate')
-#  manage_arr.push(:name=>'定期借地', :code=>'9', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e5%ae%9a|33CCCC|FFFFFF', :line_color=>'dimgray')
-#  manage_arr.push(:name=>'業務君', :code=>'10', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e6%a5%ad|FF0099|FFFFFF', :line_color=>'firebrick')
-#  manage_arr.push(:name=>'管理外', :code=>'99', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e5%a4%96|000000|FFFFFF', :line_color=>'darkcyan')
 
-
-  manage_arr.push(:name=>'一般', :code=>'1', :icon=>'/assets/marker_yellow.png', :line_color=>'darkred')
-  manage_arr.push(:name=>'A管理', :code=>'2', :icon=>'/assets/marker_red.png', :line_color=>'darkgreen')
+  manage_arr.push(:name=>'一般', :code=>'1', :icon=>'/assets/marker_yellow.png', :line_color=>'yellow')
+  manage_arr.push(:name=>'A管理', :code=>'2', :icon=>'/assets/marker_red.png', :line_color=>'red')
   manage_arr.push(:name=>'B管理', :code=>'3', :icon=>'/assets/marker_blue.png', :line_color=>'darkblue')
-  manage_arr.push(:name=>'C管理', :code=>'4', :icon=>'/assets/marker_gray.png', :line_color=>'darkviolet')
-  manage_arr.push(:name=>'D管理', :code=>'6', :icon=>'/assets/marker_purple.png', :line_color=>'red')
+  manage_arr.push(:name=>'C管理', :code=>'4', :icon=>'/assets/marker_gray.png', :line_color=>'gray')
+  manage_arr.push(:name=>'D管理', :code=>'6', :icon=>'/assets/marker_purple.png', :line_color=>'purple')
   manage_arr.push(:name=>'総務君', :code=>'7', :icon=>'/assets/marker_green.png', :line_color=>'green')
-  manage_arr.push(:name=>'特優賃', :code=>'8', :icon=>'/assets/marker_gray.png', :line_color=>'chocolate')
-  manage_arr.push(:name=>'定期借地', :code=>'9', :icon=>'/assets/marker_gray.png', :line_color=>'dimgray')
-  manage_arr.push(:name=>'業務君', :code=>'10', :icon=>'/assets/marker_orange.png', :line_color=>'firebrick')
-  manage_arr.push(:name=>'管理外', :code=>'99', :icon=>'/assets/marker_white.png', :line_color=>'darkcyan')
+  manage_arr.push(:name=>'特優賃', :code=>'8', :icon=>'/assets/marker_gray.png', :line_color=>'gray')
+  manage_arr.push(:name=>'定期借地', :code=>'9', :icon=>'/assets/marker_gray.png', :line_color=>'gray')
+  manage_arr.push(:name=>'業務君', :code=>'10', :icon=>'/assets/marker_orange.png', :line_color=>'orange')
+  manage_arr.push(:name=>'管理外', :code=>'99', :icon=>'/assets/marker_white.png', :line_color=>'black')
 
   manage_arr.each do |obj|
     manage_type = ManageType.find_or_create_by_code(obj[:code])
@@ -269,9 +242,7 @@ def biru_geocode(biru, force)
   begin
 
     skip_flg = biru.gmaps
-    if force
-      skip_flg = false
-    end
+    skip_flg = false if force
 
     unless skip_flg
       gmaps_ret = Gmaps4rails.geocode(biru.address)
@@ -308,21 +279,18 @@ def before_imp_init(type)
 
     # 部屋の初期化
     biru.rooms.each do |room|
-      p room
       room.delete_flg = true
       room.save!
     end
 
     # 貸主の初期化
     biru.owners.each do |owner|
-      p owner
       owner.delete_flg = true
       owner.save!
     end
 
     # 管理委託契約CDの初期化
     biru.trusts.each do |trust|
-      p trust
       trust.delete_flg = true
       trust.save!
     end
@@ -343,12 +311,11 @@ def import_data_oneself(filename)
     return false
   end
 
-  cnt = 0
-
   # imp_tablesを初期化
   ImpTable.delete_all
 
   # データを登録
+  cnt = 0
   open(filename).each do |line|
     catch :not_header do
 
@@ -358,7 +325,6 @@ def import_data_oneself(filename)
       end
 
       cnt = cnt + 1
-
       row = line.split(",")
 
       unless row[10]
@@ -375,6 +341,8 @@ def import_data_oneself(filename)
       imp.trust_cd = row[6]
       imp.building_cd = row[7]
       imp.building_nm = row[8]
+#      imp.building_address = row[]
+#      imp.building_type_code = []
       imp.room_cd = row[9]
       imp.room_nm = row[10]
       imp.kanri_start_date = row[11]
@@ -423,9 +391,8 @@ def update_imp_oneself()
     biru_geocode(owner, false)
     begin
       owner.save!
-    rescue
-      #p "エラー:save " + biru.name + ':' + biru.address
-      p "貸主登録エラー:save "
+    rescue => e
+      p "貸主登録エラー:save " + e.message
     end
   end
 
@@ -438,31 +405,30 @@ def update_imp_oneself()
     biru = Building.unscoped.find_or_create_by_code(imp.building_cd)
     biru.code = imp.building_cd
     biru.name = imp.building_nm
-
+    biru.shop_id = convert_shop(imp.eigyo_cd)
     biru.delete_flg = false
 
- #   biru.build_type_id = convert_biru_type(row[9])
- #   if biru.build_type_id
- #     biru.tmp_build_type_icon = biru.build_type.icon
- #   end
+    biru.build_type_id = convert_biru_type(imp.building_type_code)
+    if biru.build_type_id
+      biru.tmp_build_type_icon = biru.build_type.icon
+    end
 
-  #  biru.room_num = row[13]
-   # biru.shop_id = convert_shop(row[2])
-
-#    biru_geocode(biru, false)
-
-    # ダミー
-    biru.address = "a"
+    # TODO:住所はとりあえずダミーで登録
+    #biru_geocode(biru, false)
+    biru.address = "ダミー"
     biru.gmaps = true
-    
+    biru.biru_age = 10 # TODO:築年数も設定する。
+
     begin
       biru.save!
     rescue =>e
-      #p "エラー:save " + biru.name + ':' + biru.address
       p "建物登録エラー:save :" + e.message
     end
 
     # 部屋の登録
+    kanri_room_num = 0 # 管理戸数
+    free_num = 0
+    owner_stop_num = 0
     ImpTable.find_all_by_building_cd(biru.code).each do |imp_room|
 
       room = Room.unscoped.find_or_create_by_building_cd_and_code(biru.code, imp_room.room_cd)
@@ -470,13 +436,35 @@ def update_imp_oneself()
       room.name = imp_room.room_nm
       room.room_layout = RoomLayout.find_by_code(imp.room_layout_cd)
       room.room_type = RoomType.find_by_code(imp.room_type_cd)
+      kanri_room_num = kanri_room_num + 1 # TODO:本来はB管理以上とかが必要かも。管理方式に戸数カウントフラグを持たせてそれで判定させよう。
+      
+      # 空き状態の設定
+      if imp.room_aki == 2
+        room.free_state = true
+        free_num = free_num + 1
+      else
+        room.free_state = false
+      end
+
+      # TODO:オーナー止も取得する。
       room.delete_flg = false
       room.save!
+
 
       p room.name
 
     end
 
+    # 部屋の集計値を建物に登録
+    biru.kanri_room_num = kanri_room_num
+    biru.free_num = free_num
+    biru.owner_stop_num = owner_stop_num
+    begin
+      biru.save!
+    rescue =>e
+      p "建物登録エラー2:save :" + e.message
+    end
+    
   end
 
   ####################
@@ -509,97 +497,139 @@ def update_imp_oneself()
 end
 
 # アタック対象の貸主・物件・委託（ダミー）を登録します。
-def import_data_yourself_owner(owner_file, biru_file)
+def import_data_yourself_owner(filename)
+
+  # ファイル存在チェック
+  unless File.exist?(filename)
+    puts 'file not exist'
+    return false
+  end
+
+  # imp_tablesを初期化
+  ImpTable.delete_all
+
+  # 他社元データを一時表に登録
+  cnt = 0
+  open(filename).each do |line|
+    catch :not_header do
+
+      if cnt == 0
+        cnt = cnt + 1
+        throw :not_header
+      end
+
+      cnt = cnt + 1
+
+      row = line.split(",")
+
+      unless row[10]
+        throw :not_header
+      end
+
+      imp = ImpTable.new
+#      imp.siten_cd = row[0]
+#      imp.eigyo_order = row[1]
+      imp.eigyo_cd = row[1]
+      imp.eigyo_nm = row[2]
+#      imp.kanri_cd = row[4]
+#      imp.kanri_nm = row[5]
+#      imp.trust_cd = row[6]
+      imp.building_cd = row[11]
+      imp.building_nm = row[12]
+      imp.building_address = row[15]
+      imp.building_type_code = row[19]
+#      imp.room_cd = row[9]
+#      imp.room_nm = row[10]
+#      imp.kanri_start_date = row[11]
+#      imp.kanri_end_date = row[12]
+#      imp.room_aki = row[13]
+#      imp.room_type_cd = row[14]
+#      imp.room_type_nm = row[15]
+#      imp.room_layout_cd = row[16]
+#      imp.room_layout_nm = row[17]
+      imp.owner_cd = row[0]
+      imp.owner_nm = row[3]
+#      imp.owner_kana = row[20]
+      imp.owner_address = row[5]
+      imp.owner_tel = row[6]
+      imp.save!
+
+      if imp
+        p cnt.to_s + " " + imp.building_nm
+      else
+        p cnt.to_s
+      end
+    end
+  end
 
   # 他社の初期化(削除フラグをON)
   before_imp_init(2)
 
-  #######################
-  # アタックオーナーを登録
-  #######################
-  # ファイル存在チェック
-  unless File.exist?(owner_file)
-    puts 'file not exist ower_file'
-    return false
-  end
+  ####################
+  # 貸主の登録
+  ####################
+  ImpTable.group(:owner_cd, :owner_nm, :owner_address ).each do |imp|
+  catch :next_owner do
 
-  cnt = 0
-  open(owner_file).each do |line|
-    catch :not_header do
+    owner = Owner.unscoped.find_or_create_by_attack_code(imp.owner_cd)
+    owner.attack_code = imp.owner_cd
+    owner.name = imp.owner_nm
+    owner.address = imp.owner_address
+    owner.delete_flg = false
+    biru_geocode(owner, false)
+    begin
+      owner.save!
 
-      if cnt == 0
-        cnt = cnt + 1
-        throw :not_header
-      end
-
-      cnt = cnt + 1
-      row = line.split(",")
-
-      owner = Owner.unscoped.find_or_create_by_attack_code(row[1])
-      owner.attack_code = row[1]
-      owner.name = row[0]
-      owner.address = row[3]
-      owner.delete_flg = false
-      biru_geocode(owner, false)
-      begin
-        owner.save!
-      rescue
-        #p "エラー:save " + biru.name + ':' + biru.address
-        p "エラー:save "
-      end
+    rescue
+      #p "エラー:save " + biru.name + ':' + biru.address
+      p "貸主登録エラー:save "
+      throw :next_owner
     end
-  end
 
-  ###################################
-  # アタック物件を登録（委託ダミー999999）
-  ###################################
-  # ファイル存在チェック
-  unless File.exist?(biru_file)
-    puts 'file not exist biru_file'
-    return false
-  end
+    ##############
+    # 建物
+    ##############
+    ImpTable.where(:owner_cd=>imp.owner_cd).group(:eigyo_cd, :eigyo_nm, :building_cd, :building_nm, :building_address, :building_type_code ).each do |imp_biru|
+    catch :next_building do
 
-  cnt = 0
-  open(biru_file).each do |line|
-    catch :not_header do
+      # 建物の登録
+      biru = Building.unscoped.find_or_create_by_attack_code(imp_biru.building_cd)
+      biru.attack_code = imp_biru.building_cd
+      biru.name = imp_biru.building_nm
+      biru.delete_flg = false
 
-      if cnt == 0
-        cnt = cnt + 1
-        throw :not_header
+      biru.build_type_id = convert_biru_type(imp_biru.building_type_code)
+      if biru.build_type_id
+        biru.tmp_build_type_icon = biru.build_type.icon
       end
 
-      cnt = cnt + 1
-      row = line.split(",")
+      biru.shop_id = convert_shop(imp_biru.eigyo_cd)
+      # biru.room_num = row[13]
 
-      biru = Building.unscoped.find_or_create_by_attack_code(row[0])
-      biru.attack_code = row[0]
-      biru.name = row[1]
-      biru.address = row[3]
-      biru.delete_flg = false
+      biru.address = imp_biru.building_address
+      #biru.gmaps = true
       biru_geocode(biru, false)
 
-      # 越谷営業所で登録する。
-      biru.shop = Shop.find_by_name("越谷営業所")
       begin
         biru.save!
-
-        owner = Owner.unscoped.find_by_attack_code(row[17])
-
-        if owner
-          # 管理委託契約を登録
-          trust = Trust.unscoped.find_or_create_by_building_id_and_owner_id(biru.id, owner.id)
-          trust.delete_flg = false
-          trust.code = 99999
-          trust.manage_type = ManageType.find_by_code(99)
-          trust.save!
-        end
-      rescue
+      rescue =>e
         #p "エラー:save " + biru.name + ':' + biru.address
-        p "エラー:save " + $!.message
+        p "建物登録エラー:save :" + e.message
+        throw :next_owner
       end
-    end
-  end
 
+      # 管理委託契約を登録
+      trust = Trust.unscoped.find_or_create_by_building_id_and_owner_id(biru.id, owner.id)
+      trust.delete_flg = false
+      trust.code = 99999
+      trust.manage_type = ManageType.find_by_code(99)
+      trust.save!
+
+    end # catch
+    end
+
+  end # catch
+  end
 
 end
 
@@ -610,7 +640,7 @@ end
 #init_biru_type
 
 # 管理方式登録rak
-#init_manage_type
+init_manage_type
 
 # 部屋種別登録
 #init_room_type
@@ -622,9 +652,7 @@ end
 #import_data_oneself(Rails.root.join( "tmp", "imp_data_20130919.csv"))
 
 # データの登録(他社)
-#import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner0926.csv"), Rails.root.join( "tmp", "attack_biru0926.csv"))
-
-
+#import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
 
 
 def update_gmap
@@ -642,6 +670,5 @@ def update_gmap
     end
   end
 end
-
 
 #update_gmap

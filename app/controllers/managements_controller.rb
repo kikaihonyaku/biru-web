@@ -83,6 +83,11 @@ class ManagementsController < ApplicationController
     # タブ表示
     @tab_search = "active in"
     @tab_result = ""
+
+    # 自社・他社種別
+    @ji_only_flg = false
+    @ta_only_flg = false
+    @jita_both_flg = true
     
   end
 
@@ -211,11 +216,47 @@ class ManagementsController < ApplicationController
 
     # 管理方式で絞り込み
     if params[:manage_type]
+
+      ji_flg = false # 自社カウント
+      ta_flg = false # 他社カウント
+      
       manage_type = []
       params[:manage_type].keys.each do |key|
         manage_type.push(ManageType.find_by_code(params[:manage_type][key]).id)
         @manage_type_checked[key.to_sym] = true
+
+        if key.to_sym == :kanri_gai
+          ta_flg = true # 管理外の時
+        else
+          ji_flg = true # 通常の管理方式の時
+        end
       end
+
+      # 自社他社ラジオボタン判定
+      if ji_flg == true && ta_flg == true
+        # 自社と他社のどちらも選択された時
+        @ji_only_flg = false
+        @ta_only_flg = false
+        @jita_both_flg = true
+
+      else
+        if ji_flg == true
+          # 自社のみ選択
+          @ji_only_flg = true
+          @ta_only_flg = false
+          @jita_both_flg = false
+
+        else
+
+          # 他社のみ選択
+          @ji_only_flg = false
+          @ta_only_flg = true
+          @jita_both_flg = false
+
+        end
+      end
+
+      
 
       # ここでInner Joinをして管理方式が存在するもののみを絞り込む
       tmp_buildings = tmp_buildings.where("trusts.manage_type_id"=>manage_type)
@@ -235,9 +276,21 @@ class ManagementsController < ApplicationController
     p params[:disp_type]
     @biru_icon = params[:disp_type]
   end
+
+  # 管理方式のIDに応じた色リストを作成する
+  def make_manage_line_list
+    arr = []
+    ManageType.all.each do |manage_type|
+      arr[manage_type.id] = manage_type.line_color
+    end
+
+    return arr
+  end
   
   # 指定した建物情報を元に、出力用のjavascriptオブジェクトを作成します。
   def buildings_to_gon(buildings)
+
+      @manage_line_color = make_manage_line_list
 
       if buildings.size == 0
         # 表示する建物が存在しない時
@@ -245,7 +298,6 @@ class ManagementsController < ApplicationController
         @trusts = []
         @owner_to_buildings = []
         @building_to_owners = []
-
         @shops =  Shop.find(:all)
       
       else
@@ -265,6 +317,7 @@ class ManagementsController < ApplicationController
       gon.shops = @shops    # 関連する営業所
       gon.owner_to_buildings = @owner_to_buildings # 建物と貸主をひもづける情報
       gon.building_to_owners = @building_to_owners
+      gon.manage_line_color = @manage_line_color
     
   end
 
