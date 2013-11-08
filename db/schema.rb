@@ -85,8 +85,8 @@ ActiveRecord::Schema.define(:version => 20131106093724) do
     t.integer "eigyo_order"
     t.integer "eigyo_cd"
     t.string  "eigyo_nm"
-    t.integer "kanri_cd"
-    t.string  "kanri_nm"
+    t.integer "manage_type_cd"
+    t.string  "manage_type_nm"
     t.integer "trust_cd"
     t.integer "building_cd"
     t.string  "building_nm"
@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(:version => 20131106093724) do
     t.string  "owner_tel"
     t.string  "building_address"
     t.string  "building_type_code"
+    t.integer "biru_age"
   end
 
   create_table "manage_types", :force => true do |t|

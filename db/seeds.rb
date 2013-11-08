@@ -336,17 +336,15 @@ def import_data_oneself(filename)
       imp.eigyo_order = row[1]
       imp.eigyo_cd = row[2]
       imp.eigyo_nm = row[3]
-      imp.kanri_cd = row[4]
-      imp.kanri_nm = row[5]
+      imp.manage_type_cd = row[4]
+      imp.manage_type_nm = row[5]
       imp.trust_cd = row[6]
       imp.building_cd = row[7]
       imp.building_nm = row[8]
-#      imp.building_address = row[]
-#      imp.building_type_code = []
-      imp.room_cd = row[9]
-      imp.room_nm = row[10]
-      imp.kanri_start_date = row[11]
-      imp.kanri_end_date = row[12]
+      imp.building_type_code = [9]
+      imp.building_address = row[10]
+      imp.room_cd = row[11]
+      imp.room_nm = row[12]
       imp.room_aki = row[13]
       imp.room_type_cd = row[14]
       imp.room_type_nm = row[15]
@@ -356,7 +354,9 @@ def import_data_oneself(filename)
       imp.owner_nm = row[19]
       imp.owner_kana = row[20]
       imp.owner_address = row[21]
-      imp.owner_tel = row[22]
+      imp.biru_age = row[22]
+      #imp.owner_tel = row[22]
+
       imp.save!
 
       if imp
@@ -415,9 +415,9 @@ def update_imp_oneself()
 
     # TODO:住所はとりあえずダミーで登録
     #biru_geocode(biru, false)
-    biru.address = "ダミー"
+    biru.address = imp.building_address
     biru.gmaps = true
-    biru.biru_age = 10 # TODO:築年数も設定する。
+    biru.biru_age = imp.biru_age # TODO:築年数も設定する。
 
     begin
       biru.save!
@@ -450,7 +450,6 @@ def update_imp_oneself()
       room.delete_flg = false
       room.save!
 
-
       p room.name
 
     end
@@ -459,6 +458,7 @@ def update_imp_oneself()
     biru.kanri_room_num = kanri_room_num
     biru.free_num = free_num
     biru.owner_stop_num = owner_stop_num
+
     begin
       biru.save!
     rescue =>e
@@ -470,7 +470,7 @@ def update_imp_oneself()
   ####################
   # 管理委託契約の登録
   ####################
-  ImpTable.group( :trust_cd, :owner_cd, :building_cd, :kanri_cd ).each do |imp|
+  ImpTable.group( :trust_cd, :owner_cd, :building_cd, :manage_type_cd ).each do |imp|
 
     trust = Trust.unscoped.find_or_create_by_code(imp.trust_cd)
     biru = Building.where("code=?",imp.building_cd).first
@@ -485,7 +485,7 @@ def update_imp_oneself()
         trust.owner_id = owner.id
         trust.delete_flg = false
 
-        trust.manage_type_id = ManageType.where("code=?", imp.kanri_cd.to_i).first.id
+        trust.manage_type_id = ManageType.where("code=?", imp.manage_type_cd.to_i).first.id
 
         trust.save!
         p trust.code
@@ -640,7 +640,7 @@ end
 #init_biru_type
 
 # 管理方式登録rak
-init_manage_type
+#init_manage_type
 
 # 部屋種別登録
 #init_room_type
@@ -649,11 +649,10 @@ init_manage_type
 #init_room_layout
 
 # データの登録(自社)
-#import_data_oneself(Rails.root.join( "tmp", "imp_data_20130919.csv"))
+#import_data_oneself(Rails.root.join( "tmp", "imp_data_20131108.csv"))
 
 # データの登録(他社)
 #import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
-
 
 def update_gmap
   Building.unscoped.each do |biru|

@@ -10,5 +10,8 @@ class AddColumnsToBuildings < ActiveRecord::Migration
     add_column :rooms, :free_state, :boolean, :default=>true
     add_column :rooms, :owner_stop_state, :boolean, :default=>false
     add_column :rooms, :advertise_state, :boolean, :default=>false
+
+    # インポート用の築年数列を追加
+    add_column :imp_tables, :biru_age, :integer
   end
 end

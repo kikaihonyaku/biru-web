@@ -85,7 +85,6 @@ function FullScreenControl(map) {
 function change_biru_icon(type){
 
   if(type == "biru_kind" ){
-
     // 管理方式のアイコンにする。
     for(var item in build_arr){
       build_arr[item].setIcon(build_arr[item].build_type_icon );
@@ -94,6 +93,21 @@ function change_biru_icon(type){
     // 建物種別のアイコンにする。
     for(var item in build_arr){
       build_arr[item].setIcon(build_arr[item].manage_icon );
+    };
+  } else if( type == "num") {
+    // 管理戸数のアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].kanri_room_num );
+    };
+  } else if( type == "aki") {
+    // 空室のアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].free_room );
+    };
+  } else if( type == "age") {
+    // 築年月のアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].biru_age );
     };
 
   } else {
@@ -379,6 +393,88 @@ function create_circle(size, mapCanvas, pos){
 
   }
 
+  // 戸数
+  function get_icon_kanri_room_num(num){
+    var icon;
+
+    if(num == 1){
+        icon = 'marker_blue.png';
+    }else if( 2 <= num && num <= 4){
+        icon ='marker_yellow.png';
+    }else if( 5 <= num && num <= 6){
+        icon ='marker_purple.png';
+    }else if( 6 <= num && num <= 8){
+        icon ='marker_red.png';
+    }else if( 8 <= num && num <= 10){
+        icon ='marker_orange.png';
+    }else if( 11 <= num && num <= 15){
+        icon ='marker_green.png';
+    }else if( 16 <= num && num <= 20){
+        icon ='marker_gray.png';
+    }else if( 21 <= num ){
+        icon ='marker_gray.png';
+    }else{
+        icon ='marker_white.png';
+    }
+
+    icon = '/assets/' + icon;
+
+    return icon;
+  }
+
+  // 空室割合
+  function get_icon_free_room(kosuu, aki){
+    var flt;
+    var icon;
+    flt = aki / kosuu;
+
+    if(flt == 0){
+        icon = 'marker_blue.png';
+    }else if( 0 < flt && flt <= 0.3 ){
+        icon ='marker_yellow.png';
+    }else if( 0.3 < flt && flt <= 0.6){
+        icon ='marker_purple.png';
+    }else if( 0.6 < flt && flt <= 0.9){
+        icon ='marker_red.png';
+    }else if( 0.9 < flt && flt <= 1){
+        icon ='marker_orange.png';
+    }else{
+        icon ='marker_white.png';
+    }
+
+    icon = '/assets/' + icon;
+
+    return icon;
+
+  }
+
+  // 築年数アイコン
+  function get_icon_biru_age(age){
+    var icon;
+
+    if(0<= age && age <= 1){
+        icon = 'marker_blue.png';
+    }else if( 2 <= age && age <= 5){
+        icon ='marker_yellow.png';
+    }else if( 6 <= age && age <= 10){
+        icon ='marker_purple.png';
+    }else if( 11 <= age && age <= 20){
+        icon ='marker_red.png';
+    }else if( 21 <= age && age <= 30){
+        icon ='marker_orange.png';
+    }else if( 31 <= age && age <= 40){
+        icon ='marker_green.png';
+    }else if( 41 <= age ){
+        icon ='marker_gray.png';
+    }else{
+        icon ='marker_white.png';
+    }
+
+    icon = '/assets/' + icon;
+
+    return icon;
+  }
+
   //-------------------
   // グローバル変数定義
   //-------------------
@@ -400,7 +496,9 @@ function create_circle(size, mapCanvas, pos){
     // フルスクリーンラベルを設定
     mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new FullScreenControl(mapCanvas));
 
-    // ストリートビューオプション定義（これはcreate markerを呼び出す前に定義する。）
+    /*----------------------------------------------------------------------*/
+    /* ストリートビューオブジェクトを作成 （これはcreate markerを呼び出す前に定義する。）*/
+    /*----------------------------------------------------------------------*/
     panoramaOptionsPov = {heading: 180,pitch:0,zoom:0}
     var center = mapCanvas.getCenter();
     var panoramaOptions = {
@@ -408,6 +506,14 @@ function create_circle(size, mapCanvas, pos){
       pov:panoramaOptionsPov
     };
     panorama = new  google.maps.StreetViewPanorama(document.getElementById("panowide"), panoramaOptions);
+
+    mapCanvas.setStreetView(panorama);
+    google.maps.event.addListener(panorama, 'position_changed', function()
+    {
+      //ペグマン位置変更イベント
+      positionPegman = panorama.getPosition();
+      mapCanvas.panTo(positionPegman);
+    });
 
     // infoウィンドウを１つだけ作成
     infoWnd = new google.maps.InfoWindow();
@@ -455,17 +561,20 @@ function create_circle(size, mapCanvas, pos){
     var populations = [];
 
     var building_to_owners = gon.building_to_owners
-
     var buildings = gon.buildings
     for(var i in buildings){
         pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
 
-        // infoWndに表示するHTMLを作成する。
         <% if @search_type == 2 # 貸主の時、初期状態で非表示%>
           var build_disp = false
         <% else %>
           var build_disp = true
+          bounds.extend(pos);
         <% end %>
+
+        // 戸数
+        // 空室割合
+        // 築年数アイコン
 
         build_arr[buildings[i].id] = createMarker({
           position : pos
@@ -473,6 +582,9 @@ function create_circle(size, mapCanvas, pos){
           ,icon : buildings[i].tmp_build_type_icon
           ,manage_icon : buildings[i].tmp_manage_type_icon
           ,build_type_icon : buildings[i].tmp_build_type_icon
+          ,kanri_room_num  : get_icon_kanri_room_num(buildings[i].kanri_room_num)
+          ,free_room : get_icon_free_room(buildings[i].kanri_room_num, buildings[i].free_num)
+          ,biru_age : get_icon_biru_age(buildings[i].biru_age)
           ,shadow : '/assets/marker_shadow.png'
           ,html : info_msg_biru(buildings[i], building_to_owners[buildings[i].id])
           ,visible : build_disp
@@ -511,10 +623,6 @@ function create_circle(size, mapCanvas, pos){
 
         biru_latlngs[idx] = pos;
         idx = idx + 1;
-
-      <% if @search_type == 1 # 建物検索の時のみ追加する %>
-        bounds.extend(pos);
-      <% end %>
     }
 
     var heatmap_biru = new google.maps.visualization.HeatmapLayer();
@@ -671,20 +779,6 @@ function create_circle(size, mapCanvas, pos){
       };
     });
 
-    /*------------------------------*/
-    /* ストリートビューオブジェクトを作成 */
-    /*------------------------------*/
-
-    //青い道路（ImageMapType）をオーバーレイ
-    //mapCanvas.overlayMapTypes.insertAt(0, StreetViewType);
-    mapCanvas.setStreetView(panorama);
-
-    //ペグマン位置変更イベント
-    google.maps.event.addListener(panorama, 'position_changed', function()
-    {
-      positionPegman = panorama.getPosition();
-      mapCanvas.panTo(positionPegman);
-    });
 
   } // end initialize
 

@@ -52,15 +52,15 @@ class ManagementsController < ApplicationController
 
     # 管理方式指定
     @manage_type_checked = {}
-    @manage_type_checked[:kanri_i] = false
-    @manage_type_checked[:kanri_a] = false
-    @manage_type_checked[:kanri_b] = false
-    @manage_type_checked[:kanri_c] = false
-    @manage_type_checked[:kanri_d] = false
-    @manage_type_checked[:kanri_soumu] = false
-    @manage_type_checked[:kanri_toku] = false
-    @manage_type_checked[:kanri_teiki] = false
-    @manage_type_checked[:kanri_gyoumu] = false
+    @manage_type_checked[:kanri_i] = true
+    @manage_type_checked[:kanri_a] = true
+    @manage_type_checked[:kanri_b] = true
+    @manage_type_checked[:kanri_c] = true
+    @manage_type_checked[:kanri_d] = true
+    @manage_type_checked[:kanri_soumu] = true
+    @manage_type_checked[:kanri_toku] = true
+    @manage_type_checked[:kanri_teiki] = true
+    @manage_type_checked[:kanri_gyoumu] = true
     @manage_type_checked[:kanri_gai] = false
 
     # オブジェクトの初期化
@@ -85,9 +85,9 @@ class ManagementsController < ApplicationController
     @tab_result = ""
 
     # 自社・他社種別
-    @ji_only_flg = false
+    @ji_only_flg = true
     @ta_only_flg = false
-    @jita_both_flg = true
+    @jita_both_flg = false
     
   end
 
