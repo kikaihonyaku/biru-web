@@ -256,10 +256,13 @@ class ManagementsController < ApplicationController
         end
       end
 
-      
-
       # ここでInner Joinをして管理方式が存在するもののみを絞り込む
       tmp_buildings = tmp_buildings.where("trusts.manage_type_id"=>manage_type)
+    else
+      # 管理方式がひとつも選択されていない時は、種別は両方を設定
+      @ji_only_flg = false
+      @ta_only_flg = false
+      @jita_both_flg = true
     end
 
     # 物件情報を出力
