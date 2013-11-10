@@ -110,6 +110,7 @@ class ManagementsController < ApplicationController
   # 建物情報確認用のwindowを表示する。
   def popup_building
     @building = Building.find(params[:id])
+    @trust = Trust.find_by_building_id(@building)
     render :layout => 'popup'
   end
 
@@ -182,13 +183,13 @@ class ManagementsController < ApplicationController
     # 建物名の絞り込み
     word = params[:biru_name]
     if word.length > 0
-      tmp_buildings = tmp_buildings.where("name like ?", "%#{word}%" )
+      tmp_buildings = tmp_buildings.where("buildings.name like ?", "%#{word}%" )
       @building_nm = word
     end
 
     address = params[:biru_address]
     if address.length > 0
-      tmp_buildings = tmp_buildings.where("address like ?", "%#{address}%" )
+      tmp_buildings = tmp_buildings.where("buildings.address like ?", "%#{address}%" )
       @building_ad = address
     end
 

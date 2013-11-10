@@ -128,10 +128,13 @@ function createMarker(opts){
     infoWnd.setContent(opts.html);
     infoWnd.open(opts.map, marker);
 
-    panorama.setPosition(opts.position);
-    panorama.setPov(panoramaOptionsPov);
+    if(document.getElementById("panowide").style.display != "none"){
+      panorama.setPosition(opts.position);
+      panorama.setPov(panoramaOptionsPov);
+      opts.map.panTo(opts.position);
+      mapCanvas.setStreetView(panorama);
+    }
 
-    opts.map.panTo(opts.position);
   });
 
   return marker;
@@ -228,16 +231,12 @@ function create_circle(size, mapCanvas, pos){
   function link_building_click(num, lat, lng)
   {
     google.maps.event.trigger(build_arr[num], "click");
-    panorama.setPosition(new google.maps.LatLng(lat,lng));
-    panorama.setPov(panoramaOptionsPov);
   }
 
   // 貸主リンクをクリックした時の動きを定義します。
   function link_owner_click(num, lat, lng)
   {
     google.maps.event.trigger(owner_arr[num], "click");
-    panorama.setPosition(new google.maps.LatLng(lat,lng));
-    panorama.setPov(panoramaOptionsPov);
   }
 
   // 営業所リンクをクリックした時の動きを定義します。
@@ -301,6 +300,7 @@ function create_circle(size, mapCanvas, pos){
 
       panorama.setPosition(new google.maps.LatLng(lat,lng));
       panorama.setPov(panoramaOptionsPov);
+      mapCanvas.setStreetView(panorama);
 
     }else{
       // ストリートビューを非表示に設定
@@ -316,6 +316,11 @@ function create_circle(size, mapCanvas, pos){
   function write_build(biru)
   {
     document.getElementById("m_name").innerText=biru;
+  }
+
+  // ズームを変更する
+  function changeZoom() {
+    mapCanvas.setZoom(mapCanvas.getZoom() + 1);
   }
 
   // 建物のInfoBoxを登録する。
@@ -347,8 +352,11 @@ function create_circle(size, mapCanvas, pos){
       '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
       '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="building_trust_disp(' + biru.id  + ', this.checked);" />&nbsp;委託</label>' +
       '</div>' +
-      '<div style="padding-left:80px;">' +
-      '  <a href="javascript:void(0)" onClick="view_disp( true, ' + biru.latitude + ',' + biru.longitude  + '); return false;"> ストリートビュー</a>' +
+      '<div style="padding-left:10px;float:left;">' +
+      '  <a href="javascript:void(0)" onClick="changeZoom(); return false;">ズーム</a>' +
+      '</div>' +
+      '<div style="padding-left:120px;">' +
+      '  <a href="javascript:void(0)" onClick="view_disp( true, ' + biru.latitude + ',' + biru.longitude  + '); return false;">View</a>' +
       '</div>' +
       '</div>';
 
@@ -384,8 +392,11 @@ function create_circle(size, mapCanvas, pos){
       '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
       '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="owner_trust_disp(' + owner.id  + ', this.checked);" />&nbsp;委託</label>' +
       '</div>' +
-      '<div style="padding-left:80px;">' +
-      '  <a href="javascript:void(0)" onClick="view_disp( true, ' + owner.latitude + ',' + owner.longitude  + '); return false;"> ストリートビュー</a>' +
+      '<div style="padding-left:10px;float:left;">' +
+      '  <a href="javascript:void(0)" onClick="changeZoom(); return false;">ズーム</a>' +
+      '</div>' +
+      '<div style="padding-left:120px;">' +
+      '  <a href="javascript:void(0)" onClick="view_disp( true, ' + owner.latitude + ',' + owner.longitude  + '); return false;">View</a>' +
       '</div>' +
       '</div>';
 
@@ -481,6 +492,7 @@ function create_circle(size, mapCanvas, pos){
   var infoWnd;  // 吹き出しウィンドウ
   var panoramaOptionsPov; // ストリートビュー定義
   var panorama;
+  var mapCanvas;
   
   function initialize(){
 
@@ -489,7 +501,7 @@ function create_circle(size, mapCanvas, pos){
 
     /* 地図を作成 */
     var mapDiv = document.getElementById("map_canvas");
-    var mapCanvas = new google.maps.Map(mapDiv, {
+    mapCanvas = new google.maps.Map(mapDiv, {
       mapTypeId : google.maps.MapTypeId.ROADMAP
     });
     

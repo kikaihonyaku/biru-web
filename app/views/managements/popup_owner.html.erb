@@ -11,13 +11,6 @@
   </div>
 
   <div class="control-group">
-    <label class="control-label" for="input01">ランク</label>
-    <div class="controls">
-      <% blank_flg = @owner.owner_rank_id.present? ? false : true %>
-      <%= f.collection_select :owner_rank_id, OwnerRank.all, :id, :name, :size=>2, :include_blank=>blank_flg %>
-    </div>
-  </div>
-  <div class="control-group">
     <label class="control-label" for="input01">備考</label>
     <div class="controls">
         <%= f.text_area :memo,  :size => "3x2", :class=>"form-control"  %>
