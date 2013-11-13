@@ -90,9 +90,81 @@
     });
 
 
+
+
+
   });
 
+
+  // 東武支店をクリックした時の動きを制御
+  function click_tobu(){
+
+    var shops = [];
+    shops.push($("#shop_tobu01"));
+    shops.push($("#shop_tobu02"));
+    shops.push($("#shop_tobu03"));
+    shops.push($("#shop_tobu04"));
+    shops.push($("#shop_tobu05"));
+    shops.push($("#shop_tobu06"));
+    shops.push($("#shop_tobu07"));
+    shops.push($("#shop_tobu08"));
+    shops_change(shops);
+
+  }
+
+  // さいたま支店をクリックした時の動きを制御
+  function click_sai(){
+
+    var shops = [];
+    shops.push($("#shop_sai01"));
+    shops.push($("#shop_sai02"));
+    shops.push($("#shop_sai03"));
+    shops.push($("#shop_sai04"));
+    shops.push($("#shop_sai05"));
+    shops.push($("#shop_sai06"));
+    shops.push($("#shop_sai07"));
+    shops.push($("#shop_sai08"));
+    shops_change(shops);
+
+  }
+
+  // 千葉支店をクリックした時の動きを制御
+  function click_chiba(){
+
+    var shops = [];
+    shops.push($("#shop_chiba01"));
+    shops.push($("#shop_chiba02"));
+    shops.push($("#shop_chiba03"));
+    shops.push($("#shop_chiba04"));
+    shops_change(shops);
+
+  }
+
+  // 指定された営業所を選択して変換
+  function shops_change(shops){
+    var cnt = 0;
+    for(var i in shops){
+      if(shops[i].prop('checked')){
+        cnt = cnt + 1
+      }
+    }
+
+    if(cnt == 0){
+      // 1件もチェックされていなかったら全選択
+      for(var i in shops){
+        shops[i].prop('checked', true);
+      }
+
+    }else{
+      // 1件でも選択されていたら全解除
+      for(var i in shops){
+        shops[i].attr('checked', false);
+      }
+    }
+  }
+
 </script>
+
 
 <div class="row" style="margin-left:0px;">
   <div class="col-lg-12">
@@ -116,12 +188,21 @@
 
 
         <br/>
-        <legend>営業所<span style="font-size:x-small;padding-left:20px;">※全て未チェックは全選択</span></legend>
+        <legend style="margin-bottom: 10px;">営業所<span style="font-size:x-small;padding-left:20px;">※全て未チェックは全選択</span></legend>
 
-        <div id="shop_list" class="checkbox" style="padding-bottom:20px;">
+
+        <div style="padding-top:0px;">
+          <button type="button" class="btn btn-success" style="padding:2px 15px 2px 15px;margin-right: 10px;" onClick="javascript:click_tobu();">東武</button>
+          <button type="button" class="btn btn-primary" style="padding:2px 15px 2px 15px" onClick="javascript:click_sai();">さいたま</button>
+          <button type="button" class="btn btn-warning" style="padding:2px 15px 2px 15px;margin-left: 10px;" onClick="javascript:click_chiba();">千葉</button>
+
+        </div>
+
+        <div id="shop_list" class="checkbox" style="padding-bottom:20px;margin-top:5px;">
+
 
           <div id="tobu_siten" style="float:left;">
-            <label><%= check_box_tag('group[siten01]', 99, false, {}) %><span style="font-weight: bolder;">東武</span></label>
+            <!--<label><%#= check_box_tag('group[siten01]', 99, false, {}) %><span style="font-weight: bolder;">東武</span></label>-->
             <div>
               <div id="tobu_soth" >
                 <label><%= check_box_tag('shop[tobu01]', 3, @shop_checked[:tobu01], {}) %>草加</label>
@@ -142,7 +223,7 @@
 
 
           <div id="sai_siten" style="padding-left:25px;float:left;">
-            <label><%= check_box_tag('group[siten02]', 99, false, {}) %><span style="font-weight: bolder;">さいたま</span></label>
+            <!--<label><%#= check_box_tag('group[siten02]', 99, false, {}) %><span style="font-weight: bolder;">さいたま</span></label>-->
             <div>
 
               <div id="sai_soth">
@@ -165,15 +246,15 @@
           </div>
 
           <div id="chiba_siten" style="padding-left:175px;">
-            <label><%= check_box_tag('group[siten03]', 99, false, {}) %><span style="font-weight: bolder;">千葉</span></label>
+            <!--<label><%#= check_box_tag('group[siten03]', 99, false, {}) %><span style="font-weight: bolder;">千葉</span></label>-->
             <div>
               <div id="chiba_center">
                 <label><%= check_box_tag('shop[chiba01]', 19, @shop_checked[:chiba01], {}) %>松戸</label>
                 <label><%= check_box_tag('shop[chiba02]', 4, @shop_checked[:chiba02], {}) %>北松戸</label>
               </div>
               <div id="chiba_north">
-                <label><%= check_box_tag('shop[chiba03]', 12, @shop_checked[:chiba03], {}) %>柏</label>
-                <label><%= check_box_tag('shop[chiba04]', 9, @shop_checked[:chiba04], {}) %>南流山</label>
+                <label><%= check_box_tag('shop[chiba03]', 9, @shop_checked[:chiba03], {}) %>柏</label>
+                <label><%= check_box_tag('shop[chiba04]', 12, @shop_checked[:chiba04], {}) %>南流山</label>
               </div>
 
             </div>

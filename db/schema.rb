@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131106093724) do
+ActiveRecord::Schema.define(:version => 20131113204122) do
 
   create_table "backup_buildings", :force => true do |t|
     t.string   "code",                 :limit => nil
@@ -169,6 +169,8 @@ ActiveRecord::Schema.define(:version => 20131106093724) do
     t.string  "icon"
     t.integer "area_id"
     t.integer "group_id"
+    t.string  "tel"
+    t.string  "holiday"
   end
 
   add_index "shops", ["area_id"], :name => "index_shops_on_area_id"

@@ -56,9 +56,9 @@
           <td><%= room.name %></td>
 
           <% if room.free_state %>
-            <td><span class="label label-success">空き</span></td>
+            <td><span class="label label-important">空き</span></td>
           <% else %>
-            <td><span class="label label-important">入居中</span></td>
+            <td><span class="label label-success">入居中</span></td>
           <% end %>
 
           <td><%= room.room_layout.name if room.room_layout %></td>

@@ -33,8 +33,8 @@ def init_shop
   # 千葉支店
   show_arr.push({:code=>19, :name=>'松戸営業所', :address=>'千葉県松戸市本町18-6 壱番館ビル3Ｆ', :area_id=>21, :group_id=>3})
   show_arr.push({:code=>4, :name=>'北松戸営業所', :address=>'千葉県松戸市上本郷900－2 中央第10北松戸ビル1Ｆ', :area_id=>22, :group_id=>3})
-  show_arr.push({:code=>12, :name=>'南流山営業所', :address=>'千葉県柏市あけぼの1-1-2', :area_id=>23, :group_id=>3})
-  show_arr.push({:code=>9, :name=>'柏営業所', :address=>'千葉県流山市南流山1-1-14', :area_id=>24, :group_id=>3})
+  show_arr.push({:code=>12, :name=>'南流山営業所', :address=>'千葉県流山市南流山1-1-14', :area_id=>23, :group_id=>3})
+  show_arr.push({:code=>9, :name=>'柏営業所', :address=>'千葉県柏市あけぼの1-1-2', :area_id=>24, :group_id=>3})
 
   # 法人課
   show_arr.push({:code=>91, :name=>'法人課', :address=>'埼玉県越谷市南越谷４丁目９−６', :area_id=>30, :group_id=>4})
