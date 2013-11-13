@@ -89,10 +89,6 @@
       $("#manage_type_kanri_gai").attr("checked", false);
     });
 
-
-
-
-
   });
 
 
@@ -269,22 +265,22 @@
 
         <div id="build_type" class="checkbox" style="padding-left:30px;">
           <div style="float: left;">
-            <label><%= check_box_tag('build_type[apart]', 1020, @build_type_checked[:apart], {}) %>アパート</label>
-            <label><%= check_box_tag('build_type[man]', 1010, @build_type_checked[:man], {}) %>マンション</label>
-            <label><%= check_box_tag('build_type[bman]', 1015, @build_type_checked[:bman], {}) %>分譲M</label>
-            <label><%= check_box_tag('build_type[tenpo]', 1040, @build_type_checked[:tenpo], {}) %>店舗</label>
-            <label><%= check_box_tag('build_type[jimusyo]', 1050, @build_type_checked[:jimusyo], {}) %>事務所</label>
-            <label><%= check_box_tag('build_type[kojo]', 1055, @build_type_checked[:kojo], {}) %>工場</label>
-            <label><%= check_box_tag('build_type[soko]', 1060, @build_type_checked[:soko], {}) %>倉庫</label>
+            <label><%= check_box_tag('build_type[apart]', '01020', @build_type_checked[:apart], {}) %>アパート</label>
+            <label><%= check_box_tag('build_type[man]', '01010', @build_type_checked[:man], {}) %>マンション</label>
+            <label><%= check_box_tag('build_type[bman]', '01015', @build_type_checked[:bman], {}) %>分譲M</label>
+            <label><%= check_box_tag('build_type[tenpo]', '01040', @build_type_checked[:tenpo], {}) %>店舗</label>
+            <label><%= check_box_tag('build_type[jimusyo]', '01050', @build_type_checked[:jimusyo], {}) %>事務所</label>
+            <label><%= check_box_tag('build_type[kojo]', '01055', @build_type_checked[:kojo], {}) %>工場</label>
+            <label><%= check_box_tag('build_type[soko]', '01060', @build_type_checked[:soko], {}) %>倉庫</label>
           </div>
           <div style="padding-left:110px;">
-            <label><%= check_box_tag('build_type[kodate]', 1025, @build_type_checked[:kodate], {}) %>戸建て</label>
-            <label><%= check_box_tag('build_type[terasu]', 1030, @build_type_checked[:terasu], {}) %>テラスハウス</label>
-            <label><%= check_box_tag('build_type[mezo]', 1035, @build_type_checked[:mezo], {}) %>メゾネット</label>
-            <label><%= check_box_tag('build_type[ten_jyu]', 1045, @build_type_checked[:ten_jyu], {}) %>店舗付住宅</label>
-            <label><%= check_box_tag('build_type[soko_jimu]', 1065, @build_type_checked[:soko_jimu], {}) %>倉庫事務所</label>
-            <label><%= check_box_tag('build_type[kojo_soko]', 1070, @build_type_checked[:kojo_soko], {}) %>工場倉庫</label>
-            <label><%= check_box_tag('build_type[syakuti]', 1085, @build_type_checked[:syakuti], {}) %>定期借地</label>
+            <label><%= check_box_tag('build_type[kodate]', '01025', @build_type_checked[:kodate], {}) %>戸建て</label>
+            <label><%= check_box_tag('build_type[terasu]', '01030', @build_type_checked[:terasu], {}) %>テラスハウス</label>
+            <label><%= check_box_tag('build_type[mezo]', '01035', @build_type_checked[:mezo], {}) %>メゾネット</label>
+            <label><%= check_box_tag('build_type[ten_jyu]', '01045', @build_type_checked[:ten_jyu], {}) %>店舗付住宅</label>
+            <label><%= check_box_tag('build_type[soko_jimu]', '01065', @build_type_checked[:soko_jimu], {}) %>倉庫事務所</label>
+            <label><%= check_box_tag('build_type[kojo_soko]', '01070', @build_type_checked[:kojo_soko], {}) %>工場倉庫</label>
+            <label><%= check_box_tag('build_type[syakuti]', '01085', @build_type_checked[:syakuti], {}) %>定期借地</label>
           </div>
         </div>
 

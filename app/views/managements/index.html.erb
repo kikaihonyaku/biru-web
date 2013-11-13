@@ -127,12 +127,12 @@ function createMarker(opts){
     infoWnd.close();
     infoWnd.setContent(opts.html);
     infoWnd.open(opts.map, marker);
+    opts.map.panTo(opts.position);
 
     if(document.getElementById("panowide").style.display != "none"){
       panorama.setPosition(opts.position);
       panorama.setPov(panoramaOptionsPov);
-      opts.map.panTo(opts.position);
-      mapCanvas.setStreetView(panorama);
+      opts.map.setStreetView(panorama);
     }
 
   });
@@ -318,9 +318,20 @@ function create_circle(size, mapCanvas, pos){
     document.getElementById("m_name").innerText=biru;
   }
 
-  // ズームを変更する
-  function changeZoom() {
-    mapCanvas.setZoom(mapCanvas.getZoom() + 1);
+  // ズームを変更する maker_kind 1:建物 2:貸主
+  function changeZoom(marker_id, maker_kind) {
+
+    var marker;
+
+    if(maker_kind == 1){
+      marker = build_arr[marker_id];
+    }
+    else{
+      marker = owner_arr[marker_id];
+    }
+
+    mapCanvas.panTo(marker.position);
+    mapCanvas.setZoom(15);
   }
 
   // 建物のInfoBoxを登録する。
@@ -353,7 +364,7 @@ function create_circle(size, mapCanvas, pos){
       '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="building_trust_disp(' + biru.id  + ', this.checked);" />&nbsp;委託</label>' +
       '</div>' +
       '<div style="padding-left:10px;float:left;">' +
-      '  <a href="javascript:void(0)" onClick="changeZoom(); return false;">ズーム</a>' +
+      '  <a href="javascript:void(0)" onClick="changeZoom(' + biru.id + ', 1); return false;">ズーム</a>' +
       '</div>' +
       '<div style="padding-left:120px;">' +
       '  <a href="javascript:void(0)" onClick="view_disp( true, ' + biru.latitude + ',' + biru.longitude  + '); return false;">View</a>' +
@@ -393,7 +404,7 @@ function create_circle(size, mapCanvas, pos){
       '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="owner_trust_disp(' + owner.id  + ', this.checked);" />&nbsp;委託</label>' +
       '</div>' +
       '<div style="padding-left:10px;float:left;">' +
-      '  <a href="javascript:void(0)" onClick="changeZoom(); return false;">ズーム</a>' +
+      '  <a href="javascript:void(0)" onClick="changeZoom(' + owner.id  + ', 2); return false;">ズーム</a>' +
       '</div>' +
       '<div style="padding-left:120px;">' +
       '  <a href="javascript:void(0)" onClick="view_disp( true, ' + owner.latitude + ',' + owner.longitude  + '); return false;">View</a>' +
