@@ -159,6 +159,45 @@
     }
   }
 
+  // 検索条件をクリア
+  function search_init(){
+    //------------
+    // 物件名・住所
+    //------------
+    $("#biru_name").val(null);
+    $("#biru_address").val(null);
+    
+
+    //------------
+    // 営業所
+    //------------
+    // 東武支店
+    $("#tobu_soth input").attr("checked", false);
+    $("#tobu_center input").attr("checked", false);
+    $("#tobu_north input").attr("checked", false);
+
+    // さいたま支店
+    $("#sai_soth input").attr("checked", false);
+    $("#sai_north input").attr("checked", false);
+    $("#sai_east input").attr("checked", false);
+
+    // 千葉支店
+    $("#chiba_center input").attr("checked", false);
+    $("#chiba_north input").attr("checked", false);
+
+    //------------
+    // 物件種別
+    //------------
+    $("#build_type input").attr("checked", false);
+
+    //------------------
+    // 自社他社(管理方式)
+    //------------------
+    $("#jita_kbn_ji_only").prop('checked', true);
+    $("#jita_kbn_ji_only").change();
+
+  }
+
 </script>
 
 
@@ -168,7 +207,8 @@
       <%= form_tag('/managements/search_buildings') do %>
 
         <div style="padding-top:10px;text-align: center;">
-          <%= submit_tag "検索を実行", :class=>'btn btn-large btn-primary'  %>
+          <%= submit_tag "検索する", :class=>'btn btn-large btn-primary'  %>
+          <button type="button" class="btn btn-default btn-sm btn3d" onClick="javascript:search_init();">クリア</button>
         </div>
 
         <div class="control-group" style="padding-top:15px;padding-bottom: 10px;" >
@@ -191,7 +231,6 @@
           <button type="button" class="btn btn-success" style="padding:2px 15px 2px 15px;margin-right: 10px;" onClick="javascript:click_tobu();">東武</button>
           <button type="button" class="btn btn-primary" style="padding:2px 15px 2px 15px" onClick="javascript:click_sai();">さいたま</button>
           <button type="button" class="btn btn-warning" style="padding:2px 15px 2px 15px;margin-left: 10px;" onClick="javascript:click_chiba();">千葉</button>
-
         </div>
 
         <div id="shop_list" class="checkbox" style="padding-bottom:20px;margin-top:5px;">
@@ -305,7 +344,7 @@
         </div>
 
         <div style="padding-top:20px;text-align: center;">
-          <%= submit_tag "検索を実行", :class=>'btn btn-large btn-primary'  %>
+          <%= submit_tag "検索する", :class=>'btn btn-large btn-primary'  %>
         </div>
 
       <% end %>
