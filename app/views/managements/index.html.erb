@@ -129,10 +129,10 @@ function createMarker(opts){
     infoWnd.open(opts.map, marker);
     opts.map.panTo(opts.position);
 
+    marker.set("visible", true);
+
     if(document.getElementById("panowide").style.display != "none"){
-      panorama.setPosition(opts.position);
-      panorama.setPov(panoramaOptionsPov);
-      opts.map.setStreetView(panorama);
+      refresh_view(opts.position);
     }
 
   });
@@ -297,15 +297,22 @@ function create_circle(size, mapCanvas, pos){
       document.getElementById("map_canvas").style.height = "450px";
       document.getElementById("panowide").style.height = "350px";
       document.getElementById("panowide").style.display = "block";
-
-      panorama.setPosition(new google.maps.LatLng(lat,lng));
-      panorama.setPov(panoramaOptionsPov);
-      mapCanvas.setStreetView(panorama);
+      refresh_view(new google.maps.LatLng(lat,lng));
 
     }else{
       // ストリートビューを非表示に設定
       init_display();
     }
+  }
+
+  /* ストリートビューのリフレッシュ */
+  function refresh_view(pos){
+
+    // ストリートビューがないところを一度選択するとそれ以降他もも表示されなくなるので、再度生成する。
+    panorama = new  google.maps.StreetViewPanorama(document.getElementById("panowide"), panoramaOptions);
+    panorama.setPosition(pos);
+    panorama.setPov(panoramaOptions.pov);
+    mapCanvas.setStreetView(panorama);
   }
 
   // ストリートビューを閉じます
@@ -331,7 +338,7 @@ function create_circle(size, mapCanvas, pos){
     }
 
     mapCanvas.panTo(marker.position);
-    mapCanvas.setZoom(15);
+    mapCanvas.setZoom(18);
   }
 
   // 建物のInfoBoxを登録する。
@@ -501,7 +508,7 @@ function create_circle(size, mapCanvas, pos){
   // グローバル変数定義
   //-------------------
   var infoWnd;  // 吹き出しウィンドウ
-  var panoramaOptionsPov; // ストリートビュー定義
+  var panoramaOptions; // ストリートビュー定義
   var panorama;
   var mapCanvas;
   
@@ -522,11 +529,9 @@ function create_circle(size, mapCanvas, pos){
     /*----------------------------------------------------------------------*/
     /* ストリートビューオブジェクトを作成 （これはcreate markerを呼び出す前に定義する。）*/
     /*----------------------------------------------------------------------*/
-    panoramaOptionsPov = {heading: 180,pitch:0,zoom:0}
-    var center = mapCanvas.getCenter();
-    var panoramaOptions = {
-      position:center,
-      pov:panoramaOptionsPov
+    panoramaOptions = {
+      position:mapCanvas.getCenter(),
+      pov:{heading: 180,pitch:0,zoom:0}
     };
     panorama = new  google.maps.StreetViewPanorama(document.getElementById("panowide"), panoramaOptions);
 
