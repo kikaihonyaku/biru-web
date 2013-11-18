@@ -176,9 +176,9 @@ class ManagementsController < ApplicationController
     # 委託契約がされてないものも削除フラグが立っていない建物ならば出力する。
     tmp_buildings = Building.scoped
     tmp_buildings = tmp_buildings.includes(:build_type)
+    tmp_buildings = tmp_buildings.includes(:shop)
     tmp_buildings = tmp_buildings.includes(:trusts)
     tmp_buildings = tmp_buildings.includes(:trusts => :owner)
-    tmp_buildings = tmp_buildings.includes(:shop)
 
     # 建物名の絞り込み
     word = params[:biru_name]
@@ -322,6 +322,7 @@ class ManagementsController < ApplicationController
       gon.owner_to_buildings = @owner_to_buildings # 建物と貸主をひもづける情報
       gon.building_to_owners = @building_to_owners
       gon.manage_line_color = @manage_line_color
+      gon.all_shops = Shop.find(:all)
     
   end
 

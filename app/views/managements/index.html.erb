@@ -84,7 +84,18 @@ function FullScreenControl(map) {
 // 建物のアイコンを変更します。
 function change_biru_icon(type){
 
-  if(type == "biru_kind" ){
+  if(type == "area"){
+    // エリア表示
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].area_icon );
+    };
+  } else if(type == "shop" ){
+    // 営業所表示
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].shop_icon );
+    };
+
+  } else if(type == "biru_kind" ){
     // 管理方式のアイコンにする。
     for(var item in build_arr){
       build_arr[item].setIcon(build_arr[item].build_type_icon );
@@ -341,6 +352,17 @@ function create_circle(size, mapCanvas, pos){
     mapCanvas.setZoom(18);
   }
 
+  // 営業所のInfoBoxを登録する。
+  function info_msg_shop(shop){
+    var vhtml;
+
+    vhtml = '<div><b>' + shop.name + '</b></div>' +
+      '<div>ＴＥＬ：' + shop.tel +'</div>' +
+      '<div>定休日：' + shop.holiday +'</div>'
+
+    return vhtml;
+  }
+
   // 建物のInfoBoxを登録する。
   function info_msg_biru(biru, owners){
     var inner_text = "";
@@ -382,6 +404,7 @@ function create_circle(size, mapCanvas, pos){
 
   }
 
+
   // 貸主のInfoBoxのメッセージを作成する。
   function info_msg_owner(owner, buildings){
 
@@ -422,18 +445,106 @@ function create_circle(size, mapCanvas, pos){
 
   }
 
+  // 営業所
+  function get_icon_shop(num){
+    var icon;
+
+    if( num == 3 ){
+      icon = 'marker_blue.png'; // 草加
+    }else if (num == 11 ){
+      icon = 'marker_yellow.png'; // 新田
+    }else if (num == 16 ){
+      icon = 'marker_purple.png'; // 北千住
+    }else if (num == 1 ){
+      icon = 'marker_red.png'; // 南越谷
+    }else if (num == 18 ){
+      icon = 'marker_orange.png'; // 越谷
+    }else if (num == 8 ){
+      icon = 'marker_green.png'; // 北越谷
+    }else if (num == 21 ){
+      icon = 'marker_white.png'; // せんげん台
+    }else if (num == 7 ){
+      icon = 'marker_gray.png'; // 春日部
+    }else if (num == 2 ){
+      icon = 'marker_blue.png'; // 戸田
+    }else if (num == 5 ){
+      icon = 'marker_yellow.png'; // 武蔵
+    }else if (num == 15 ){
+      icon = 'marker_purple.png'; // 川口
+    }else if (num == 17 ){
+      icon = 'marker_red.png'; // 与野
+    }else if (num == 13 ){
+      icon = 'marker_orange.png'; // 浦和
+    }else if (num == 10 ){
+      icon = 'marker_green.png'; // 東浦和
+    }else if (num == 6 ){
+      icon = 'marker_white.png'; // 東川口
+    }else if (num == 14 ){
+      icon = 'marker_gray.png'; // 戸塚安行
+    }else if (num == 19 ){
+      icon = 'marker_blue.png'; // 松戸
+    }else if (num == 4 ){
+      icon = 'marker_yellow.png'; // 北松戸
+    }else if (num == 9 ){
+      icon = 'marker_purple.png'; // 柏
+    }else if (num == 12 ){
+      icon = 'marker_red.png'; // 南流山
+    }else if (num == 91 ){
+      icon = 'marker_purple.png'; // 法人課
+    }else {
+      icon = 'marker_white.png'; // 不明
+    }
+
+    icon = '/assets/' + icon;
+    return icon;
+  }
+
+
+  // エリア
+  function get_icon_area(num){
+    var icon;
+
+
+
+    if( num == 3 || num == 11 || num == 16 ){
+      icon = 'marker_blue.png'; // 東武南
+    }else if (num == 1 || num == 18 ){
+      icon = 'marker_yellow.png'; // 東武中央
+    }else if (num == 8 || num == 21 || num == 7){
+      icon = 'marker_purple.png'; // 東武北
+    }else if (num == 2 || num == 5 || num == 15){
+      icon = 'marker_red.png'; // さいたま南
+    }else if (num == 17 || num == 13  ){
+      icon = 'marker_orange.png'; // さいたま北
+    }else if (num == 10 || num == 6 || num == 14 ){
+      icon = 'marker_green.png'; // さいたま東
+    }else if (num == 19 || num == 4 ){
+      icon = 'marker_white.png'; // 常磐西
+    }else if (num == 9 || num == 12){
+      icon = 'marker_gray.png'; // 常磐中央
+    }else if (num == 91 ){
+      icon = 'marker_green.png'; // 法人課
+    }else {
+      icon = 'marker_white.png'; // 不明
+    }
+
+    icon = '/assets/' + icon;
+    return icon;
+
+  }
+
   // 戸数
   function get_icon_kanri_room_num(num){
     var icon;
 
     if(num == 1){
-        icon = 'marker_blue.png';
+      icon ='marker_purple.png';
     }else if( 2 <= num && num <= 4){
-        icon ='marker_green.png';
+        icon = 'marker_blue.png';
     }else if( 5 <= num && num <= 6){
-        icon ='marker_yellow.png';
+        icon ='marker_green.png';
     }else if( 6 <= num && num <= 8){
-        icon ='marker_purple.png';
+        icon ='marker_yellow.png';
     }else if( 8 <= num && num <= 10){
         icon ='marker_orange.png';
     }else if( 11 <= num && num <= 15){
@@ -462,7 +573,7 @@ function create_circle(size, mapCanvas, pos){
     }else if( 0 < flt && flt <= 0.3 ){
         icon ='marker_green.png';
     }else if( 0.3 < flt && flt <= 0.6){
-        icon ='marker_yellow.png';
+        icon ='marker_orange.png';
     }else if( 0.6 < flt && flt <= 0.9){
         icon ='marker_orange.png';
     }else if( 0.9 < flt && flt <= 1){
@@ -482,11 +593,11 @@ function create_circle(size, mapCanvas, pos){
     var icon;
 
     if(0<= age && age <= 1){
-        icon = 'marker_blue.png';
-    }else if( 2 <= age && age <= 5){
-        icon ='marker_green.png';
-    }else if( 6 <= age && age <= 10){
         icon ='marker_purple.png';
+    }else if( 2 <= age && age <= 5){
+        icon = 'marker_blue.png';
+    }else if( 6 <= age && age <= 10){
+        icon ='marker_green.png';
     }else if( 11 <= age && age <= 20){
         icon ='marker_yellow.png';
     }else if( 21 <= age && age <= 30){
@@ -504,6 +615,15 @@ function create_circle(size, mapCanvas, pos){
     return icon;
   }
 
+  // 変換用配列などを作成します。
+  function init_process(){
+
+    // 営業所IDを添字、営業所CODEを値に変換用配列を作成します。。
+    for(var i in gon.all_shops){
+      convert_shop[gon.all_shops[i].id] = parseInt(gon.all_shops[i].code);
+    }
+  }
+
   //-------------------
   // グローバル変数定義
   //-------------------
@@ -511,8 +631,12 @@ function create_circle(size, mapCanvas, pos){
   var panoramaOptions; // ストリートビュー定義
   var panorama;
   var mapCanvas;
+  var convert_shop = [];
   
   function initialize(){
+    
+    // 初期化処理
+    init_process();
 
     // 初期表示は非表示
     init_display();
@@ -549,37 +673,6 @@ function create_circle(size, mapCanvas, pos){
     // 初期表示位置を調整
     var bounds = new google.maps.LatLngBounds();
 
-    /* 営業所の情報を表示する */
-    shop_arr = {}; // varを消してグローバル化
-    var shop_circle01_arr = {};
-    var shop_circle02_arr = {};
-    var distination = new google.maps.MVCArray();
-    var distination_arr = [];
-
-    var shops = gon.shops
-    for(var i in shops){
-
-      pos = new google.maps.LatLng(shops[i].latitude, shops[i].longitude);
-      bounds.extend(pos);
-
-      shop_arr[shops[i].id] = createMarker({
-        position : pos
-        ,map : mapCanvas
-        ,animation: google.maps.Animation.DROP
-        ,icon : shops[i].icon
-        ,info_msg : shops[i].name
-        ,html : shops[i].name
-      });
-
-      /* 営業所の円を作成 */
-      shop_circle01_arr[shops[i].id] = create_circle(1000, mapCanvas, pos);
-      shop_circle02_arr[shops[i].id] = create_circle(2000, mapCanvas, pos);
-
-      /* 距離を測る対象を設定 */
-      distination.push({name:shops[i].name, latLng:[shops[i].latitude,shops[i].longitude]});
-      distination_arr.push(pos);
-    }
-
     /* 建物オブジェクトを作成 */
     build_arr = {}; // グローバル
     kyori_text = ""
@@ -600,14 +693,16 @@ function create_circle(size, mapCanvas, pos){
           bounds.extend(pos);
         <% end %>
 
-        // 戸数
-        // 空室割合
-        // 築年数アイコン
+        var shop_code = convert_shop[buildings[i].shop_id];
+
+        var area_icon = get_icon_area(shop_code);
 
         build_arr[buildings[i].id] = createMarker({
           position : pos
           ,map : mapCanvas
-          ,icon : buildings[i].tmp_build_type_icon
+          ,icon : area_icon
+          ,area_icon : area_icon
+          ,shop_icon : get_icon_shop(shop_code)
           ,manage_icon : buildings[i].tmp_manage_type_icon
           ,build_type_icon : buildings[i].tmp_build_type_icon
           ,kanri_room_num  : get_icon_kanri_room_num(buildings[i].kanri_room_num)
@@ -745,6 +840,38 @@ function create_circle(size, mapCanvas, pos){
       // クリックした時のオブジェクトを保存するために、イベントは関数呼び出しで登録する。
       create_relation_listener(trust_ev, owner_ev, build_ev)
 
+    }
+
+
+    /* 営業所の情報を表示する */
+    shop_arr = {}; // varを消してグローバル化
+    var shop_circle01_arr = {};
+    var shop_circle02_arr = {};
+    var distination = new google.maps.MVCArray();
+    var distination_arr = [];
+
+    var shops = gon.shops
+    for(var i in shops){
+
+      pos = new google.maps.LatLng(shops[i].latitude, shops[i].longitude);
+      bounds.extend(pos);
+
+      shop_arr[shops[i].id] = createMarker({
+        position : pos
+        ,map : mapCanvas
+        ,animation: google.maps.Animation.DROP
+        ,icon : shops[i].icon
+        ,info_msg : shops[i].name
+        ,html : info_msg_shop(shops[i])
+      });
+
+      /* 営業所の円を作成 */
+      shop_circle01_arr[shops[i].id] = create_circle(1000, mapCanvas, pos);
+      shop_circle02_arr[shops[i].id] = create_circle(2000, mapCanvas, pos);
+
+      /* 距離を測る対象を設定 */
+      distination.push({name:shops[i].name, latLng:[shops[i].latitude,shops[i].longitude]});
+      distination_arr.push(pos);
     }
 
     mapCanvas.fitBounds(bounds);

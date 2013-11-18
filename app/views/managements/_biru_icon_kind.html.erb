@@ -1,5 +1,155 @@
 
-<% if biru_icon == "biru_kind" %>
+<% if biru_icon == "shop" %>
+  <!-- 物件種別  -->
+  <table class="table table-striped table-bordered table-condensed" >
+    <thead>
+      <tr>
+        <th width="50" style="text-align:center;"><label>−</label></th>
+        <th width="100" style="text-align:center;"><label>営業所</label></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_blue.png') %></td>
+        <td style="text-align:center">草加</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_yellow.png') %></td>
+        <td style="text-align:center">新田</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
+        <td style="text-align:center">北千住</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_red.png') %></td>
+        <td style="text-align:center">南越谷</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_orange.png') %></td>
+        <td style="text-align:center">越谷</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_green.png') %></td>
+        <td style="text-align:center">北越谷</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_white.png') %></td>
+        <td style="text-align:center">せんげん台</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_gray.png') %></td>
+        <td style="text-align:center">春日部</td>
+      </tr>
+
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_blue.png') %></td>
+        <td style="text-align:center">戸田</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_yellow.png') %></td>
+        <td style="text-align:center">武蔵浦和</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
+        <td style="text-align:center">川口</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_red.png') %></td>
+        <td style="text-align:center">与野</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_orange.png') %></td>
+        <td style="text-align:center">浦和</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_green.png') %></td>
+        <td style="text-align:center">東浦和</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_white.png') %></td>
+        <td style="text-align:center">東川口</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_gray.png') %></td>
+        <td style="text-align:center">戸塚安行</td>
+      </tr>
+
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_blue.png') %></td>
+        <td style="text-align:center">松戸</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_yellow.png') %></td>
+        <td style="text-align:center">北松戸</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
+        <td style="text-align:center">柏</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_red.png') %></td>
+        <td style="text-align:center">南流山</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
+        <td style="text-align:center">法人課</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+<% elsif biru_icon == "area" %>
+
+  <table class="table table-striped table-bordered table-condensed" >
+    <thead>
+      <tr>
+        <th width="50" style="text-align:center;"><label>−</label></th>
+        <th width="100" style="text-align:center;"><label>エリア</label></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_blue.png') %></td>
+        <td style="text-align:center">東武南</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_yellow.png') %></td>
+        <td style="text-align:center">東武中央</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
+        <td style="text-align:center">東武北</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_red.png') %></td>
+        <td style="text-align:center">さいたま南</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_orange.png') %></td>
+        <td style="text-align:center">さいたま北</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_green.png') %></td>
+        <td style="text-align:center">さいたま東</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_white.png') %></td>
+        <td style="text-align:center">常磐西</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_gray.png') %></td>
+        <td style="text-align:center">常磐中央</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><%= image_tag('marker_green.png') %></td>
+        <td style="text-align:center">法人課</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+<% elsif biru_icon == "biru_kind" %>
 
   <!-- 物件種別  -->
   <table class="table table-striped table-bordered table-condensed" >
@@ -117,11 +267,11 @@
         <td style="text-align:center">1〜30%</td>
       </tr>
       <tr>
-        <td style="text-align:center"><%= image_tag('marker_orange.png') %></td>
+        <td style="text-align:center"><%= image_tag('marker_yellow.png') %></td>
         <td style="text-align:center">31〜60%</td>
       </tr>
       <tr>
-        <td style="text-align:center"><%= image_tag('marker_yellow.png') %></td>
+        <td style="text-align:center"><%= image_tag('marker_orange.png') %></td>
         <td style="text-align:center">61〜90%</td>
       </tr>
       <tr>
@@ -142,15 +292,15 @@
     </thead>
     <tbody>
       <tr>
-        <td style="text-align:center"><%= image_tag('marker_blue.png') %></td>
+        <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
         <td style="text-align:center">0〜1年</td>
       </tr>
       <tr>
-        <td style="text-align:center"><%= image_tag('marker_green.png') %></td>
+        <td style="text-align:center"><%= image_tag('marker_blue.png') %></td>
         <td style="text-align:center">2〜5年</td>
       </tr>
       <tr>
-        <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
+        <td style="text-align:center"><%= image_tag('marker_green.png') %></td>
         <td style="text-align:center">6〜10年</td>
       </tr>
       <tr>
@@ -184,19 +334,19 @@
     </thead>
     <tbody>
       <tr>
-        <td style="text-align:center"><%= image_tag('marker_blue.png') %></td>
+        <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
         <td style="text-align:center">1戸</td>
       </tr>
       <tr>
-        <td style="text-align:center"><%= image_tag('marker_green.png') %></td>
+        <td style="text-align:center"><%= image_tag('marker_blue.png') %></td>
         <td style="text-align:center">2〜4戸</td>
       </tr>
       <tr>
-        <td style="text-align:center"><%= image_tag('marker_yellow.png') %></td>
+        <td style="text-align:center"><%= image_tag('marker_green.png') %></td>
         <td style="text-align:center">5〜6戸</td>
       </tr>
       <tr>
-        <td style="text-align:center"><%= image_tag('marker_purple.png') %></td>
+        <td style="text-align:center"><%= image_tag('marker_yellow.png') %></td>
         <td style="text-align:center">6〜8戸</td>
       </tr>
       <tr>
