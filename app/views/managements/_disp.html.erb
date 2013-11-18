@@ -16,13 +16,13 @@
 </script>
 <div>
   <%= form_tag('/managements/change_biru_icon', :remote => true, :format => 'js', :name=>'biru_icon', :id=>'biru_icon_id') do %>
-  <%= select_tag 'disp_type', options_for_select({"エリア" => "area","営業所" => "shop","建物種別" => "biru_kind", "管理方式" => "manage_type", "空室数" => "aki", "築年数" => "age", "戸数"=>"num", "自他"=>"jita", "アタックランク"=>"atk"}), :onChange=>'change_icon();' %>
+  <%= select_tag 'disp_type', options_for_select({"建物種別" => "biru_kind", "支店"=>"siten", "エリア" => "area","営業所" => "shop", "管理方式" => "manage_type", "空室数" => "aki", "築年数" => "age", "戸数"=>"num", "自他"=>"jita", "アタックランク"=>"atk"}), :onChange=>'change_icon();' %>
   <%= submit_tag "", :name=>'s_commit', :style=>"display:none;" %>
   <% end %>
 </div>
 
 <div id="biru_icon">
-<%= render 'biru_icon_kind', :biru_icon => "area" %>
+<%= render 'biru_icon_kind', :biru_icon => "biru_kind" %>
 </div>
 
 

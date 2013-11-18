@@ -124,8 +124,9 @@ class ManagementsController < ApplicationController
   end
 
   def index
-    # 営業所のみ表示
-    gon.shops = Shop.find(:all)
+    # 営業所のみ表示 (検索結果一覧リストに出すために、インスタンス変数にも入れる)
+    @shops = Shop.find(:all)
+    gon.shops = @shops
   end
 
   # 貸主検索

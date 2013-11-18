@@ -83,8 +83,12 @@ function FullScreenControl(map) {
 
 // 建物のアイコンを変更します。
 function change_biru_icon(type){
-
-  if(type == "area"){
+  if(type == "siten"){
+    // 支店表示
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].siten_icon );
+    };
+  }else if(type == "area"){
     // エリア表示
     for(var item in build_arr){
       build_arr[item].setIcon(build_arr[item].area_icon );
@@ -504,8 +508,6 @@ function create_circle(size, mapCanvas, pos){
   function get_icon_area(num){
     var icon;
 
-
-
     if( num == 3 || num == 11 || num == 16 ){
       icon = 'marker_blue.png'; // 東武南
     }else if (num == 1 || num == 18 ){
@@ -524,6 +526,27 @@ function create_circle(size, mapCanvas, pos){
       icon = 'marker_gray.png'; // 常磐中央
     }else if (num == 91 ){
       icon = 'marker_green.png'; // 法人課
+    }else {
+      icon = 'marker_white.png'; // 不明
+    }
+
+    icon = '/assets/' + icon;
+    return icon;
+
+  }
+
+  // 支店
+  function get_icon_siten(num){
+    var icon;
+
+    if( num == 3 || num == 11 || num == 16 || num == 1 || num == 18 || num == 8 || num == 21 || num == 7 ){
+      icon = 'marker_green.png'; // 東武支店
+    }else if (num == 2 || num == 5 || num == 15 || num == 17 || num == 13 || num == 10 || num == 6 || num == 14){
+      icon = 'marker_blue.png'; // さいたま支店
+    }else if (num == 19 || num == 4 || num == 9 || num == 12){
+      icon = 'marker_yellow.png'; // 千葉支店
+    }else if (num == 91 ){
+      icon = 'marker_purple.png'; // アセットマネジメント部
     }else {
       icon = 'marker_white.png'; // 不明
     }
@@ -695,13 +718,12 @@ function create_circle(size, mapCanvas, pos){
 
         var shop_code = convert_shop[buildings[i].shop_id];
 
-        var area_icon = get_icon_area(shop_code);
-
         build_arr[buildings[i].id] = createMarker({
           position : pos
           ,map : mapCanvas
-          ,icon : area_icon
-          ,area_icon : area_icon
+          ,icon : buildings[i].tmp_build_type_icon
+          ,siten_icon : get_icon_siten(shop_code)
+          ,area_icon : get_icon_area(shop_code)
           ,shop_icon : get_icon_shop(shop_code)
           ,manage_icon : buildings[i].tmp_manage_type_icon
           ,build_type_icon : buildings[i].tmp_build_type_icon
