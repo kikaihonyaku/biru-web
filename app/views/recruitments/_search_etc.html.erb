@@ -1,0 +1,888 @@
+
+<style type="text/css">
+/* CSS Document */
+
+/* -----------------------
+#物件詳細リンク
+ ----------------------- */
+#mcR .img a:visited,
+#mcR .img a:active {
+	border: 1px solid #81C046;}
+#mcR .img a:hover {
+	border: 1px solid #E7368E;}
+#mcR .txt a:visited {
+	color: #81C046;
+/*	color: #961254;*/}
+#mcR .txt a:active {
+	color: #81C046; }
+#mcR .txt a:hover {
+	color: #E7368E;}
+
+/* -----------------------
+#searchMini
+ ----------------------- */
+#searchMini {
+	margin:10px 0 0 0;
+	width:216px;
+	line-height:1.5;
+	font-size:93%;
+	border:1px solid #ccc;}
+
+#searchMiniFoot {
+	height:77px;
+	padding:10px 0 10px 9px;
+	background-color:#eee;
+	list-style:none;}
+
+#searchMini .submit {
+	width:198px;
+	height:40px;
+	background:url(../img/list_search/btn_search_on.gif) 0 0 no-repeat;
+	behavior:url("../js/csshover3.htc");}
+
+#searchMini .submit input {
+	width:198px;
+	height:40px;}
+
+#searchMini .submit input:hover {
+	filter: alpha(opacity=0);
+	-ms-filter: alpha(opacity=0);
+	opacity: 0.0;}
+
+#searchMini .close {
+	margin-top:8px;
+	width:158px;
+	height:29px;}
+
+
+
+#searchMini div {
+	padding:0 10px 5px 10px;
+	width:196px;
+	zoom:1;}
+
+#searchMini div:after {
+	content: ".";
+	display: block;
+	clear: both;
+	height: 0;
+	visibility: hidden;}
+
+#searchMini div h3 {
+	padding:3px 0 0 20px;
+	height:17px;
+	color:#e7368e;
+	font-size:0.9em;
+	font-weight:bold;
+	background-position:0 0;
+	background-repeat:no-repeat;}
+
+#searchMini div h4 {
+	float:left;
+	margin:5px 0 5px 5px;
+	padding:5px;
+	width:176px;
+	line-height:1;
+	font-weight:normal;
+	background:#eee;
+	border:1px solid #dedede;}
+
+#searchMini div label {
+	float:left;
+	display:block;
+	width:90px;
+	padding:0 0 0 5px;
+	line-height:1.5;}
+
+#searchMini div label.wide { width:180px;}
+
+#searchMini div select {
+	margin-left:5px;}
+
+
+/* 種別 */
+#searchMini #h301 h3 { background-image:url(../img/list_search/icon01.gif);}
+
+
+/* 間取り */
+#searchMini #h302 h3 { background-image:url(../img/list_search/icon02.gif);}
+
+/* 面積 */
+#searchMini #h303 h3 { background-image:url(../img/list_search/icon03.gif);}
+
+/* 家賃 */
+#searchMini #h304 h3 {
+	background-image:url(../img/list_search/icon04.gif);}
+#searchMini #h304 p {
+	display:block;
+	zoom:1;}
+
+#searchMini #h304 p:after {
+	content: ".";
+	display: block;
+	clear: both;
+	height: 0;
+	visibility: hidden;}
+#searchMini #h304 span { display:block; float:left; width:70px;}
+#searchMini #h304 select {
+	float:right;
+	width:100px;}
+
+/* 敷金・礼金 */
+#searchMini #h305 h3 { background-image:url(../img/list_search/icon05.gif);}
+
+/* 駅徒歩 */
+#searchMini #h306 h3 { background-image:url(../img/list_search/icon06.gif);}
+#searchMini #h306 h3 { float:left; width:50px;}
+#searchMini #h306 select { float:right; width:100px;}
+
+/* 築年数 */
+#searchMini #h307 h3 { background-image:url(../img/list_search/icon07.gif);}
+#searchMini #h307 h3 { float:left; width:50px;}
+#searchMini #h307 select { float:right; width:100px;}
+
+/* こだわり */
+#searchMini #h308 h3 { background-image:url(../img/list_search/icon08.gif);}
+
+
+/* -----------------------
+ headerBox
+ ----------------------- */
+#headerBox {
+	width:688px;
+	width:688px\9;
+	/*padding:10px 10px 5px 10px; */
+	background-color:#efefef;
+	border:1px solid #d0d0d0;
+	zoom:1;}
+#headerBox:after {
+	content: ".";
+	display: block;
+	clear: both;
+	height: 0;
+	visibility: hidden;}
+
+#headerBox .num {
+	margin-right:1px;}
+
+#headerBox select {
+	padding:1px;
+	font-size:93%;}
+
+#headerBox img {
+	vertical-align:middle;}
+
+#searchCond {
+	position:relative;
+	padding:10px 10px 24px 10px;
+	font-size:93%;
+	line-height:1.5;
+	overflow:hidden;
+	border-bottom: 1px solid #aaaaaa;
+}
+#searchCond_kabecolle {
+	position:relative;
+	padding: 1px;
+	font-size:93%;
+	line-height:1.5;
+	overflow:hidden;
+	border-bottom: 1px solid #aaaaaa;
+}
+#bannerFeature {
+	padding: 1px;
+}
+#searchCond .button {
+	text-align: center;
+	width: 100%;
+	position:absolute;
+	bottom:0;
+	left:0;
+	height: 31px;
+	background-color:#EFEFEF;
+}
+#headerBox .linebtn {
+	position: relative;
+	height: 47px;
+}
+#headerBox .linebtn img {
+	position: absolute;
+	top: -2px;
+	left: 222px;
+	cursor: pointer;
+}
+#searchMini div.linebtn {
+	padding: 0;
+	margin-bottom: 5px;
+}
+/*
+#acoform.nonactive {
+	display: none;
+}
+#acoform.active {
+	border: solid 1px #e7368e;
+}
+*/
+#headerBox .lower {
+	padding: 0 10px 5px 10px;
+	border-top: solid 2px #FFF;
+}
+#counter {
+	float:left;}
+
+#counter {
+	width:200px;}
+
+#selecter {
+	float:right;
+	width:400px;
+	margin-top:5px;
+	text-align:right;}
+
+#formwindow.nonactive {
+	display: none;
+}
+#formwindow.active {
+	border: solid 1px #e7368e;
+}
+/* -----------------------
+ acoform
+ ----------------------- */
+#acoform,
+#acoform_station {
+	padding: 10px;
+}
+#acoform h4,
+#acoform_station h4 {
+	background-color: #EFEFEF;
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0 0 10px;
+    padding: 6px 10px;
+}
+#acoform .block div,
+#acoform_station .block div {
+	margin-bottom: 10px;
+}
+#acoform div#checkArea div.block div label,
+#acoform_station div#checkArea_st div.block div label {
+	display: block;
+    float: left;
+    padding: 2px 0;
+    width: 162px;
+}
+
+#formwindow {
+	width: 686px;
+	overflow: hidden;
+	background-color: #FFF;
+	position: relative;
+}
+#formlist {
+	width: 1376px;
+	position:relative;
+	top: 0;
+}
+#formlist li.block {
+	width: 688px;
+	float: left;
+}
+
+ul#btn li,
+ul#btn_st li {
+	display: block;
+}
+ul#btn_st li#btn1_st {
+	float: left;
+}
+ul#btn li#btn3 input,
+ul#btn_st li#btn3_st input {
+	height: 55px;
+    width: 306px;
+}
+ul#btn li#btn2 {
+	float: left;
+    margin-left: 180px;
+}
+ul#btn_st li#btn2_st {
+	float: left;
+    margin-left: 24px;
+}
+ul#btn input:hover,
+ul#btn_st input:hover {
+    opacity: 0;
+}
+ul#btn li#btn3 {
+	float: right;
+    height: 55px;
+    width: 306px;
+	/*background: url("../img/common/btn_submit_railway_on.gif") no-repeat scroll 0 0 transparent;*/
+}
+ul#btn_st li#btn3_st {
+	float: right;
+    height: 55px;
+    width: 306px;
+	background: url("../img/common/btn_submit_station_on.gif") no-repeat scroll 0 0 transparent;
+}
+#checkArea{
+	margin-bottom: 10px;
+	min-height: 200px;
+}
+#checkArea_st {
+	overflow-y: scroll;
+	margin-bottom: 10px;
+}
+#checkArea label span,
+#checkArea_st label span{
+	color: #E7368E;
+}
+#attention {
+    color: #E7368E;
+    background-color: #FFF;
+	padding: 30px 0px 30px 0px;
+   /* border: solid 2px #ccc; */
+   /*
+    -webkit-box-shadow:0 8px 20px rgba(0, 0, 0, 1);
+    -moz-box-shadow:0 8px 20px rgba(0, 0, 0, 1);
+    box-shadow:0 8px 20px rgba(0, 0, 0, 1);*/
+    -webkit-box-shadow:0 8px 20px rgba(125, 123, 123, 1);
+    -moz-box-shadow:0 8px 20px rgba(125, 123, 123, 1);
+    box-shadow:0 8px 20px rgba(125, 123, 123, 1);
+	display: none;
+	min-height: 60px;
+}
+#attention.oldie {
+	border: 2px solid #CCC;
+}
+#attention div {
+	float: left;
+	position: relative;
+	margin-left: 26px;
+}
+#attention img {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+#attention div.typee img.no {
+	display: none;
+}
+#attention div.typen img.er {
+	display: none;
+}
+#attention p {
+    padding: 10px 0px 10px 116px;
+	margin-right: 26px;
+}
+#attention.mshow {
+    display: block;
+    position: absolute;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+}
+#attention.mhidden {
+    display: none;
+}
+/* test */
+#bkm {
+	display: none;
+}
+/* -----------------------
+ Navigation
+ ----------------------- */
+ul.numNavi {
+	margin:20px 0;
+	width:690px;
+	text-align:center;
+	font-size:93%;
+	line-height:1;}
+
+ul.numNavi li {
+	display:inline;
+	line-height:1;
+	list-style:none;}
+
+ul.numNavi li a {
+	display:inline-block;
+	color:#111;
+	text-decoration:none !important;
+	border:1px solid #cecece;
+	padding:4px 6px !important;
+	overflow:visible !important;}
+
+ul.numNavi li a:hover{
+	padding:4px 6px !important;
+	background-color:#e7368e;
+	border:1px solid #e7368e;
+	color:#fff !important;
+	text-decoration:none !important;}
+
+ul.numNavi li.now span {
+	display:inline-block;
+	padding:4px 6px;
+	background-color:#e7368e;
+	border:1px solid #e7368e;
+	color:#fff;
+	text-decoration:none;
+	font-weight:bold;}
+
+
+ul.numNavi li.naviNext span,
+ul.numNavi li.naviPrev span {
+	display:inline-block;
+	border:1px solid #d1d1d1;
+	text-align:center;
+	padding:4px 6px;}
+
+/* -----------------------
+.listTable
+ ----------------------- */
+.listTable {
+	position:relative;
+	margin:0 0 6px 0;
+	width:686px;
+	border-collapse:collapse;
+	border:2px solid #ccc;
+	color:#111;
+	font-size:93%;
+	line-height:1.2;}
+
+.listTable th {
+	padding:5px;
+	background-color:#eee;
+	color:#333;
+	text-align:center;
+	font-weight:normal;
+	vertical-align:middle;}
+
+.listTable td {
+	padding:5px;
+	vertical-align:top;}
+
+.listTable em {
+	font-style:normal;
+	font-weight:bold;
+	font-size:1.8em;}
+
+/* 写真 */
+.listTable td.photo {
+	width:128px;
+	background-color:#eee;
+	border-right:1px solid #dedede;
+	padding:7px 8px 7px 7px;
+	vertical-align:top;}
+
+.listTable td.photo div.img {
+	width:126px;
+	height:126px;
+	margin:0 0 10px 0;}
+
+.listTable td.photo div.img a {
+	display:block;
+	width:126px;
+	height:126px;
+	border:1px solid #fff;
+	background-color:#fff;
+	overflow:hidden;}
+
+.listTable td.photo div.img a:hover {
+	border:1px solid #e7368e;}
+
+.listTable td.photo div.txt {
+	width:128px;
+	text-align:center;}
+
+.listTable td.photo div.cpimg{
+	margin: 0px 0 10px 0;}
+
+/* 住所 */
+.listTable td.address {
+	padding:0;}
+
+.listTable td.address div {
+	position:relative;
+	width:526px;
+	padding:8px;}
+
+.listTable td.address {
+	border-bottom:1px solid #dedede;}
+
+.listTable td.address .buildingType {
+	vertical-align:middle;
+	border:none;}
+
+.listTable td.address a {
+	position:absolute;
+	top:4px;
+	right:4px;
+	display:block;
+	width:120px;
+	height:24px;}
+
+.listTable td.address a img {
+	width:120px;
+	height:24px;
+	border:none;}
+
+/* 金額 */
+.listTable td.amount {
+	width:180px;
+	padding:8px;
+	border-right:1px solid #dedede;
+	border-bottom:1px solid #dedede;}
+
+.listTable td.amount em {
+	color:#e7368e;}
+
+/* 間取り等 */
+.listTable td.roomtype {
+	width:84px;
+	padding:5px 10px;
+	line-height:1.5;
+	border-right:1px solid #dedede;
+	border-bottom:1px solid #dedede;}
+
+.listTable td.roomtype sup {
+	font-size:0.6em;}
+
+/* 駅等 */
+.listTable td.station {
+	width:240px;
+	border-bottom:1px solid #dedede;}
+
+.listTable td.station strong {
+	font-size:1.2em;}
+
+.listTable td.station em {
+	font-size:1.4em;
+	font-style:normal;
+	font-weight:bold;}
+
+.listTable td.station span {
+	font-size:0.85em;}
+
+.listTable td.station div {
+	width:220px;
+	padding:5px 5px;
+	border-bottom:1px dotted #999;}
+
+.listTable td.station div.last {
+	border-bottom:none;}
+
+/* 敷金・礼金 */
+.listTable th.shikikin,
+.listTable td.shikikin,
+.listTable th.reikin,
+.listTable td.reikin {
+	vertical-align:middle;
+	border-bottom:1px solid #dedede;}
+
+.listTable th.shikikin,
+.listTable th.reikin {
+	width:36px;}
+
+.listTable td.shikikin,
+.listTable td.reikin {
+	font-weight:bold;
+	text-align:center;
+	width:42px;}
+
+.listTable td.reikin {
+	border-right:1px solid #dedede;}
+
+/* 画像の種類 */
+.listTable td.imgMark {
+	padding:10px 8px 8px 50px;
+	width:484px;
+	background:url(../img/list/icon_camera.gif) 4px center no-repeat;
+	border-bottom:1px solid #dedede;
+	zoom:1;}
+
+.listTable td.imgMark:after {
+	content: ".";
+	display: block;
+	clear: both;
+	height: 0;
+	visibility: hidden;}
+
+.listTable td.imgMark img {
+	float:left;
+	margin:0 2px 2px 0;}
+
+/* 取扱営業所 */
+.listTable th.shop {
+	width:88px;
+	vertical-align:middle;}
+
+.listTable td.shop {
+	width:193px;
+	font-size:1em;
+	border-right:1px solid #dedede;
+	vertical-align:middle;}
+
+.listTable td.shop strong {
+	font-size:1.2em;
+	color:#e7368e;}
+
+/* 物件コード */
+.listTable th.roomCD {
+	width:110px;
+	background-color:#e7368e;
+	vertical-align:middle;
+	color:#fff;}
+
+.listTable td.roomCD {
+	width:110px;
+	font-size:1.2em;
+	font-weight:bold;
+	vertical-align:middle;
+	text-align:center;
+	font-family:"ＭＳ ゴシック", "Osaka－等幅";}
+
+/* プロのコメント */
+.listTable td.pcomment {
+	background-color: #fdeff6;
+	padding: 0px;
+	border-bottom: solid 1px #dedede;
+}
+.listTable td.pcomment div {
+	float:left;
+	margin-top: 1px;
+}
+.listTable td.pcomment div.pcomment {
+	padding: 14px 8px 0;
+	width: 620px;
+	overflow: hidden;
+	font-size: 12px;
+	font-weight: 700;
+	font-family: "ＭＳ ゴシック","Osaka－等幅";
+	color: #e7368e;
+}
+.listTable td.pcomment div.pcomment a {
+	text-decoration: underline;
+}
+
+/* カベコレ関連 */
+#searchMini .formIcon {
+	line-height: 18px;
+}
+#searchMini .formIcon img {
+	vertical-align: top;
+	padding: 1px 4px 0;
+}
+</style>
+
+
+<div id="mcL">
+
+<div id="searchMini">
+<form action="/area/list.php" method="post" id="form1">
+<input type="hidden" name="search_flag" value="1" />
+<h2><img src="img/list_search/title.gif" alt="物件を絞り込む" width="216" height="30" /></h2>
+<div class="linebtn"><img src="img/list/btn_06.png" alt="沿線・駅を絞り込む" /></div>
+<div id="h301">
+<h3>種別</h3>
+<label><input type="checkbox" name="building_type[]" value="1" /> マンション</label>
+<label><input type="checkbox" name="building_type[]" value="2" /> アパート</label>
+<label><input type="checkbox" name="building_type[]" value="3" /> 戸建</label>
+<label class="wide"><input type="checkbox" name="building_type[]" value="4" /> テラスハウス・タウンハウス</label>
+</div>
+
+<div id="h302">
+<h3>間取り</h3>
+<label><input type="checkbox" name="room_layout_type[]" value="OneRoom" /> 1R</label>
+<label><input type="checkbox" name="room_layout_type[]" value="3K" /> 3K</label>
+<label><input type="checkbox" name="room_layout_type[]" value="1K" /> 1K</label>
+<label><input type="checkbox" name="room_layout_type[]" value="3DK" /> 3DK</label>
+<label><input type="checkbox" name="room_layout_type[]" value="1DK" /> 1DK</label>
+<label><input type="checkbox" name="room_layout_type[]" value="3LDK" /> 3LDK</label>
+<label><input type="checkbox" name="room_layout_type[]" value="1LDK" /> 1LDK</label>
+<label><input type="checkbox" name="room_layout_type[]" value="4K" /> 4K～</label>
+<label><input type="checkbox" name="room_layout_type[]" value="2K" /> 2K</label>
+<label><input type="checkbox" name="room_layout_type[]" value="4DK" /> 4DK～</label>
+<label><input type="checkbox" name="room_layout_type[]" value="2DK" /> 2DK</label>
+<label><input type="checkbox" name="room_layout_type[]" value="4LDK" /> 4LDK～</label>
+<label><input type="checkbox" name="room_layout_type[]" value="2LDK" /> 2LDK</label>
+</div>
+
+<div id="h303">
+<h3>面積</h3>
+<select name="square_lower"><option value="">下限なし</option><option value="5">5平米</option>
+<option value="10">10平米</option>
+<option value="20">20平米</option>
+<option value="30">30平米</option>
+<option value="40">40平米</option>
+<option value="50">50平米</option>
+<option value="60">60平米</option>
+<option value="70">70平米</option>
+<option value="80">80平米</option>
+<option value="90">90平米</option>
+<option value="100">100平米</option>
+<option value="150">150平米</option>
+<option value="200">200平米</option>
+</select> ～
+<select name="square_upper"><option value="">上限なし</option><option value="5">5平米</option>
+<option value="10">10平米</option>
+<option value="20">20平米</option>
+<option value="30">30平米</option>
+<option value="40">40平米</option>
+<option value="50">50平米</option>
+<option value="60">60平米</option>
+<option value="70">70平米</option>
+<option value="80">80平米</option>
+<option value="90">90平米</option>
+<option value="100">100平米</option>
+<option value="150">150平米</option>
+<option value="200">200平米</option>
+</select>
+</div>
+
+<div id="h304">
+<h3>家賃（共益費含む）</h3>
+<p><span><img src="img/list_search/icon0402.gif" alt="上限" />上限金額</span><select name="rent_total_upper"><option value="">上限なし</option><option value="30000">30,000 円</option>
+<option value="35000">35,000 円</option>
+<option value="40000">40,000 円</option>
+<option value="45000">45,000 円</option>
+<option value="50000">50,000 円</option>
+<option value="55000">55,000 円</option>
+<option value="60000">60,000 円</option>
+<option value="65000">65,000 円</option>
+<option value="70000">70,000 円</option>
+<option value="75000">75,000 円</option>
+<option value="80000">80,000 円</option>
+<option value="85000">85,000 円</option>
+<option value="90000">90,000 円</option>
+<option value="95000">95,000 円</option>
+<option value="100000">100,000 円</option>
+<option value="105000">105,000 円</option>
+<option value="110000">110,000 円</option>
+<option value="115000">115,000 円</option>
+<option value="120000">120,000 円</option>
+<option value="125000">125,000 円</option>
+<option value="130000">130,000 円</option>
+<option value="135000">135,000 円</option>
+<option value="140000">140,000 円</option>
+<option value="145000">145,000 円</option>
+<option value="150000">150,000 円</option>
+<option value="200000">200,000 円</option>
+<option value="250000">250,000 円</option>
+<option value="300000">300,000 円</option>
+<option value="400000">400,000 円</option>
+<option value="500000">500,000 円</option>
+<option value="1000000">1,000,000 円</option>
+</select>
+</p>
+<p><span><img src="img/list_search/icon0401.gif" alt="下限" />下限金額</span><select name="rent_total_lower"><option value="">下限なし</option><option value="30000">30,000 円</option>
+<option value="35000">35,000 円</option>
+<option value="40000">40,000 円</option>
+<option value="45000">45,000 円</option>
+<option value="50000">50,000 円</option>
+<option value="55000">55,000 円</option>
+<option value="60000">60,000 円</option>
+<option value="65000">65,000 円</option>
+<option value="70000">70,000 円</option>
+<option value="75000">75,000 円</option>
+<option value="80000">80,000 円</option>
+<option value="85000">85,000 円</option>
+<option value="90000">90,000 円</option>
+<option value="95000">95,000 円</option>
+<option value="100000">100,000 円</option>
+<option value="105000">105,000 円</option>
+<option value="110000">110,000 円</option>
+<option value="115000">115,000 円</option>
+<option value="120000">120,000 円</option>
+<option value="125000">125,000 円</option>
+<option value="130000">130,000 円</option>
+<option value="135000">135,000 円</option>
+<option value="140000">140,000 円</option>
+<option value="145000">145,000 円</option>
+<option value="150000">150,000 円</option>
+<option value="200000">200,000 円</option>
+<option value="250000">250,000 円</option>
+<option value="300000">300,000 円</option>
+<option value="400000">400,000 円</option>
+<option value="500000">500,000 円</option>
+<option value="1000000">1,000,000 円</option>
+</select>
+</p>
+</div>
+
+<div id="h305">
+<h3>敷金・礼金</h3>
+<label><input type="checkbox" name="shikikin_upper" value="0" /> 敷金なし</label> <label><input type="checkbox" name="reikin_upper" value="0" /> 礼金なし</label></div>
+
+<div id="h306">
+<h3>駅徒歩</h3>
+<input type="hidden" name="transport_div" value="1" />
+<select name="est_transport_time_upper"><option value="" selected="selected">指定なし</option>
+<option value="5">5分以内</option>
+<option value="10">10分以内</option>
+<option value="15">15分以内</option>
+</select>
+</div>
+
+<div id="h307">
+<h3>築年数</h3>
+<select name="complete_year_lower"><option value="" selected="selected">問わない</option>
+<option value="new">新築</option>
+<option value="200811">～5年</option>
+<option value="200311">～10年</option>
+<option value="199811">～15年</option>
+</select>
+</div>
+
+<div id="h308">
+<h3>こだわり条件</h3>
+<h4>環境</h4>
+<label><input type="checkbox" name="floor_upper" value="1" /> 1階</label>
+<label><input type="checkbox" name="floor_lower" value="2" /> 2階以上</label>
+<label><input type="checkbox" name="equipment_and[]" value="top_floor" /> 最上階</label>
+<label><input type="checkbox" name="cond_pet" value="1" /> ペット</label>
+<label><input type="checkbox" name="kaikoumuki" value="3" /> 南向き</label>
+<label><input type="checkbox" name="equipment_and[]" value="conner_room" /> 角部屋</label>
+
+<h4>建物設備</h4>
+<label><input type="checkbox" name="equipment_and[]" value="division_type" /> 分譲タイプ</label>
+<label><input type="checkbox" name="equipment_and[]" value="balcony" /> バルコニー</label>
+<label><input type="checkbox" name="equipment_and[]" value="garden" /> 専用庭</label>
+<label><input type="checkbox" name="carpark_status" value="1,2,3" /> 駐車場付き</label>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="delivery_locker" /> 宅配ロッカー</label>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="elevator" /> エレベーター付</label>
+
+<h4>室内設備</h4>
+<label><input type="checkbox" name="equipment_and[]" value="loft" /> ロフト</label>
+<label><input type="checkbox" name="equipment_and[]" value="oidaki" /> 追焚機能付</label>
+<label><input type="checkbox" name="ihburner" value="1" /> IHコンロ</label>
+<label><input type="checkbox" name="airconditioner" value="1" /> エアコン付</label>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="has_flooring" /> フローリング</label>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="walk_in" /> ウォークインクローゼット</label>
+<label class="wide"><input type="checkbox" name="burner" value="1,2,3,4,5,6,7,8" /> ガスコンロ対応</label>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="counter_kitchen" /> カウンターキッチン</label>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="BT_separate" /> バス・トイレ別</label>
+<label class="wide formIcon"><input type="checkbox" name="room_keyword" value="カベコレ"  /><img src="/area/img/feature/form_icon_01.png" width="54" height="15" alt="カベ★コレ" />対象物件</label>
+<h4>セキュリティ</h4>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="autolock" /> オートロック</label>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="security_shutter" /> 防犯シャッター</label>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="tv_doorphone" /> TVモニタ付インターホン</label>
+
+<h4>通信環境</h4>
+<label class="wide"><input type="checkbox" name="equipment_and[]" value="has_internet" /> インターネット接続可</label>
+<label><input type="checkbox" name="equipment_and[]" value="catv" /> CATV</label>
+<label><input type="checkbox" name="equipment_and[]" value="bs" /> BS</label>
+<label><input type="checkbox" name="equipment_and[]" value="cs" /> CS</label>
+</div>
+
+<ul id="searchMiniFoot">
+<li class="submit"><input type="image" name="submit" value="決定" src="img/list_search/btn_search.gif" /></li>
+<li class="close"><a class="checkoff" href="/area/list.php?z=1"><img src="img/list_search/btn_clear.gif" alt="全ての条件をクリア" width="158" height="29" class="rollover" /></a></li>
+</ul>
+
+</form>
+</div>
+<div id="attention" class=""><div class="img"><img class="no" src="img/list/loading_n.gif" width="80" height="55" alt="message icon" /><img class="er" src="img/list/loading_e.gif" width="80" height="55" alt="message icon" /></div><p>&nbsp;</p></div>
+</div>
+
+
+
+
+

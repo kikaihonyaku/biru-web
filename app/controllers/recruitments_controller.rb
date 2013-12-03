@@ -3,12 +3,47 @@
   before_filter :init
 
   def init
+    
+    # 物件種別指定
+    @build_type_checked = {}
+    @build_type_checked[:apart] = false
+    @build_type_checked[:man] = false
+    @build_type_checked[:bman] = false
+    @build_type_checked[:tenpo] = false
+    @build_type_checked[:jimusyo] = false
+    @build_type_checked[:kojo] = false
+    @build_type_checked[:soko] = false
+    @build_type_checked[:kodate] = false
+    @build_type_checked[:terasu] = false
+    @build_type_checked[:mezo] = false
+    @build_type_checked[:ten_jyu] = false
+    @build_type_checked[:soko_jimu] = false
+    @build_type_checked[:kojo_soko] = false
+    @build_type_checked[:syakuti] = false
+
+
+    @layout_type_checked = {}
+    @layout_type_checked[:layout_1r] = false
+    @layout_type_checked[:layout_1k] = false
+    @layout_type_checked[:layout_1dk] = false
+    @layout_type_checked[:layout_1ldk] = false
+    @layout_type_checked[:layout_2k] = false
+    @layout_type_checked[:layout_2dk] = false
+    @layout_type_checked[:layout_2ldk] = false
+    @layout_type_checked[:layout_3k] = false
+    @layout_type_checked[:layout_3dk] = false
+    @layout_type_checked[:layout_3ldk] = false
+    @layout_type_checked[:layout_4k] = false
+    @layout_type_checked[:layout_4dk] = false
+    @layout_type_checked[:layout_4ldk] = false
+    
+    @buildings = []
+    @shops = []
   end
 
   def index
 
     # 表示する建物が存在しない時
-    @buildings = []
     @shops =  Shop.find(:all)
 
     gon.buildings = @buildings
@@ -19,17 +54,30 @@
   # 検索
   def search
 
-    tmp_room = Room.joins(:building => :shop).includes(:building).includes(:building => :shop).scoped
+    tmp_room = Room.joins(:building).joins(:building => :shop).includes(:building).includes(:building => :shop).scoped
+
+    # 物件種別で絞り込み
+    if params[:build_type]
+      build_type = []
+      params[:build_type].keys.each do |key|
+        build_type.push(BuildType.find_by_code(params[:build_type][key]).id)
+        @build_type_checked[key.to_sym] = true
+      end
+      tmp_room = tmp_room.where('buildings.build_type_id'=>build_type)
+    end
+
 
     # 間取りが選択されていたらそれを絞り込む
-    if params[:layout]
+    if params[:layout_type]
       layout_arr = []
-      params[:layout].keys.each do |key|
-        layout_arr.push(RoomLayout.find_by_code(params[:layout][key]).id)
+      params[:layout_type].keys.each do |key|
+        RoomLayout.conv_param(params[:layout_type][key].to_i, layout_arr)
+        @layout_type_checked[key.to_sym] = true
       end
 
       tmp_room = tmp_room.where(:room_layout_id => layout_arr)
     end
+
 
 
     # 間取りを展開
@@ -49,9 +97,14 @@
 
     end
 
-    @buildings = buildings.uniq!
-    @shops = shops.uniq!
+    if buildings.uniq
+      @buildings = buildings.uniq
+      @shops = shops.uniq
+   else
+      @shops =  Shop.find(:all)
+    end
 
+ 
     gon.shops = @shops    # 関連する営業所
     gon.buildings = @buildings
     gon.room_of_building = room_of_building
@@ -59,7 +112,6 @@
     
 
     render 'index'
-    #render 'test'
 
   end
 
