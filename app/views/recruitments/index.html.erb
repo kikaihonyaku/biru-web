@@ -160,6 +160,7 @@ var places_types={
   var openFLG=[],iterator=0;
   var picmaxWidth=200; //スポット画像の最大幅
   var picmaxHeight=200; //スポット画像の最大高さ
+  var before_circle = null;
 
 function create_circle(size, mapCanvas, pos){
   var myCircle = new google.maps.Circle({
@@ -185,6 +186,44 @@ function search_around(biru_id){
   document.aaaa.submit();
 }
 
+var g_places; // placesを格納
+
+
+// 表示する場所を定義します。
+function initPlaces(){
+
+  g_places = {};
+  g_places["bakery"] = "place_market.png" // "ベーカリー、パン屋",
+  g_places["beauty_salon"] = "place_hear_salon.png" // "ビューティー サロン",
+  g_places["cafe"] = "place_restrant.png" // "カフェ",
+  g_places["convenience_store"] = "place_convenience.png" // "コンビニエンス ストア",
+  g_places["dentist"] = "place_hospital.png" // "歯科医",
+  g_places["doctor"] = "place_hospital.png" // "医者",
+  g_places["food"] = "place_market.png" // "食料品店",
+  g_places["grocery_or_supermarket"] = "place_market.png" // "スーパー",
+  g_places["hospital"] = "place_hospital.png" // "病院",
+  g_places["restaurant"] = "place_restrant.png" // "レストラン",
+  g_places["school"] = "place_school.png" // "学校",
+  g_places["university"] = "place_school.png" // "大学"
+  g_places["book_store"] = "place_etc.png" // "書店",
+  g_places["atm"] = "place_etc.png" // "ATM",
+  g_places["bank"] = "place_etc.png" // "銀行",
+  g_places["clothing_store"] = "place_etc.png" // "衣料品店",
+  g_places["city_hall"] = "place_etc.png" // "市役所",
+  g_places["department_store"] = "place_etc.png" // "百貨店",
+  g_places["electronics_store"] = "place_etc.png" // "電器店",
+  g_places["library"] = "place_etc.png" // "図書館",
+  g_places["local_government_office"] = "place_etc.png" // "役場",
+  g_places["movie_rental"] = "place_etc.png" // "DVD レンタル",
+  g_places["movie_theater"] = "place_etc.png" // "映画館",
+  g_places["post_office"] = "place_etc.png" // "郵便局",
+  g_places["park"] = "place_etc.png" // "公園",
+  g_places["police"] = "place_etc.png" // "警察",
+  g_places["shopping_mall"] = "place_etc.png" // "ショッピング モール",
+  g_places["store"] = "place_etc.png" // "小売店",
+
+}
+
 function fGetPlaceInfo(chk_flg, lat, lng){
 
     if(chk_flg == false){
@@ -192,16 +231,19 @@ function fGetPlaceInfo(chk_flg, lat, lng){
     }
 
     // チェックされた場所を選択
-    var places=[];
-    $('[name="place"]:checked').each(function(){
-      places.push($(this).val());
-    });
+//    var places=[];
+//    $('[name="place"]:checked').each(function(){
+//      places.push($(this).val());
+//    });
+
+    initPlaces();
 
     resetOverlay(1);
 
     // チェックされた範囲を選択
-    var p_size;
-    p_size = $('#place_size').val();
+//    var p_size;
+//    p_size = $('#place_size').val();
+    p_size = 1000;
 
     var place_pos;
     place_pos = new google.maps.LatLng(lat, lng);
@@ -214,7 +256,7 @@ function fGetPlaceInfo(chk_flg, lat, lng){
       ,center : place_pos
       ,strokeColor: '#0000FF' /* ストロークの色 */
       ,strokeOpacity: 0.8 /* ストロークの透明度 */
-      ,strokeWeight: 2 /* ストロークの幅 */
+      ,strokeWeight: 1 /* ストロークの幅 */
       ,fillColor: '#0000FF' /* フィルの色 */
       ,fillOpacity: 0.01 /* フィルの透明度 */
       ,fillColor: "#0000FF"
@@ -223,11 +265,17 @@ function fGetPlaceInfo(chk_flg, lat, lng){
     myCircle.setRadius(parseInt(p_size)); // メートル単位で指定
     myCircle.set("visible",true);
 
+    if(before_circle != null){
+      before_circle.set("visible",false);
+    }
+
+    before_circle = myCircle;
+
     // 周辺施設を検索する。
     var request={
         location: place_pos,
         radius:p_size, /* 指定した座標から半径1000m(1km)以内 */
-         types: places
+         types: g_places
     };
     service.search(request, callback);
 }
@@ -285,13 +333,16 @@ function resetOverlay(deleteFLG){
 
 function getPlaceIcon(place_arr){
 
-  var icon = "place_etc.png"
-  // 学校
-  if($.inArray("school", place_arr) >= 0){
-    icon = "place_school.png";
+  var key;
+  for(key in g_places ){
+
+    if($.inArray(key, place_arr) >= 0){
+      return '/assets/' + g_places[key];
+    }
   }
 
-  return '/assets/' + icon;
+  // なにも見つからなかった時
+  return '/assets/place_etc.png';
 
 }
 
@@ -330,13 +381,20 @@ function createMarker_place(place, bounds_place) {
         openFLG[infowindow.get("id")]=0;
     });
     /* マーカークリックで情報ウィンドウを開閉 */
-    google.maps.event.addListener(marker, "click", function(){
+    google.maps.event.addListener(marker, "mouseover", function(){
 
         var id=this.get("id");
         if(current>=0 && current!=id){
             openFLG[current]=0;
         }
+
         resetOverlay(0);
+        
+        current=id;
+        var infowindow=overlays[id][1];
+        infowindow.close();
+        openFLG[id]=0;
+
         var s ="";
         /* アイコン+場所名 */
         s+="<div class='ttl cf'>";
@@ -368,8 +426,7 @@ function createMarker_place(place, bounds_place) {
         if(place.photos && place.photos.length>=1){
             s+="<p class='picframe'><img src='"+place.photos[0].getUrl({"maxWidth":picmaxWidth,"maxHeight":picmaxHeight})+"' class='shadow size' /></p>";
         }
-        current=id;
-        var infowindow=overlays[id][1];
+
         infowindow.setContent("<div class='infowin'>"+s+"</div>");
         if(openFLG[id]!=1){
             infowindow.open(mapCanvas, this);
@@ -527,14 +584,14 @@ google.maps.event.addDomListener(window, "load", initialize);
 
     <div>
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab_search" data-toggle="tab">条件を指定して検索</a></li>
-        <li><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
+        <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab">条件を指定して検索</a></li>
+        <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
       </ul>
 
       <div id="myTabContent_search" class="tab-content">
 
         <!-- 検索条件設定 -->
-        <div class="tab-pane fade active in" id="tab_search">
+        <div class="tab-pane fade <%= @tab_search %>" id="tab_search">
 
           <%= form_tag('/recruitments/search') do %>
 
@@ -564,22 +621,22 @@ google.maps.event.addDomListener(window, "load", initialize);
         </div>
 
         <!-- 検索結果確認 -->
-        <div class="tab-pane fade in" id="tab_result">
+        <div class="tab-pane fade <%= @tab_result %>" id="tab_result">
           <ul class="nav nav-tabs">
-            <li><a class="active" href="#tab5" data-toggle="tab">建物</a></li>
+            <li><a class="active" href="#tab7" data-toggle="tab">表示設定</a></li>
+            <li><a href="#tab5" data-toggle="tab">建物</a></li>
             <li><a href="#tab6" data-toggle="tab">営業所</a></li>
-            <li><a href="#tab7" data-toggle="tab">表示設定</a></li>
           </ul>
 
           <div id="myTabContent2" class="tab-content">
+            <div class="tab-pane active in fade" id="tab7">
+               <%= render :partial=>'disp' %>
+            </div>
             <div class="tab-pane fade" id="tab5">
                <%= render :partial=>'result_buildings' %>
             </div>
             <div class="tab-pane fade" id="tab6">
                <%= render :partial=>'result_shops' %>
-            </div>
-            <div class="tab-pane fade" id="tab7">
-               <%= render :partial=>'disp' %>
             </div>
           </div>
 

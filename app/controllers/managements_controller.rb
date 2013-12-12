@@ -132,7 +132,7 @@ class ManagementsController < ApplicationController
   # 貸主検索
   def search_owners
 
-    @search_type = 2
+    search_result_init(2) # 貸主を初期表示
 
     # 元データを取得
     tmp_owners = Owner.joins(:trusts => :building).scoped
@@ -169,10 +169,7 @@ class ManagementsController < ApplicationController
   # 物件検索
   def search_buildings
 
-    @search_type = 1
-
-    @tab_search = ""
-    @tab_result = "active in"
+    search_result_init(1) # 建物を初期表示
 
     # 委託契約がされてないものも削除フラグが立っていない建物ならば出力する。
     tmp_buildings = Building.scoped
@@ -394,14 +391,16 @@ class ManagementsController < ApplicationController
   # ファイル一括検索を行います。
   #########################
   def bulk_search_text
-    @search_type = 1 # 建物を初期表示
+    search_result_init(1) # 建物を初期表示
+
     @bulk_text = params[:bulk_search_text]
     buildings_to_gon(parse_buildings(@bulk_text))
     render 'index'
   end
 
   def bulk_search_file
-    @search_type = 1 # 建物を初期表示
+    search_result_init(1) # 建物を初期表示
+
     buildings_to_gon(parse_buildings(params[:file].read))
     render 'index'
   end

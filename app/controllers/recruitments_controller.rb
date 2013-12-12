@@ -39,6 +39,11 @@
     
     @buildings = []
     @shops = []
+
+    # タブ表示
+    @tab_search = "active in"
+    @tab_result = ""
+
   end
 
   def index
@@ -54,6 +59,7 @@
   # 検索
   def search
 
+    search_result_init(1)
     tmp_room = Room.joins(:building).joins(:building => :shop).includes(:building).includes(:building => :shop).scoped
 
     # 物件種別で絞り込み
@@ -121,6 +127,7 @@
     @buildings = []
     @shops = []
     room_of_building = []
+    search_result_init(1)
 
 
     p params[:around]
@@ -138,7 +145,6 @@
     else
       @shops =  Shop.find(:all)
     end
-
 
     gon.shops = @shops    # 関連する営業所
     gon.buildings = @buildings

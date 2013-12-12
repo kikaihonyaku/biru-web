@@ -956,6 +956,16 @@ function create_circle(size, mapCanvas, pos){
       };
     });
 
+    // マップをクリックしたらマーカーが落ちてくる。
+    google.maps.event.addListener(mapCanvas, 'click', function(e){
+      var click_marker = createMarker({
+        position : e.latLng
+        ,map : mapCanvas
+        ,animation: google.maps.Animation.DROP
+        ,html:'クリックして作りました！'
+      });
+
+    })
 
   } // end initialize
 
