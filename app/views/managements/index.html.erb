@@ -49,8 +49,13 @@ function FullScreenControl(map) {
 
     // Setup the click event listener
     google.maps.event.addDomListener(controlUI, 'click', function() {
+            var obj = document.getElementById("simple-menu");
+
             var center = map.getCenter();
             if (!fullScreen) {
+
+                    obj.click();
+
                     divStyle.position = "fixed";
                     divStyle.width = "100%";
                     divStyle.height = "100%";
@@ -61,6 +66,9 @@ function FullScreenControl(map) {
                     controlText.innerHTML = '<strong>Exit full screen</strong>';
             }
             else {
+
+                    obj.click();
+
                     if (originalPos == "")
                             divStyle.position = "relative";
                     else
@@ -80,6 +88,56 @@ function FullScreenControl(map) {
 
     return controlDiv;
 }
+
+function MenuControll(map) {
+    var controlDiv = document.createElement('div');
+    controlDiv.index = 1;
+    controlDiv.style.padding = '5px';
+
+    // Set CSS for the control border.
+    var controlUI = document.createElement('div');
+    controlUI.style.backgroundColor = 'white';
+    controlUI.style.borderStyle = 'solid';
+    controlUI.style.borderWidth = '1px';
+    controlUI.style.borderColor = '#717b87';
+    controlUI.style.cursor = 'pointer';
+    controlUI.style.textAlign = 'center';
+    controlUI.style.boxShadow = '0px 2px 4px rgba(0,0,0,0.4)';
+    controlDiv.appendChild(controlUI);
+
+    // Set CSS for the control interior.
+    var controlText = document.createElement('div');
+    controlText.style.fontFamily = 'Arial,sans-serif';
+    controlText.style.fontSize = '13px';
+    controlText.style.paddingTop = '1px';
+    controlText.style.paddingBottom = '1px';
+    controlText.style.paddingLeft = '6px';
+    controlText.style.paddingRight = '6px';
+    controlText.innerHTML = '<strong>menu&nbsp;&nbsp;表示</strong>';
+    controlUI.appendChild(controlText);
+
+    var fullScreen = false;
+    var mapDiv = map.getDiv();
+    var divStyle = mapDiv.style;
+
+    // Setup the click event listener
+    google.maps.event.addDomListener(controlUI, 'click', function() {
+      var obj = document.getElementById("simple-menu");
+
+      if (!fullScreen) {
+        obj.click();
+        controlText.innerHTML = '<strong>menu非表示</strong>';
+      }
+      else {
+        obj.click();
+        controlText.innerHTML = '<strong>menu&nbsp;&nbsp;表示</strong>';
+      }
+      fullScreen = !fullScreen;
+    });
+
+    return controlDiv;
+}
+
 
 // 建物のアイコンを変更します。
 function change_biru_icon(type){
@@ -245,18 +303,21 @@ function create_circle(size, mapCanvas, pos){
   // 建物リンクをクリックした時の動きを定義します。
   function link_building_click(num, lat, lng)
   {
+    mapCanvas.setZoom(18);
     google.maps.event.trigger(build_arr[num], "click");
   }
 
   // 貸主リンクをクリックした時の動きを定義します。
   function link_owner_click(num, lat, lng)
   {
+    mapCanvas.setZoom(18);
     google.maps.event.trigger(owner_arr[num], "click");
   }
 
   // 営業所リンクをクリックした時の動きを定義します。
   function link_shop_click(num)
   {
+    mapCanvas.setZoom(18);
     google.maps.event.trigger(shop_arr[num], "click");
   }
 
@@ -309,6 +370,7 @@ function create_circle(size, mapCanvas, pos){
     
     if(disp_flg == true){
       // ストリートビュー　表示設定
+
       document.getElementById("map_canvas").style.height = "450px";
       document.getElementById("panowide").style.height = "350px";
       document.getElementById("panowide").style.display = "block";
@@ -361,7 +423,8 @@ function create_circle(size, mapCanvas, pos){
     var vhtml;
 
     vhtml = '<div><b>' + shop.name + '</b></div>' +
-      '<div>ＴＥＬ：' + shop.tel +'</div>' +
+      '<div> TEL1：' + shop.tel +'</div>' +
+      '<div> TEL2：' + shop.tel2 +'</div>' +
       '<div>定休日：' + shop.holiday +'</div>'
 
     return vhtml;
@@ -668,10 +731,12 @@ function create_circle(size, mapCanvas, pos){
     var mapDiv = document.getElementById("map_canvas");
     mapCanvas = new google.maps.Map(mapDiv, {
       mapTypeId : google.maps.MapTypeId.ROADMAP
+      ,scaleControl: true
     });
     
     // フルスクリーンラベルを設定
-    mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new FullScreenControl(mapCanvas));
+    mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new MenuControll(mapCanvas));
+    mapCanvas.controls[google.maps.ControlPosition.TOP_LEFT].push(new FullScreenControl(mapCanvas));
 
     /*----------------------------------------------------------------------*/
     /* ストリートビューオブジェクトを作成 （これはcreate markerを呼び出す前に定義する。）*/
@@ -685,10 +750,17 @@ function create_circle(size, mapCanvas, pos){
     mapCanvas.setStreetView(panorama);
     google.maps.event.addListener(panorama, 'position_changed', function()
     {
-      //ペグマン位置変更イベント
       positionPegman = panorama.getPosition();
+
+      // ストリートビューが表示されていなかったら表示
+      if( document.getElementById("panowide").style.display == "none" ){
+        view_disp(true, positionPegman.latitude, positionPegman.longitude);
+      }
+
+      //ペグマン位置変更イベント
       mapCanvas.panTo(positionPegman);
     });
+
 
     // infoウィンドウを１つだけ作成
     infoWnd = new google.maps.InfoWindow();
@@ -967,9 +1039,30 @@ function create_circle(size, mapCanvas, pos){
 
     })
 
+    /*
+    //-----------------------
+    // 画面のフルスクリーン化
+    //-----------------------
+    var mapDivSc = mapCanvas.getDiv();
+    var divStyle = mapDivSc.style;
+    if (mapDivSc.runtimeStyle){divStyle = mapDivSc.runtimeStyle;}
+    var bodyStyle = document.body.style;
+    if (document.body.runtimeStyle){bodyStyle = document.body.runtimeStyle;}
+    divStyle.position = "fixed";
+    divStyle.width = "100%";
+    //divStyle.height = "100%";
+    divStyle.top = "0";
+    divStyle.left = "0";
+    divStyle.zIndex = "100";
+    bodyStyle.overflow = "hidden";
+    google.maps.event.trigger(mapCanvas, 'resize');
+    */
+
   } // end initialize
 
   google.maps.event.addDomListener(window, "load", initialize);
+
+
 </script>
 
   <style type="text/css">
@@ -979,6 +1072,7 @@ function create_circle(size, mapCanvas, pos){
       width: 100%;
       height: 100%;
     }
+    
   </style>
 
 <% end %>
@@ -987,7 +1081,7 @@ function create_circle(size, mapCanvas, pos){
 
   <!-- ここは span3で呼び出されている -->
 
-    <div>
+    <div style="width:330px;"  style="padding-left:10px;">
       <ul class="nav nav-tabs">
         <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab">検索をする</a></li>
         <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
@@ -1010,7 +1104,7 @@ function create_circle(size, mapCanvas, pos){
             <div class="tab-pane fade" id="tab2">
                <%= render :partial=>'search_owner' %>
             </div>
-            <div class="tab-pane fade" id="tab3">
+            <div class="tab-pane fade" id="tab3" style="padding-left:30px;">
                <%= render :partial=>'search_bulk' %>
             </div>
           </div>
@@ -1025,7 +1119,7 @@ function create_circle(size, mapCanvas, pos){
             <li><a href="#tab6" data-toggle="tab">営業所</a></li>
           </ul>
 
-          <div id="myTabContent2" class="tab-content">
+          <div id="myTabContent2" class="tab-content" style="padding-left:10px;">
             <div class="tab-pane fade" id="tab4">
                <%= render :partial=>'result_buildings' %>
             </div>
@@ -1035,7 +1129,7 @@ function create_circle(size, mapCanvas, pos){
             <div class="tab-pane fade" id="tab6">
                <%= render :partial=>'result_shops' %>
             </div>
-            <div class="tab-pane active in fade" id="tab7">
+            <div class="tab-pane active in fade" id="tab7" style="padding-left:10px;">
                <%= render :partial=>'disp' %>
             </div>
           </div>
@@ -1046,10 +1140,19 @@ function create_circle(size, mapCanvas, pos){
 
     </div>
 
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#simple-menu').sidr({
+    side: 'right'
+  });
+});
+</script>
 <% end %>
 
-<!-- ここは span9で呼び出されているので合計も9に合わせる -->
-<div class="span12" style="float:left;padding-left:10px;">
+
+  <!-- ここは span9で呼び出されているので合計も9に合わせる -->
+<div class="span12" style="float:left;padding-left:10px;"> 
+  <a id="simple-menu" href="#sidr"></a>
   <div style="border-width : 3px;border-style : solid;border-color : silver;">
     <div id="map_canvas" style="width: 100%;"></div>
     <div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;">
@@ -1057,6 +1160,7 @@ function create_circle(size, mapCanvas, pos){
     </div>
   </div>
 </div>
+
 
 
 

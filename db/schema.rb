@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131113204122) do
+ActiveRecord::Schema.define(:version => 20131212221111) do
 
   create_table "backup_buildings", :force => true do |t|
     t.string   "code",                 :limit => nil
@@ -81,16 +81,16 @@ ActiveRecord::Schema.define(:version => 20131113204122) do
   add_index "buildings", ["shop_id"], :name => "index_buildings_on_shop_id"
 
   create_table "imp_tables", :force => true do |t|
-    t.integer "siten_cd"
-    t.integer "eigyo_order"
-    t.integer "eigyo_cd"
+    t.string  "siten_cd"
+    t.string  "eigyo_order"
+    t.string  "eigyo_cd"
     t.string  "eigyo_nm"
-    t.integer "manage_type_cd"
+    t.string  "manage_type_cd"
     t.string  "manage_type_nm"
-    t.integer "trust_cd"
-    t.integer "building_cd"
+    t.string  "trust_cd"
+    t.string  "building_cd"
     t.string  "building_nm"
-    t.integer "room_cd"
+    t.string  "room_cd"
     t.string  "room_nm"
     t.string  "kanri_start_date"
     t.string  "kanri_end_date"
@@ -99,14 +99,21 @@ ActiveRecord::Schema.define(:version => 20131113204122) do
     t.string  "room_type_nm"
     t.string  "room_layout_cd"
     t.string  "room_layout_nm"
-    t.integer "owner_cd"
+    t.string  "owner_cd"
     t.string  "owner_nm"
     t.string  "owner_kana"
     t.string  "owner_address"
     t.string  "owner_tel"
     t.string  "building_address"
-    t.string  "building_type_code"
+    t.string  "building_type_cd"
     t.integer "biru_age"
+  end
+
+  create_table "lines", :force => true do |t|
+    t.string   "code"
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "manage_types", :force => true do |t|
@@ -171,10 +178,20 @@ ActiveRecord::Schema.define(:version => 20131113204122) do
     t.integer "group_id"
     t.string  "tel"
     t.string  "holiday"
+    t.string  "tel2"
   end
 
   add_index "shops", ["area_id"], :name => "index_shops_on_area_id"
   add_index "shops", ["group_id"], :name => "index_shops_on_group_id"
+
+  create_table "stations", :force => true do |t|
+    t.string   "code"
+    t.string   "name"
+    t.string   "route_code"
+    t.integer  "route_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "trusts", :force => true do |t|
     t.integer  "owner_id"

@@ -7,9 +7,6 @@
     <title><%= content_for?(:title) ? yield(:title) : "中央ビル管理Webシステム" %></title>
     <%= csrf_meta_tags %>
 
-    <% if content_for?(:header) %>
-      <%= yield :header %>
-    <% end %>
 
     <%= include_gon %>
 
@@ -41,6 +38,12 @@
     <%#= favicon_link_tag 'favicon.ico', :rel => 'shortcut icon' %>
 
     <%= javascript_include_tag "application" %>
+
+    <%= javascript_include_tag "jquery.sidr.min" %>
+
+    <% if content_for?(:header) %>
+      <%= yield :header %>
+    <% end %>
 
   </head>
   <body>
@@ -80,21 +83,21 @@
 
       <div class="row-fluid">
         <% if content_for?(:sidebar) %>
-          <%= yield :sidebar %>
+            <%= yield :sidebar %>
         <% end %>
         
+        <!--
+        <div class="span9">
+        -->
+        <div>
+          <%= yield %>
+        </div>
+
         <% if content_for?(:sidebar_map) %>
-          <div class="span3">
+          <div id="sidr">
               <%= yield :sidebar_map %>
           </div><!--/span-->
         <% end %>
-
-        <div class="span9">
-          <%= yield %>
-          <!--
-          <a href="#" class="btn btn-info btn-large">東武支店</a>
-          -->
-        </div>
 
       </div><!--/row-->
 

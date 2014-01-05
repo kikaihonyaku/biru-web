@@ -3,6 +3,13 @@
 require 'csv'
 require 'kconv'
 
+#------------------------------
+# 路線マスタ／駅マスタを登録します。
+#------------------------------
+def init_station
+  
+end
+
 #--------------------------
 # 営業所マスタを登録します。
 #--------------------------
@@ -11,33 +18,33 @@ def init_shop
   show_arr = []
 
   # 東武支店
-  show_arr.push({:code=>3, :name=>'草加営業所', :address=>'埼玉県草加市氷川町2131番地3', :area_id=>1, :group_id=>1, :tel=>'0120-278-342', :holiday=>'水曜'})
-  show_arr.push({:code=>11, :name=>'草加新田営業所', :address=>'埼玉県草加市金明町276', :area_id=>1, :group_id=>1, :tel=>'0120-702-728', :holiday=>'火曜'})
-  show_arr.push({:code=>16, :name=>'北千住営業所', :address=>'東京都足立区千住3-1 石黒ビル2F', :area_id=>1, :group_id=>1, :tel=>'0120-956-776', :holiday=>'水曜'})
-  show_arr.push({:code=>1, :name=>'南越谷営業所', :address=>'埼玉県越谷市南越谷1-20-17　中央ビル管理本社ビル内1F', :area_id=>2, :group_id=>1, :tel=>'0120-754-215', :holiday=>'無休'})
-  show_arr.push({:code=>18, :name=>'越谷営業所', :address=>'埼玉県越谷市赤山本町2-14', :area_id=>2, :group_id=>1, :tel=>'0120-948-909', :holiday=>'水曜'})
-  show_arr.push({:code=>8, :name=>'北越谷営業所', :address=>'埼玉県越谷市大沢3-19-17', :area_id=>3, :group_id=>1, :tel=>'0120-304-137', :holiday=>'水曜'})
-  show_arr.push({:code=>7, :name=>'春日部営業所', :address=>'埼玉県春日部市中央1-2-5', :area_id=>3, :group_id=>1, :tel=>'0120-675-488', :holiday=>'火曜'})
-  show_arr.push({:code=>21, :name=>'せんげん台営業所', :address=>'埼玉県越谷市千間台東1-8-1', :area_id=>3, :group_id=>1, :tel=>'0120-929-979', :holiday=>'火・水曜'})
+  show_arr.push({:code=>3, :name=>'草加営業所', :address=>'埼玉県草加市氷川町2131番地3', :area_id=>1, :group_id=>1, :tel=>'0120-278-342', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>11, :name=>'草加新田営業所', :address=>'埼玉県草加市金明町276', :area_id=>1, :group_id=>1, :tel=>'0120-702-728', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>16, :name=>'北千住営業所', :address=>'東京都足立区千住3-1 石黒ビル2F', :area_id=>1, :group_id=>1, :tel=>'0120-956-776', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>1, :name=>'南越谷営業所', :address=>'埼玉県越谷市南越谷1-20-17　中央ビル管理本社ビル内1F', :area_id=>2, :group_id=>1, :tel=>'0120-754-215', :tel2=>'xxx-xxxx-xxxx', :holiday=>'無休'})
+  show_arr.push({:code=>18, :name=>'越谷営業所', :address=>'埼玉県越谷市赤山本町2-14', :area_id=>2, :group_id=>1, :tel=>'0120-948-909', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>8, :name=>'北越谷営業所', :address=>'埼玉県越谷市大沢3-19-17', :area_id=>3, :group_id=>1, :tel=>'0120-304-137', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>7, :name=>'春日部営業所', :address=>'埼玉県春日部市中央1-2-5', :area_id=>3, :group_id=>1, :tel=>'0120-675-488', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>21, :name=>'せんげん台営業所', :address=>'埼玉県越谷市千間台東1-8-1', :area_id=>3, :group_id=>1, :tel=>'0120-929-979', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
 
   # さいたま支店
-  show_arr.push({:code=>2, :name=>'戸田営業所', :address=>'埼玉県戸田市大字新曽353-6', :area_id=>11, :group_id=>2, :tel=>'0120-654-021', :holiday=>'火曜'})
-  show_arr.push({:code=>5, :name=>'武蔵浦和営業所', :address=>'埼玉県さいたま市南区別所7-9-5', :area_id=>12, :group_id=>2, :tel=>'0120-634-315', :holiday=>'水曜'})
-  show_arr.push({:code=>15, :name=>'川口営業所', :address=>'埼玉県川口市川口1-1-1 キュポ・ラ専門店1F', :area_id=>13, :group_id=>2, :tel=>'0120-163-366', :holiday=>'水曜'})
-  show_arr.push({:code=>17, :name=>'浦和営業所', :address=>'埼玉県さいたま市浦和区東仲町11-23 3F', :area_id=>14, :group_id=>2, :tel=>'0120-953-833', :holiday=>'火・水曜'})
-  show_arr.push({:code=>13, :name=>'与野営業所', :address=>'埼玉県さいたま市浦和区上木崎1丁目8-10', :area_id=>15, :group_id=>2, :tel=>'0120-234-495', :holiday=>'水曜'})
-  show_arr.push({:code=>10, :name=>'東浦和営業所', :address=>'埼玉県さいたま市緑区東浦和1-14-7', :area_id=>16, :group_id=>2, :tel=>'0120-817-455', :holiday=>'水曜'})
-  show_arr.push({:code=>6, :name=>'東川口営業所', :address=>'埼玉県川口市東川口2丁目3-35 サクセスＩＭ1F', :area_id=>17, :group_id=>2, :tel=>'0120-643-552', :holiday=>'火曜'})
-  show_arr.push({:code=>14, :name=>'戸塚安行営業所', :address=>'埼玉県川口市長蔵1-16-19 クレアーレ1F', :area_id=>18, :group_id=>2, :tel=>'0120-577-933', :holiday=>'火曜'})
+  show_arr.push({:code=>2, :name=>'戸田営業所', :address=>'埼玉県戸田市大字新曽353-6', :area_id=>11, :group_id=>2, :tel=>'0120-654-021', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>5, :name=>'武蔵浦和営業所', :address=>'埼玉県さいたま市南区別所7-9-5', :area_id=>12, :group_id=>2, :tel=>'0120-634-315', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>15, :name=>'川口営業所', :address=>'埼玉県川口市川口1-1-1 キュポ・ラ専門店1F', :area_id=>13, :group_id=>2, :tel=>'0120-163-366', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>17, :name=>'浦和営業所', :address=>'埼玉県さいたま市浦和区東仲町11-23 3F', :area_id=>14, :group_id=>2, :tel=>'0120-953-833', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
+  show_arr.push({:code=>13, :name=>'与野営業所', :address=>'埼玉県さいたま市浦和区上木崎1丁目8-10', :area_id=>15, :group_id=>2, :tel=>'0120-234-495', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>10, :name=>'東浦和営業所', :address=>'埼玉県さいたま市緑区東浦和1-14-7', :area_id=>16, :group_id=>2, :tel=>'0120-817-455', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>6, :name=>'東川口営業所', :address=>'埼玉県川口市東川口2丁目3-35 サクセスＩＭ1F', :area_id=>17, :group_id=>2, :tel=>'0120-643-552', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>14, :name=>'戸塚安行営業所', :address=>'埼玉県川口市長蔵1-16-19 クレアーレ1F', :area_id=>18, :group_id=>2, :tel=>'0120-577-933', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
 
   # 千葉支店
-  show_arr.push({:code=>19, :name=>'松戸営業所', :address=>'千葉県松戸市本町18-6 壱番館ビル3Ｆ', :area_id=>21, :group_id=>3, :tel=>'0120-981-703', :holiday=>'火・水曜'})
-  show_arr.push({:code=>4, :name=>'北松戸営業所', :address=>'千葉県松戸市上本郷900－2 中央第10北松戸ビル1Ｆ', :area_id=>22, :group_id=>3, :tel=>'0120-518-655', :holiday=>'火・水曜'})
-  show_arr.push({:code=>12, :name=>'南流山営業所', :address=>'千葉県流山市南流山1-1-14', :area_id=>23, :group_id=>3, :tel=>'0120-477-512', :holiday=>'火曜'})
-  show_arr.push({:code=>9, :name=>'柏営業所', :address=>'千葉県柏市あけぼの1-1-2', :area_id=>24, :group_id=>3, :tel=>'0120-708-251', :holiday=>'火・水曜'})
+  show_arr.push({:code=>19, :name=>'松戸営業所', :address=>'千葉県松戸市本町18-6 壱番館ビル3Ｆ', :area_id=>21, :group_id=>3, :tel=>'0120-981-703', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
+  show_arr.push({:code=>4, :name=>'北松戸営業所', :address=>'千葉県松戸市上本郷900－2 中央第10北松戸ビル1Ｆ', :area_id=>22, :group_id=>3, :tel=>'0120-518-655', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
+  show_arr.push({:code=>12, :name=>'南流山営業所', :address=>'千葉県流山市南流山1-1-14', :area_id=>23, :group_id=>3, :tel=>'0120-477-512', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>9, :name=>'柏営業所', :address=>'千葉県柏市あけぼの1-1-2', :area_id=>24, :group_id=>3, :tel=>'0120-708-251', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
 
   # 法人課
-  show_arr.push({:code=>91, :name=>'法人課', :address=>'埼玉県越谷市南越谷４丁目９−６', :area_id=>30, :group_id=>4, :tel=>'0120-922-597', :holiday=>'無休'})
+  show_arr.push({:code=>91, :name=>'法人課', :address=>'埼玉県越谷市南越谷４丁目９−６', :area_id=>30, :group_id=>4, :tel=>'0120-922-597', :tel2=>'xxx-xxxx-xxxx', :holiday=>'無休'})
 
   # ダミー　支店など用
   #show_arr.push({:code=>99, :name=>'ダミー', :address=>'', :area_id=>90, :group_id=>9})
@@ -51,6 +58,7 @@ def init_shop
     shop.area_id = obj[:area_id]
     shop.group_id = obj[:group_id]
     shop.tel = obj[:tel]
+    shop.tel2 = obj[:tel2]
     shop.holiday = obj[:holiday]
 
     # 支店別にアイコンを指定する
@@ -658,7 +666,7 @@ def import_data_yourself_owner(filename)
 end
 
 # 営業所登録
-#init_shop
+init_shop
 
 # 物件種別登録
 #init_biru_type
@@ -673,7 +681,7 @@ end
 #init_room_layout
 
 # データの登録(自社)
-import_data_oneself(Rails.root.join( "tmp", "imp_data_20131108.csv"))
+#import_data_oneself(Rails.root.join( "tmp", "imp_data_20131108.csv"))
 
 # データの登録(他社)
 #import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
