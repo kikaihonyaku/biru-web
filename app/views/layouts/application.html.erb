@@ -48,7 +48,7 @@
   </head>
   <body>
 
-    <div class="navbar navbar-fluid-top">
+    <div class="navbar navbar-fluid-top" id="top-menu">
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
@@ -78,10 +78,10 @@
       </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="height:100%;width:100%;padding:0;margin:0">
       <%= bootstrap_flash %>
 
-      <div class="row-fluid">
+      <div class="row-fluid" style="height:100%;">
         <% if content_for?(:sidebar) %>
             <%= yield :sidebar %>
         <% end %>
@@ -89,7 +89,7 @@
         <!--
         <div class="span9">
         -->
-        <div>
+        <div style="height:100%">
           <%= yield %>
         </div>
 

@@ -350,7 +350,9 @@ function create_circle(size, mapCanvas, pos){
 
   // ストリートビューを非表示にして map_canvasの高さを設定
   function init_display(){
-      document.getElementById("map_canvas").style.height = "700px";
+      document.getElementById("map_canvas").style.height = "50px";
+
+
       document.getElementById("panowide").style.height = "0px";
       document.getElementById("panowide").style.display = "none";
   }
@@ -725,7 +727,7 @@ function create_circle(size, mapCanvas, pos){
     init_process();
 
     // 初期表示は非表示
-    init_display();
+    //init_display();
 
     /* 地図を作成 */
     var mapDiv = document.getElementById("map_canvas");
@@ -806,7 +808,6 @@ function create_circle(size, mapCanvas, pos){
           ,html : info_msg_biru(buildings[i], building_to_owners[buildings[i].id])
           ,visible : build_disp
         });
-
 
         /* 距離を測る */
         /*
@@ -935,7 +936,6 @@ function create_circle(size, mapCanvas, pos){
       create_relation_listener(trust_ev, owner_ev, build_ev)
 
     }
-
 
     /* 営業所の情報を表示する */
     shop_arr = {}; // varを消してグローバル化
@@ -1072,7 +1072,19 @@ function create_circle(size, mapCanvas, pos){
       width: 100%;
       height: 100%;
     }
-    
+
+    #map_canvas{
+      position: fixed;
+      width:100%;
+      height:100%;
+      top:0px;
+      left:0;
+    }
+
+    #top-menu{
+      padding:0;
+      margin:0;
+    }
   </style>
 
 <% end %>
@@ -1151,16 +1163,23 @@ $(document).ready(function() {
 
 
   <!-- ここは span9で呼び出されているので合計も9に合わせる -->
-<div class="span12" style="float:left;padding-left:10px;"> 
+  <!--
+<div class="span12" style="float:left;padding-left:10px;">
+  -->
   <a id="simple-menu" href="#sidr"></a>
+  <!--
   <div style="border-width : 3px;border-style : solid;border-color : silver;">
-    <div id="map_canvas" style="width: 100%;"></div>
+  -->
+    <div id="map_canvas" style="width: 100%;height:100%;"></div>
     <div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;">
        <input type="button" value="閉じる" onclick="sv_init();" style="top: 10px;right: 20px;position:absolute;z-index: 500;" />
     </div>
+    <!--
   </div>
+    -->
+    <!--
 </div>
-
+  -->
 
 
 
