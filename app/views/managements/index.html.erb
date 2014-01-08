@@ -89,6 +89,7 @@ function FullScreenControl(map) {
     return controlDiv;
 }
 
+
 function MenuControll(map) {
     var controlDiv = document.createElement('div');
     controlDiv.index = 1;
@@ -113,7 +114,7 @@ function MenuControll(map) {
     controlText.style.paddingBottom = '1px';
     controlText.style.paddingLeft = '6px';
     controlText.style.paddingRight = '6px';
-    controlText.innerHTML = '<strong>menu&nbsp;&nbsp;表示</strong>';
+    controlText.innerHTML = '<strong>メニュー&nbsp;&nbsp;表示</strong>';
     controlUI.appendChild(controlText);
 
     var fullScreen = false;
@@ -126,11 +127,11 @@ function MenuControll(map) {
 
       if (!fullScreen) {
         obj.click();
-        controlText.innerHTML = '<strong>menu非表示</strong>';
+        controlText.innerHTML = '<strong>メニュー非表示</strong>';
       }
       else {
         obj.click();
-        controlText.innerHTML = '<strong>menu&nbsp;&nbsp;表示</strong>';
+        controlText.innerHTML = '<strong>メニュー&nbsp;&nbsp;表示</strong>';
       }
       fullScreen = !fullScreen;
     });
@@ -138,6 +139,56 @@ function MenuControll(map) {
     return controlDiv;
 }
 
+function StreetViewControll(map) {
+    var controlDiv = document.createElement('div');
+    controlDiv.index = 1;
+    controlDiv.style.padding = '5px';
+
+    // Set CSS for the control border.
+    var controlUI = document.createElement('div');
+    controlUI.style.backgroundColor = 'white';
+    controlUI.style.borderStyle = 'solid';
+    controlUI.style.borderWidth = '1px';
+    controlUI.style.borderColor = '#717b87';
+    controlUI.style.cursor = 'pointer';
+    controlUI.style.textAlign = 'center';
+    controlUI.style.boxShadow = '0px 2px 4px rgba(1,0,0,0.4)';
+    controlDiv.appendChild(controlUI);
+
+    // Set CSS for the control interior.
+    var controlText = document.createElement('div');
+    controlText.style.fontFamily = 'Arial,sans-serif';
+    controlText.style.fontSize = '13px';
+    controlText.style.paddingTop = '1px';
+    controlText.style.paddingBottom = '1px';
+    controlText.style.paddingLeft = '6px';
+    controlText.style.paddingRight = '6px';
+    controlText.innerHTML = '<strong>ストリートビュー&nbsp;&nbsp;表示</strong>';
+    controlUI.appendChild(controlText);
+
+    var fullScreen = false;
+    var mapDiv = map.getDiv();
+    var divStyle = mapDiv.style;
+
+    // Setup the click event listener
+    google.maps.event.addDomListener(controlUI, 'click', function() {
+
+
+      if (!fullScreen) {
+        street_veiw_window();
+        refresh_view(panorama.getPosition());
+
+        controlText.innerHTML = '<strong>ストリートビュー非表示</strong>';
+      }
+      else {
+        init_display()
+        controlText.innerHTML = '<strong>ストリートビュー&nbsp;&nbsp;表示</strong>';
+      }
+      fullScreen = !fullScreen;
+    });
+
+    return controlDiv;
+}
 
 // 建物のアイコンを変更します。
 function change_biru_icon(type){
@@ -350,11 +401,16 @@ function create_circle(size, mapCanvas, pos){
 
   // ストリートビューを非表示にして map_canvasの高さを設定
   function init_display(){
-      document.getElementById("map_canvas").style.height = "50px";
-
-
+      document.getElementById("map_canvas").style.height = "100%";
       document.getElementById("panowide").style.height = "0px";
       document.getElementById("panowide").style.display = "none";
+  }
+
+  // ストリートビューの表示を設定します。
+  function street_veiw_window(){
+    document.getElementById("map_canvas").style.height = "400px";
+    document.getElementById("panowide").style.height = "350px";
+    document.getElementById("panowide").style.display = "block";
   }
 
   // 管理方式のICONを返します。
@@ -373,9 +429,7 @@ function create_circle(size, mapCanvas, pos){
     if(disp_flg == true){
       // ストリートビュー　表示設定
 
-      document.getElementById("map_canvas").style.height = "450px";
-      document.getElementById("panowide").style.height = "350px";
-      document.getElementById("panowide").style.display = "block";
+      street_veiw_window();
       refresh_view(new google.maps.LatLng(lat,lng));
 
     }else{
@@ -727,7 +781,7 @@ function create_circle(size, mapCanvas, pos){
     init_process();
 
     // 初期表示は非表示
-    //init_display();
+    init_display();
 
     /* 地図を作成 */
     var mapDiv = document.getElementById("map_canvas");
@@ -738,7 +792,8 @@ function create_circle(size, mapCanvas, pos){
     
     // フルスクリーンラベルを設定
     mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new MenuControll(mapCanvas));
-    mapCanvas.controls[google.maps.ControlPosition.TOP_LEFT].push(new FullScreenControl(mapCanvas));
+    mapCanvas.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(new StreetViewControll(mapCanvas));
+    // mapCanvas.controls[google.maps.ControlPosition.TOP_LEFT].push(new FullScreenControl(mapCanvas));
 
     /*----------------------------------------------------------------------*/
     /* ストリートビューオブジェクトを作成 （これはcreate markerを呼び出す前に定義する。）*/
@@ -752,7 +807,7 @@ function create_circle(size, mapCanvas, pos){
     mapCanvas.setStreetView(panorama);
     google.maps.event.addListener(panorama, 'position_changed', function()
     {
-      positionPegman = panorama.getPosition();
+      var positionPegman = panorama.getPosition();
 
       // ストリートビューが表示されていなかったら表示
       if( document.getElementById("panowide").style.display == "none" ){
@@ -1095,25 +1150,25 @@ function create_circle(size, mapCanvas, pos){
 
     <div style="width:330px;"  style="padding-left:10px;">
       <ul class="nav nav-tabs">
-        <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab">検索をする</a></li>
-        <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
+        <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab" style=";padding:10px 15px 10px 15px;width:130px;text-align: center;">検索をする</a></li>
+        <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab" style="padding:10px 15px 10px 15px;width:130px;text-align: center;">結果を確認する</a></li>
       </ul>
 
       <div id="myTabContent_search" class="tab-content">
 
         <!-- 検索条件設定 -->
-        <div class="tab-pane fade <%= @tab_search %> " id="tab_search">
+        <div class="tab-pane fade <%= @tab_search %> " id="tab_search" style="padding:0;margin:0">
           <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab1" data-toggle="tab">建物検索</a></li>
-            <li><a href="#tab2" data-toggle="tab">貸主検索</a></li>
-            <li><a href="#tab3" data-toggle="tab">バルク検索</a></li>
+            <li class="active"><a href="#tab1" data-toggle="tab" style="width:70px;text-align: center;">&nbsp;建物検索</a></li>
+            <li><a href="#tab2" data-toggle="tab" style="width:75px;text-align: center;">貸主検索</a></li>
+            <li><a href="#tab3" data-toggle="tab" style="width:80px;text-align: center;">バルク検索</a></li>
           </ul>
 
           <div id="myTabContent1" class="tab-content">
-            <div class="tab-pane fade active in" id="tab1">
+            <div class="tab-pane fade active in" id="tab1" style="margin-left:15px;">
                <%= render :partial=>'search_build' %>
             </div>
-            <div class="tab-pane fade" id="tab2">
+            <div class="tab-pane fade" id="tab2" style="margin-left:15px;">
                <%= render :partial=>'search_owner' %>
             </div>
             <div class="tab-pane fade" id="tab3" style="padding-left:30px;">
@@ -1123,12 +1178,12 @@ function create_circle(size, mapCanvas, pos){
         </div>
 
         <!-- 検索結果確認 -->
-        <div class="tab-pane fade <%= @tab_result %>" id="tab_result">
+        <div class="tab-pane fade <%= @tab_result %>" id="tab_result" >
           <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab7" data-toggle="tab">表示設定</a></li>
-            <li><a href="#tab4" data-toggle="tab">建物</a></li>
-            <li><a href="#tab5" data-toggle="tab">貸主</a></li>
-            <li><a href="#tab6" data-toggle="tab">営業所</a></li>
+            <li class="active"><a href="#tab7" data-toggle="tab" style="width:65px;text-align: center;">表示設定</a></li>
+            <li><a href="#tab4" data-toggle="tab" style="width:40px;text-align: center;">建物</a></li>
+            <li><a href="#tab5" data-toggle="tab" style="width:40px;text-align: center;">貸主</a></li>
+            <li><a href="#tab6" data-toggle="tab" style="width:45px;text-align: center;">営業所</a></li>
           </ul>
 
           <div id="myTabContent2" class="tab-content" style="padding-left:10px;">
@@ -1172,7 +1227,9 @@ $(document).ready(function() {
   -->
     <div id="map_canvas" style="width: 100%;height:100%;"></div>
     <div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;">
+      <!--
        <input type="button" value="閉じる" onclick="sv_init();" style="top: 10px;right: 20px;position:absolute;z-index: 500;" />
+      -->
     </div>
     <!--
   </div>
