@@ -46,3 +46,4 @@ gem 'gmaps4rails'
 gem 'gon' # active_recordのデータをjavascript化する
 #gem 'roo' # excelなどのスプレッドシートを読めるようにする。
 gem 'spinjs-rails'
+gem 'lazy_high_charts'

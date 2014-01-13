@@ -8,7 +8,7 @@
   <li>動画を再生できる</li>
 </ul>
 -->
- 
+
 <!--
 <h1>募集に使用する画面</h1>
 <p>来店客に物件を紹介する時に使う</p>
@@ -21,7 +21,8 @@
 -->
 
 <% content_for :header do %>
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization,places"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
 <script type="text/javascript">
 
 /* プレイスタイプ */
@@ -155,20 +156,38 @@ var places_types={
 };
 
 
-// グローバル変数定義
-var point,openFLG=[],overlays=[],iterator=0,current;
-var openFLG=[],iterator=0;
-var picmaxWidth=200; //スポット画像の最大幅
-var picmaxHeight=200; //スポット画像の最大高さ
-var before_circle = null;
-var g_places; // placesを格納
+  var point,openFLG=[],overlays=[],iterator=0,current;
+  var openFLG=[],iterator=0;
+  var picmaxWidth=200; //スポット画像の最大幅
+  var picmaxHeight=200; //スポット画像の最大高さ
+  var before_circle = null;
 
+function create_circle(size, mapCanvas, pos){
+  var myCircle = new google.maps.Circle({
+    map : mapCanvas
+    ,center : pos
+    ,strokeColor: '#0000FF' /* ストロークの色 */
+    ,strokeOpacity: 0.8 /* ストロークの透明度 */
+    ,strokeWeight: 2 /* ストロークの幅 */
+    ,fillColor: '#0000FF' /* フィルの色 */
+    ,fillOpacity: 0.35 /* フィルの透明度 */
+    ,fillColor: "#0000FF"
+  });
+
+  myCircle.setRadius(size); // メートル単位で指定
+  myCircle.set("visible",false);
+
+  return myCircle
+}
 
 // 指定した物件の周辺検索をします。
 function search_around(biru_id){
-  document.aaaa.around.value = biru_id;
+ document.aaaa.around.value = biru_id;
   document.aaaa.submit();
 }
+
+var g_places; // placesを格納
+
 
 // 表示する場所を定義します。
 function initPlaces(){
@@ -271,6 +290,17 @@ function dbg(str){
     }
 }
 
+//-------------------
+// グローバル変数定義
+//-------------------
+var infoWnd;  // 吹き出しウィンドウ
+var panoramaOptionsPov; // ストリートビュー定義
+
+// ストリートビューを非表示にして map_canvasの高さを設定
+function init_display(){
+    document.getElementById("map_canvas").style.height = "700px";
+}
+
 function callback(results, status) {
   if (status == google.maps.places.PlacesServiceStatus.OK) {
 
@@ -284,6 +314,7 @@ function callback(results, status) {
 
   }
 }
+
 
 /* オーバーレイ全削除 */
 function resetOverlay(deleteFLG){
@@ -407,15 +438,36 @@ function createMarker_place(place, bounds_place) {
     });
 }
 
+/* マーカーを作成 */
+function createMarker(opts){
+var marker = new google.maps.Marker(opts);
+google.maps.event.addListener(marker, "click", function(){
+  // write_build(opts.info_msg);
+
+  infoWnd.close();
+  infoWnd.setContent(opts.html);
+  infoWnd.open(opts.map, marker);
+
+});
+
+
+
+return marker;
+}
 
 function initialize(){
 
     // 初期表示は非表示
     init_display();
 
-    // 地図・ストリートビューを作成します。
-    init_map();
+    /* 地図を作成 */
+    var mapDiv = document.getElementById("map_canvas");
+    mapCanvas = new google.maps.Map(mapDiv, {
+      mapTypeId : google.maps.MapTypeId.ROADMAP
+    });
 
+    // infoウィンドウを１つだけ作成
+    infoWnd = new google.maps.InfoWindow();
 
     // 初期表示位置を調整
     bounds = new google.maps.LatLngBounds();
@@ -442,6 +494,9 @@ function initialize(){
     build_arr = {}; // グローバル
     kyori_text = ""
     var pos;
+    var idx = 0;
+    var biru_latlngs = [];
+    var populations = [];
 
     var buildings = gon.buildings
     for(var i in buildings){
@@ -475,6 +530,7 @@ function initialize(){
         build_arr[buildings[i].id] = createMarker({
           position : pos
           ,map : mapCanvas
+//          ,animation: google.maps.Animation.DROP
           ,icon : '/assets/msmarker_red.png'
           ,shadow : 'assets/msmarker_shadow.png'
           ,info_msg : buildings[i].name
@@ -511,27 +567,14 @@ google.maps.event.addDomListener(window, "load", initialize);
 
 </script>
 
-  <style type="text/css">
-    html, body{
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    #map_canvas{
-      position: fixed;
-      width:100%;
-      height:100%;
-      top:0px;
-      left:0;
-    }
-
-    #top-menu{
-      padding:0;
-      margin:0;
-    }
-  </style>
+<style type="text/css">
+  html, body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
 
 <% end %>
 
@@ -570,7 +613,7 @@ google.maps.event.addDomListener(window, "load", initialize);
                  <%#= render :partial=>'search_layouts' %>
               </div>
               <div class="tab-pane fade" id="tab3">
-                 <%#= render :partial=>'search_etc' %>
+                 <%= render :partial=>'search_etc' %>
               </div>
             </div>
 
@@ -605,17 +648,12 @@ google.maps.event.addDomListener(window, "load", initialize);
 
 <% end %>
 
-<script type="text/javascript">
-$(document).ready(function() {
-  $('#simple-menu').sidr({
-    side: 'right'
-  });
-});
-</script>
-
-<a id="simple-menu" href="#sidr"></a>
-<div id="map_canvas" style="width: 100%;height:100%;"></div>
-<div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;"></div>
+<!-- ここは span9で呼び出されているので合計も9に合わせる -->
+  <div class="span12" style="float:left;padding-left:10px;">
+    <div style="border-width : 3px;border-style : solid;border-color : silver;">
+      <div id="map_canvas" style="width: 100%;"></div>
+    </div>
+  </div>
 
 <!-- 周辺検索する為の、ダミー用の表示 -->
 <div>
