@@ -196,7 +196,7 @@ function StreetViewControll(map) {
 
 // ストリートビューを非表示にして map_canvasの高さを設定
 function init_display(){
-  document.getElementById("map_canvas").style.height = "100%";
+  document.getElementById("map_canvas").style.height = "95%";
   document.getElementById("panowide").style.height = "0px";
   document.getElementById("panowide").style.display = "none";
 }

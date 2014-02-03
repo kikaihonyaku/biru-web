@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131212221111) do
+ActiveRecord::Schema.define(:version => 20140129064713) do
 
   create_table "backup_buildings", :force => true do |t|
     t.string   "code",                 :limit => nil
@@ -80,6 +80,30 @@ ActiveRecord::Schema.define(:version => 20131212221111) do
   add_index "buildings", ["build_type_id"], :name => "index_buildings_on_build_type_id"
   add_index "buildings", ["shop_id"], :name => "index_buildings_on_shop_id"
 
+  create_table "dept_group_details", :force => true do |t|
+    t.integer  "dept_group_id"
+    t.integer  "dept_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  create_table "dept_groups", :force => true do |t|
+    t.string   "busyo_id"
+    t.string   "code"
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "depts", :force => true do |t|
+    t.string   "busyo_id"
+    t.string   "code"
+    t.string   "name"
+    t.boolean  "delete_flg", :default => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+  end
+
   create_table "imp_tables", :force => true do |t|
     t.string  "siten_cd"
     t.string  "eigyo_order"
@@ -109,6 +133,13 @@ ActiveRecord::Schema.define(:version => 20131212221111) do
     t.integer "biru_age"
   end
 
+  create_table "items", :force => true do |t|
+    t.string   "code"
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "lines", :force => true do |t|
     t.string   "code"
     t.string   "name"
@@ -122,6 +153,21 @@ ActiveRecord::Schema.define(:version => 20131212221111) do
     t.string "icon"
     t.string "line_color"
   end
+
+  create_table "monthly_statements", :force => true do |t|
+    t.integer  "dept_id"
+    t.integer  "item_id"
+    t.string   "yyyymm"
+    t.decimal  "plan_value",   :precision => 11, :scale => 2
+    t.decimal  "result_value", :precision => 11, :scale => 2
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
+  end
+
+  add_index "monthly_statements", ["dept_id", "item_id", "yyyymm"], :name => "index_monthly_all"
+  add_index "monthly_statements", ["dept_id"], :name => "index_monthly_dept"
+  add_index "monthly_statements", ["item_id"], :name => "index_monthly_item"
+  add_index "monthly_statements", ["yyyymm"], :name => "index_monthly_yyyymm"
 
   create_table "owners", :force => true do |t|
     t.string   "code"
@@ -187,8 +233,12 @@ ActiveRecord::Schema.define(:version => 20131212221111) do
   create_table "stations", :force => true do |t|
     t.string   "code"
     t.string   "name"
-    t.string   "route_code"
-    t.integer  "route_id"
+    t.string   "line_code"
+    t.integer  "line_id"
+    t.string   "address"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.boolean  "gmaps"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end

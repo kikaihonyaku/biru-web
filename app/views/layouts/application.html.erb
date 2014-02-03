@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= content_for?(:title) ? yield(:title) : "中央ビル管理Webシステム" %></title>
     <%= csrf_meta_tags %>
 
@@ -16,8 +16,8 @@
     <![endif]-->
 
     <%= stylesheet_link_tag "application", :media => "all" %>
-
     <%= stylesheet_link_tag "jquery.sidr.light", :media => "all" %>
+    <%= stylesheet_link_tag "jqtree", :media => "all" %>
     
     <!-- For third-generation iPad with high-resolution Retina display: -->
     <!-- Size should be 144 x 144 pixels -->
@@ -42,6 +42,9 @@
     <%= javascript_include_tag "application" %>
 
     <%= javascript_include_tag "jquery.sidr.min" %>
+    <%= javascript_include_tag "tree.jquery" %>
+    <%= javascript_include_tag "jquery.cookie" %>
+    <%= javascript_include_tag "biru-map" %>
 
     <% if content_for?(:header) %>
       <%= yield :header %>
@@ -65,9 +68,9 @@
               <li><%= link_to "管理", managements_path %></li>
               <li><%= link_to "募集", recruitments_path %></li>
               <li><%= link_to "カスタマーデスク", repairs_path %></li>
-              <li><%= link_to "業績管理", performances_path  %></li>
-              <li><%= link_to "オーナー専用", owners_path %></li>
-              <li><%= link_to "入居者専用", renters_path %></li>
+              <li><%= link_to "業績分析", performances_path  %></li>
+              <li><%= link_to "オーナー様専用", owners_path %></li>
+              <li><%= link_to "入居者様専用", renters_path %></li>
               <!--
               <li><%#= link_to "メンテナンス", admin_root_path, {:target=>"_blank"}  %></li>
               -->
