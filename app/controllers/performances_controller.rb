@@ -119,14 +119,53 @@ class PerformancesController < ApplicationController
     ##################################
     # 指定した月で最小の月+12ヶ月を取得する。
     min_month = nil
-    year_sum = monthly.select("MIN(yyyymm) as yyyymm")
+    max_month = nil
+    year_sum = monthly.select("MIN(yyyymm) as yyyymm_min, MAX(yyyymm) as yyyymm_max").where("result_value > 0")
     year_sum.each do |rec|
-      min_month = rec.yyyymm
+      min_month = rec.yyyymm_min
+      max_month = rec.yyyymm_max
     end
 
     if min_month
-      # 指定した月が存在したらそこからマイナス
-      month = Date.parse(min_month + '01').strftime("%y%m")
+      dt_start = Date.parse(min_month + '01') # 最小月
+      dt_end = dt_start >> 11 # ＋11ヶ月後
+      dt_max = Date.parse(max_month + '01') # 最大月
+
+      # データが12ヶ月以上ある場合、年計グラフを作成する
+      if dt_end <= dt_max
+
+        year_category = []
+        year_result = []
+
+        while dt_end <= dt_max
+
+          #p dt_end.strftime("%Y%m")
+
+          year_category.push(dt_end.strftime("%Y%m"))
+
+          year_sum_v2 = monthly.where("yyyymm between ? and ?", dt_start.strftime("%Y%m"), dt_end.strftime("%Y%m") ).select("SUM(result_value) as result_value")
+          year_sum_v2.each do |rec|
+            p rec.result_value
+            year_result.push(rec.result_value.to_f)
+          end
+
+          # 1ヶ月進める
+          dt_start = dt_start >> 1
+          dt_end = dt_end >> 1
+
+
+        end
+
+        interval = ((year_category.length)/12).to_i + 1
+
+        @year_result = LazyHighCharts::HighChart.new('graph') do |f|
+          f.title(text: dept_name + 'の' + item.name + 'の年計')
+          f.xAxis(categories: year_category, tickInterval: interval) # 1とかは列の間隔の指定
+          f.series(name: '実績', data: year_result, type: "column")
+        end
+
+      end
+
     end
 
     ##############################################
