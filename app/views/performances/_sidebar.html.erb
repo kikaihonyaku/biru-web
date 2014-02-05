@@ -10,7 +10,7 @@
 <script type="text/javascript">
 
   var yyyymm_data = [
-    { label:'年度',id: 3001,
+    { label:'年度',id: 6001,
       children: [
         {label: '2014年度', id:2014},
         {label: '2013年度', id:2013},
@@ -24,7 +24,7 @@
 
   // cookieに展開状況を保存するため、idは全てに付ける。
   var dept_data = [
-    { label: '部署', id: 3100,
+    { label: '部署', id: 6100,
       children: [
       {
           label: 'ビル管理全体', id:252,
@@ -123,170 +123,170 @@
   ];
 
   var item_data = [
-    { label: '項目', id: 4000,
+    { label: '項目', id: 6000,
       children: [
         {
-          label: '損益項目', id: 4010,
+          label: '損益項目', id: 6010,
           children: [
-            { label: '売上高', id:'A0001'},
-            { label: '粗利益', id:'B0010'},
-            { label: '人件費', id:'A0003'},
-            { label: '経費', id:'A0004'},
-            { label: '経常利益', id:'A0007'},
+            { label: '売上高', id:'S-A0001'},
+            { label: '粗利益', id:'S-B0010'},
+            { label: '人件費', id:'S-A0003'},
+            { label: '経費', id:'S-A0004'},
+            { label: '経常利益', id:'S-A0007'},
           ]
         },
         {
-          label: '営業所 主要項目', id: 4020,
+          label: '営業所 主要項目', id: 6020,
           children: [
-            { label: '新規受託管理戸数　他社', id: 'B0001'},
-            { label: '新規受託管理戸数　自社', id: 'B0002'},
-            { label: '賃貸管理手数料', id: '41040'},
-            { label: '賃貸仲介件数', id: 'B0009'},
-            { label: '賃貸仲介手数料', id: 'Z0002'},
-            { label: '売買粗利益', id: 'B0003'},
-            { label: 'サブリース等売上', id: '44020'},
-            { label: '不動産再生事業売上(契約)', id: 'B0035'},
-            { label: '建物管理売上', id: '41070'},
-            { label: '保険代理店手数料', id: '41060'},
-            { label: '家賃立替サービス代理店手数料', id: 'B0004'},
-            { label: '付随商品手数料', id: '45010'},
-            { label: '建築紹介件数', id: 'B0008'},
-            { label: '入居率', id: 'B0007'},
-            { label: '空室率', id: 'B0006'},
-            { label: '総管理戸数', id: 'B0005'},
-            { label: '家賃回収滞納率', id: 'B0090'},
+            { label: '新規受託管理戸数　他社', id: 'E-B0001'},
+            { label: '新規受託管理戸数　自社', id: 'E-B0002'},
+            { label: '賃貸管理手数料', id: 'E-41040'},
+            { label: '賃貸仲介件数', id: 'E-B0009'},
+            { label: '賃貸仲介手数料', id: 'E-Z0002'},
+            { label: '売買粗利益', id: 'E-B0003'},
+            { label: 'サブリース等売上', id: 'E-44020'},
+            { label: '不動産再生事業売上(契約)', id: 'E-B0035'},
+            { label: '建物管理売上', id: 'E-41070'},
+            { label: '保険代理店手数料', id: 'E-41060'},
+            { label: '家賃立替サービス代理店手数料', id: 'E-B0004'},
+            { label: '付随商品手数料', id: 'E-45010'},
+            { label: '建築紹介件数', id: 'E-B0008'},
+            { label: '入居率', id: 'E-B0007'},
+            { label: '空室率', id: 'E-B0006'},
+            { label: '総管理戸数', id: 'E-B0005'},
+            { label: '家賃回収滞納率', id: 'E-B0090'},
           ]
         },
         {
-          label: '建管 主要項目', id: 4030,
+          label: '建管 主要項目', id: 6030,
           children: [
-            { label: '原状回復工事売上', id: 'B0019'},
-            { label: '定期設備メンテナンス売上', id: 'B0020'},
-            { label: '提案設備メンテナンス売上', id: 'B0021'},
-            { label: '原状回復工事粗利益率', id: 'B0022'},
-            { label: '提案同行数', id: 'B0023'},
-            { label: 'サブリース等売上', id: '44020'},
-            { label: '建物管理売上', id: '41070'},
-            { label: '付随商品手数料', id: '45010'},
-            { label: '管理手数料', id: '41040'},
-            { label: '解約精算・工事所要日数', id: 'B0091'},
-            { label: '工事代未収金100万以下', id: 'B0067'},
+            { label: '原状回復工事売上', id: 'T-B0019'},
+            { label: '定期設備メンテナンス売上', id: 'T-B0020'},
+            { label: '提案設備メンテナンス売上', id: 'T-B0021'},
+            { label: '原状回復工事粗利益率', id: 'T-B0022'},
+            { label: '提案同行数', id: 'T-B0023'},
+            { label: 'サブリース等売上', id: 'T-44020'},
+            { label: '建物管理売上', id: 'T-41070'},
+            { label: '付随商品手数料', id: 'T-45010'},
+            { label: '管理手数料', id: 'T-41040'},
+            { label: '解約精算・工事所要日数', id: 'T-B0091'},
+            { label: '工事代未収金100万以下', id: 'T-B0067'},
           ]
         },
         {
-          label: '流通 主要項目', id: 4040,
+          label: '流通 主要項目', id: 6040,
           children: [
-            { label: '不動産再生売上(契約)', id: 'B0035'},
-            { label: '売買粗利益（契約）', id: 'B0003'},
-            { label: '新築・注文契約件数', id: 'B0040'},
-            { label: '資産売却受託件数', id: 'B0039'},
-            { label: '自己開拓契約件数', id: 'B0093'},
-            { label: '再生事業粗利益（契約）', id: 'B0084'},
+            { label: '不動産再生売上(契約)', id: 'R-B0035'},
+            { label: '売買粗利益（契約）', id: 'R-B0003'},
+            { label: '新築・注文契約件数', id: 'R-B0040'},
+            { label: '資産売却受託件数', id: 'R-B0039'},
+            { label: '自己開拓契約件数', id: 'R-B0093'},
+            { label: '再生事業粗利益（契約）', id: 'R-B0084'},
           ]
         },
         {
-          label: 'アセット', id: 4050,
+          label: 'アセット', id: 6050,
           children: [
-            { label: '保健課', id: 4051,
+            { label: '保健課', id: 6051,
               children:[
-                { label: '保険代理店手数料（契約）', id: 'B0025'},
-                { label: '保険代理店手数料（計上）', id: '41060'},
-                { label: '火災保険独自新規契約件数', id: 'B0028'},
-                { label: '自動車保険継続率', id: 'B0029'},
-                { label: '自動車保険独自新規契約件数', id: 'B0031'},
-                { label: '入居者保険更新手続完了率', id: 'B0033'},
-                { label: '生命保険新規契約手数料', id: 'B0034'},
-                { label: '火災保険独自新規契約手数料', id: 'B0094'},
-                { label: '火災保険更新手数料', id: 'B0095'},
+                { label: '保険代理店手数料（契約）', id: 'H-B0025'},
+                { label: '保険代理店手数料（計上）', id: 'H-41060'},
+                { label: '火災保険独自新規契約件数', id: 'H-B0028'},
+                { label: '自動車保険継続率', id: 'H-B0029'},
+                { label: '自動車保険独自新規契約件数', id: 'H-B0031'},
+                { label: '入居者保険更新手続完了率', id: 'H-B0033'},
+                { label: '生命保険新規契約手数料', id: 'H-B0034'},
+                { label: '火災保険独自新規契約手数料', id: 'H-B0094'},
+                { label: '火災保険更新手数料', id: 'H-B0095'},
               ]
             },
-            { label: '法人課', id: 4052,
+            { label: '法人課', id: 6052,
               children:[
-                { label: '売買粗利益（契約）', id: 'B0003'},
-                { label: '賃貸仲介手数料', id: 'Z0002'},
-                { label: 'サブリース等売上', id: '44020'},
-                { label: '法人賃貸紹介件数', id: 'B0037'},
-                { label: 'オーナー借上提案数', id: 'B0038'},
-                { label: 'サブリース等粗利率', id: 'B0092'},
-                { label: 'コインパーキング売上', id: 'B0200'},
-                { label: 'サブリース管理戸数', id: 'B0225'},
+                { label: '売買粗利益（契約）', id: 'H-B0003'},
+                { label: '賃貸仲介手数料', id: 'H-Z0002'},
+                { label: 'サブリース等売上', id: 'H-44020'},
+                { label: '法人賃貸紹介件数', id: 'H-B0037'},
+                { label: 'オーナー借上提案数', id: 'H-B0038'},
+                { label: 'サブリース等粗利率', id: 'H-B0092'},
+                { label: 'コインパーキング売上', id: 'H-B0200'},
+                { label: 'サブリース管理戸数', id: 'H-B0225'},
               ]
             },
           ]
         },
         {
-          label: 'ライフサービス 主要項目', id: 4060,
+          label: 'ライフサービス 主要項目', id: 6060,
           children: [
-            { label: 'クリーンサービス', id: 4061,
+            { label: 'クリーンサービス', id: 6061,
               children:[
                 { label: 'ダミー', id: 111 },
               ]
             },
-            { label: '損害サービス', id: 4062,
+            { label: '損害サービス', id: 6062,
               children: [
-                { label: '損害サービス工事受注金額', id: 'B0043'},
-                { label: '損害サービス工事受注件数', id: 'B0044'},
-                { label: '損害調査受注金額', id: 'B0233'},
-                { label: '損害調査受注件数', id: 'B0232'},
-                { label: '新規保険拠点開拓数', id: 'B0234'},
-                { label: '30日以内工事完了報告率', id: 'B0235'},
-                { label: '事故現場社員出勤率', id: 'B0236'},
+                { label: '損害サービス工事受注金額', id: 'C-B0043'},
+                { label: '損害サービス工事受注件数', id: 'C-B0044'},
+                { label: '損害調査受注金額', id: 'C-B0233'},
+                { label: '損害調査受注件数', id: 'C-B0232'},
+                { label: '新規保険拠点開拓数', id: 'C-B0234'},
+                { label: '30日以内工事完了報告率', id: 'C-B0235'},
+                { label: '事故現場社員出勤率', id: 'C-B0236'},
               ]
             },
-            { label: 'マンション管理', id: 4063,
+            { label: 'マンション管理', id: 6063,
               children: [
-                { label: '建物管理売上', id: '41070'},
-                { label: '管理手数料', id: '41040'},
-                { label: '分譲マンション新規管理受託数', id: 'B0217'},
-                { label: '新規委託契約組合数', id: 'B0410'},
-                { label: '新規見積り提出件数', id: 'B0411'},
-                { label: '管理移行検討組合数', id: 'B0412'},
-                { label: '報告書20日以内提出率', id: 'B0413'},
+                { label: '建物管理売上', id: 'M-41070'},
+                { label: '管理手数料', id: 'M-41040'},
+                { label: '分譲マンション新規管理受託数', id: 'M-B0217'},
+                { label: '新規委託契約組合数', id: 'M-B0410'},
+                { label: '新規見積り提出件数', id: 'M-B0411'},
+                { label: '管理移行検討組合数', id: 'M-B0412'},
+                { label: '報告書20日以内提出率', id: 'M-B0413'},
               ]
             },
           ]
         },
         {
-          label: 'ポラスアルファ', id: 4070,
+          label: 'ポラスアルファ', id: 6070,
           children: [
-            { label: '契約書取得率', id: 'D0001'},
-            { label: '滞納賃料当月内回収率', id: 'D0003'},
-            { label: '前月分滞納賃料回収率', id: 'D0004'},
-            { label: '新規立替サービス契約件数', id: 'D0005'},
-            { label: '新規立替サービス契約手数料', id: 'D0006'},
-            { label: '他社切替え立替えサービス契約件数', id: 'D0007'},
-            { label: '他社切替え立替えサービス契約手数料', id: 'D0008'},
-            { label: '立替サービス引受保有件数', id: 'D0009'},
-            { label: '滞納賃料立替金額', id: 'D0012'},
+            { label: '契約書取得率', id: 'D-D0001'},
+            { label: '滞納賃料当月内回収率', id: 'D-D0003'},
+            { label: '前月分滞納賃料回収率', id: 'D-D0004'},
+            { label: '新規立替サービス契約件数', id: 'D-D0005'},
+            { label: '新規立替サービス契約手数料', id: 'D-D0006'},
+            { label: '他社切替え立替えサービス契約件数', id: 'D-D0007'},
+            { label: '他社切替え立替えサービス契約手数料', id: 'D-D0008'},
+            { label: '立替サービス引受保有件数', id: 'D-D0009'},
+            { label: '滞納賃料立替金額', id: 'D-D0012'},
             { label: '滞納賃料立替件数', id: 'D0013'},
-            { label: '立替未収残高', id: 'D0014'},
+            { label: '立替未収残高', id: 'D-D0014'},
           ]
         },
         {
-          label: '業務管理 項目', id: 4080,
+          label: '業務管理 項目', id: 6080,
           children: [
-            { label: '職場巡回指摘改善数（総）　', id: 'B0600'},
-            { label: '18：00以降在社時間ﾗｲﾝ短縮（総）', id: 'B0601'},
-            { label: '総家賃延滞率（業）', id: 'B0213'},
-            { label: '更新書類回収率（業）', id: 'B0220'},
-            { label: '工事代金未収金額（業）　　　　　　　', id: 'B0067'},
-            { label: '賃貸仲介手数料（品）', id: 'B0231'},
-            { label: '新規管理受託他社（品）', id: 'B0602'},
-            { label: 'システム開発進捗率（品）', id: 'B0603'},
-            { label: '初期修理発生率（品）', id: 'B0604'},
-            { label: '室内デザインパック受注件数（品）', id: 'B0605'},
-            { label: '修理未完了件数（カ）', id: 'B0606'},
-            { label: '売買粗利益（売）', id: 'B0607'},
-            { label: '経常利益PH', id: 'B0017'},
-            { label: '粗利益PH', id: 'B0016'},
+            { label: '職場巡回指摘改善数（総）　', id: 'G-B0600'},
+            { label: '18：00以降在社時間ﾗｲﾝ短縮（総）', id: 'G-B0601'},
+            { label: '総家賃延滞率（業）', id: 'G-B0213'},
+            { label: '更新書類回収率（業）', id: 'G-B0220'},
+            { label: '工事代金未収金額（業）', id: 'G-B0067'},
+            { label: '賃貸仲介手数料（品）', id: 'G-B0231'},
+            { label: '新規管理受託他社（品）', id: 'G-B0602'},
+            { label: 'システム開発進捗率（品）', id: 'G-B0603'},
+            { label: '初期修理発生率（品）', id: 'G-B0604'},
+            { label: '室内デザインパック受注件数（品）', id: 'G-B0605'},
+            { label: '修理未完了件数（カ）', id: 'G-B0606'},
+            { label: '売買粗利益（売）', id: 'G-B0607'},
+            { label: '経常利益PH', id: 'G-B0017'},
+            { label: '粗利益PH', id: 'G-B0016'},
           ]
         },
         {
-          label: 'ハートフル 項目', id: 4100,
+          label: 'ハートフル 項目', id: 6100,
           children: [
-            { label: '営業紹介', id: 'C0001'},
-            { label: '業者紹介', id: 'C0002'},
-            { label: '社員紹介', id: 'C0003'},
+            { label: '営業紹介', id: 'X-C0001'},
+            { label: '業者紹介', id: 'X-C0002'},
+            { label: '社員紹介', id: 'X-C0003'},
           ]
         },
       ]
@@ -317,7 +317,7 @@ $(function() {
           var node = event.node;
           var num = parseInt(node.id);
           if(isNaN(num) == false){
-            if(num >= 3000){
+            if(num >= 6000){
               $('#tree-item').tree('removeFromSelection', node);
             }
           }
@@ -381,20 +381,44 @@ function graph_disp(){
 }
 
 </script>
-
 <% content_for :sidebar do %>
-      <div id="sidebar" class="span2" style="padding-left:10px;padding-right:10px;">
-        <ul class="nav nav-list well">
-          <div id="tree-yyyymm"></div>
-          <div id="tree-dept"></div>
-          <div id="tree-item"></div>
+
+    <div id="sidebar" class="span2" style="padding-left:10px;padding-right:10px;width:250px;">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_month" data-toggle="tab" style=";padding:10px 15px 5px 15px;width:80px;text-align: center;">月次</a></li>
+        <li><a href="#tab_daily" data-toggle="tab" style="padding:10px 15px 5px 15px;width:80px;text-align: center;">日次</a></li>
+      </ul>
+      <div id="myTabContent_search" class="tab-content">
+        <div class="tab-pane fade active in" id="tab_month" style="padding:0;margin:0">
 
           <%= form_tag performances_path ,:name=>"frm" do %>
             <%= hidden_field_tag 'yyyymm', '' %>
             <%= hidden_field_tag 'item', '' %>
             <%= hidden_field_tag 'dept', '' %>
-            <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-top:20px;', :onClick=>"javascript:graph_disp();" %>
+
+              <ul class="nav nav-list well" >
+                <div style="text-align: center;">
+                  <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-bottom:15px;margin-top:0px;', :onClick=>"javascript:graph_disp();" %>
+                </div>
+
+                <div id="tree-yyyymm"></div>
+                <div id="tree-dept"></div>
+                <div id="tree-item"></div>
+
+                <div style="text-align: center;">
+                  <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-top:20px;', :onClick=>"javascript:graph_disp();" %>
+                </div>
+              </ul>
           <% end %>
-        </ul>
-      </div><!-- /span3 -->
+
+        </div>
+        <div class="tab-pane fade" id="tab_daily" >
+          指定月の新規来店客数の日別来店客数などを出す。
+        </div>
+      </div>
+    </div>
+
+
+
+
 <% end %>

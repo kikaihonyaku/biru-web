@@ -22,7 +22,8 @@ class PerformancesController < ApplicationController
     #################
     # 項目指定
     #################
-    item = Item.find_by_code(params[:item])
+    #  項目CDの先頭には２文字、ID重複しないためのキーが入っているので、それを除いて使用
+    item = Item.find_by_code(params[:item].slice(2, params[:item].length - 2))
 
     #################
     # 部署判定
@@ -113,18 +114,20 @@ class PerformancesController < ApplicationController
 #      f.series(name: yyyy.to_s + '年度実績', data: this_year_results, type: "column", color: '#d9534f')
 #    end
 
-
     ##################################
     # 年計グラフを作成
     ##################################
-    # 指定した月で最小の月-12ヶ月を取得する。
-    min_month = ""
+    # 指定した月で最小の月+12ヶ月を取得する。
+    min_month = nil
     year_sum = monthly.select("MIN(yyyymm) as yyyymm")
     year_sum.each do |rec|
       min_month = rec.yyyymm
     end
 
-    dt = Date.parse(min_month + '01').strftime("%y/%m/%d")
+    if min_month
+      # 指定した月が存在したらそこからマイナス
+      month = Date.parse(min_month + '01').strftime("%y%m")
+    end
 
     ##############################################
     # グループ部署の時、子部署の実績を線グラフで表示する。
@@ -135,14 +138,15 @@ class PerformancesController < ApplicationController
         f.xAxis(categories: categories.collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
         #f.series(name: '実績', data: this_year_results, type: "spline")
 
+        # 凡例
         f.legend(
             layout: 'vertical',
             backgroundColor: '#FFFFFF',
             floating: true,
-            align: 'left',
-            x: 100,
+            align: 'right',
+            x: 0,
             verticalAlign: 'top',
-            y: 20
+            y: 0
         )
 
         dept_arr.each do |dept_id|
