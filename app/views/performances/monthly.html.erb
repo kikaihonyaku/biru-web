@@ -1,4 +1,4 @@
-<%= render :partial=>'sidebar' %>
+<%= render :partial=>'sidebar', :locals=>{:val => 1} %>
 
 <div style="text-align: center;margin: 0 auto;">
   <div style="width:60%;text-align: right;margin: 0 auto;"><%= high_chart("chart-1", @plan_result) %></div>

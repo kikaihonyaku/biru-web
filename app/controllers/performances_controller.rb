@@ -71,7 +71,6 @@ class PerformancesController < ApplicationController
     # 今年度の計画実績
     this_year_monthly = monthly.where("yyyymm>=" + yyyymm_s)
     this_year_monthly = this_year_monthly.where("yyyymm<=" + yyyymm_e)
-
     this_year_monthly = this_year_monthly.group("yyyymm").select(func_summary + "(plan_value) as plan_value," + func_summary +" (result_value) as result_value, yyyymm")
 
     ##################################
@@ -265,31 +264,99 @@ class PerformancesController < ApplicationController
     end
 
     category_arr = []
-    biru_age_arr = []
+    biru_age_apmn = [] # アパート・マンション
+    biru_age_bmmn = [] # 分譲マンション
+    biru_age_kodt = [] # 戸建て
+    biru_age_etc = []  # その他
 
     while min_age <= max_age
-      base.select('count(buildings.code) as cnt').where('biru_age = ?', min_age ).each do |rec|
-        category_arr.push(min_age)
-        biru_age_arr.push(rec.cnt)
+
+      category_arr.push(min_age)
+
+      apmn_cnt = 0
+      bnmn_cnt = 0
+      kodt_cnt = 0
+      etc_cnt = 0
+
+      base.select('count(buildings.code) as cnt, build_types.code as biru_type_cd').where('biru_age = ?', min_age ).group('build_types.code').each do |rec|
+
+        case rec.biru_type_cd
+        when '01010', '01020'
+          # アパート・マンション
+          apmn_cnt = apmn_cnt + rec.cnt
+        when '01015'
+          # 分譲マンション
+          bnmn_cnt = bnmn_cnt + rec.cnt
+
+        when '01025'
+          # 戸建て
+          kodt_cnt = kodt_cnt + rec.cnt
+
+        else
+          # それ以外のもの
+          etc_cnt = etc_cnt + rec.cnt
+        end
       end
+
+      biru_age_apmn.push(apmn_cnt)
+      biru_age_bmmn.push(bnmn_cnt)
+      biru_age_kodt.push(kodt_cnt)
+      biru_age_etc.push(etc_cnt)
 
       min_age = min_age + 1
     end
 
     # 棟数別
     @build_sum = LazyHighCharts::HighChart.new('graph') do |f|
+
+      f.chart(
+        renderTo: 'container',
+        type: 'column'
+      )
+
+      # 凡例
+      f.legend(
+          layout: 'vertical',
+          reversed: true,
+          backgroundColor: '#FFFFFF',
+          floating: true,
+          align: 'right',
+          x: -20,
+          verticalAlign: 'top',
+          y: 100
+      )
+
       f.title(text: params[:shop_nm] + 'の築年数(棟数別)')
       f.xAxis(categories: category_arr, tickInterval: 2) # 1とかは列の間隔の指定
-      f.series(name: '築年数', data: biru_age_arr, type: "column")
+      f.series(name: 'その他', data: biru_age_etc, type: "column")
+      f.series(name: '戸建て', data: biru_age_kodt, type: "column")
+      f.series(name: '分譲Ｍ', data: biru_age_bmmn, type: "column")
+      f.series(name: 'アパマン', data: biru_age_apmn, type: "column")
+      f.plotOptions(
+        column: {stacking: 'normal',
+            dataLabels: {
+              enabled: false,
+              color: 'red'|| 'white' || 'blue'
+            }
+        }
+      )
     end
 
     # 内訳一覧を表示する。
-    @biru_detail = base.select('buildings.code, buildings.name, shops.name as shop_nm, build_types.name as build_type_nm, biru_age, manage_types.name as manage_type_name').where('biru_age < 100').order('biru_age')
+    @biru_detail = base.select('buildings.code, buildings.name, shops.name as shop_nm, build_types.name as build_type_nm, biru_age, manage_types.name as manage_type_name').where('biru_age < 100').order('biru_age').order('build_types.id')
 
     #####################################
     # 営業所別・物件種別ごとを出す(物件種別別)
     #####################################
+    biru_type_ap = []  # アパート
+    biru_type_ko = []  # 戸建て
+    biru_type_bun = [] # 分譲M
+    biru_type_etc = [] # その他
+    
+#    def_bm = Build_type.find_by_code().id  # 分譲M
+    @biru_detail.each do |rec|
 
+    end
 
 
     ###############################
@@ -312,5 +379,6 @@ class PerformancesController < ApplicationController
    # @arr = manage_types
   end
 
+  @active_biru_age = ""
 
 end

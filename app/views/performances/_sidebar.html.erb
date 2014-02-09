@@ -504,14 +504,15 @@ function build_age_disp(){
 </script>
 <% content_for :sidebar do %>
 
+
     <div id="sidebar" class="span2" style="padding-left:10px;padding-right:10px;width:250px;">
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab_month" data-toggle="tab" style=";padding:10px 10px 5px 10px;width:50px;text-align: center;">月次</a></li>
+        <li <%= if val == 1 then raw('class="active"') end %>><a href="#tab_month" data-toggle="tab" style=";padding:10px 10px 5px 10px;width:50px;text-align: center;">月次</a></li>
         <li><a href="#tab_daily" data-toggle="tab" style="padding:10px 10px 5px 10px;width:50px;text-align: center;">日次</a></li>
-        <li><a href="#tab_etc" data-toggle="tab" style="padding:10px 5px 5px 5px;width:60px;text-align: center;">築年数</a></li>
+        <li  <%= if val == 2 then raw('class="active"') end %>><a href="#tab_etc" data-toggle="tab" style="padding:10px 5px 5px 5px;width:60px;text-align: center;">築年数</a></li>
       </ul>
       <div id="myTabContent_search" class="tab-content">
-        <div class="tab-pane fade active in" id="tab_month" style="padding:0;margin:0">
+        <div class="tab-pane fade <%= if val == 1 then raw('active in') end %>" id="tab_month" style="padding:0;margin:0">
 
           <%= form_tag performances_monthly_path ,:name=>"frm" do %>
             <%= hidden_field_tag 'yyyymm', '' %>
@@ -538,7 +539,7 @@ function build_age_disp(){
         <div class="tab-pane fade" id="tab_daily" >
           指定月の新規来店客数の日別来店客数などを出す。
         </div>
-        <div class="tab-pane fade" id="tab_etc" >
+        <div class="tab-pane fade <%= if val == 2 then raw('active in') end %>" id="tab_etc" >
 
           <%= form_tag performances_build_age_path ,:name=>"frm_build_age" do %>
             <%= hidden_field_tag 'shop', '' %>

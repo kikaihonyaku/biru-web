@@ -1,4 +1,4 @@
-<%= render :partial=>'sidebar' %>
+<%= render :partial=>'sidebar', :locals=>{:val => 2} %>
 
 <script type="text/javascript">
 
@@ -42,10 +42,10 @@
     <thead>
       <tr>
         <th>築年数</th>
+        <th>物件種別</th>
         <th>営業所名</th>
         <th>建物CD</th>
         <th>建物名</th>
-        <th>物件種別</th>
         <th>管理方式</th>
       </tr>
     </thead>
@@ -53,10 +53,10 @@
       <% @biru_detail.each do |biru| %>
       <tr>
         <td style="text-align: center"><%= biru.biru_age.to_s + '年' %></td>
+        <td><%= biru.build_type_nm %></td>
         <td><%= biru.shop_nm %></td>
         <td><%= biru.code %></td>
         <td><%= biru.name %></td>
-        <td><%= biru.build_type_nm %></td>
         <td><%= biru.manage_type_name %></td>
       </tr>
       <% end %>
