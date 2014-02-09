@@ -6,12 +6,16 @@ class PerformancesController < ApplicationController
     #################
     # パラメータチェック
     #################
-    if (params[:yyyymm] == nil) or (params[:item] == nil) or (params[:dept] == nil)
-      # パラメータが指定されていない
-      render 'index_def'
-      return
-    end
+#    if (params[:yyyymm] == nil) or (params[:item] == nil) or (params[:dept] == nil)
+#      # パラメータが指定されていない
+#      render 'index_def'
+#      return
+#    end
 
+  end
+
+  # 月次情報
+  def monthly
     #################
     # 年度指定
     #################
@@ -24,6 +28,17 @@ class PerformancesController < ApplicationController
     #################
     #  項目CDの先頭には２文字、ID重複しないためのキーが入っているので、それを除いて使用
     item = Item.find_by_code(params[:item].slice(2, params[:item].length - 2))
+
+    # 集計種別を取得 1:合計 2:平均 3:最大
+    p "集計種別：" + params[:item_summary]
+    case params[:item_summary].to_i
+    when 1
+      func_summary = "SUM"
+    when 2
+      func_summary = "AVG"
+    when 3
+      func_summary = "SUM" # だたしこの時は年計は出さない
+    end
 
     #################
     # 部署判定
@@ -56,7 +71,8 @@ class PerformancesController < ApplicationController
     # 今年度の計画実績
     this_year_monthly = monthly.where("yyyymm>=" + yyyymm_s)
     this_year_monthly = this_year_monthly.where("yyyymm<=" + yyyymm_e)
-    this_year_monthly = this_year_monthly.group("yyyymm").select("SUM(plan_value) as plan_value, SUM(result_value) as result_value, yyyymm")
+
+    this_year_monthly = this_year_monthly.group("yyyymm").select(func_summary + "(plan_value) as plan_value," + func_summary +" (result_value) as result_value, yyyymm")
 
     ##################################
     # 今年度の計画／実績と、昨年の実績を取得
@@ -77,7 +93,7 @@ class PerformancesController < ApplicationController
       # 前年実績
       prev_year = rec.yyyymm.slice(0..3).to_i - 1
       prev_year_monthly = monthly.where("yyyymm = " + prev_year.to_s + rec.yyyymm.slice(4..5))
-      prev_year_monthly = prev_year_monthly.group("yyyymm").select("SUM(plan_value) as plan_value, SUM(result_value) as result_value, yyyymm")
+      prev_year_monthly = prev_year_monthly.group("yyyymm").select(func_summary + "(plan_value) as plan_value, " + func_summary + "(result_value) as result_value, yyyymm")
 
       reg_flg = false
       prev_year_monthly.each do |rec2|
@@ -114,54 +130,57 @@ class PerformancesController < ApplicationController
 #      f.series(name: yyyy.to_s + '年度実績', data: this_year_results, type: "column", color: '#d9534f')
 #    end
 
-    ##################################
-    # 年計グラフを作成
-    ##################################
+    ############################################################################
+    # 集計種別が「最大」でない時、年計グラフを作成（管理戸数の累計などだしても意味が無いから）
+    ############################################################################
     # 指定した月で最小の月+12ヶ月を取得する。
-    min_month = nil
-    max_month = nil
-    year_sum = monthly.select("MIN(yyyymm) as yyyymm_min, MAX(yyyymm) as yyyymm_max").where("result_value > 0")
-    year_sum.each do |rec|
-      min_month = rec.yyyymm_min
-      max_month = rec.yyyymm_max
-    end
+    if params[:item_summary].to_i != 3
+      min_month = nil
+      max_month = nil
+      year_sum = monthly.select("MIN(yyyymm) as yyyymm_min, MAX(yyyymm) as yyyymm_max").where("result_value > 0")
+      year_sum.each do |rec|
+        min_month = rec.yyyymm_min
+        max_month = rec.yyyymm_max
+      end
 
-    if min_month
-      dt_start = Date.parse(min_month + '01') # 最小月
-      dt_end = dt_start >> 11 # ＋11ヶ月後
-      dt_max = Date.parse(max_month + '01') # 最大月
+      if min_month
+        dt_start = Date.parse(min_month + '01') # 最小月
+        dt_end = dt_start >> 11 # ＋11ヶ月後
+        dt_max = Date.parse(max_month + '01') # 最大月
 
-      # データが12ヶ月以上ある場合、年計グラフを作成する
-      if dt_end <= dt_max
+        # データが12ヶ月以上ある場合、年計グラフを作成する
+        if dt_end <= dt_max
 
-        year_category = []
-        year_result = []
+          year_category = []
+          year_result = []
 
-        while dt_end <= dt_max
+          while dt_end <= dt_max
 
-          #p dt_end.strftime("%Y%m")
+            #p dt_end.strftime("%Y%m")
 
-          year_category.push(dt_end.strftime("%Y%m"))
+            year_category.push(dt_end.strftime("%Y%m"))
 
-          year_sum_v2 = monthly.where("yyyymm between ? and ?", dt_start.strftime("%Y%m"), dt_end.strftime("%Y%m") ).select("SUM(result_value) as result_value")
-          year_sum_v2.each do |rec|
-            p rec.result_value
-            year_result.push(rec.result_value.to_f)
+            year_sum_v2 = monthly.where("yyyymm between ? and ?", dt_start.strftime("%Y%m"), dt_end.strftime("%Y%m") ).select(func_summary + "(result_value) as result_value")
+            year_sum_v2.each do |rec|
+              p rec.result_value
+              year_result.push(rec.result_value.to_f)
+            end
+
+            # 1ヶ月進める
+            dt_start = dt_start >> 1
+            dt_end = dt_end >> 1
+
+
           end
 
-          # 1ヶ月進める
-          dt_start = dt_start >> 1
-          dt_end = dt_end >> 1
+          interval = ((year_category.length)/12).to_i + 1
 
+          @year_result = LazyHighCharts::HighChart.new('graph') do |f|
+            f.title(text: dept_name + 'の' + item.name + 'の年計')
+            f.xAxis(categories: year_category, tickInterval: interval) # 1とかは列の間隔の指定
+            f.series(name: '実績', data: year_result, type: "column")
+          end
 
-        end
-
-        interval = ((year_category.length)/12).to_i + 1
-
-        @year_result = LazyHighCharts::HighChart.new('graph') do |f|
-          f.title(text: dept_name + 'の' + item.name + 'の年計')
-          f.xAxis(categories: year_category, tickInterval: interval) # 1とかは列の間隔の指定
-          f.series(name: '実績', data: year_result, type: "column")
         end
 
       end
@@ -210,9 +229,88 @@ class PerformancesController < ApplicationController
         end
       end
     end # if
-
-
-
+    
   end
+
+
+  # 築年数
+  def build_age
+
+    # 対象の営業所IDを取得する
+    shops = []
+    Shop.find_all_by_code(params[:shop].split(',')).each do |shop|
+      shops.push(shop.id)
+    end
+
+    # 対象の管理方式（B管理・D管理・業務君）を取得する
+    manage_types = []
+    ManageType.find_all_by_code([3,6,10]).each do |manage_type|
+      manage_types.push(manage_type.id)
+    end
+
+    # 対象の建物を取得する。Baseの項目を取得する。
+    base = Building.joins(:trusts => :manage_type).joins(:shop).joins(:build_type).scoped
+    base = base.where("buildings.shop_id In (?)", shops)
+    base = base.where("trusts.manage_type_id In (?)", manage_types)
+
+    ###############################
+    # 営業所別の築年数を出す(棟数別)
+    ###############################
+    # 築年数の最小と最大を取得(棟数別)
+    min_age = nil
+    max_age = nil
+    base.select('MIN(biru_age) as min_age, MAX(biru_age) as max_age').where('biru_age < 100').each do |rec|
+      min_age = rec.min_age
+      max_age = rec.max_age
+    end
+
+    category_arr = []
+    biru_age_arr = []
+
+    while min_age <= max_age
+      base.select('count(buildings.code) as cnt').where('biru_age = ?', min_age ).each do |rec|
+        category_arr.push(min_age)
+        biru_age_arr.push(rec.cnt)
+      end
+
+      min_age = min_age + 1
+    end
+
+    # 棟数別
+    @build_sum = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: params[:shop_nm] + 'の築年数(棟数別)')
+      f.xAxis(categories: category_arr, tickInterval: 2) # 1とかは列の間隔の指定
+      f.series(name: '築年数', data: biru_age_arr, type: "column")
+    end
+
+    # 内訳一覧を表示する。
+    @biru_detail = base.select('buildings.code, buildings.name, shops.name as shop_nm, build_types.name as build_type_nm, biru_age, manage_types.name as manage_type_name').where('biru_age < 100').order('biru_age')
+
+    #####################################
+    # 営業所別・物件種別ごとを出す(物件種別別)
+    #####################################
+
+
+
+    ###############################
+    # 営業所別・築年数を出す(戸数別)
+    ###############################
+    
+    # 戸数別
+
+
+
+    # 戸数・間取り別
+
+    # 戸数・部屋種別別
+    #
+    ###############################
+    # 営業所別・間取り別の築年数を出す(戸数別)
+    ###############################
+
+
+   # @arr = manage_types
+  end
+
 
 end

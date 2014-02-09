@@ -1,14 +1,6 @@
 <%= render :partial=>'sidebar' %>
 
-<div style="text-align: center;margin: 0 auto;">
-  <div style="width:60%;text-align: right;margin: 0 auto;"><%= high_chart("chart-1", @plan_result) %></div>
-  <!-- <div style="width:70%;text-align: right;margin: 0 auto;"><%#= high_chart("chart-2", @year_on_year) %></div>-->
-  <% if @group_result %>
-    <div style="width:60%;text-align: right;margin: 0 auto;"><%= high_chart("chart-2", @group_result) %></div>
-  <% end %>
-  <% if @year_result %>
-    <div style="width:60%;text-align: right;margin: 0 auto;"><%= high_chart("chart-3", @year_result) %></div>
-  <% end %>
+<div class="hero-unit" style="width:55%;margin-left:280px;margin-top:55px;">
+    <h1>ビル管理&nbsp;業績分析</h1>
+    <p>年度(月度)・部署・項目を選択してグラフ表示ボタンを押下してください。</p>
 </div>
-
-

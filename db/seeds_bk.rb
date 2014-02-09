@@ -2,21 +2,6 @@
 
 require 'csv'
 require 'kconv'
-require 'date'
-
-# 文字列を日付に変換
-def custom_parse(str)
-  date = nil
-  if str && !str.empty? #railsなら、if str.present? を使う
-    begin
-      date = DateTime.parse(str)
-    # parseで処理しきれない場合
-    rescue ArgumentError
-    end
-  end
-  return date
-end 
-
 
 #------------------------------
 # 路線マスタ／駅マスタを登録します。
@@ -258,33 +243,33 @@ def init_shop
   show_arr = []
 
   # 東武支店
-  show_arr.push({:code=>3, :name=>'草加営業所', :address=>'埼玉県草加市氷川町2131番地3', :area_id=>1, :group_id=>1, :tel=>'0120-278-342', :tel2=>'048-927-8311', :holiday=>'水曜'})
-  show_arr.push({:code=>11, :name=>'草加新田営業所', :address=>'埼玉県草加市金明町276', :area_id=>1, :group_id=>1, :tel=>'0120-702-728', :tel2=>'048-930-2300', :holiday=>'火曜'})
-  show_arr.push({:code=>16, :name=>'北千住営業所', :address=>'東京都足立区千住3-1 石黒ビル2F', :area_id=>1, :group_id=>1, :tel=>'0120-956-776', :tel2=>'03-5813-1741', :holiday=>'水曜'})
-  show_arr.push({:code=>1, :name=>'南越谷営業所', :address=>'埼玉県越谷市南越谷1-20-17　中央ビル管理本社ビル内1F', :area_id=>2, :group_id=>1, :tel=>'0120-754-215', :tel2=>'048-988-8800', :holiday=>'無休'})
-  show_arr.push({:code=>18, :name=>'越谷営業所', :address=>'埼玉県越谷市赤山本町2-14', :area_id=>2, :group_id=>1, :tel=>'0120-948-909', :tel2=>'048-969-0111', :holiday=>'水曜'})
-  show_arr.push({:code=>8, :name=>'北越谷営業所', :address=>'埼玉県越谷市大沢3-19-17', :area_id=>3, :group_id=>1, :tel=>'0120-304-137', :tel2=>'048-979-4455', :holiday=>'水曜'})
-  show_arr.push({:code=>7, :name=>'春日部営業所', :address=>'埼玉県春日部市中央1-2-5', :area_id=>3, :group_id=>1, :tel=>'0120-675-488', :tel2=>'048-793-5488', :holiday=>'火曜'})
-  show_arr.push({:code=>21, :name=>'せんげん台営業所', :address=>'埼玉県越谷市千間台東1-8-1', :area_id=>3, :group_id=>1, :tel=>'0120-929-979', :tel2=>'048-973-3530', :holiday=>'火・水曜'})
+  show_arr.push({:code=>3, :name=>'草加営業所', :address=>'埼玉県草加市氷川町2131番地3', :area_id=>1, :group_id=>1, :tel=>'0120-278-342', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>11, :name=>'草加新田営業所', :address=>'埼玉県草加市金明町276', :area_id=>1, :group_id=>1, :tel=>'0120-702-728', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>16, :name=>'北千住営業所', :address=>'東京都足立区千住3-1 石黒ビル2F', :area_id=>1, :group_id=>1, :tel=>'0120-956-776', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>1, :name=>'南越谷営業所', :address=>'埼玉県越谷市南越谷1-20-17　中央ビル管理本社ビル内1F', :area_id=>2, :group_id=>1, :tel=>'0120-754-215', :tel2=>'xxx-xxxx-xxxx', :holiday=>'無休'})
+  show_arr.push({:code=>18, :name=>'越谷営業所', :address=>'埼玉県越谷市赤山本町2-14', :area_id=>2, :group_id=>1, :tel=>'0120-948-909', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>8, :name=>'北越谷営業所', :address=>'埼玉県越谷市大沢3-19-17', :area_id=>3, :group_id=>1, :tel=>'0120-304-137', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>7, :name=>'春日部営業所', :address=>'埼玉県春日部市中央1-2-5', :area_id=>3, :group_id=>1, :tel=>'0120-675-488', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>21, :name=>'せんげん台営業所', :address=>'埼玉県越谷市千間台東1-8-1', :area_id=>3, :group_id=>1, :tel=>'0120-929-979', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
 
   # さいたま支店
-  show_arr.push({:code=>2, :name=>'戸田営業所', :address=>'埼玉県戸田市大字新曽353-6', :area_id=>11, :group_id=>2, :tel=>'0120-654-021', :tel2=>'048-441-4021', :holiday=>'火曜'})
-  show_arr.push({:code=>5, :name=>'武蔵浦和営業所', :address=>'埼玉県さいたま市南区別所7-9-5', :area_id=>12, :group_id=>2, :tel=>'0120-634-315', :tel2=>'048-838-8822', :holiday=>'水曜'})
-  show_arr.push({:code=>15, :name=>'川口営業所', :address=>'埼玉県川口市川口1-1-1 キュポ・ラ専門店1F', :area_id=>13, :group_id=>2, :tel=>'0120-163-366', :tel2=>'048-227-3366', :holiday=>'水曜'})
-  show_arr.push({:code=>17, :name=>'浦和営業所', :address=>'埼玉県さいたま市浦和区東仲町11-23 3F', :area_id=>14, :group_id=>2, :tel=>'0120-953-833', :tel2=>'048-871-2161', :holiday=>'火・水曜'})
-  show_arr.push({:code=>13, :name=>'与野営業所', :address=>'埼玉県さいたま市浦和区上木崎1丁目8-10', :area_id=>15, :group_id=>2, :tel=>'0120-234-495', :tel2=>'048-823-4388', :holiday=>'水曜'})
-  show_arr.push({:code=>10, :name=>'東浦和営業所', :address=>'埼玉県さいたま市緑区東浦和1-14-7', :area_id=>16, :group_id=>2, :tel=>'0120-817-455', :tel2=>'048-876-1611', :holiday=>'水曜'})
-  show_arr.push({:code=>6, :name=>'東川口営業所', :address=>'埼玉県川口市東川口2丁目3-35 サクセスＩＭ1F', :area_id=>17, :group_id=>2, :tel=>'0120-643-552', :tel2=>'048-297-3552', :holiday=>'火曜'})
-  show_arr.push({:code=>14, :name=>'戸塚安行営業所', :address=>'埼玉県川口市長蔵1-16-19 クレアーレ1F', :area_id=>18, :group_id=>2, :tel=>'0120-577-933', :tel2=>'048-291-0011', :holiday=>'火曜'})
+  show_arr.push({:code=>2, :name=>'戸田営業所', :address=>'埼玉県戸田市大字新曽353-6', :area_id=>11, :group_id=>2, :tel=>'0120-654-021', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>5, :name=>'武蔵浦和営業所', :address=>'埼玉県さいたま市南区別所7-9-5', :area_id=>12, :group_id=>2, :tel=>'0120-634-315', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>15, :name=>'川口営業所', :address=>'埼玉県川口市川口1-1-1 キュポ・ラ専門店1F', :area_id=>13, :group_id=>2, :tel=>'0120-163-366', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>17, :name=>'浦和営業所', :address=>'埼玉県さいたま市浦和区東仲町11-23 3F', :area_id=>14, :group_id=>2, :tel=>'0120-953-833', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
+  show_arr.push({:code=>13, :name=>'与野営業所', :address=>'埼玉県さいたま市浦和区上木崎1丁目8-10', :area_id=>15, :group_id=>2, :tel=>'0120-234-495', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>10, :name=>'東浦和営業所', :address=>'埼玉県さいたま市緑区東浦和1-14-7', :area_id=>16, :group_id=>2, :tel=>'0120-817-455', :tel2=>'xxx-xxxx-xxxx', :holiday=>'水曜'})
+  show_arr.push({:code=>6, :name=>'東川口営業所', :address=>'埼玉県川口市東川口2丁目3-35 サクセスＩＭ1F', :area_id=>17, :group_id=>2, :tel=>'0120-643-552', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>14, :name=>'戸塚安行営業所', :address=>'埼玉県川口市長蔵1-16-19 クレアーレ1F', :area_id=>18, :group_id=>2, :tel=>'0120-577-933', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
 
   # 千葉支店
-  show_arr.push({:code=>19, :name=>'松戸営業所', :address=>'千葉県松戸市本町18-6 壱番館ビル3Ｆ', :area_id=>21, :group_id=>3, :tel=>'0120-981-703', :tel2=>'047-703-5300', :holiday=>'火・水曜'})
-  show_arr.push({:code=>4, :name=>'北松戸営業所', :address=>'千葉県松戸市上本郷900－2 中央第10北松戸ビル1Ｆ', :area_id=>22, :group_id=>3, :tel=>'0120-518-655', :tel2=>'047-364-8655', :holiday=>'火・水曜'})
-  show_arr.push({:code=>12, :name=>'南流山営業所', :address=>'千葉県流山市南流山1-1-14', :area_id=>23, :group_id=>3, :tel=>'0120-477-512', :tel2=>'04-7178-8288', :holiday=>'火曜'})
-  show_arr.push({:code=>9, :name=>'柏営業所', :address=>'千葉県柏市あけぼの1-1-2', :area_id=>24, :group_id=>3, :tel=>'0120-708-251', :tel2=>'04-7142-8866', :holiday=>'火・水曜'})
+  show_arr.push({:code=>19, :name=>'松戸営業所', :address=>'千葉県松戸市本町18-6 壱番館ビル3Ｆ', :area_id=>21, :group_id=>3, :tel=>'0120-981-703', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
+  show_arr.push({:code=>4, :name=>'北松戸営業所', :address=>'千葉県松戸市上本郷900－2 中央第10北松戸ビル1Ｆ', :area_id=>22, :group_id=>3, :tel=>'0120-518-655', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
+  show_arr.push({:code=>12, :name=>'南流山営業所', :address=>'千葉県流山市南流山1-1-14', :area_id=>23, :group_id=>3, :tel=>'0120-477-512', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火曜'})
+  show_arr.push({:code=>9, :name=>'柏営業所', :address=>'千葉県柏市あけぼの1-1-2', :area_id=>24, :group_id=>3, :tel=>'0120-708-251', :tel2=>'xxx-xxxx-xxxx', :holiday=>'火・水曜'})
 
   # 法人課
-  show_arr.push({:code=>91, :name=>'法人課', :address=>'埼玉県越谷市南越谷４丁目９−６', :area_id=>30, :group_id=>4, :tel=>'0120-922-597', :tel2=>'048-989-0705', :holiday=>'無休'})
+  show_arr.push({:code=>91, :name=>'法人課', :address=>'埼玉県越谷市南越谷４丁目９−６', :area_id=>30, :group_id=>4, :tel=>'0120-922-597', :tel2=>'xxx-xxxx-xxxx', :holiday=>'無休'})
 
   # ダミー　支店など用
   #show_arr.push({:code=>99, :name=>'ダミー', :address=>'', :area_id=>90, :group_id=>9})
@@ -330,24 +315,24 @@ end
 #-------------
 # 物件種別の登録
 #-------------
-def init_biru_type(prefix)
+def init_biru_type
   type_arr = []
 
-  type_arr.push({:name=>'マンション', :code=>'01010', :icon=> prefix + '/assets/marker_yellow.png'})
-  type_arr.push({:name=>'分譲マンション', :code=>'01015', :icon=> prefix + '/assets/marker_purple.png'})
-  type_arr.push({:name=>'アパート', :code=>'01020', :icon=> prefix + '/assets/marker_blue.png'})
-  type_arr.push({:name=>'一戸建貸家', :code=>'01025', :icon=> prefix + '/assets/marker_red.png'})
-  type_arr.push({:name=>'テラスハウス', :code=>'01030', :icon=> prefix + '/assets/marker_orange.png'})
-  type_arr.push({:name=>'メゾネット', :code=>'01035', :icon=> prefix + '/assets/marker_green.png'})
-  type_arr.push({:name=>'店舗', :code=>'01040', :icon=> prefix + '/assets/marker_gray.png'})
-  type_arr.push({:name=>'店舗付住宅', :code=>'01045', :icon=> prefix + '/assets/marker_gray.png'})
-  type_arr.push({:name=>'事務所', :code=>'01050', :icon=> prefix + '/assets/marker_gray.png'})
-  type_arr.push({:name=>'工場', :code=>'01055', :icon=> prefix + '/assets/marker_gray.png'})
-  type_arr.push({:name=>'倉庫', :code=>'01060', :icon=> prefix + '/assets/marker_gray.png'})
-  type_arr.push({:name=>'倉庫事務所', :code=>'01065', :icon=> prefix + '/assets/marker_gray.png'})
-  type_arr.push({:name=>'工場倉庫', :code=>'01070', :icon=> prefix + '/assets/marker_gray.png'})
-  type_arr.push({:name=>'定期借地権', :code=>'01085', :icon=> prefix + '/assets/marker_gray.png'})
-  type_arr.push({:name=>'その他', :code=>'01998', :icon=> prefix + '/assets/marker_white.png'})
+  type_arr.push({:name=>'マンション', :code=>'01010', :icon=>'/assets/marker_yellow.png'})
+  type_arr.push({:name=>'分譲マンション', :code=>'01015', :icon=>'/assets/marker_purple.png'})
+  type_arr.push({:name=>'アパート', :code=>'01020', :icon=>'/assets/marker_blue.png'})
+  type_arr.push({:name=>'一戸建貸家', :code=>'01025', :icon=>'/assets/marker_red.png'})
+  type_arr.push({:name=>'テラスハウス', :code=>'01030', :icon=>'/assets/marker_orange.png'})
+  type_arr.push({:name=>'メゾネット', :code=>'01035', :icon=>'/assets/marker_green.png'})
+  type_arr.push({:name=>'店舗', :code=>'01040', :icon=>'/assets/marker_gray.png'})
+  type_arr.push({:name=>'店舗付住宅', :code=>'01045', :icon=>'/assets/marker_gray.png'})
+  type_arr.push({:name=>'事務所', :code=>'01050', :icon=>'/assets/marker_gray.png'})
+  type_arr.push({:name=>'工場', :code=>'01055', :icon=>'/assets/marker_gray.png'})
+  type_arr.push({:name=>'倉庫', :code=>'01060', :icon=>'/assets/marker_gray.png'})
+  type_arr.push({:name=>'倉庫事務所', :code=>'01065', :icon=>'/assets/marker_gray.png'})
+  type_arr.push({:name=>'工場倉庫', :code=>'01070', :icon=>'/assets/marker_gray.png'})
+  type_arr.push({:name=>'定期借地権', :code=>'01085', :icon=>'/assets/marker_gray.png'})
+  type_arr.push({:name=>'その他', :code=>'01998', :icon=>'/assets/marker_white.png'})
 
   type_arr.each do |obj|
     biru_type = BuildType.find_or_create_by_code(obj[:code])
@@ -360,20 +345,20 @@ def init_biru_type(prefix)
 end
 
 # 管理方式の登録
-def init_manage_type(prefix)
+def init_manage_type
 
   manage_arr = []
 
-  manage_arr.push(:name=>'一般', :code=>'1', :icon=> prefix + '/assets/marker_yellow.png', :line_color=>'yellow')
-  manage_arr.push(:name=>'A管理', :code=>'2', :icon=> prefix + '/assets/marker_red.png', :line_color=>'red')
-  manage_arr.push(:name=>'B管理', :code=>'3', :icon=> prefix + '/assets/marker_blue.png', :line_color=>'darkblue')
-  manage_arr.push(:name=>'C管理', :code=>'4', :icon=> prefix + '/assets/marker_gray.png', :line_color=>'gray')
-  manage_arr.push(:name=>'D管理', :code=>'6', :icon=> prefix + '/assets/marker_purple.png', :line_color=>'purple')
-  manage_arr.push(:name=>'総務君', :code=>'7', :icon=> prefix + '/assets/marker_green.png', :line_color=>'green')
-  manage_arr.push(:name=>'特優賃', :code=>'8', :icon=> prefix + '/assets/marker_gray.png', :line_color=>'gray')
-  manage_arr.push(:name=>'定期借地', :code=>'9', :icon=> prefix + '/assets/marker_gray.png', :line_color=>'gray')
-  manage_arr.push(:name=>'業務君', :code=>'10', :icon=> prefix + '/assets/marker_orange.png', :line_color=>'orange')
-  manage_arr.push(:name=>'管理外', :code=>'99', :icon=> prefix + '/assets/marker_white.png', :line_color=>'black')
+  manage_arr.push(:name=>'一般', :code=>'1', :icon=>'/assets/marker_yellow.png', :line_color=>'yellow')
+  manage_arr.push(:name=>'A管理', :code=>'2', :icon=>'/assets/marker_red.png', :line_color=>'red')
+  manage_arr.push(:name=>'B管理', :code=>'3', :icon=>'/assets/marker_blue.png', :line_color=>'darkblue')
+  manage_arr.push(:name=>'C管理', :code=>'4', :icon=>'/assets/marker_gray.png', :line_color=>'gray')
+  manage_arr.push(:name=>'D管理', :code=>'6', :icon=>'/assets/marker_purple.png', :line_color=>'purple')
+  manage_arr.push(:name=>'総務君', :code=>'7', :icon=>'/assets/marker_green.png', :line_color=>'green')
+  manage_arr.push(:name=>'特優賃', :code=>'8', :icon=>'/assets/marker_gray.png', :line_color=>'gray')
+  manage_arr.push(:name=>'定期借地', :code=>'9', :icon=>'/assets/marker_gray.png', :line_color=>'gray')
+  manage_arr.push(:name=>'業務君', :code=>'10', :icon=>'/assets/marker_orange.png', :line_color=>'orange')
+  manage_arr.push(:name=>'管理外', :code=>'99', :icon=>'/assets/marker_white.png', :line_color=>'black')
 
   manage_arr.each do |obj|
     manage_type = ManageType.find_or_create_by_code(obj[:code])
@@ -557,19 +542,6 @@ def before_imp_init(type)
 
 end
 
-##########################
-# 自社物の登録
-##########################
-def regist_oneself(filename)
-
-	# 自社データのインポート
-  import_data_oneself(filename)
-
-	# インポートしたデータのシステム反映
-	update_imp_oneself()
-
-end
-
 # importデータの読み込み（自社）
 def import_data_oneself(filename)
 
@@ -612,6 +584,7 @@ def import_data_oneself(filename)
       imp.building_nm = row[8]
       imp.building_type_cd = row[9]
       imp.building_address = row[10]
+
       imp.room_cd = row[11]
       imp.room_nm = row[12]
       imp.room_aki = row[13]
@@ -623,7 +596,8 @@ def import_data_oneself(filename)
       imp.owner_nm = row[19]
       imp.owner_kana = row[20]
       imp.owner_address = row[21]
-      imp.build_day = row[22]
+      imp.biru_age = row[22]
+      #imp.owner_tel = row[22]
       imp.save!
 
       if imp
@@ -633,6 +607,9 @@ def import_data_oneself(filename)
       end
     end
   end
+
+  # 自社物の登録
+  update_imp_oneself()
 
 end
 
@@ -657,9 +634,9 @@ def update_imp_oneself()
 
     # 一時対応
     if owner.latitude
-      biru_geocode(owner, false)
+	    biru_geocode(owner, false)
     else
-      biru_geocode(owner, true)
+	    biru_geocode(owner, true)
     end
 
     begin
@@ -675,7 +652,7 @@ def update_imp_oneself()
   # 建物・部屋の登録
   ####################
   p "■自社物件登録（" + Time.now.to_s(:db) + "）"
-  ImpTable.group(:eigyo_cd, :eigyo_nm, :trust_cd,  :building_cd, :building_nm, :building_address, :owner_cd, :building_type_cd, :room_type_nm, :biru_age, :build_day ).select(:eigyo_cd).select(:eigyo_nm).select(:trust_cd).select(:building_cd).select(:building_nm).select(:building_address).select(:owner_cd).select(:building_type_cd).select(:room_type_nm).select(:biru_age).select(:build_day).each do |imp|
+  ImpTable.group(:eigyo_cd, :eigyo_nm, :trust_cd,  :building_cd, :building_nm, :building_address, :owner_cd, :building_type_cd, :room_type_nm, :biru_age ).select(:eigyo_cd).select(:eigyo_nm).select(:trust_cd).select(:building_cd).select(:building_nm).select(:building_address).select(:owner_cd).select(:building_type_cd).select(:room_type_nm).select(:biru_age).each do |imp|
 
     # 建物の登録
     biru = Building.unscoped.find_or_create_by_code(imp.building_cd)
@@ -685,16 +662,7 @@ def update_imp_oneself()
     biru.build_type_id = convert_biru_type(imp.building_type_cd)
     biru.room_num = imp.room_type_nm
     biru.shop_id = convert_shop(imp.eigyo_cd)
-
-    biru.build_day = imp.build_day.slice(0..3) + '/' + imp.build_day.slice(4..5) + '/' + imp.build_day.slice(6..7)
-    building_day = custom_parse(biru.build_day)
-
-    # 築年数
-    biru.biru_age = nil
-    if building_day
-      biru.biru_age = ( Date.today - building_day  ) / 365
-    end
-
+    biru.biru_age = imp.biru_age # TODO:築年数も設定する。
     biru.delete_flg = false
 
     # 一時対応
@@ -727,7 +695,7 @@ def update_imp_oneself()
       kanri_room_num = kanri_room_num + 1 # TODO:本来はB管理以上とかが必要かも。管理方式に戸数カウントフラグを持たせてそれで判定させよう。
 
       # 空き状態の設定
-      if imp_room.room_aki.to_i == 2
+      if imp_room.room_aki == 2
         room.free_state = true
         free_num = free_num + 1
         p room.building_cd.to_s + ' ' + room.code + ' ' + '空き'
@@ -926,13 +894,13 @@ end
 #init_station
 
 # 営業所登録
-init_shop
+# init_shop
 
 # 物件種別登録
-#init_biru_type('/biruweb')
+#init_biru_type
 
 # 管理方式登録rak
-#init_manage_type('/biruweb')
+#init_manage_type
 
 # 部屋種別登録
 #init_room_type
@@ -941,8 +909,7 @@ init_shop
 #init_room_layout
 
 # データの登録(自社)
-# regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
-
+#import_data_oneself(Rails.root.join( "tmp", "imp_data_20131108.csv"))
 
 # データの登録(他社)
 #import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
@@ -1657,19 +1624,19 @@ def monthly_regist(filename)
       month.dept_id = dept.id
       month.item_id = item.id
       month.yyyymm = row[2]
-      month.plan = row[3]
-      month.result = row[4]
+      month.plan_value = row[3]
+      month.result_value = row[4]
       month.save!
 
-      p sprintf("%05d", cnt)  + ' ' + month.dept.name + ' ' + month.item.name + ' ' + month.yyyymm + ' ' + month.plan.to_s + '/' + month.result.to_s
+      p sprintf("%05d", cnt)  + ' ' + month.dept.name + ' ' + month.item.name + ' ' + month.yyyymm + ' ' + month.plan_value.to_s + '/' + month.result_value.to_s
     end
   end
-
+  
 end
 
 
 # 初期化処理
-#performance_init
+performance_init
 
 # 月次情報登録
-#monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
+monthly_regist(Rails.root.join( "tmp", "monthley.csv"))

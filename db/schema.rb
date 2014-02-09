@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140129064713) do
+ActiveRecord::Schema.define(:version => 20140208114709) do
 
   create_table "backup_buildings", :force => true do |t|
     t.string   "code",                 :limit => nil
@@ -75,6 +75,7 @@ ActiveRecord::Schema.define(:version => 20140129064713) do
     t.integer  "free_num",             :default => 0
     t.integer  "owner_stop_num",       :default => 0
     t.integer  "biru_age",             :default => 0
+    t.string   "build_day"
   end
 
   add_index "buildings", ["build_type_id"], :name => "index_buildings_on_build_type_id"
@@ -131,6 +132,7 @@ ActiveRecord::Schema.define(:version => 20140129064713) do
     t.string  "building_address"
     t.string  "building_type_cd"
     t.integer "biru_age"
+    t.string  "build_day"
   end
 
   create_table "items", :force => true do |t|
