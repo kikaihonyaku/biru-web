@@ -252,9 +252,9 @@ class PerformancesController < ApplicationController
     base = base.where("buildings.shop_id In (?)", shops)
     base = base.where("trusts.manage_type_id In (?)", manage_types)
 
-    ###############################
-    # 営業所別の築年数を出す(棟数別)
-    ###############################
+    #######################################################
+    # 営業所別の築年数を出す(棟数別)(物件種別ごとの積み上げグラフ)
+    #######################################################
     # 築年数の最小と最大を取得(棟数別)
     min_age = nil
     max_age = nil
@@ -345,26 +345,11 @@ class PerformancesController < ApplicationController
     # 内訳一覧を表示する。
     @biru_detail = base.select('buildings.code, buildings.name, shops.name as shop_nm, build_types.name as build_type_nm, biru_age, manage_types.name as manage_type_name').where('biru_age < 100').order('biru_age').order('build_types.id')
 
-    #####################################
-    # 営業所別・物件種別ごとを出す(物件種別別)
-    #####################################
-    biru_type_ap = []  # アパート
-    biru_type_ko = []  # 戸建て
-    biru_type_bun = [] # 分譲M
-    biru_type_etc = [] # その他
-    
-#    def_bm = Build_type.find_by_code().id  # 分譲M
-    @biru_detail.each do |rec|
-
-    end
-
-
-    ###############################
-    # 営業所別・築年数を出す(戸数別)
-    ###############################
+    #################################################
+    # 営業所別・築年数を出す(戸数別)(間取りの積み上げグラフ)
+    #################################################
     
     # 戸数別
-
 
 
     # 戸数・間取り別
