@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140208114709) do
+ActiveRecord::Schema.define(:version => 20140212103337) do
 
   create_table "backup_buildings", :force => true do |t|
     t.string   "code",                 :limit => nil
@@ -258,5 +258,18 @@ ActiveRecord::Schema.define(:version => 20140208114709) do
   add_index "trusts", ["building_id"], :name => "index_trusts_on_building_id"
   add_index "trusts", ["manage_type_id"], :name => "index_trusts_on_manage_type_id"
   add_index "trusts", ["owner_id"], :name => "index_trusts_on_owner_id"
+
+  create_table "vacant_rooms", :force => true do |t|
+    t.string   "yyyymm"
+    t.integer  "room_id"
+    t.integer  "shop_id"
+    t.integer  "building_id"
+    t.integer  "manage_type_id"
+    t.integer  "room_layout_id"
+    t.string   "vacant_start_day"
+    t.integer  "vacant_cnt"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+  end
 
 end

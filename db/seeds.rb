@@ -413,7 +413,6 @@ def init_room_type
     end
 end
 
-
 # 間取りの登録
 def init_room_layout
   layout_arr = []
@@ -459,7 +458,6 @@ def init_room_layout
     room_layout.save!
     p room_layout
   end
-
 end
 
 
@@ -483,8 +481,6 @@ def convert_shop(num)
   end
 
 end
-
-
 
 # geocoding
 # force:強制的にgeocodingを行う。
@@ -921,31 +917,6 @@ def import_data_yourself_owner(filename)
   end
 
 end
-
-# 駅マスタ登録
-#init_station
-
-# 営業所登録
-init_shop
-
-# 物件種別登録
-#init_biru_type('/biruweb')
-
-# 管理方式登録rak
-#init_manage_type('/biruweb')
-
-# 部屋種別登録
-#init_room_type
-
-# 部屋間取登録
-#init_room_layout
-
-# データの登録(自社)
-# regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
-
-
-# データの登録(他社)
-#import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
 
 def update_gmap
   Owner.unscoped.each do |owner|
@@ -1668,8 +1639,142 @@ def monthly_regist(filename)
 end
 
 
+# 空日数の情報を登録する
+def regist_vacant_room(yyyymm, filename)
+
+  # 本来は最初にYYYYMMで削除するべきかもしれないが
+  # データを消してしまい、登録データに失敗すると永遠にそれが失われてしまうので
+  # データを消させないで、もし既存のデータが登録されている時は、手動で削除させる。
+
+  tmp = VacantRoom.find_all_by_yyyymm(yyyymm)
+  if tmp.length > 0
+    p yyyymm + 'の空日数情報はすでに登録されています。削除してから実行してください。'
+    return
+  end
+
+  unless File.exist?(filename)
+    puts 'file not exist'
+    return false
+  end
+
+  # データを登録
+  cnt = 0
+  open(filename).each do |line|
+    catch :not_header do
+
+      if cnt == 0
+        cnt = cnt + 1
+        throw :not_header
+      end
+
+      cnt = cnt + 1
+      row = line.split(",")
+
+      # shop_id
+      shop = Shop.find_by_code(row[0])
+      unless shop
+        p "skip shop " + row[0]
+        throw :not_header
+      end
+
+      # building_id
+      building = Building.find_by_code(row[9])
+      unless building
+        p "skip building " + row[9]
+        throw :not_header
+      end
+
+      # room_id
+      room = Room.find_by_building_cd_and_code(row[9], row[11])
+      unless room
+        p "skip room " + row[9] + ' ' + row[11]
+        throw :not_header
+      end
+
+      # TODO:空室一覧で管理方式コードも取るようにする。
+      # TODO:間取り別の空室数も確認できるようにする。
+      manage_type = ManageType.find_by_code(row[15])
+      unless manage_type
+        p "skip manage_type " + row[15]
+        throw :not_header
+      end
+
+      room_layout = RoomLayout.find_by_code(row[13])
+      unless room_layout
+        p "skip room_layout " + row[13]
+        throw :not_header
+      end
+
+      vacant_room = VacantRoom.find_or_create_by_yyyymm_and_room_id(yyyymm, room.id)
+      vacant_room.yyyymm = yyyymm
+      vacant_room.room_id = room.id
+      vacant_room.shop_id = shop.id
+      vacant_room.building_id = building.id
+      vacant_room.manage_type_id = manage_type.id
+      vacant_room.room_layout_id = room_layout.id
+      vacant_room.vacant_start_day = row[4]
+      vacant_room.vacant_cnt = row[5]
+      vacant_room.save!
+
+      p vacant_room.building.name + ' ' + vacant_room.room.name + ' ' + vacant_room.vacant_cnt.to_s + '日'
+    end
+  end
+  
+
+end
+
+
+
+
+
+
+
+########################
+# マスタ登録
+########################
+
+# 駅マスタ登録
+#init_station
+
+# 営業所登録
+# init_shop
+
+# 物件種別登録
+#init_biru_type('/biruweb')
+
+# 管理方式登録
+#init_manage_type('/biruweb')
+
+# 部屋種別登録
+#init_room_type
+
+# 部屋間取登録
+#init_room_layout
+
+
+########################
+# 地図管理物件登録
+########################
+
+# データの登録(自社)
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
+
+# データの登録(他社)
+#import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
+
+
+###########################
+# 業績分析(月次)
+###########################
+
 # 初期化処理
 #performance_init
 
 # 月次情報登録
 #monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
+
+
+###########################
+# 業績分析(空室)
+###########################
+regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))

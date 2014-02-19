@@ -10,9 +10,10 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require jquery
+//= require jquery-1.8.min
 //= require jquery.sidr.min
 //= require jquery_ujs
+//= require jquery.ui.ympicker
 //= require twitter/bootstrap
 //
 //= require highcharts/highcharts

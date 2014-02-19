@@ -135,10 +135,15 @@ function MenuControll(map) {
       if (!fullScreen) {
         obj.click();
         controlText.innerHTML = '<strong>メニュー非表示</strong>';
+        //divStyle.marginLeft = "500px";
+        //divStyle.width = "80%";
+
       }
       else {
         obj.click();
         controlText.innerHTML = '<strong>メニュー&nbsp;&nbsp;表示</strong>';
+        //divStyle.marginLeft = "0px";
+        //divStyle.width = "100%";
       }
       fullScreen = !fullScreen;
     });

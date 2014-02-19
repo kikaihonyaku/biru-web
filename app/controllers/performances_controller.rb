@@ -1,6 +1,9 @@
 # -*- encoding:utf-8 *-*
 require 'date'
 class PerformancesController < ApplicationController
+
+  before_filter :init
+  
   def index
 
     #################
@@ -362,8 +365,140 @@ class PerformancesController < ApplicationController
 
 
    # @arr = manage_types
+    @active_biru_age = ""
+
   end
 
-  @active_biru_age = ""
+  # 空日数
+  def vacant_day
+
+    # 対象の営業所IDを取得する
+    shops = []
+    Shop.find_all_by_code(params[:shop].split(',')).each do |shop|
+      shops.push(shop.id)
+    end
+
+    # 対象の管理方式（B管理・D管理・業務君）を取得する
+    manage_types = []
+    ManageType.find_all_by_code([3,6,10]).each do |manage_type|
+      manage_types.push(manage_type.id)
+    end
+
+    @vacant_yyyymm_current = params[:yyyymm_current].to_s
+    @vacant_yyyymm_before = params[:yyyymm_before].to_s
+
+    # カテゴリ定義
+    category_arr = ["〜30", "〜60", "〜90", "〜120", "〜150", "〜180", "〜210", "〜240", "〜270", "〜300", "〜330", "〜360", "〜390", "〜420", "〜450", "〜480", "〜510", "511〜" ]
+
+    # 対象の建物を取得する。Baseの項目を取得する。
+    base = VacantRoom.joins(:building).joins(:room).joins(:shop).joins(:room_layout).joins(:manage_type).scoped
+    base = base.where("vacant_rooms.shop_id In (?)", shops)
+    base = base.where("vacant_rooms.manage_type_id In (?)", manage_types)
+
+    # 当月の情報を取得する
+    current_vacant = base.where("yyyymm = ?", params[:yyyymm_current].gsub('/',''))
+    @vacant_detail_current = current_vacant.select("vacant_cnt, manage_types.name as manage_type_nm, shops.name as shop_nm, buildings.code as building_cd, buildings.name as building_nm, rooms.name as room_nm, room_layouts.name as room_layout_nm").order("vacant_cnt, shops.code, room_layouts.code, buildings.code, rooms.code")
+    vacant_current_map = vacant_count(category_arr, @vacant_detail_current)
+
+    # 前月の情報を取得する
+    before_vacant = base.where("yyyymm = ?", params[:yyyymm_before].gsub('/',''))
+    @vacant_detail_before = before_vacant.select("vacant_cnt, manage_types.name as manage_type_nm, shops.name as shop_nm, buildings.code as building_cd, buildings.name as building_nm, rooms.name as room_nm, room_layouts.name as room_layout_nm").order("vacant_cnt, shops.code, room_layouts.code, buildings.code, rooms.code")
+    vacant_before_map = vacant_count(category_arr, @vacant_detail_before)
+
+
+    @vacant_sum = LazyHighCharts::HighChart.new('graph') do |f|
+
+      f.chart(
+        renderTo: 'container',
+        type: 'column'
+      )
+
+      # 凡例
+      f.legend(
+          layout: 'vertical',
+          reversed: true,
+          backgroundColor: '#FFFFFF',
+          floating: true,
+          align: 'right',
+          x: -20,
+          verticalAlign: 'top',
+          y: 100
+      )
+
+      f.title(text: params[:shop_nm] + 'の空日数')
+      f.xAxis(categories: category_arr, tickInterval: 1) # 1とかは列の間隔の指定
+      f.series(name: params[:yyyymm_before], data: vacant_before_map.to_a, type: "column")
+      f.series(name: params[:yyyymm_current], data: vacant_current_map.to_a, type: "column")
+
+    end
+
+  end
+
+
+private
+
+  def init
+    @vacant_yyyymm_before = Date.today.prev_month.strftime("%Y/%m")
+    @vacant_yyyymm_current = Date.today.strftime("%Y/%m")
+  end
+
+  # vacant_dataより空日数のカウントをし、その結果をvacant_resultに返します
+  def vacant_count(category_arr, vacant_data )
+
+    vacant_result = {}
+
+    # カウントの初期化
+    category_arr.each do |day|
+      vacant_result[day] = 0
+    end
+
+    s_key = ""
+    vacant_data.each do |rec|
+
+      case rec.vacant_cnt
+      when 0..30
+          s_key = category_arr[0]
+      when 0..60
+          s_key = category_arr[1]
+      when 0..90
+          s_key = category_arr[2]
+      when 0..120
+          s_key = category_arr[3]
+      when 0..150
+          s_key = category_arr[4]
+      when 0..180
+          s_key = category_arr[5]
+      when 0..210
+          s_key = category_arr[6]
+      when 0..240
+          s_key = category_arr[7]
+      when 0..270
+          s_key = category_arr[8]
+      when 0..300
+          s_key = category_arr[9]
+      when 0..330
+          s_key = category_arr[10]
+      when 0..360
+          s_key = category_arr[11]
+      when 0..390
+          s_key = category_arr[12]
+      when 0..420
+          s_key = category_arr[13]
+      when 0..450
+          s_key = category_arr[14]
+      when 0..480
+          s_key = category_arr[15]
+      when 0..510
+          s_key = category_arr[16]
+      else
+          s_key = category_arr[17]
+      end
+      vacant_result[s_key] = vacant_result[s_key] + 1
+
+    end
+
+    return vacant_result
+
+  end
 
 end

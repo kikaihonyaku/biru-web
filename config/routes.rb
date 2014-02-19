@@ -72,6 +72,7 @@ BiruWeb::Application.routes.draw do
   get "performances/index", :as => :performances
   get "performances/monthly", :as => :performances_monthly
   get "performances/build_age", :as => :performances_build_age
+  get "performances/vacant_day", :as => :performances_vacant_day
 
 #  get "managements/popup_owner/:id", :as => :popup_owner
 
