@@ -53,28 +53,6 @@
       <%= yield :header %>
     <% end %>
 
-    <style type="text/css">
-
-      /* リキッドレイアウトを使って固定バーと共にmainは可変100%に */
-      div#top-wrapper{
-        width:95%;
-      }
-
-      div#top-contents{
-        width: 100%;
-        float: right;
-      }
-
-      div#top-contents-main{
-        margin-left: 250px;
-      }
-
-      div#top-sidebar{
-        width: 250px;
-        margin-right: -250px;
-        float: left;
-      }
-    </style>
   </head>
   <body>
 
@@ -120,9 +98,33 @@
         </div>
 
         <% if content_for?(:sidebar) %>
-        <div id="top-sidebar">
-            <%= yield :sidebar %>
-        </div>
+
+          <style type="text/css">
+
+            /* リキッドレイアウトを使って固定バーと共にmainは可変100%に */
+            div#top-wrapper{
+              width:95%;
+            }
+
+            div#top-contents{
+              width: 100%;
+              float: right;
+            }
+
+            div#top-contents-main{
+              margin-left: 250px;
+            }
+
+            div#top-sidebar{
+              width: 250px;
+              margin-right: -250px;
+              float: left;
+            }
+          </style>
+
+          <div id="top-sidebar">
+              <%= yield :sidebar %>
+          </div>
         <% end %>
 
         <% if content_for?(:sidebar_map) %>
