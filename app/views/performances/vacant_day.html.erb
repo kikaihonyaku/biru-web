@@ -5,11 +5,39 @@
 </div>
 
 <div style="margin-left:300px;">
-  <a href="javascript:void(0);" onclick="openClose('p_30000','p_30000_detail', <%= raw("'[ " + @vacant_yyyymm_current + " ]'") %> )"><span id="p_30000_detail">内訳を表示</span></a>
+  <a href="javascript:void(0);" onclick="openClose('p_30001','p_30001_detail', <%= raw("'[ " + @vacant_yyyymm_before + " ] 合計" + @vacant_detail_before.length.to_s + "戸'") %> )"><span id="p_30001_detail">内訳を表示</span></a>
 </div>
 
+<table class="table table-striped table-bordered table-condensed" style="margin-left:300px;width:800px;" id="p_30001">
+  <thead>
+    <tr>
+      <th>空日数</th>
+      <th>営業所</th>
+      <th>間取り</th>
+      <th>建物CD</th>
+      <th>建物名</th>
+      <th>部屋</th>
+      <th>管理方式</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @vacant_detail_before.each do |vacant| %>
+    <tr>
+      <td style="text-align: center"><%= vacant.vacant_cnt.to_s + '日' %></td>
+      <td><%= vacant.shop_nm %></td>
+      <td><%= vacant.room_layout_nm %></td>
+      <td><%= vacant.building_cd %></td>
+      <td><%= vacant.building_nm %></td>
+      <td><%= vacant.room_nm %></td>
+      <td><%= vacant.manage_type_nm %></td>
+    </tr>
+    <% end %>
+  </tbody>
+
+</table>
+
 <div style="margin-left:300px;">
-  <a href="javascript:void(0);" onclick="openClose('p_30001','p_30001_detail', <%= raw("'[ " + @vacant_yyyymm_before + " ]'") %> )"><span id="p_30001_detail">内訳を表示</span></a>
+  <a href="javascript:void(0);" onclick="openClose('p_30000','p_30000_detail', <%= raw("'[ " + @vacant_yyyymm_current + " ] 合計" + @vacant_detail_current.length.to_s + "戸'") %> )"><span id="p_30000_detail">内訳を表示</span></a>
 </div>
 
 <table class="table table-striped table-bordered table-condensed" style="margin-left:300px;width:800px;" id="p_30000">
@@ -40,37 +68,10 @@
 </table>
 
 
-<table class="table table-striped table-bordered table-condensed" style="margin-left:300px;width:800px;" id="p_30001">
-  <thead>
-    <tr>
-      <th>空日数</th>
-      <th>営業所</th>
-      <th>間取り</th>
-      <th>建物CD</th>
-      <th>建物名</th>
-      <th>部屋</th>
-      <th>管理方式</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @vacant_detail_before.each do |vacant| %>
-    <tr>
-      <td style="text-align: center"><%= vacant.vacant_cnt.to_s + '日' %></td>
-      <td><%= vacant.shop_nm %></td>
-      <td><%= vacant.room_layout_nm %></td>
-      <td><%= vacant.building_cd %></td>
-      <td><%= vacant.building_nm %></td>
-      <td><%= vacant.room_nm %></td>
-      <td><%= vacant.manage_type_nm %></td>
-    </tr>
-    <% end %>
-  </tbody>
-
-</table>
   <script type="text/javascript">
   <!--
-    openClose('p_30000','p_30000_detail', <%= raw("'[ " + @vacant_yyyymm_current + " ]'") %> )
-    openClose('p_30001','p_30001_detail', <%= raw("'[ " + @vacant_yyyymm_before + " ]'") %> )
+    openClose('p_30000','p_30000_detail', <%= raw("'[ " + @vacant_yyyymm_current + " ] 合計" + @vacant_detail_current.length.to_s + "戸'") %> )
+    openClose('p_30001','p_30001_detail', <%= raw("'[ " + @vacant_yyyymm_before + " ] 合計" + @vacant_detail_before.length.to_s + "戸'") %> )
   //-->
 </script>
 

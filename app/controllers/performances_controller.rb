@@ -416,7 +416,7 @@ class PerformancesController < ApplicationController
       # 凡例
       f.legend(
           layout: 'vertical',
-          reversed: true,
+          reversed: false,
           backgroundColor: '#FFFFFF',
           floating: true,
           align: 'right',

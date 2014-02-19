@@ -602,7 +602,7 @@ function openClose(id, mid, disp_msg)
             <ul class="nav nav-list well"  style="margin-bottom:15px;">
               <div style="text-align: center;">
                 <div>
-                  <label ><%= text_field_tag 'yyyymm_current', @vacant_yyyymm_current, :class=>'ympicker', :style=>'width:65px;text-align:center;' %>&nbsp;＋&nbsp;<%= text_field_tag 'yyyymm_before', @vacant_yyyymm_before, :class=>'ympicker', :style=>'width:65px;text-align:center;' %></label>
+                  <label ><%= text_field_tag 'yyyymm_before', @vacant_yyyymm_before, :class=>'ympicker', :style=>'width:65px;text-align:center;' %>&nbsp;＋&nbsp;<%= text_field_tag 'yyyymm_current', @vacant_yyyymm_current, :class=>'ympicker', :style=>'width:65px;text-align:center;' %></label>
                 </div>
 
                 <%= button_tag "空日数を表示" ,:type=>'button', :onClick=>"javascript:vacant_dips();" %>

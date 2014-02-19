@@ -1777,4 +1777,5 @@ end
 ###########################
 # 業績分析(空室)
 ###########################
-regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
+# regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
+regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))
