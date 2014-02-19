@@ -49,6 +49,10 @@
     <%= javascript_include_tag "jquery.cookie" %>
     <%= javascript_include_tag "biru-map" %>
 
+    <%= javascript_include_tag "highcharts/highcharts" %>
+    <%= javascript_include_tag "highcharts/highcharts-more" %>
+    <%= javascript_include_tag "highcharts/highstock" %>
+
     <% if content_for?(:header) %>
       <%= yield :header %>
     <% end %>

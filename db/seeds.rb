@@ -15,7 +15,7 @@ def custom_parse(str)
     end
   end
   return date
-end 
+end
 
 
 #------------------------------
@@ -1246,6 +1246,9 @@ def performance_init
   item_arr.push(:code=>'Z0005', :name=>'再生事業売上　合算')
   item_arr.push(:code=>'Z0006', :name=>'営業外損益　合算')
 
+  item_arr.push(:code=>'E0001', :name=>'新規来店客数')
+  item_arr.push(:code=>'E0002', :name=>'賃貸契約件数')
+
   item_arr.each do |obj|
     item = Item.find_or_create_by_code(obj[:code])
     item.code = obj[:code]
@@ -1628,11 +1631,11 @@ def monthly_regist(filename)
       month.dept_id = dept.id
       month.item_id = item.id
       month.yyyymm = row[2]
-      month.plan = row[3]
-      month.result = row[4]
+      month.plan_value = row[3]
+      month.result_value = row[4]
       month.save!
 
-      p sprintf("%05d", cnt)  + ' ' + month.dept.name + ' ' + month.item.name + ' ' + month.yyyymm + ' ' + month.plan.to_s + '/' + month.result.to_s
+      p sprintf("%05d", cnt)  + ' ' + month.dept.name + ' ' + month.item.name + ' ' + month.yyyymm + ' ' + month.plan_value.to_s + '/' + month.result_value.to_s
     end
   end
 
@@ -1719,7 +1722,7 @@ def regist_vacant_room(yyyymm, filename)
       p vacant_room.building.name + ' ' + vacant_room.room.name + ' ' + vacant_room.vacant_cnt.to_s + '日'
     end
   end
-  
+
 
 end
 
@@ -1768,14 +1771,14 @@ end
 ###########################
 
 # 初期化処理
-#performance_init
+performance_init
 
 # 月次情報登録
 #monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
-
+monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
 
 ###########################
 # 業績分析(空室)
 ###########################
 # regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
-regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))
+#regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))

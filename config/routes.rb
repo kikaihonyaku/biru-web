@@ -57,7 +57,7 @@ BiruWeb::Application.routes.draw do
   # match ':controller(/:action(/:id))(.:format)'
 
 #  root :to => 'pages#index'
-  root :to => "managements#index"
+  root :to => "performances#index"
 
   get "repairs/index" ,:as => :repairs
 

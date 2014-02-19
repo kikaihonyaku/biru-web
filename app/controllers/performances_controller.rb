@@ -79,18 +79,23 @@ class PerformancesController < ApplicationController
     ##################################
     # 今年度の計画／実績と、昨年の実績を取得
     ##################################
-    categories = []
-    this_year_plans = []
-    this_year_results = []
-    prev_year_results = []
+    @categories = []
+    @this_year_plans = []
+    @this_year_results = []
+    @prev_year_results = []
+
+    plan_exists = false # 計画が定義されているか判定する。
 
     this_year_monthly.each do |rec|
 
       # 今年度の計画／実績
       #categories.push(rec.yyyymm.slice(4..5).to_i.to_s + "月")
-      categories.push(rec.yyyymm)
-      this_year_plans.push(rec.plan_value.to_f)
-      this_year_results.push(rec.result_value.to_f)
+      @categories.push(rec.yyyymm)
+      @this_year_plans.push(rec.plan_value.to_f)
+      @this_year_results.push(rec.result_value.to_f)
+
+      # 計画が一つでも登録されていれば、計画棒グラフを出す。
+      plan_exists = true if rec.plan_value.to_f > 0
 
       # 前年実績
       prev_year = rec.yyyymm.slice(0..3).to_i - 1
@@ -99,12 +104,12 @@ class PerformancesController < ApplicationController
 
       reg_flg = false
       prev_year_monthly.each do |rec2|
-        prev_year_results.push(rec2.result_value.to_f)
+        @prev_year_results.push(rec2.result_value.to_f)
         reg_flg = true
       end
 
       unless reg_flg
-        prev_year_results.push(0)
+        @prev_year_results.push(0)
       end
 
     end
@@ -116,10 +121,14 @@ class PerformancesController < ApplicationController
 #      f.chart(:type => "spline")
 #      f.chart(:type => "column")
       f.title(text: dept_name + 'の' + item.name + '(' + yyyy.to_s + '年度)')
-      f.xAxis(categories: categories.collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
-      f.series(name: (yyyy -1).to_s + '年度実績', data: prev_year_results, type: "column", color: '#8cc63f')
-      f.series(name: '計画', data: this_year_plans, type: "column", color: '#3276b1')
-      f.series(name: '実績', data: this_year_results, type: "column", color: '#d9534f')
+      f.xAxis(categories: @categories.collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+      f.series(name: (yyyy -1).to_s + '年度実績', data: @prev_year_results, type: "column", color: '#8cc63f')
+
+      if plan_exists
+        f.series(name: '計画', data: @this_year_plans, type: "column", color: '#3276b1')
+      end
+
+      f.series(name: '実績', data: @this_year_results, type: "column", color: '#d9534f')
     end
 
     ##################################
@@ -195,7 +204,7 @@ class PerformancesController < ApplicationController
     if dept_group
       @group_result = LazyHighCharts::HighChart.new('graph') do |f|
         f.title(text: dept_name + 'の' + item.name + 'の実績一覧')
-        f.xAxis(categories: categories.collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+        f.xAxis(categories: @categories.collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
         #f.series(name: '実績', data: this_year_results, type: "spline")
 
         # 凡例
@@ -214,7 +223,7 @@ class PerformancesController < ApplicationController
           dept = Dept.find(dept_id)
           p dept.name
 
-          categories.each do |yymm|
+          @categories.each do |yymm|
             monthly_result = MonthlyStatement.scoped
             monthly_result = monthly_result.where("item_id = " + item.id.to_s)
             monthly_result = monthly_result.where("yyyymm=" + yymm)
@@ -266,15 +275,15 @@ class PerformancesController < ApplicationController
       max_age = rec.max_age
     end
 
-    category_arr = []
-    biru_age_apmn = [] # アパート・マンション
-    biru_age_bmmn = [] # 分譲マンション
-    biru_age_kodt = [] # 戸建て
-    biru_age_etc = []  # その他
+    @category_arr = []
+    @biru_age_apmn = [] # アパート・マンション
+    @biru_age_bmmn = [] # 分譲マンション
+    @biru_age_kodt = [] # 戸建て
+    @biru_age_etc = []  # その他
 
     while min_age <= max_age
 
-      category_arr.push(min_age)
+      @category_arr.push(min_age)
 
       apmn_cnt = 0
       bnmn_cnt = 0
@@ -301,10 +310,10 @@ class PerformancesController < ApplicationController
         end
       end
 
-      biru_age_apmn.push(apmn_cnt)
-      biru_age_bmmn.push(bnmn_cnt)
-      biru_age_kodt.push(kodt_cnt)
-      biru_age_etc.push(etc_cnt)
+      @biru_age_apmn.push(apmn_cnt)
+      @biru_age_bmmn.push(bnmn_cnt)
+      @biru_age_kodt.push(kodt_cnt)
+      @biru_age_etc.push(etc_cnt)
 
       min_age = min_age + 1
     end
@@ -330,11 +339,11 @@ class PerformancesController < ApplicationController
       )
 
       f.title(text: params[:shop_nm] + 'の築年数(棟数別)')
-      f.xAxis(categories: category_arr, tickInterval: 2) # 1とかは列の間隔の指定
-      f.series(name: 'その他', data: biru_age_etc, type: "column")
-      f.series(name: '戸建て', data: biru_age_kodt, type: "column")
-      f.series(name: '分譲Ｍ', data: biru_age_bmmn, type: "column")
-      f.series(name: 'アパマン', data: biru_age_apmn, type: "column")
+      f.xAxis(categories: @category_arr, tickInterval: 2) # 1とかは列の間隔の指定
+      f.series(name: 'その他', data: @biru_age_etc, type: "column")
+      f.series(name: '戸建て', data: @biru_age_kodt, type: "column")
+      f.series(name: '分譲Ｍ', data: @biru_age_bmmn, type: "column")
+      f.series(name: 'アパマン', data: @biru_age_apmn, type: "column")
       f.plotOptions(
         column: {stacking: 'normal',
             dataLabels: {
@@ -388,7 +397,7 @@ class PerformancesController < ApplicationController
     @vacant_yyyymm_before = params[:yyyymm_before].to_s
 
     # カテゴリ定義
-    category_arr = ["〜30", "〜60", "〜90", "〜120", "〜150", "〜180", "〜210", "〜240", "〜270", "〜300", "〜330", "〜360", "〜390", "〜420", "〜450", "〜480", "〜510", "511〜" ]
+    @category_arr = ["〜30", "〜60", "〜90", "〜120", "〜150", "〜180", "〜210", "〜240", "〜270", "〜300", "〜330", "〜360", "〜390", "〜420", "〜450", "〜480", "〜510", "511〜" ]
 
     # 対象の建物を取得する。Baseの項目を取得する。
     base = VacantRoom.joins(:building).joins(:room).joins(:shop).joins(:room_layout).joins(:manage_type).scoped
@@ -398,13 +407,12 @@ class PerformancesController < ApplicationController
     # 当月の情報を取得する
     current_vacant = base.where("yyyymm = ?", params[:yyyymm_current].gsub('/',''))
     @vacant_detail_current = current_vacant.select("vacant_cnt, manage_types.name as manage_type_nm, shops.name as shop_nm, buildings.code as building_cd, buildings.name as building_nm, rooms.name as room_nm, room_layouts.name as room_layout_nm").order("vacant_cnt, shops.code, room_layouts.code, buildings.code, rooms.code")
-    vacant_current_map = vacant_count(category_arr, @vacant_detail_current)
+    @vacant_current_map = vacant_count(@category_arr, @vacant_detail_current)
 
     # 前月の情報を取得する
     before_vacant = base.where("yyyymm = ?", params[:yyyymm_before].gsub('/',''))
     @vacant_detail_before = before_vacant.select("vacant_cnt, manage_types.name as manage_type_nm, shops.name as shop_nm, buildings.code as building_cd, buildings.name as building_nm, rooms.name as room_nm, room_layouts.name as room_layout_nm").order("vacant_cnt, shops.code, room_layouts.code, buildings.code, rooms.code")
-    vacant_before_map = vacant_count(category_arr, @vacant_detail_before)
-
+    @vacant_before_map = vacant_count(@category_arr, @vacant_detail_before)
 
     @vacant_sum = LazyHighCharts::HighChart.new('graph') do |f|
 
@@ -426,9 +434,9 @@ class PerformancesController < ApplicationController
       )
 
       f.title(text: params[:shop_nm] + 'の空日数')
-      f.xAxis(categories: category_arr, tickInterval: 1) # 1とかは列の間隔の指定
-      f.series(name: params[:yyyymm_before], data: vacant_before_map.to_a, type: "column")
-      f.series(name: params[:yyyymm_current], data: vacant_current_map.to_a, type: "column")
+      f.xAxis(categories: @category_arr, tickInterval: 1) # 1とかは列の間隔の指定
+      f.series(name: params[:yyyymm_before], data: @vacant_before_map.to_a, type: "column")
+      f.series(name: params[:yyyymm_current], data: @vacant_current_map.to_a, type: "column")
 
     end
 

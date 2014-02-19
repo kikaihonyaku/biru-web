@@ -5,6 +5,72 @@
   <div style="width:60%;text-align: right;margin: 0 auto;"><%= high_chart("chart-1", @build_sum) %></div>
 </div>
 
+<div style="text-align:left;margin-left:300px;">
+  <a href="javascript:void(0);" onclick="openClose('p_30005','p_30005_detail', 'グラフデータ' );"><span id="p_30005_detail">内訳を表示</span></a>
+</div>
+
+<table class="table table-striped table-bordered table-condensed" style="margin-left:300px;width:800px;" id="p_30005">
+  <thead>
+    <tr>
+      <th style="text-align:center">&nbsp;</th>
+      <% @category_arr.each do |cate| %>
+        <th style="text-align:center"><%= cate %></th>
+      <% end %>
+      <th style="text-align:center">合計</th>
+    </tr>
+    <tr>
+      <td style="text-align:center">アパマン</td>
+      <% sum = 0 %>
+      <% @biru_age_apmn.each do |rec| %>
+        <td style="text-align:center"><%= rec %></td>
+        <% sum = sum + rec %>
+      <% end %>
+      <td style="text-align:center"><%= sum %></td>
+    </tr>
+    <tr>
+      <td style="text-align:center">分譲M</td>
+      <% sum = 0 %>
+      <% @biru_age_bmmn.each do |rec| %>
+        <td style="text-align:center"><%= rec %></td>
+        <% sum = sum + rec %>
+      <% end %>
+      <td style="text-align:center"><%= sum %></td>
+    </tr>
+    <tr>
+      <td style="text-align:center">戸建て</td>
+      <% sum = 0 %>
+      <% @biru_age_kodt.each do |rec| %>
+        <td style="text-align:center"><%= rec %></td>
+        <% sum = sum + rec %>
+      <% end %>
+      <td style="text-align:center"><%= sum %></td>
+    </tr>
+    <tr>
+      <td style="text-align:center">その他</td>
+      <% sum = 0 %>
+      <% @biru_age_etc.each do |rec| %>
+        <td style="text-align:center"><%= rec %></td>
+        <% sum = sum + rec %>
+      <% end %>
+      <td style="text-align:center"><%= sum %></td>
+    </tr>
+    <tr>
+      <% sum = 0 %>
+      <td style="text-align:center">合計</td>
+      <% @category_arr.each_with_index do |cate, i| %>
+        <% rec =  @biru_age_apmn[i] + @biru_age_bmmn[i] + @biru_age_kodt[i] + @biru_age_etc[i]  %>
+        <td style="text-align:center"><%= rec %></td>
+        <% sum = sum + rec %>
+      <% end %>
+      <td style="text-align:center"><%= sum %></td>
+    </tr>
+
+  </thead>
+
+</table>
+
+
+
   <div style="margin-left:300px;">
     <a href="javascript:void(0);" onclick="openClose('p_20000','p_20000_detail', '築年数の内訳')"><span id="p_20000_detail">築年数の内訳を表示</span></a>
   </div>
@@ -36,6 +102,7 @@
     <script type="text/javascript">
     <!--
       openClose('p_20000','p_20000_detail', '築年数の内訳')
+      openClose('p_30005','p_30005_detail', 'グラフデータ')
     //-->
   </script>
 

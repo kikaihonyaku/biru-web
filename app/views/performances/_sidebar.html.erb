@@ -126,6 +126,13 @@
     { label: '項目', id: 6000,
       children: [
         {
+          label: '月次報告書', id: 6010,
+          children: [
+            { label: '新規来店客数', id:'G-E0001' ,summary:1},
+            { label: '賃貸契約件数', id:'G-E0002' ,summary:1},
+          ]
+        },
+        {
           label: '損益項目', id: 6010,
           children: [
             { label: '売上高', id:'S-A0001' ,summary:1},
@@ -138,17 +145,17 @@
         {
           label: '営業所 主要項目', id: 6020,
           children: [
-            { label: '新規受託管理戸数　他社', id: 'E-B0001' ,summary:1},
-            { label: '新規受託管理戸数　自社', id: 'E-B0002' ,summary:1},
+            { label: '受託戸数（他社）', id: 'E-B0001' ,summary:1},
+            { label: '受託戸数（自社）', id: 'E-B0002' ,summary:1},
             { label: '賃貸管理手数料', id: 'E-41040' ,summary:1},
             { label: '賃貸仲介件数', id: 'E-B0009' ,summary:1},
             { label: '賃貸仲介手数料', id: 'E-Z0002' ,summary:1},
             { label: '売買粗利益', id: 'E-B0003' ,summary:1},
             { label: 'サブリース等売上', id: 'E-44020' ,summary:1},
-            { label: '不動産再生事業売上(契約)', id: 'E-B0035' ,summary:1},
+            { label: '再生事業売上(契約)', id: 'E-B0035' ,summary:1},
             { label: '建物管理売上', id: 'E-41070' ,summary:1},
             { label: '保険代理店手数料', id: 'E-41060' ,summary:1},
-            { label: '家賃立替サービス代理店手数料', id: 'E-B0004' ,summary:1},
+            { label: '家賃立替手数料', id: 'E-B0004' ,summary:1},
             { label: '付随商品手数料', id: 'E-45010' ,summary:1},
             { label: '建築紹介件数', id: 'E-B0008' ,summary:1},
             { label: '入居率', id: 'E-B0007' ,summary:2},
@@ -161,8 +168,8 @@
           label: '建管 主要項目', id: 6030,
           children: [
             { label: '原状回復工事売上', id: 'T-B0019' ,summary:1},
-            { label: '定期設備メンテナンス売上', id: 'T-B0020' ,summary:1},
-            { label: '提案設備メンテナンス売上', id: 'T-B0021' ,summary:1},
+            { label: '定期設備メンテ売上', id: 'T-B0020' ,summary:1},
+            { label: '提案設備メンテ売上', id: 'T-B0021' ,summary:1},
             { label: '原状回復工事粗利益率', id: 'T-B0022' ,summary:2},
             { label: '提案同行数', id: 'T-B0023' ,summary:1},
             { label: 'サブリース等売上', id: 'T-44020' ,summary:1},
@@ -176,7 +183,7 @@
         {
           label: '流通 主要項目', id: 6040,
           children: [
-            { label: '不動産再生売上(契約)', id: 'R-B0035' ,summary:1},
+            { label: '再生売上(契約)', id: 'R-B0035' ,summary:1},
             { label: '売買粗利益（契約）', id: 'R-B0003' ,summary:1},
             { label: '新築・注文契約件数', id: 'R-B0040' ,summary:1},
             { label: '資産売却受託件数', id: 'R-B0039' ,summary:1},
@@ -191,12 +198,12 @@
               children:[
                 { label: '保険代理店手数料（契約）', id: 'H-B0025' ,summary:1},
                 { label: '保険代理店手数料（計上）', id: 'H-41060' ,summary:1},
-                { label: '火災保険独自新規契約件数', id: 'H-B0028' ,summary:1},
+                { label: '火災独自新規契約件数', id: 'H-B0028' ,summary:1},
                 { label: '自動車保険継続率', id: 'H-B0029' ,summary:2},
-                { label: '自動車保険独自新規契約件数', id: 'H-B0031' ,summary:1},
+                { label: '自動車保険新規契約件数', id: 'H-B0031' ,summary:1},
                 { label: '入居者保険更新手続完了率', id: 'H-B0033' ,summary:2},
                 { label: '生命保険新規契約手数料', id: 'H-B0034' ,summary:1},
-                { label: '火災保険独自新規契約手数料', id: 'H-B0094' ,summary:1},
+                { label: '火災保険新規契約手数料', id: 'H-B0094' ,summary:1},
                 { label: '火災保険更新手数料', id: 'H-B0095' ,summary:1},
               ]
             },
@@ -224,8 +231,8 @@
             },
             { label: '損害サービス', id: 6062,
               children: [
-                { label: '損害サービス工事受注金額', id: 'C-B0043' ,summary:1},
-                { label: '損害サービス工事受注件数', id: 'C-B0044' ,summary:1},
+                { label: '損害サービス受注金額', id: 'C-B0043' ,summary:1},
+                { label: '損害サービス受注件数', id: 'C-B0044' ,summary:1},
                 { label: '損害調査受注金額', id: 'C-B0233' ,summary:1},
                 { label: '損害調査受注件数', id: 'C-B0232' ,summary:1},
                 { label: '新規保険拠点開拓数', id: 'C-B0234' ,summary:1},
@@ -237,7 +244,7 @@
               children: [
                 { label: '建物管理売上', id: 'M-41070' ,summary:1},
                 { label: '管理手数料', id: 'M-41040' ,summary:1},
-                { label: '分譲マンション新規管理受託数', id: 'M-B0217' ,summary:1},
+                { label: '分譲マンション受託数', id: 'M-B0217' ,summary:1},
                 { label: '新規委託契約組合数', id: 'M-B0410' ,summary:1},
                 { label: '新規見積り提出件数', id: 'M-B0411' ,summary:1},
                 { label: '管理移行検討組合数', id: 'M-B0412' ,summary:1},
@@ -254,8 +261,8 @@
             { label: '前月分滞納賃料回収率', id: 'D-D0004' ,summary:2},
             { label: '新規立替サービス契約件数', id: 'D-D0005' ,summary:1},
             { label: '新規立替サービス契約手数料', id: 'D-D0006' ,summary:1},
-            { label: '他社切替え立替えサービス契約件数', id: 'D-D0007' ,summary:1},
-            { label: '他社切替え立替えサービス契約手数料', id: 'D-D0008' ,summary:1},
+            { label: '他社切替えサービス契約件数', id: 'D-D0007' ,summary:1},
+            { label: '他社切替えサービス契約手数料', id: 'D-D0008' ,summary:1},
             { label: '立替サービス引受保有件数', id: 'D-D0009' ,summary:1},
             { label: '滞納賃料立替金額', id: 'D-D0012' ,summary:1},
             { label: '滞納賃料立替件数', id: 'D0013' ,summary:1},
@@ -274,7 +281,7 @@
             { label: '新規管理受託他社（品）', id: 'G-B0602' ,summary:1},
             { label: 'システム開発進捗率（品）', id: 'G-B0603' ,summary:2},
             { label: '初期修理発生率（品）', id: 'G-B0604' ,summary:2},
-            { label: '室内デザインパック受注件数（品）', id: 'G-B0605' ,summary:1},
+            { label: 'デザインパック受注件数（品）', id: 'G-B0605' ,summary:1},
             { label: '修理未完了件数（カ）', id: 'G-B0606' ,summary:1},
             { label: '売買粗利益（売）', id: 'G-B0607' ,summary:1},
             { label: '経常利益PH', id: 'G-B0017' ,summary:2},
@@ -615,8 +622,4 @@ function openClose(id, mid, disp_msg)
         </div>
       </div>
     </div>
-
-
-
-
 <% end %>
