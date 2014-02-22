@@ -19,7 +19,7 @@
     { label: '部署', id: 6100,
       children: [
       {
-          label: 'ビル管理全体', id:252,
+          label: 'ビル管理全体', id:252, dept_list:[252,245,246,247],
           children: [
               { label: '東武支店',id:245,
                 children: [
@@ -483,6 +483,12 @@ function graph_disp(){
     return;
   }
 
+  frm.dept_list.value = $('#tree-dept').tree('getSelectedNode').dept_list
+  if(frm.dept_list.value =='undefined' ){
+    alert('dept_listが未定義です');
+    return;
+  }
+
   frm.submit();
 }
 
@@ -562,6 +568,7 @@ function openClose(id, mid, disp_msg)
             <%= hidden_field_tag 'item', '' %>
             <%= hidden_field_tag 'item_summary', '' %>
             <%= hidden_field_tag 'dept', '' %>
+            <%= hidden_field_tag 'dept_list', '' %>
 
               <ul class="nav nav-list well" >
                 <div style="text-align: center;">
