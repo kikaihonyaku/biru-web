@@ -101,7 +101,7 @@
 
           <style type="text/css">
 
-            /* リキッドレイアウトを使って固定バーと共にmainは可変100%に */
+            /* リキッドレイアウトを使って左固定バーと共にmainは可変100%に */
             div#top-wrapper{
               width:95%;
             }
@@ -128,6 +128,7 @@
         <% end %>
 
         <% if content_for?(:sidebar_map) %>
+
           <div id="sidr">
               <%= yield :sidebar_map %>
           </div><!--/span-->
