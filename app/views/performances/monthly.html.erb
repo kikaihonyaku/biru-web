@@ -16,6 +16,7 @@
       <a href="javascript:void(0);" onclick="openClose('p_30005','p_30005_detail', 'グラフデータ' );"><span id="p_30005_detail">内訳を表示</span></a>
     </div>
 
+    <div style="text-align: right;margin: 0 auto;margin-bottom: 15px;"><%= high_chart("cumulative-" + i.to_s, result['graph_cumulative']) %></div>
 
     <table class="table table-striped table-bordered table-condensed" id="p_30005">
       <thead>

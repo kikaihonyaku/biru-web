@@ -18,98 +18,119 @@
   var dept_data = [
     { label: '部署', id: 6100,
       children: [
-      {
-          label: 'ビル管理全体', id:252, dept_list:[252,245,246,247],
+        {
+          label:'集計グループ別', id: 6101,
+          children:[
+            { label: '営業所グループ', id:6110,
+              children:[
+                { label: '全支店', id:910, graph_name: '営業所グループ：全支店', dept_list:[252,245,246,247]},
+                { label: '全営業所', id:911, graph_name: '営業所グループ：全営業所', dept_list:[252,245,246,247]},
+                { label: '東武支店', id:912 },
+                { label: 'さいたま支店', id:913 },
+                { label: '千葉支店', id:914 },
+              ]
+            },
+            { label: '建物管理グループ', id:902 },
+            { label: '不動産流通グループ', id:903 },
+          ]
+        },
+        {
+          label:'組織別', id: 6102,
           children: [
-              { label: '東武支店',id:245,
-                children: [
-                  { label: '東武南',id:236,
+          {
+              label: 'ビル管理全体', id:252, dept_list:[252,245,246,247],
+              children: [
+                  { label: '東武支店',id:245,
                     children: [
-                      { label: '草加', id: 152},
-                      { label: '草加新田', id: 153},
-                      { label: '北千住', id: 154}
+                      { label: '東武南',id:236,
+                        children: [
+                          { label: '草加', id: 152},
+                          { label: '草加新田', id: 153},
+                          { label: '北千住', id: 154}
+                        ]
+                      },
+                      { label: '東武中央',id:237 ,
+                        children: [
+                          {label: '南越谷', id:155 },
+                          {label: '越谷', id:156 }
+                        ]
+                      },
+                      { label: '東武北',id:238,
+                        children:[
+                          { label: '北越谷', id: 227},
+                          { label: '春日部', id: 228},
+                          { label: 'せんげん台', id: 229}
+                        ]
+                      },
+                      { label: '東武建管',id:159},
+                      { label: '東武流通',id:230},
                     ]
                   },
-                  { label: '東武中央',id:237 ,
+                  { label: 'さいたま支店',id:246,
                     children: [
-                      {label: '南越谷', id:155 },
-                      {label: '越谷', id:156 }
+                      { label:'さいたま南', id:279,
+                        children:[
+                          { label: '戸田', id:161},
+                          { label: '武蔵浦和', id:162},
+                          { label: '川口', id:163},
+                        ]
+                      },
+                      { label: 'さいたま北', id:277,
+                        children:[
+                          { label: '浦和', id:164},
+                          { label: '与野', id:165}
+                        ]
+                      },
+                      { label:'さいたま東', id:240,
+                        children: [
+                          { label: '東浦和', id:166},
+                          { label: '東川口', id:167},
+                          { label: '戸塚安行', id:168}
+                        ]
+                      },
+                      { label: 'さいたま建管',id:169},
+                      { label: 'さいたま流通',id:231},
                     ]
                   },
-                  { label: '東武北',id:238,
-                    children:[
-                      { label: '北越谷', id: 227},
-                      { label: '春日部', id: 228},
-                      { label: 'せんげん台', id: 229}
-                    ]
-                  },
-                  { label: '東武建管',id:159},
-                  { label: '東武流通',id:230},
-                ]
-              },
-              { label: 'さいたま支店',id:246,
-                children: [
-                  { label:'さいたま南', id:279,
-                    children:[
-                      { label: '戸田', id:161},
-                      { label: '武蔵浦和', id:162},
-                      { label: '川口', id:163},
-                    ]
-                  },
-                  { label: 'さいたま北', id:277,
-                    children:[
-                      { label: '浦和', id:164},
-                      { label: '与野', id:165}
-                    ]
-                  },
-                  { label:'さいたま東', id:240,
+                  { label: '千葉支店',id:247,
                     children: [
-                      { label: '東浦和', id:166},
-                      { label: '東川口', id:167},
-                      { label: '戸塚安行', id:168}
+                      { label:'常磐中央', id:241,
+                        children:[
+                          { label: '松戸', id:171},
+                          { label: '北松戸', id:172},
+                        ]
+                      },
+                      { label: '常磐西', id:242,
+                        children:[
+                          { label: '南流山', id:174},
+                          { label: '柏', id:173}
+                        ]
+                      },
+                      { label: '千葉建管',id: 175},
+                      { label: '千葉流通',id: 232},
                     ]
                   },
-                  { label: 'さいたま建管',id:169},
-                  { label: 'さいたま流通',id:231},
-                ]
-              },
-              { label: '千葉支店',id:247,
-                children: [
-                  { label:'常磐中央', id:241,
-                    children:[
-                      { label: '松戸', id:171},
-                      { label: '北松戸', id:172},
+                  { label: 'アセット',id:243,
+                    children: [
+                      { label: '保険課', id:209},
+                      { label: '法人課', id:181}
                     ]
                   },
-                  { label: '常磐西', id:242,
-                    children:[
-                      { label: '南流山', id:174},
-                      { label: '柏', id:173}
+                  { label: 'ライフサービス部',id:248,
+                    children: [
+                      { label: '損害サービス課', id:185},
+                      { label: 'クリーンサービス課', id:186}
                     ]
                   },
-                  { label: '千葉建管',id: 175},
-                  { label: '千葉流通',id: 232},
-                ]
-              },
-              { label: 'アセット',id:243,
-                children: [
-                  { label: '保険課', id:209},
-                  { label: '法人課', id:181}
-                ]
-              },
-              { label: 'ライフサービス部',id:248,
-                children: [
-                  { label: '損害サービス課', id:185},
-                  { label: 'クリーンサービス課', id:186}
-                ]
-              },
+
+              ]
+          },
+          {
+            label: 'ポラスアルファ', id:258
+          }
 
           ]
-      },
-      {
-        label: 'ポラスアルファ', id:258
-      }
-
+        }
       ]
     }
   ];
@@ -489,6 +510,12 @@ function graph_disp(){
     return;
   }
 
+  frm.graph_name.value = $('#tree-dept').tree('getSelectedNode').graph_name
+  if(frm.graph_name.value =='undefined' ){
+    alert('graph_nameが未定義です');
+    return;
+  }
+
   frm.submit();
 }
 
@@ -569,6 +596,7 @@ function openClose(id, mid, disp_msg)
             <%= hidden_field_tag 'item_summary', '' %>
             <%= hidden_field_tag 'dept', '' %>
             <%= hidden_field_tag 'dept_list', '' %>
+            <%= hidden_field_tag 'graph_name', '' %>
 
               <ul class="nav nav-list well" >
                 <div style="text-align: center;">

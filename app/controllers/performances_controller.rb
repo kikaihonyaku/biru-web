@@ -60,10 +60,10 @@ class PerformancesController < ApplicationController
 
 
     ##############################################
-    # グループ部署の時、子部署の実績を線グラフで表示する。
+    # 指定された部署を折れ線グラフで表示する。
     ##############################################
    @group_result = LazyHighCharts::HighChart.new('graph') do |f|
-     f.title(text: 'dept_name' + 'の' + item.name + 'の実績一覧')
+     f.title(text: params[:graph_name].to_s + 'の' + item.name + 'の実績一覧')
      f.xAxis(categories: @result_arr[0]['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
      #f.series(name: '実績', data: this_year_results, type: "spline")
 
@@ -79,7 +79,7 @@ class PerformancesController < ApplicationController
      )
 
      @result_arr.each_with_index do |result, i|
-       f.series(name: i.to_s , data: result['this_year_results'].dup, type: "line")
+       f.series(name: result['dept_name'] , data: result['this_year_results'].dup, type: "line")
      end
    end
     
@@ -397,10 +397,23 @@ private
     # 今年度の計画／実績と、昨年の実績を取得
     ##################################
     result = {}
+    result['dept_name'] = dept_name
     result['categories'] = []
+
+    # 通常棒グラフ
     result['this_year_plans'] = []
     result['this_year_results'] = []
     result['prev_year_results'] = []
+
+    # 積み上げ棒グラフ
+    result['cumulative_this_year_plans'] = []
+    result['cumulative_this_year_results'] = []
+    result['cumulative_prev_year_results'] = []
+
+
+    cummulative_this_plans = 0
+    cumulative_this_year = 0
+    cumulative_prev_year = 0
 
     plan_exists = false # 計画が定義されているか判定する。
     this_year_monthly.each do |rec|
@@ -409,6 +422,15 @@ private
       result['categories'].push(rec.yyyymm)
       result['this_year_plans'].push(rec.plan_value.to_f)
       result['this_year_results'].push(rec.result_value.to_f)
+
+
+      # 積み上げ棒グラフ用
+      cummulative_this_plans = cummulative_this_plans + rec.plan_value.to_f
+      cumulative_this_year = cumulative_this_year + rec.result_value.to_f
+
+      result['cumulative_this_year_plans'].push(cummulative_this_plans)
+      result['cumulative_this_year_results'].push(cumulative_this_year)
+
 
       # 計画が一つでも登録されていれば、計画棒グラフを出す。
       plan_exists = true if rec.plan_value.to_f > 0
@@ -421,19 +443,39 @@ private
       reg_flg = false
       prev_year_monthly.each do |rec2|
         result['prev_year_results'].push(rec2.result_value.to_f)
+
+        cumulative_prev_year = cumulative_prev_year + rec2.result_value.to_f
+        result['cumulative_prev_year_results'].push(cumulative_prev_year)
+
         reg_flg = true
       end
 
       unless reg_flg
         result['prev_year_results'].push(0)
+        result['cumulative_prev_year_results'].push(cumulative_prev_year)
       end
 
     end
 
-    ##################################
-    # 計画／実績の棒グラフを作成(前年対比も含める)
-    ##################################
+    #######################################
+    # 計画／実績／前年の棒グラフを作成
+    #######################################
     result['graph_plan'] = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: dept_name + 'の' + item.name + '(' + graph_title + ')')
+      f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+      f.series(name: '前年実績', data: result['cumulative_prev_year_results'], type: "line", color: '#8cc63f')
+
+      if plan_exists
+        f.series(name: '計画', data: result['cumulative_this_year_plans'], type: "line", color: '#3276b1')
+      end
+
+      f.series(name: '実績', data: result['cumulative_this_year_results'], type: "line", color: '#d9534f')
+    end
+
+    #######################################
+    # 計画／実績／前年の積算の折れ線グラフを作成
+    #######################################
+    result['graph_cumulative'] = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: dept_name + 'の' + item.name + '(' + graph_title + ')')
       f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
       f.series(name: '前年実績', data: result['prev_year_results'], type: "column", color: '#8cc63f')
@@ -444,6 +486,7 @@ private
 
       f.series(name: '実績', data: result['this_year_results'], type: "column", color: '#d9534f')
     end
+
 
     ############################################################################
     # 集計種別が「最大」でない時、年計グラフを作成（管理戸数の累計などだしても意味が無いから）
