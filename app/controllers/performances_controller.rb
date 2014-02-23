@@ -39,12 +39,14 @@ class PerformancesController < ApplicationController
 
     # params[:item_summary]    ←集計種別  1:合計 2:平均 3:最大
     item_summary = params[:item_summary]
+    @item_calc = params[:item_calc]
 
 
     #################
     # 部署判定
     #################
-#    busyo = params[:dept].to_i
+    @plan_exists = false
+    @prev_result_exists = false
     params[:dept_list].split(",").each do |busyo|
 
       # ここで指定した条件で以下のkeyを持つ配列が返ってくるので、それを配列に格納
@@ -63,7 +65,15 @@ class PerformancesController < ApplicationController
       #
       # result['graph_plan'] ・・・・　計画／実績／前年実績の棒グラフ
       # result['graph_years'] ・・・・ 年計グラフ
-      @result_arr.push(get_monthly_graph(busyo.to_i, yyyymm_s, yyyymm_e, @item, item_summary, yyyy.to_s + '年度'))
+      #
+      # result['plan_exists']・・・・・・ 計画存在チェック
+      # result['prev_result_exists']・ ・前年存在チェック
+      result = get_monthly_graph(busyo.to_i, yyyymm_s, yyyymm_e, @item, item_summary, yyyy.to_s + '年度')
+      @result_arr.push(result)
+
+      # 1件でも計画がある場合、計画有りと判定する
+      @plan_exists = true if result['plan_exists']
+      @prev_result_exists = true if result['prev_result_exists']
 
     end
 
@@ -82,9 +92,9 @@ class PerformancesController < ApplicationController
          backgroundColor: '#FFFFFF',
          floating: true,
          align: 'right',
-         x: 0,
+         x: -20,
          verticalAlign: 'top',
-         y: 0
+         y: 40
      )
 
      @result_arr.each_with_index do |result, i|
@@ -407,6 +417,9 @@ private
     ##################################
     result = {}
     result['dept_name'] = dept_name
+    result['plan_exists'] = false
+    result['prev_result_exists'] = false
+
     result['categories'] = []
 
     # 通常棒グラフ
@@ -424,7 +437,6 @@ private
     cumulative_this_year = 0
     cumulative_prev_year = 0
 
-    plan_exists = false # 計画が定義されているか判定する。
     this_year_monthly.each do |rec|
 
       # 今年度の計画／実績
@@ -442,7 +454,7 @@ private
 
 
       # 計画が一つでも登録されていれば、計画棒グラフを出す。
-      plan_exists = true if rec.plan_value.to_f > 0
+      result['plan_exists'] = true if rec.plan_value.to_f > 0
 
       # 前年実績
       prev_year = rec.yyyymm.slice(0..3).to_i - 1
@@ -455,7 +467,8 @@ private
 
         cumulative_prev_year = cumulative_prev_year + rec2.result_value.to_f
         result['cumulative_prev_year_results'].push(cumulative_prev_year)
-
+        result['prev_result_exists'] = true # 1件でも前年が存在すれば、前年有りと判定
+        
         reg_flg = true
       end
 
@@ -472,9 +485,22 @@ private
     result['graph_plan'] = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: dept_name + 'の' + item.name + '(' + graph_title + ')')
       f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+
+      # 凡例
+      f.legend(
+          layout: 'vertical',
+          reversed: true,
+          backgroundColor: '#FFFFFF',
+          floating: true,
+          align: 'right',
+          x: -20,
+          verticalAlign: 'top',
+          y: 250
+      )
+
       f.series(name: '前年実績', data: result['cumulative_prev_year_results'], type: "line", color: '#8cc63f')
 
-      if plan_exists
+      if result['plan_exists']
         f.series(name: '計画', data: result['cumulative_this_year_plans'], type: "line", color: '#3276b1')
       end
 
@@ -487,9 +513,22 @@ private
     result['graph_cumulative'] = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: dept_name + 'の' + item.name + '(' + graph_title + ')')
       f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+
+      # 凡例
+      f.legend(
+          layout: 'vertical',
+          reversed: true,
+          backgroundColor: '#FFFFFF',
+          floating: true,
+          align: 'right',
+          x: -20,
+          verticalAlign: 'top',
+          y: 250
+      )
+
       f.series(name: '前年実績', data: result['prev_year_results'], type: "column", color: '#8cc63f')
 
-      if plan_exists
+      if result['plan_exists']
         f.series(name: '計画', data: result['this_year_plans'], type: "column", color: '#3276b1')
       end
 
