@@ -1,15 +1,55 @@
 <%= render :partial=>'sidebar', :locals=>{:val => 1} %>
 
+<!-- 達成率の表を作る -->
+<div style="text-align: center;padding:5px;margin-top:10px;"><%= @graph_name + '(' + @item.name +  ')の計画比' %></div>
+<table class="table table-striped table-bordered table-condensed">
+<% @result_arr.each_with_index do |result, i| %>
+  <% if i == 0 %>
+    <!-- ヘッダ -->
+    <thead>
+      <tr>
+        <th style="text-align:center">&nbsp;</th>
+        <% result['categories'].each do |cate| %>
+          <th style="text-align:center"><%= cate.slice(0,4) + '/' + cate.slice(4,2) %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+  <% end %>
+  
+      <tr>
+        <td style="text-align:center"><%= result['dept_name'] %></td>
+        <% result['categories'].each_with_index do |cate, i| %>
+          <% value = BigDecimal("#{result['this_year_results'][i]/result['this_year_plans'][i]*100}").floor(1) %>
+
+          <% if value >= 100 %>
+            <td style="text-align:center;background-color: #a9dba9;"><%= sprintf("%.1f", value)  %></td>
+          <% elsif value < 80 %>
+            <td style="text-align:center;background-color: lightpink;"><%= sprintf("%.1f", value)  %></td>
+          <% else %>
+            <td style="text-align:center"><%= sprintf("%.1f", value)  %></td>
+          <% end %>
+
+        <% end %>
+      </tr>
+
+<% end %>
+  </tbody>
+</table>
+
+
+
+
+<!-- 折れ線グラフを表示する -->
+<% if @group_result %>
+  <div style="text-align: right;margin: 0 auto;"><%= high_chart("gropu_result-1", @group_result) %></div>
+<% end %>
+
 <!-- 戻り値分　繰り返す -->
 <% @result_arr.each_with_index do |result, i| %>
 
   <div style="text-align: center;margin: 0 auto;">
-
-
-    <% if @group_result %>
-      <div style="text-align: right;margin: 0 auto;"><%= high_chart("gropu_result-1", @group_result) %></div>
-    <% end %>
-
+    
     <div style="text-align: right;margin: 0 auto;margin-bottom: 15px;"><%= high_chart("chart-" + i.to_s, result['graph_plan']) %></div>
 
     <div style="text-align:left;">
@@ -26,6 +66,8 @@
             <th style="text-align:center"><%= cate %></th>
           <% end %>
         </tr>
+      </thead>>
+      <tbody>
         <tr>
           <td style="text-align:center">計画</td>
           <% sum = 0 %>
@@ -50,8 +92,8 @@
             <% sum = sum + rec %>
           <% end %>
         </tr>
+      </tbody>
 
-      </thead>
     </table>
 
     <% if result['graph_years'] %>

@@ -22,6 +22,7 @@ class PerformancesController < ApplicationController
 
     # 戻り値のHashを格納する為の配列
     @result_arr = []
+    @graph_name = params[:graph_name]
 
     #################
     # 年度指定
@@ -34,7 +35,7 @@ class PerformancesController < ApplicationController
     # 項目指定
     #################
     #  項目CDの先頭には２文字、ID重複しないためのキーが入っているので、それを除いて使用
-    item = Item.find_by_code(params[:item].slice(2, params[:item].length - 2))
+    @item = Item.find_by_code(params[:item].slice(2, params[:item].length - 2))
 
     # params[:item_summary]    ←集計種別  1:合計 2:平均 3:最大
     item_summary = params[:item_summary]
@@ -48,13 +49,21 @@ class PerformancesController < ApplicationController
 
       # ここで指定した条件で以下のkeyを持つ配列が返ってくるので、それを配列に格納
       # Hashのkey
-      # result['categories'] 　　　　・・・・　年月のカテゴリ配列
+      #
+      # result['dept_name']　・・・　部署名
+      # result['categories'] ・・・・　年月のカテゴリ配列
+      #
       # result['this_year_plans'] 　・・・・　計画値の配列
       # result['this_year_results'] ・・・・　実績値の配列
       # result['prev_year_results'] ・・・・　前年実績値の配列
+      #
+      # result['cumulative_this_year_plans']　・・・計画値の累積
+      # result['cumulative_this_year_results']　・・・実績値の累積
+      # result['cumulative_prev_year_results']　・・・前年実績値の累積
+      #
       # result['graph_plan'] ・・・・　計画／実績／前年実績の棒グラフ
       # result['graph_years'] ・・・・ 年計グラフ
-      @result_arr.push(get_monthly_graph(busyo.to_i, yyyymm_s, yyyymm_e, item, item_summary, yyyy.to_s + '年度'))
+      @result_arr.push(get_monthly_graph(busyo.to_i, yyyymm_s, yyyymm_e, @item, item_summary, yyyy.to_s + '年度'))
 
     end
 
@@ -63,7 +72,7 @@ class PerformancesController < ApplicationController
     # 指定された部署を折れ線グラフで表示する。
     ##############################################
    @group_result = LazyHighCharts::HighChart.new('graph') do |f|
-     f.title(text: params[:graph_name].to_s + 'の' + item.name + 'の実績一覧')
+     f.title(text: @graph_name.to_s + 'の' + @item.name + 'の実績一覧')
      f.xAxis(categories: @result_arr[0]['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
      #f.series(name: '実績', data: this_year_results, type: "spline")
 
