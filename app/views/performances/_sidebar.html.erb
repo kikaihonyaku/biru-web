@@ -24,8 +24,8 @@
             { label: '営業所グループ', id:6110,
               children:[
                 { label: '全支店', id:910, graph_name: '営業所グループ：全支店', dept_list:[252,245,246,247]},
-                { label: '全営業所', id:911, graph_name: '営業所グループ：全営業所', dept_list:[252,245,246,247]},
-                { label: '全エリア', id:912 },
+                { label: '全エリア', id:912, graph_name: '営業所グループ：全エリア', dept_list:[236,237,238,279,277,277,240,241,242]},
+                { label: '全営業所', id:911, graph_name: '営業所グループ：全営業所', dept_list:[152,153,154,155,156,227,228,229,161,162,163,164,165,166,167,168,171,172,174,173]},
               ]
             },
             { label: '建物管理グループ', id:902 },
@@ -572,8 +572,9 @@ function openClose(id, mid, disp_msg)
          disp='none';
          msg= disp_msg + 'を表示';
       }
-         target.style.display = disp;
-         targetmsg.firstChild.nodeValue = msg;
+     
+     target.style.display = disp;
+     targetmsg.firstChild.nodeValue = msg;
    }
 }
 

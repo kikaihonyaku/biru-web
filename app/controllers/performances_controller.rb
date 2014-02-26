@@ -432,6 +432,10 @@ private
     result['cumulative_this_year_results'] = []
     result['cumulative_prev_year_results'] = []
 
+    # 計画比／前年比
+    result['comparison_plan'] = []
+    result['comparison_result'] = []
+
 
     cummulative_this_plans = 0
     cumulative_this_year = 0
@@ -443,6 +447,8 @@ private
       result['categories'].push(rec.yyyymm)
       result['this_year_plans'].push(rec.plan_value.to_f)
       result['this_year_results'].push(rec.result_value.to_f)
+      result['comparison_plan'].push(BigDecimal("#{(rec.result_value.to_f) / (rec.plan_value.to_f) *100}").floor(1))
+
 
 
       # 積み上げ棒グラフ用
@@ -464,9 +470,12 @@ private
       reg_flg = false
       prev_year_monthly.each do |rec2|
         result['prev_year_results'].push(rec2.result_value.to_f)
+        result['comparison_result'].push(BigDecimal("#{((rec.result_value.to_f))/(rec2.result_value.to_f)*100}").floor(1))
 
         cumulative_prev_year = cumulative_prev_year + rec2.result_value.to_f
         result['cumulative_prev_year_results'].push(cumulative_prev_year)
+
+
         result['prev_result_exists'] = true # 1件でも前年が存在すれば、前年有りと判定
         
         reg_flg = true

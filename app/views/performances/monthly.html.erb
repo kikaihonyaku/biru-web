@@ -1,10 +1,11 @@
 <%= render :partial=>'sidebar', :locals=>{:val => 1} %>
 
+
 <!-- 計画が存在する時、達成率の表を作る -->
 <% if @plan_exists %>
 
   <div style="text-align: center;padding:5px;margin-top:20px;font-size: medium;margin-bottom:5px;"><%= @graph_name + '(' + @item.name +  ')の計画比' %></div>
-  <table class="table table-striped table-bordered table-condensed" style="margin-bottom:20px;">
+  <table class="table table-striped table-bordered table-condensed" style="margin-bottom:40px;">
   <% @result_arr.each_with_index do |result, i| %>
     <% if i == 0 %>
       <!-- ヘッダ -->
@@ -12,7 +13,7 @@
         <tr>
           <th style="text-align:center">&nbsp;</th>
           <% result['categories'].each do |cate| %>
-            <th style="text-align:center"><%= cate.slice(0,4) + '/' + cate.slice(4,2) %></th>
+            <th style="text-align:center;"><%= cate.slice(0,4) + '/' + cate.slice(4,2) %></th>
           <% end %>
         </tr>
       </thead>
@@ -20,9 +21,9 @@
     <% end %>
 
         <tr>
-          <td style="text-align:center"><%= result['dept_name'] %></td>
-          <% result['categories'].each_with_index do |cate, i| %>
-            <% value = BigDecimal("#{result['this_year_results'][i]/result['this_year_plans'][i]*100}").floor(1) %>
+          <td style="text-align:center;min-width: 120px;"><a href="#p_4000<%= i %>"><%= result['dept_name'] %></a></td>
+          <% result['categories'].each_with_index do |cate, j| %>
+            <% value = result['comparison_plan'][j]  %>
 
             <% if value >= 100 %>
               <td style="text-align:center;background-color: #a9dba9;"><%= sprintf("%.1f", value)  %></td>
@@ -46,8 +47,8 @@
 
   <div style="padding-top:20px;"></div>
 
-  <div style="text-align: center;padding:5px;margin-top:20px;font-size: medium;margin-bottom:5px;"><%= @graph_name + '(' + @item.name +  ')の前年対比' %></div>
-  <table class="table table-striped table-bordered table-condensed" style="margin-bottom:20px;">
+  <div style="text-align: center;padding:5px;font-size: medium;margin-bottom:5px;"><%= @graph_name + '(' + @item.name +  ')の前年対比' %></div>
+  <table class="table table-striped table-bordered table-condensed" style="margin-bottom:40px;">
   <% @result_arr.each_with_index do |result, i| %>
     <% if i == 0 %>
       <!-- ヘッダ -->
@@ -63,9 +64,9 @@
     <% end %>
 
         <tr>
-          <td style="text-align:center"><%= result['dept_name'] %></td>
-          <% result['categories'].each_with_index do |cate, i| %>
-            <% value = BigDecimal("#{result['this_year_results'][i]/result['prev_year_results'][i]*100}").floor(1) %>
+          <td style="text-align:center;min-width: 120px;"><a href="#p_4000<%= i %>"><%= result['dept_name'] %></a></td>
+          <% result['categories'].each_with_index do |cate, j| %>
+            <% value = result['comparison_result'][j] %>
 
             <% if value >= 100 %>
               <td style="text-align:center;background-color: #a9dba9;"><%= sprintf("%.1f", value)  %></td>
@@ -86,12 +87,14 @@
 
 <!-- 折れ線グラフを表示する -->
 <% if @group_result %>
-
-  <div style="text-align: right;margin-top:80px;" ><%= high_chart("gropu_result-1", @group_result) %></div>
+  <div style="text-align: right;margin-top:80px;padding-bottom:100px;" ><%= high_chart("gropu_result-1", @group_result) %></div>
 <% end %>
 
+
+
 <!-- ショートカットを作成 -->
-<div style="margin-top:30px;text-align: left;padding-left:20px;">
+<% if false %>
+<div style="margin-top:30px;text-align: left;padding-left:20px;margin-bottom: 50px;">
   <% @result_arr.each_with_index do |result, i| %>
   <span style="margin-right:20px;">
     <a href="javascript:void(0);" onclick="openClose('p_4000<%= i %>','p_4000<%= i %>_detail', '<%= result['dept_name'] %>' );"><span id="p_4000<%= i %>_detail">内訳を表示</span></a>
@@ -99,13 +102,24 @@
   <% end %>
 
 </div>
+<% end %>
 
 <!-- 戻り値分　繰り返す -->
 <% @result_arr.each_with_index do |result, i| %>
 
-  <div style="text-align: center;margin-bottom: 100px;" id="p_4000<%= i %>">
+<hr style="page-break-after: always;"></hr>
+
+  <div style="text-align: center;margin-bottom: 50px;" id="p_4000<%= i %>">
+
+  <div style="font-size:small;text-align: left;padding-left:15px;padding-top:10px;"><a href="#">トップへ</a></div>
+  <div style="font-size:xx-large;padding-bottom:30px;"><%= result['dept_name'] %></div>
     
-    <div style="text-align: right;margin: 0 auto;margin-bottom: 5px;"><%= high_chart("cumulative-" + i.to_s, result['graph_cumulative']) %></div>
+    <div style="text-align: right;margin: 0 auto;margin-bottom: 5px;width:50%;float:left;">
+      <%= high_chart("cumulative-" + i.to_s, result['graph_cumulative']) %>
+    </div>
+    <div style="text-align: right;margin: 0 auto;width:50%;float:left;">
+      <%= high_chart("chart-" + i.to_s, result['graph_plan']) %>
+    </div>
 
     <table class="table table-striped table-bordered table-condensed" id="p_3000<%= i %>" style="margin-bottom:80px;">
       <thead>
@@ -117,14 +131,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td style="text-align:center">計画</td>
-          <% sum = 0 %>
-          <% result['this_year_plans'].each do |rec| %>
-            <td style="text-align:center"><%= (rec / @item_calc.to_f).round %></td>
-            <% sum = sum + rec %>
-          <% end %>
-        </tr>
+        <% if @plan_exists %>
+          <tr>
+            <td style="text-align:center;min-width: 60px;">計画</td>
+            <% sum = 0 %>
+            <% result['this_year_plans'].each do |rec| %>
+              <td style="text-align:center"><%= (rec / @item_calc.to_f).round %></td>
+              <% sum = sum + rec %>
+            <% end %>
+          </tr>
+        <% end %>
         <tr>
           <td style="text-align:center">実績</td>
           <% sum = 0 %>
@@ -133,19 +149,58 @@
             <% sum = sum + rec %>
           <% end %>
         </tr>
-        <tr>
-          <% sum = 0 %>
-          <td style="text-align:center">前年実績</td>
-          <% result['prev_year_results'].each do |rec| %>
-            <td style="text-align:center"><%= (rec / @item_calc.to_f).round %></td>
-            <% sum = sum + rec %>
-          <% end %>
-        </tr>
+
+        <% if @prev_result_exists  %>
+
+          <tr>
+            <% sum = 0 %>
+            <td style="text-align:center">前年実績</td>
+            <% result['prev_year_results'].each do |rec| %>
+              <td style="text-align:center"><%= (rec / @item_calc.to_f).round %></td>
+              <% sum = sum + rec %>
+            <% end %>
+          </tr>
+
+        <% end %>
+
+        <% if @plan_exists %>
+          <tr>
+            <td style="text-align:center">計画比</td>
+            <% result['comparison_plan'].each do |value| %>
+
+              <% if value >= 100 %>
+                <td style="text-align:center;background-color: #a9dba9;"><%= sprintf("%.1f", value)  %></td>
+              <% elsif value < 80 %>
+                <td style="text-align:center;background-color: lightpink;"><%= sprintf("%.1f", value)  %></td>
+              <% else %>
+                <td style="text-align:center"><%= sprintf("%.1f", value)  %></td>
+              <% end %>
+
+
+            <% end %>
+          </tr>
+        <% end %>
+
+        <% if @prev_result_exists  %>
+          <tr>
+            <td style="text-align:center">前年比</td>
+            <% result['comparison_result'].each do |value| %>
+
+              <% if value >= 100 %>
+                <td style="text-align:center;background-color: #a9dba9;"><%= sprintf("%.1f", value)  %></td>
+              <% elsif value < 80 %>
+                <td style="text-align:center;background-color: lightpink;"><%= sprintf("%.1f", value)  %></td>
+              <% else %>
+                <td style="text-align:center"><%= sprintf("%.1f", value)  %></td>
+              <% end %>
+            <% end %>
+          </tr>
+        <% end %>
+
       </tbody>
 
     </table>
     
-    <div style="text-align: right;margin: 0 auto;margin-bottom: 80px;"><%= high_chart("chart-" + i.to_s, result['graph_plan']) %></div>
 
     <% if result['graph_years'] %>
       <div style="text-align: right;margin: 0 auto;"><%= high_chart("years-" + i.to_s, result['graph_years']) %></div>
@@ -157,10 +212,10 @@
 
 
 
-<% @result_arr.each_with_index do |result, i| %>
 <script type="text/javascript">
   <!--
-    openClose('p_4000<%= i %>','p_4000<%= i %>_detail', '<%= result['dept_name'] %>');
+    <% @result_arr.each_with_index do |result, i| %>
+      // openClose('p_4000<%= i %>','p_4000<%= i %>_detail', '<%= result['dept_name'] %>');
+    <% end %>
   //-->
 </script>
-<% end %>
