@@ -28,103 +28,103 @@
                 { label: '全営業所', id:911, graph_name: '営業所グループ：全営業所', dept_list:[152,153,154,155,156,227,228,229,161,162,163,164,165,166,167,168,171,172,174,173]},
               ]
             },
-            { label: '建物管理グループ', id:902 },
-            { label: '不動産流通グループ', id:903 },
+            { label: '建物管理グループ', id:902, graph_name: '建物管理グループ', dept_list:[159, 169, 175] },
+            { label: '不動産流通グループ', id:903, graph_name: '不動産流通グループ', dept_list:[230, 231, 232]  },
           ]
         },
         {
           label:'組織別', id: 6102,
           children: [
           {
-              label: 'ビル管理全体', id:252, dept_list:[252,245,246,247],
+              label: 'ビル管理全体', graph_name: 'ビル管理全体', id:252, dept_list:[252,245,246,247,243,248],
               children: [
-                  { label: '東武支店',id:245,
+                  { label: '東武支店',id:245, graph_name: '東武支店', dept_list:[245, 236, 237, 238, 159, 230] ,
                     children: [
-                      { label: '東武南',id:236,
+                      { label: '東武南',id:236, graph_name: '東武南', dept_list:[236, 152, 153, 154] ,
                         children: [
-                          { label: '草加', id: 152},
-                          { label: '草加新田', id: 153},
-                          { label: '北千住', id: 154}
+                          { label: '草加', id: 152, graph_name: '草加', dept_list:[152] },
+                          { label: '草加新田', id: 153, graph_name: '草加新田', dept_list:[153] },
+                          { label: '北千住', id: 154, graph_name: '北千住', dept_list:[154] }
                         ]
                       },
-                      { label: '東武中央',id:237 ,
+                      { label: '東武中央',id:237, graph_name: '東武中央', dept_list:[237, 155, 156] ,
                         children: [
-                          {label: '南越谷', id:155 },
-                          {label: '越谷', id:156 }
+                          {label: '南越谷', id:155, graph_name: '南越谷', dept_list:[155]  },
+                          {label: '越谷', id:156, graph_name: '越谷', dept_list:[156]  }
                         ]
                       },
-                      { label: '東武北',id:238,
+                      { label: '東武北',id:238, graph_name: '東武北', dept_list:[238, 227, 228, 229] ,
                         children:[
-                          { label: '北越谷', id: 227},
-                          { label: '春日部', id: 228},
-                          { label: 'せんげん台', id: 229}
+                          { label: '北越谷', id: 227, graph_name: '北越谷', dept_list:[227] },
+                          { label: '春日部', id: 228, graph_name: '春日部', dept_list:[228] },
+                          { label: 'せんげん台', id: 229, graph_name: 'せんげん台', dept_list:[229] }
                         ]
                       },
-                      { label: '東武建管',id:159},
-                      { label: '東武流通',id:230},
+                      { label: '東武建管',id:159, graph_name: '東武建管', dept_list:[159] },
+                      { label: '東武流通',id:230, graph_name: '東武流通', dept_list:[230] },
                     ]
                   },
-                  { label: 'さいたま支店',id:246,
+                  { label: 'さいたま支店',id:246, graph_name: 'さいたま支店', dept_list:[246, 279, 277, 240, 169, 231] ,
                     children: [
-                      { label:'さいたま南', id:279,
+                      { label:'さいたま南', id:279, graph_name: 'さいたま南', dept_list:[279, 161, 162, 163] ,
                         children:[
-                          { label: '戸田', id:161},
-                          { label: '武蔵浦和', id:162},
-                          { label: '川口', id:163},
+                          { label: '戸田', id:161, graph_name: '戸田', dept_list:[161] },
+                          { label: '武蔵浦和', id:162, graph_name: '武蔵浦和', dept_list:[162] },
+                          { label: '川口', id:163, graph_name: '川口', dept_list:[163] },
                         ]
                       },
-                      { label: 'さいたま北', id:277,
+                      { label: 'さいたま北', id:277, graph_name: 'さいたま北', dept_list:[277, 164, 165] ,
                         children:[
-                          { label: '浦和', id:164},
-                          { label: '与野', id:165}
+                          { label: '浦和', id:164, graph_name: '浦和', dept_list:[164] },
+                          { label: '与野', id:165, graph_name: '与野', dept_list:[165] }
                         ]
                       },
-                      { label:'さいたま東', id:240,
+                      { label:'さいたま東', id:240, graph_name: 'さいたま東', dept_list:[240, 166, 167, 168] ,
                         children: [
-                          { label: '東浦和', id:166},
-                          { label: '東川口', id:167},
-                          { label: '戸塚安行', id:168}
+                          { label: '東浦和', id:166, graph_name: '東浦和', dept_list:[166] },
+                          { label: '東川口', id:167, graph_name: '東川口', dept_list:[167] },
+                          { label: '戸塚安行', id:168, graph_name: '戸塚安行', dept_list:[168] }
                         ]
                       },
-                      { label: 'さいたま建管',id:169},
-                      { label: 'さいたま流通',id:231},
+                      { label: 'さいたま建管',id:169, graph_name: 'さいたま建管', dept_list:[169] },
+                      { label: 'さいたま流通',id:231, graph_name: 'さいたま流通', dept_list:[231] },
                     ]
                   },
-                  { label: '千葉支店',id:247,
+                  { label: '千葉支店',id:247, graph_name: '千葉支店', dept_list:[247, 241, 242, 175, 232] ,
                     children: [
-                      { label:'常磐中央', id:241,
+                      { label:'常磐中央', id:241, graph_name: '常磐中央', dept_list:[241] ,
                         children:[
-                          { label: '松戸', id:171},
-                          { label: '北松戸', id:172},
+                          { label: '松戸', id:171, graph_name: '松戸', dept_list:[171] },
+                          { label: '北松戸', id:172, graph_name: '北松戸', dept_list:[172] },
                         ]
                       },
-                      { label: '常磐西', id:242,
+                      { label: '常磐西', id:242, graph_name: '常磐西', dept_list:[242] ,
                         children:[
-                          { label: '南流山', id:174},
-                          { label: '柏', id:173}
+                          { label: '南流山', id:174, graph_name: '南流山', dept_list:[174] },
+                          { label: '柏', id:173, graph_name: '柏', dept_list:[173] }
                         ]
                       },
-                      { label: '千葉建管',id: 175},
-                      { label: '千葉流通',id: 232},
+                      { label: '千葉建管',id: 175, graph_name: '千葉建管', dept_list:[175] },
+                      { label: '千葉流通',id: 232, graph_name: '千葉流通', dept_list:[232] },
                     ]
                   },
-                  { label: 'アセット',id:243,
+                  { label: 'アセット',id:243, graph_name: 'アセットマネジメント部', dept_list:[243, 209, 181] ,
                     children: [
-                      { label: '保険課', id:209},
-                      { label: '法人課', id:181}
+                      { label: '保険課', id:209, graph_name: '保健課', dept_list:[209] },
+                      { label: '法人課', id:181, graph_name: '法人課', dept_list:[181] }
                     ]
                   },
-                  { label: 'ライフサービス部',id:248,
+                  { label: 'ライフサービス部',id:248, graph_name: 'ライフサービス部', dept_list:[248] ,
                     children: [
-                      { label: '損害サービス課', id:185},
-                      { label: 'クリーンサービス課', id:186}
+                      { label: '損害サービス課', id:185, graph_name: '損害サービス課', dept_list:[185] },
+                      { label: 'クリーンサービス課', id:186, graph_name: 'クリーンサービス課', dept_list:[186] }
                     ]
                   },
 
               ]
           },
           {
-            label: 'ポラスアルファ', id:258
+            label: 'ポラスアルファ', id:258, graph_name: 'ポラスアルファ', dept_list:[258]
           }
 
           ]

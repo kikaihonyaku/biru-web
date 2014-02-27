@@ -529,10 +529,10 @@ private
           reversed: true,
           backgroundColor: '#FFFFFF',
           floating: true,
-          align: 'right',
-          x: -20,
+          align: 'left',
+          x: 50,
           verticalAlign: 'top',
-          y: 250
+          y: 40
       )
 
       f.series(name: '前年実績', data: result['prev_year_results'], type: "column", color: '#8cc63f')

@@ -25,7 +25,9 @@
           <% result['categories'].each_with_index do |cate, j| %>
             <% value = result['comparison_plan'][j]  %>
 
-            <% if value >= 100 %>
+              <% if value.nil? %>
+                <td style="text-align:center;">—</td>
+              <% elsif value >= 100 %>
               <td style="text-align:center;background-color: #a9dba9;"><%= sprintf("%.1f", value)  %></td>
             <% elsif value < 80 %>
               <td style="text-align:center;background-color: lightpink;"><%= sprintf("%.1f", value)  %></td>
@@ -68,7 +70,9 @@
           <% result['categories'].each_with_index do |cate, j| %>
             <% value = result['comparison_result'][j] %>
 
-            <% if value >= 100 %>
+              <% if value.nil? %>
+                <td style="text-align:center;">—</td>
+              <% elsif value >= 100 %>
               <td style="text-align:center;background-color: #a9dba9;"><%= sprintf("%.1f", value)  %></td>
             <% elsif value < 80 %>
               <td style="text-align:center;background-color: lightpink;"><%= sprintf("%.1f", value)  %></td>
@@ -168,7 +172,9 @@
             <td style="text-align:center">計画比</td>
             <% result['comparison_plan'].each do |value| %>
 
-              <% if value >= 100 %>
+              <% if value.nil? %>
+                <td style="text-align:center;">—</td>
+              <% elsif value >= 100 %>
                 <td style="text-align:center;background-color: #a9dba9;"><%= sprintf("%.1f", value)  %></td>
               <% elsif value < 80 %>
                 <td style="text-align:center;background-color: lightpink;"><%= sprintf("%.1f", value)  %></td>
@@ -186,7 +192,9 @@
             <td style="text-align:center">前年比</td>
             <% result['comparison_result'].each do |value| %>
 
-              <% if value >= 100 %>
+              <% if value.nil? %>
+                <td style="text-align:center;">—</td>
+              <% elsif value >= 100 %>
                 <td style="text-align:center;background-color: #a9dba9;"><%= sprintf("%.1f", value)  %></td>
               <% elsif value < 80 %>
                 <td style="text-align:center;background-color: lightpink;"><%= sprintf("%.1f", value)  %></td>
