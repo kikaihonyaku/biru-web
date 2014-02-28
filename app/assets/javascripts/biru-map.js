@@ -151,10 +151,181 @@ function MenuControll(map) {
     return controlDiv;
 }
 
+function BarControll(map) {
+    
+    var controlDiv = document.createElement('div');
+    controlDiv.index = 1;
+    controlDiv.style.padding = '5px';
+    controlDiv.style.marginRight = '10px';
+    controlDiv.style.marginTop = '-50px';
+
+
+    // Set CSS for the control border.
+    var controlUI = document.createElement('div');
+    controlUI.style.backgroundColor = 'white';
+    controlUI.style.borderStyle = 'solid';
+    controlUI.style.borderWidth = '1px';
+    controlUI.style.borderColor = '#717b87';
+    controlUI.style.cursor = 'pointer';
+    controlUI.style.textAlign = 'center';
+    controlUI.style.boxShadow = '0px 2px 4px rgba(0,0,0,0.4)';
+    controlUI.style.height = '350px';
+    controlUI.style.width = '200px';
+    controlUI.style.top = '10px';
+    controlDiv.appendChild(controlUI);
+
+    var divRadio = document.createElement('div');
+    divRadio.style.position = 'absolute';
+    divRadio.style.top = '20px';
+    divRadio.style.left = '25px';
+    divRadio.style.left = '25px';
+    var strRadio = ""
+
+    strRadio = strRadio + '<form accept-charset="UTF-8" action="/managements/change_biru_icon" data-remote="true" format="js" id="biru_icon_id" method="post" name="biru_icon">'
+    strRadio = strRadio + '  <div style="margin:0;padding:0;display:inline">'
+    strRadio = strRadio + '    <input name="utf8" type="hidden" value="&#x2713;" />'
+    strRadio = strRadio + '    <input name="authenticity_token" type="hidden" value="JEzEMF2O+DTDMazjGjDPHR3BNof0wPWpYp3uIceXX7M=" /></div>'
+    strRadio = strRadio + '  </div>'
+    strRadio = strRadio + '  <select id="disp_type" name="disp_type" onChange="change_icon();" style="width:150px;">'
+    strRadio = strRadio + '    <option value="biru_kind">建物種別</option>'
+    strRadio = strRadio + '    <option value="siten">支店</option>'
+    strRadio = strRadio + '    <option value="area">エリア</option>'
+    strRadio = strRadio + '    <option value="shop">営業所</option>'
+    strRadio = strRadio + '    <option value="manage_type">管理方式</option>'
+    strRadio = strRadio + '    <option value="aki">空室数</option>'
+    strRadio = strRadio + '    <option value="age">築年数</option>'
+    strRadio = strRadio + '    <option value="num">戸数</option>'
+    strRadio = strRadio + '    <option value="jita">自他</option>'
+    strRadio = strRadio + '    <option value="atk">アタックランク</option>'
+    strRadio = strRadio + '  </select>'
+    strRadio = strRadio + '  <input name="s_commit" style="display:none;" type="submit" value="" />'
+    strRadio = strRadio + '</form>'
+
+    divRadio.innerHTML = strRadio
+    controlDiv.appendChild(divRadio);
+
+
+    var divA = document.createElement('div');
+    divA.style.position = 'absolute';
+    divA.style.top = '75px';
+    divA.style.left = '0px';
+    divA.id = "biru_icon"
+
+    var strTable = ""
+    strTable = strTable + '<table style="margin-left:30px;">'
+    strTable = strTable + '   <tbody>'
+    strTable = strTable + '     <tr >'
+    strTable = strTable + '       <td style="text-align:left;height:20px;width:25px;"><img alt="Marker_blue" src="/assets/marker_blue.png" /></td>'
+    strTable = strTable + '       <td style="text-align:left;height:5px;font-size:medium;">アパート</td>'
+    strTable = strTable + '     </tr>'
+    strTable = strTable + '     <tr>'
+    strTable = strTable + '       <td><img alt="Marker_yellow" src="/assets/marker_yellow.png" /></td>'
+    strTable = strTable + '       <td style="font-size:medium;">マンション</td>'
+    strTable = strTable + '     </tr>'
+    strTable = strTable + '     <tr>'
+    strTable = strTable + '       <td><img alt="Marker_purple" src="/assets/marker_purple.png" /></td>'
+    strTable = strTable + '       <td style="font-size:medium;">分譲M</td>'
+    strTable = strTable + '     </tr>'
+    strTable = strTable + '     <tr>'
+    strTable = strTable + '       <td><img alt="Marker_red" src="/assets/marker_red.png" /></td>'
+    strTable = strTable + '       <td style="font-size:medium;">戸建て</td>'
+    strTable = strTable + '     </tr>'
+    strTable = strTable + '     <tr>'
+    strTable = strTable + '       <td><img alt="Marker_orange" src="/assets/marker_orange.png" /></td>'
+    strTable = strTable + '       <td style="font-size:medium;">テラス</td>'
+    strTable = strTable + '     </tr>'
+    strTable = strTable + '     <tr>'
+    strTable = strTable + '       <td><img alt="Marker_green" src="/assets/marker_green.png" /></td>'
+    strTable = strTable + '       <td style="font-size:medium;">メゾネット</td>'
+    strTable = strTable + '     </tr>'
+    strTable = strTable + '     <tr>'
+    strTable = strTable + '       <td><img alt="Marker_gray" src="/assets/marker_gray.png" /></td>'
+    strTable = strTable + '       <td style="font-size:medium;">店舗等</td>'
+    strTable = strTable + '     </tr>'
+    strTable = strTable + '     <tr>'
+    strTable = strTable + '       <td><img alt="Marker_gray" src="/assets/marker_gray.png" /></td>'
+    strTable = strTable + '       <td style="font-size:medium;">事務所等</td>'
+    strTable = strTable + '     </tr>'
+    strTable = strTable + '     <tr>'
+    strTable = strTable + '       <td><img alt="Marker_white" src="/assets/marker_white.png" /></td>'
+    strTable = strTable + '       <td style="font-size:medium;">その他</td>'
+    strTable = strTable + '     </tr>'
+    strTable = strTable + '   </tbody>'
+    strTable = strTable + ' </table>'
+    
+    divA.innerHTML = strTable
+    controlDiv.appendChild(divA);
+
+    // Set CSS for the control interior.
+//   var controlText = document.createElement('div');
+//   controlText.style.fontFamily = 'Arial,sans-serif';
+//   controlText.style.fontSize = '13px';
+//   controlText.style.paddingTop = '1px';
+//   controlText.style.paddingBottom = '1px';
+//   controlText.style.paddingLeft = '6px';
+//   controlText.style.paddingRight = '6px';
+//   controlText.innerHTML = '<strong>メニュー&nbsp;&nbsp;表示</strong>';
+//   controlUI.appendChild(controlText);
+
+
+
+    return controlDiv;
+}
+
+
+function DispControll(map) {
+
+    var controlDiv = document.createElement('div');
+    controlDiv.index = 1;
+    controlDiv.style.padding = '5px';
+    controlDiv.style.marginRight = '10px';
+
+
+    // Set CSS for the control border.
+    var controlUI = document.createElement('div');
+    controlUI.style.backgroundColor = 'white';
+    controlUI.style.borderStyle = 'solid';
+    controlUI.style.borderWidth = '1px';
+    controlUI.style.borderColor = '#717b87';
+    controlUI.style.cursor = 'pointer';
+    controlUI.style.textAlign = 'center';
+    controlUI.style.boxShadow = '0px 2px 4px rgba(0,0,0,0.4)';
+    controlUI.style.height = '180px';
+    controlUI.style.width = '200px';
+    controlUI.style.top = '10px';
+    controlDiv.appendChild(controlUI);
+
+
+    var divA = document.createElement('div');
+    divA.style.position = 'absolute';
+    divA.style.top = '20px';
+    divA.style.left = '15px';
+
+    var strTable = ""
+    strTable = strTable + '<label style="font-size:small;"><input type="checkbox" id="ownerChk"  onClick="javascript:dips_owners(ownerChk.checked);" />&nbsp;&nbsp;貸主マーカー</label>'
+    strTable = strTable + '<label style="font-size:small;"><input type="checkbox" id="trustChk" onClick="javascript:dips_trusts(trustChk.checked);" />&nbsp;&nbsp;委託契約ライン</label>'
+    strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;clear:both;"><input type="checkbox" id="shopChk" onClick="javascript:dips_shops(shopChk.checked);" checked/>&nbsp;&nbsp;営業所マーカー</label>'
+
+    strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:20px;"><input type="checkbox" name="dispcheck01" id="circle01Chk" onClick="javascript:disp_shop_01(circle01Chk.checked);" />&nbsp;&nbsp;半径1Km</label>'
+    strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:20px;"><input type="checkbox" name="dispcheck01" id="circle02Chk" onClick="javascript:disp_shop_02(circle02Chk.checked);" />&nbsp;&nbsp;半径2Km</label>'
+
+
+    strTable = strTable + '</div>'  
+
+    divA.innerHTML = strTable
+    controlDiv.appendChild(divA);
+
+    return controlDiv;
+   
+}
+
+
 function StreetViewControll(map) {
     var controlDiv = document.createElement('div');
     controlDiv.index = 1;
     controlDiv.style.padding = '5px';
+    controlDiv.style.marginBottom = '30px';
+    controlDiv.style.marginRight = '50px';
 
     // Set CSS for the control border.
     var controlUI = document.createElement('div');
@@ -201,7 +372,7 @@ function StreetViewControll(map) {
 
 // ストリートビューを非表示にして map_canvasの高さを設定
 function init_display(){
-  document.getElementById("map_canvas").style.height = "95%";
+  document.getElementById("map_canvas").style.height = "100%";
   document.getElementById("panowide").style.height = "0px";
   document.getElementById("panowide").style.display = "none";
 }
@@ -298,6 +469,9 @@ function init_map(){
     mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new MenuControll(mapCanvas));
     mapCanvas.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(new StreetViewControll(mapCanvas));
     // mapCanvas.controls[google.maps.ControlPosition.TOP_LEFT].push(new FullScreenControl(mapCanvas));
+
+    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new BarControll(mapCanvas));
+    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new DispControll(mapCanvas));
 
     /*----------------------------------------------------------------------*/
     /* ストリートビューオブジェクトを作成 （これはcreate markerを呼び出す前に定義する。）*/

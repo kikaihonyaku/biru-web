@@ -2,6 +2,18 @@
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
 <script type="text/javascript">
 
+
+// アイコンを変更します。
+function change_icon(){
+
+  // ajaxで凡例を変更
+  document.forms['biru_icon'].s_commit.click();
+
+  // コンボボックスで選択されたものにgooglemapのアイコンを変更
+  change_biru_icon($('#biru_icon_id [name=disp_type]').val());
+
+}
+
 // 建物のアイコンを変更します。
 function change_biru_icon(type){
   if(type == "siten"){
@@ -50,6 +62,43 @@ function change_biru_icon(type){
     // 何もしない
   }
 
+}
+
+
+// 営業所マーカーの表示／非表示
+function dips_shops(flg){
+  for(var item in shop_arr){
+    shop_arr[item].set("visible", flg);
+  };
+}
+
+// 委託契約マーカーの表示／非表示
+function dips_trusts(flg){
+  for(var item in trust_arr){
+    trust_arr[item].set("visible", flg);
+  };
+}
+
+// 貸主マーカーの表示／非表示
+function dips_owners(flg){
+  for(var item in owner_arr){
+    owner_arr[item].set("visible", flg);
+  };
+}
+
+
+// 営業所の半径１kmのマーカーの表示／非表示
+function disp_shop_01(flg){
+  for(var item in shop_circle01_arr){
+    shop_circle01_arr[item].set("visible", flg);
+  };
+}
+
+// 営業所の半径２kmのマーカーの表示／非表示
+function disp_shop_02(flg){
+  for(var item in shop_circle02_arr){
+    shop_circle02_arr[item].set("visible", flg);
+  };
 }
 
 
@@ -592,24 +641,24 @@ function getCoords(position) {
     var heatmap_room = new google.maps.visualization.HeatmapLayer();
     heatmap_room.setData(populations);
 
-    /* ヒートマップイベント登録 */
-    var hiatmap00Radio = document.getElementById("hiatmap00Radio");
-    google.maps.event.addDomListener(hiatmap00Radio, "click", function(){
-      heatmap_biru.setMap(null);
-      heatmap_room.setMap(null);
-    });
+//    /* ヒートマップイベント登録 */
+//    var hiatmap00Radio = document.getElementById("hiatmap00Radio");
+//    google.maps.event.addDomListener(hiatmap00Radio, "click", function(){
+//      heatmap_biru.setMap(null);
+//      heatmap_room.setMap(null);
+//    });
 
-    var hiatmap01Radio = document.getElementById("hiatmap01Radio");
-    google.maps.event.addDomListener(hiatmap01Radio, "click", function(){
-      heatmap_biru.setMap(mapCanvas);
-      heatmap_room.setMap(null);
-    });
+//    var hiatmap01Radio = document.getElementById("hiatmap01Radio");
+//    google.maps.event.addDomListener(hiatmap01Radio, "click", function(){
+//      heatmap_biru.setMap(mapCanvas);
+//      heatmap_room.setMap(null);
+//    });
 
-    var hiatmap02Radio = document.getElementById("hiatmap02Radio");
-    google.maps.event.addDomListener(hiatmap02Radio, "click", function(){
-      heatmap_biru.setMap(null);
-      heatmap_room.setMap(mapCanvas);
-    });
+//    var hiatmap02Radio = document.getElementById("hiatmap02Radio");
+//    google.maps.event.addDomListener(hiatmap02Radio, "click", function(){
+//      heatmap_biru.setMap(null);
+//      heatmap_room.setMap(mapCanvas);
+//    });
 
     /* 貸主オブジェクトを作成 */
     owner_arr = {}; // varを外してグローバル化
@@ -645,7 +694,7 @@ function getCoords(position) {
     }
 
     /* 委託契約CDのラインを引く */
-    var trust_arr = {};
+    trust_arr = {}; // varを外してグローバル化
     var trusts = gon.trusts
     for(var i in trusts){
 
@@ -677,13 +726,12 @@ function getCoords(position) {
 
       // クリックした時のオブジェクトを保存するために、イベントは関数呼び出しで登録する。
       create_relation_listener(trust_ev, owner_ev, build_ev)
-
     }
 
     /* 営業所の情報を表示する */
     shop_arr = {}; // varを消してグローバル化
-    var shop_circle01_arr = {};
-    var shop_circle02_arr = {};
+    shop_circle01_arr = {}; // varを消してグローバル化
+    shop_circle02_arr = {}; // varを消してグローバル化
     var distination = new google.maps.MVCArray();
     var distination_arr = [];
 
@@ -713,63 +761,47 @@ function getCoords(position) {
 
     mapCanvas.fitBounds(bounds);
 
-    /* すべての委託契約の表示をON または OFF にする。 */
-    var trustChkbox = document.getElementById("trustChkbox");
-    google.maps.event.addDomListener(trustChkbox, "click", function(){
-        // console.log(trust_arr);
-        for(var item in trust_arr){
-          trust_arr[item].set("visible", trustChkbox.checked);
-        };
-    });
-
-    /* すべての貸主を表示・非表示にする */
-    var ownerChkbox = document.getElementById("ownerChkbox");
-    google.maps.event.addDomListener(ownerChkbox, "click", function(){
-        for(var item in owner_arr){
-          owner_arr[item].set("visible", ownerChkbox.checked);
-        };
-    });
-
-    /* すべての営業所を表示・非表示にする */
-    var storeChkbox = document.getElementById("storeChkbox");
-    google.maps.event.addDomListener(storeChkbox, "click", function(){
-        // console.log(trust_arr);
-        for(var item in shop_arr){
-          shop_arr[item].set("visible", storeChkbox.checked);
-        };
-    });
-
-//    /* 管理方式をチェックした時、建物のマークを変更する */
-//     var kanriRadio = document.getElementById("kanriRadio");
-//    google.maps.event.addDomListener(kanriRadio, "click", function(){
-//        for(var item in build_arr){
-//          build_arr[item].setIcon(build_arr[item].manage_icon );
+//    /* すべての委託契約の表示をON または OFF にする。 */
+//    var trustChkbox = document.getElementById("trustChkbox");
+//    google.maps.event.addDomListener(trustChkbox, "click", function(){
+//        // console.log(trust_arr);
+//        for(var item in trust_arr){
+//          trust_arr[item].set("visible", trustChkbox.checked);
 //        };
 //    });
 
-    /* 物件種別をチェックした時、建物のマークを変更する */
-//    var bukkenRadio = document.getElementById("bukkenRadio");
-//    google.maps.event.addDomListener(bukkenRadio, "click", function(){
-//        for(var item in build_arr){
-//          build_arr[item].setIcon(build_arr[item].build_type_icon );
+//    /* すべての貸主を表示・非表示にする */
+//    var ownerChkbox = document.getElementById("ownerChkbox");
+//    google.maps.event.addDomListener(ownerChkbox, "click", function(){
+//        for(var item in owner_arr){
+//          owner_arr[item].set("visible", ownerChkbox.checked);
 //        };
 //    });
 
-    /* 営業所の範囲サークルの表示１ */
-    var circle01Check = document.getElementById("circle01Check");
-    google.maps.event.addDomListener(circle01Check, "click", function(){
-      for(var item in shop_circle01_arr){
-        shop_circle01_arr[item].set("visible", circle01Check.checked);
-      };
-    });
+//    /* すべての営業所を表示・非表示にする */
+//    var storeChkbox = document.getElementById("storeChkbox");
+//    google.maps.event.addDomListener(storeChkbox, "click", function(){
+//        // console.log(trust_arr);
+//        for(var item in shop_arr){
+//          shop_arr[item].set("visible", storeChkbox.checked);
+//        };
+//    });
 
-    /* 営業所の範囲サークルの表示２ */
-    var circle02Check = document.getElementById("circle02Check");
-    google.maps.event.addDomListener(circle02Check, "click", function(){
-      for(var item in shop_circle02_arr){
-        shop_circle02_arr[item].set("visible", circle02Check.checked);
-      };
-    });
+//   /* 営業所の範囲サークルの表示１ */
+//    var circle01Check = document.getElementById("circle01Check");
+//    google.maps.event.addDomListener(circle01Check, "click", function(){
+//      for(var item in shop_circle01_arr){
+//        shop_circle01_arr[item].set("visible", circle01Check.checked);
+//      };
+//    });
+
+//    /* 営業所の範囲サークルの表示２ */
+//    var circle02Check = document.getElementById("circle02Check");
+//    google.maps.event.addDomListener(circle02Check, "click", function(){
+//      for(var item in shop_circle02_arr){
+//        shop_circle02_arr[item].set("visible", circle02Check.checked);
+//      };
+//    });
 
     // マップをクリックしたらマーカーが落ちてくる。
     google.maps.event.addListener(mapCanvas, 'click', function(e){
@@ -779,7 +811,6 @@ function getCoords(position) {
         ,animation: google.maps.Animation.DROP
         ,html:'クリックして作りました！'
       });
-
     })
 
   } // end initialize
@@ -800,7 +831,7 @@ function getCoords(position) {
     #map_canvas{
       position: fixed;
       width:100%;
-      height:95%;
+      height:100%;
       top:0px;
       left:0;
     }
@@ -816,65 +847,69 @@ function getCoords(position) {
 <% content_for :sidebar_map do %>
 
   <!-- ここは span3で呼び出されている -->
+  <div style="padding-left:0px;width:300px;">
 
-    <div style="padding-left:10px;width:330px;">
-      <ul class="nav nav-tabs">
-        <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab" style=";padding:10px 15px 10px 15px;width:120px;text-align: center;">検索をする</a></li>
-        <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab" style="padding:10px 15px 10px 15px;width:120px;text-align: center;">結果を確認する</a></li>
-      </ul>
+    <ul class="nav nav-tabs" style="padding:0;margin:0;">
+      <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:100px;text-align: center;">検索する</a></li>
+      <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:100px;text-align: center;">結果を確認</a></li>
+    </ul>
 
-      <div id="myTabContent_search" class="tab-content">
+    <div id="myTabContent_search" class="tab-content">
 
-        <!-- 検索条件設定 -->
-        <div class="tab-pane fade <%= @tab_search %> " id="tab_search" style="padding:0;margin:0">
-          <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab1" data-toggle="tab" style="width:70px;text-align: center;">&nbsp;建物検索</a></li>
-            <li><a href="#tab2" data-toggle="tab" style="width:75px;text-align: center;">貸主検索</a></li>
-            <li><a href="#tab3" data-toggle="tab" style="width:80px;text-align: center;">バルク検索</a></li>
-          </ul>
+      <!-- 検索条件設定 -->
+      <div class="tab-pane fade <%= @tab_search %> " id="tab_search" style="padding:0;margin:0">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab1" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:60px;text-align: center;">建物検索</a></li>
+          <li><a href="#tab2" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:60px;text-align: center;">貸主検索</a></li>
+          <li><a href="#tab3" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:75px;text-align: center;">バルク検索</a></li>
+        </ul>
 
-          <div id="myTabContent1" class="tab-content">
-            <div class="tab-pane fade active in" id="tab1" style="margin-left:15px;">
-               <%= render :partial=>'search_build' %>
-            </div>
-            <div class="tab-pane fade" id="tab2" style="margin-left:15px;">
-               <%= render :partial=>'search_owner' %>
-            </div>
-            <div class="tab-pane fade" id="tab3" style="padding-left:30px;">
-               <%= render :partial=>'search_bulk' %>
-            </div>
+        <div id="myTabContent1" class="tab-content">
+          <div class="tab-pane fade active in" id="tab1" style="margin-left:15px;">
+             <%= render :partial=>'search_build' %>
+          </div>
+          <div class="tab-pane fade" id="tab2" style="margin-left:15px;">
+             <%= render :partial=>'search_owner' %>
+          </div>
+          <div class="tab-pane fade" id="tab3" style="padding-left:15px;">
+             <%= render :partial=>'search_bulk' %>
           </div>
         </div>
+      </div>
 
-        <!-- 検索結果確認 -->
-        <div class="tab-pane fade <%= @tab_result %>" id="tab_result" >
-          <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab7" data-toggle="tab" style="width:65px;text-align: center;">表示設定</a></li>
-            <li><a href="#tab4" data-toggle="tab" style="width:40px;text-align: center;">建物</a></li>
-            <li><a href="#tab5" data-toggle="tab" style="width:40px;text-align: center;">貸主</a></li>
-            <li><a href="#tab6" data-toggle="tab" style="width:45px;text-align: center;">営業所</a></li>
-          </ul>
+      <!-- 検索結果確認 -->
+      <div class="tab-pane fade <%= @tab_result %>" id="tab_result" >
+        <ul class="nav nav-tabs">
+          <!--
+          <li class="active"><a href="#tab7" data-toggle="tab" style="width:65px;text-align: center;">表示設定</a></li>
+          -->
+          <li class="active"><a href="#tab4" data-toggle="tab" style="width:40px;text-align: center;">建物</a></li>
+          <li><a href="#tab5" data-toggle="tab" style="width:40px;text-align: center;">貸主</a></li>
+          <li><a href="#tab6" data-toggle="tab" style="width:45px;text-align: center;">営業所</a></li>
+        </ul>
 
-          <div id="myTabContent2" class="tab-content" style="padding-left:10px;">
-            <div class="tab-pane fade" id="tab4">
-               <%= render :partial=>'result_buildings' %>
-            </div>
-            <div class="tab-pane fade" id="tab5">
-               <%= render :partial=>'result_owners' %>
-            </div>
-            <div class="tab-pane fade" id="tab6">
-               <%= render :partial=>'result_shops' %>
-            </div>
-            <div class="tab-pane active in fade" id="tab7" style="padding-left:10px;">
-               <%= render :partial=>'disp' %>
-            </div>
+        <div id="myTabContent2" class="tab-content" style="padding-left:10px;">
+          <div class="tab-pane active in fade" id="tab4">
+             <%= render :partial=>'result_buildings' %>
           </div>
-
+          <div class="tab-pane fade" id="tab5">
+             <%= render :partial=>'result_owners' %>
+          </div>
+          <div class="tab-pane fade" id="tab6">
+             <%= render :partial=>'result_shops' %>
+          </div>
+          <!--
+          <div class="tab-pane active in fade" id="tab7" style="padding-left:10px;">
+             <%#= render :partial=>'disp' %>
+          </div>
+          -->
         </div>
 
       </div>
 
     </div>
+
+  </div>
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -894,7 +929,7 @@ $(document).ready(function() {
   <!--
   <div style="border-width : 3px;border-style : solid;border-color : silver;">
   -->
-    <div id="map_canvas" style="width: 100%;height:95%;"></div>
+    <div id="map_canvas" style="width: 100%;height:100%;"></div>
     <div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;">
       <!--
        <input type="button" value="閉じる" onclick="sv_init();" style="top: 10px;right: 20px;position:absolute;z-index: 500;" />

@@ -1,37 +1,23 @@
 <!-- ここはspan3で呼び出されているから、span3ピッタリでグリッドを作る必要がある。 -->
 
-<script type="text/javascript">
-
-  // アイコンを変更します。
-  function change_icon(){
-
-    // ajaxで凡例を変更
-    document.forms['biru_icon'].s_commit.click();
-
-    // コンボボックスで選択されたものにgooglemapのアイコンを変更
-    change_biru_icon($('#biru_icon_id [name=disp_type]').val());
-
-  }
-
-</script>
 <div>
   <%= form_tag('/managements/change_biru_icon', :remote => true, :format => 'js', :name=>'biru_icon', :id=>'biru_icon_id') do %>
-  <%= select_tag 'disp_type', options_for_select({"建物種別" => "biru_kind", "支店"=>"siten", "エリア" => "area","営業所" => "shop", "管理方式" => "manage_type", "空室数" => "aki", "築年数" => "age", "戸数"=>"num", "自他"=>"jita", "アタックランク"=>"atk"}), :onChange=>'change_icon();' %>
-  <%= submit_tag "", :name=>'s_commit', :style=>"display:none;" %>
+    <%= select_tag 'disp_type', options_for_select({"建物種別" => "biru_kind", "支店"=>"siten", "エリア" => "area","営業所" => "shop", "管理方式" => "manage_type", "空室数" => "aki", "築年数" => "age", "戸数"=>"num", "自他"=>"jita", "アタックランク"=>"atk"}), :onChange=>'change_icon();' %>
+    <%= submit_tag "", :name=>'s_commit', :style=>"display:none;" %>
   <% end %>
 </div>
 
+<!--
 <div id="biru_icon">
-<%= render 'biru_icon_kind', :biru_icon => "biru_kind" %>
+  <%#= render 'biru_icon_kind', :biru_icon => "biru_kind" %>
 </div>
-
-
+-->
 
 <div style="padding-top:10px;">
    <label><input type="checkbox" id="ownerChkbox" />&nbsp;貸主マーカー</label>
-<div style="font-size:x-small">
-  ※貸主マーカーもランク別とか担当者別とかでマーカーを分けて表示するのもあり。
-</div>
+    <div style="font-size:x-small">
+      ※貸主マーカーもランク別とか担当者別とかでマーカーを分けて表示するのもあり。
+    </div>
    <label><input type="checkbox" id="trustChkbox" />&nbsp;管理委託契約ライン</label>
    <label><input type="checkbox" id="storeChkbox" checked/>営業所</label><span style="margin-left:50px;"><input type="checkbox" name="dispcheck01" id="circle01Check"  /> 半径1Km&nbsp;&nbsp;&nbsp;<input type="checkbox" name="dispcheck01" id="circle02Check"  /> 半径2Km</span>
    <label class="inline">ヒートマップ</label><span style="margin-left:50px;"><input type="radio" name="heatMaps" id="hiatmap00Radio" value="0" checked/> なし&nbsp;&nbsp;&nbsp;<input type="radio" name="heatMaps" id="hiatmap01Radio" value="1" /> 物件別&nbsp;&nbsp;&nbsp;<input type="radio" name="heatMaps" id="hiatmap02Radio" value="2"/> 戸数別</span>
