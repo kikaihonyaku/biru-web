@@ -883,19 +883,19 @@ function getCoords(position) {
           <!--
           <li class="active"><a href="#tab7" data-toggle="tab" style="width:65px;text-align: center;">表示設定</a></li>
           -->
-          <li class="active"><a href="#tab4" data-toggle="tab" style="width:40px;text-align: center;">建物</a></li>
+          <li class="active"><a href="#tab6" data-toggle="tab" style="width:45px;text-align: center;">営業所</a></li>
+          <li><a href="#tab4" data-toggle="tab" style="width:40px;text-align: center;">建物</a></li>
           <li><a href="#tab5" data-toggle="tab" style="width:40px;text-align: center;">貸主</a></li>
-          <li><a href="#tab6" data-toggle="tab" style="width:45px;text-align: center;">営業所</a></li>
         </ul>
 
         <div id="myTabContent2" class="tab-content" style="padding-left:10px;">
-          <div class="tab-pane active in fade" id="tab4">
+          <div class="tab-pane fade" id="tab4">
              <%= render :partial=>'result_buildings' %>
           </div>
           <div class="tab-pane fade" id="tab5">
              <%= render :partial=>'result_owners' %>
           </div>
-          <div class="tab-pane fade" id="tab6">
+          <div class="tab-pane active in fade" id="tab6">
              <%= render :partial=>'result_shops' %>
           </div>
           <!--
