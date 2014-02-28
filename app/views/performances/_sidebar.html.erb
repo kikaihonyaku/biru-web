@@ -5,11 +5,12 @@
     { label:'年度',id: 6001,
       children: [
      //   {label: '2014年度', id:2014},
-        {label: '2013年度', id:2013 },
-        {label: '2012年度', id:2012 },
-        {label: '2011年度', id:2011 },
-        {label: '2010年度', id:2010 },
-        {label: '2009年度', id:2009 }
+        {label: '2013年度', id:2013, yyyymm_s:201304, yyyymm_e:201404, title:'2013年度' },
+        {label: '2012年度', id:2012, yyyymm_s:201204, yyyymm_e:201303, title:'2012年度' },
+        {label: '2011年度', id:2011, yyyymm_s:201104, yyyymm_e:201203, title:'2011年度' },
+        {label: '2010年度', id:2010, yyyymm_s:201004, yyyymm_e:201103, title:'2010年度' },
+        {label: '2009年度', id:2009, yyyymm_s:200904, yyyymm_e:201003, title:'2009年度' },
+        {label: '月度指定',  id:1500, yyyymm_s:999999, yyyymm_e:999999, title:'月指定' }
       ]
     }
   ]
@@ -477,11 +478,52 @@ $(function() {
 
 function graph_disp(){
 
-  frm.yyyymm.value = $('#tree-yyyymm').tree('getSelectedNode').id;
-  if(frm.yyyymm.value =='undefined' ){
-    alert('年度を指定してください');
+
+  frm.yyyymm_s.value = $('#tree-yyyymm').tree('getSelectedNode').yyyymm_s;
+  if(frm.yyyymm_s.value =='undefined' ){
+    alert('期間を指定してください');
     return;
   }
+
+  frm.yyyymm_e.value = $('#tree-yyyymm').tree('getSelectedNode').yyyymm_e;
+  if(frm.yyyymm_e.value =='undefined' ){
+    alert('期間を指定してください');
+    return;
+  }
+
+  frm.yyyymm_title.value = $('#tree-yyyymm').tree('getSelectedNode').title;
+  if(frm.yyyymm_title.value =='undefined' ){
+    alert('期間を指定してください');
+    return;
+  }
+
+  // 月度指定の時、月度入力チェック
+  if(frm.yyyymm_s.value == "999999"){
+
+    if(monthly_yyyymm_from.value == ""){
+      alert('開始月度を指定してください');
+      return;
+    }
+
+    if(monthly_yyyymm_to.value == ""){
+      alert('最終月度を指定してください');
+      return;
+    }
+
+    frm.yyyymm_title.value = monthly_yyyymm_from.value + "〜" + monthly_yyyymm_to.value
+    frm.yyyymm_type.value = "1"
+
+  }else{
+    frm.yyyymm_type.value = "0"
+  }
+
+  frm.yyyymm_s_monthly.value = monthly_yyyymm_from.value;
+  frm.yyyymm_e_monthly.value = monthly_yyyymm_to.value;
+
+
+
+
+
 
   frm.item.value = $('#tree-item').tree('getSelectedNode').id;
   if(frm.item.value =='undefined' ){
@@ -584,7 +626,6 @@ function openClose(id, mid, disp_msg)
 </script>
 <% content_for :sidebar do %>
 
-
     <div id="sidebar" style="padding-left:10px;padding-right:10px;">
       <ul class="nav nav-tabs">
         <li <%= if val == 1 then raw('class="active"') end %>><a href="#tab_month" data-toggle="tab" style=";padding:10px 10px 5px 10px;width:50px;text-align: center;">月次</a></li>
@@ -595,7 +636,12 @@ function openClose(id, mid, disp_msg)
         <div class="tab-pane fade <%= if val == 1 then raw('active in') end %>" id="tab_month" style="padding:0;margin:0">
 
           <%= form_tag performances_monthly_path ,:name=>"frm" do %>
-            <%= hidden_field_tag 'yyyymm', '' %>
+            <%= hidden_field_tag 'yyyymm_s', '' %>
+            <%= hidden_field_tag 'yyyymm_e', '' %>
+            <%= hidden_field_tag 'yyyymm_s_monthly', '' %>
+            <%= hidden_field_tag 'yyyymm_e_monthly', '' %>
+            <%= hidden_field_tag 'yyyymm_title', '' %>
+            <%= hidden_field_tag 'yyyymm_type', '' %>
             <%= hidden_field_tag 'item', '' %>
             <%= hidden_field_tag 'item_summary', '' %>
             <%= hidden_field_tag 'item_calc', '' %>
@@ -603,19 +649,23 @@ function openClose(id, mid, disp_msg)
             <%= hidden_field_tag 'dept_list', '' %>
             <%= hidden_field_tag 'graph_name', '' %>
 
-              <ul class="nav nav-list well" >
-                <div style="text-align: center;">
-                  <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-bottom:15px;margin-top:0px;', :onClick=>"javascript:graph_disp();" %>
-                </div>
+            <ul class="nav nav-list well" >
+              <div style="text-align: center;">
+                <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-bottom:15px;margin-top:0px;', :onClick=>"javascript:graph_disp();" %>
+              </div>
 
-                <div id="tree-yyyymm"></div>
-                <div id="tree-dept"></div>
-                <div id="tree-item"></div>
+              <div id="tree-yyyymm"></div>
+              <div>
+                <label ><%= text_field_tag 'monthly_yyyymm_from', @yyyymm_s_monthly, :class=>'ympicker', :style=>'width:65px;text-align:center;' %>&nbsp;＋&nbsp;<%= text_field_tag 'monthly_yyyymm_to', @yyyymm_e_monthly, :class=>'ympicker', :style=>'width:65px;text-align:center;' %></label>
+              </div>
 
-                <div style="text-align: center;">
-                  <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-top:20px;', :onClick=>"javascript:graph_disp();" %>
-                </div>
-              </ul>
+              <div id="tree-dept"></div>
+              <div id="tree-item"></div>
+
+              <div style="text-align: center;">
+                <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-top:20px;', :onClick=>"javascript:graph_disp();" %>
+              </div>
+            </ul>
           <% end %>
 
         </div>

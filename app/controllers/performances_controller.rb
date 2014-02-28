@@ -27,9 +27,25 @@ class PerformancesController < ApplicationController
     #################
     # 年度指定
     #################
-    yyyy = params[:yyyymm].to_i
-    yyyymm_s = yyyy.to_s + "04"
-    yyyymm_e = (yyyy+1).to_s + "03"
+#    yyyy = params[:yyyymm].to_i
+#    yyyymm_s = yyyy.to_s + "04"
+#    yyyymm_e = (yyyy+1).to_s + "03"
+
+    title = params[:yyyymm_title]
+
+    if params[:yyyymm_type] == "0"
+      # 年度指定
+      yyyymm_s = params[:yyyymm_s]
+      yyyymm_e = params[:yyyymm_e]
+    else
+      # 月個別指定
+      yyyymm_s = params[:yyyymm_s_monthly].gsub('/','')
+      yyyymm_e = params[:yyyymm_e_monthly].gsub('/','')
+    end
+
+    @yyyymm_s_monthly = params[:yyyymm_s_monthly]
+    @yyyymm_e_monthly = params[:yyyymm_e_monthly]
+
 
     #################
     # 項目指定
@@ -40,7 +56,6 @@ class PerformancesController < ApplicationController
     # params[:item_summary]    ←集計種別  1:合計 2:平均 3:最大
     item_summary = params[:item_summary]
     @item_calc = params[:item_calc]
-
 
     #################
     # 部署判定
@@ -68,7 +83,7 @@ class PerformancesController < ApplicationController
       #
       # result['plan_exists']・・・・・・ 計画存在チェック
       # result['prev_result_exists']・ ・前年存在チェック
-      result = get_monthly_graph(busyo.to_i, yyyymm_s, yyyymm_e, @item, item_summary, yyyy.to_s + '年度')
+      result = get_monthly_graph(busyo.to_i, yyyymm_s, yyyymm_e, @item, item_summary, title)
       @result_arr.push(result)
 
       # 1件でも計画がある場合、計画有りと判定する
@@ -507,7 +522,7 @@ private
           y: 250
       )
 
-      f.series(name: '前年実績', data: result['cumulative_prev_year_results'], type: "line", color: '#8cc63f')
+      f.series(name: '前年実績', data: result['cumulative_prev_year_results'], type: "line", color: '#8cc63f' )
 
       if result['plan_exists']
         f.series(name: '計画', data: result['cumulative_this_year_plans'], type: "line", color: '#3276b1')
