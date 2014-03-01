@@ -10,7 +10,7 @@
         <tbody>
           <% @shops.each do |shop| %>
           <tr>
-            <td><a href="<%= "javascript:link_shop_click(" + shop.id.to_s + ")"%>"><%= shop.name %></a></td>
+            <td style="min-width: 80px;"><a href="<%= "javascript:link_shop_click(" + shop.id.to_s + ")"%>"><%= shop.name %></a></td>
             <td><%= shop.address %></td>
           </tr>
           <% end %>

@@ -121,8 +121,22 @@ function getCoords(position) {
   }
 
   function win_building(id){
-    window.open('/managements/popup_building/' + id   , "", "width=400,height=450");
+    //window.open('/managements/popup_building/' + id   , "", "width=400,height=450");
+    $( "#myTabContent2" ).dialog();
   }
+
+  function win_result_biru(){
+    $( "#result_biru" ).dialog({ width: 500, height: 550 });
+  }
+
+  function win_result_owner(){
+    $( "#result_owner" ).dialog({ width: 500, height: 450 });
+  }
+
+  function win_result_shop(){
+    $( "#result_shop" ).dialog({ width: 500, height: 450 });
+  }
+
 
   // 管理委託契約と建物・貸主の紐付け（このように関数で呼び出すようにする必要がある）
   function create_relation_listener(trust_ev, owner_ev, build_ev){
@@ -849,15 +863,10 @@ function getCoords(position) {
   <!-- ここは span3で呼び出されている -->
   <div style="padding-left:0px;width:300px;">
 
-    <ul class="nav nav-tabs" style="padding:0;margin:0;">
-      <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:100px;text-align: center;">検索する</a></li>
-      <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:100px;text-align: center;">結果を確認</a></li>
-    </ul>
-
     <div id="myTabContent_search" class="tab-content">
 
       <!-- 検索条件設定 -->
-      <div class="tab-pane fade <%= @tab_search %> " id="tab_search" style="padding:0;margin:0">
+      <div class="tab-pane fade active in" id="tab_search" style="padding:0;margin:0">
         <ul class="nav nav-tabs">
           <li class="active"><a href="#tab1" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:60px;text-align: center;">建物検索</a></li>
           <li><a href="#tab2" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:60px;text-align: center;">貸主検索</a></li>
@@ -878,7 +887,7 @@ function getCoords(position) {
       </div>
 
       <!-- 検索結果確認 -->
-      <div class="tab-pane fade <%= @tab_result %>" id="tab_result" >
+      <div class="tab-pane fade " id="tab_result" >
         <ul class="nav nav-tabs">
           <!--
           <li class="active"><a href="#tab7" data-toggle="tab" style="width:65px;text-align: center;">表示設定</a></li>
@@ -890,13 +899,19 @@ function getCoords(position) {
 
         <div id="myTabContent2" class="tab-content" style="padding-left:10px;">
           <div class="tab-pane fade" id="tab4">
+            <div id="result_biru" title="建物検索結果">
              <%= render :partial=>'result_buildings' %>
+            </div>
           </div>
           <div class="tab-pane fade" id="tab5">
-             <%= render :partial=>'result_owners' %>
+            <div id="result_owner" title="貸主検索結果">
+              <%= render :partial=>'result_owners' %>
+            </div>
           </div>
           <div class="tab-pane active in fade" id="tab6">
-             <%= render :partial=>'result_shops' %>
+            <div id="result_shop" title="営業所検索結果">
+              <%= render :partial=>'result_shops' %>
+            </div>
           </div>
           <!--
           <div class="tab-pane active in fade" id="tab7" style="padding-left:10px;">

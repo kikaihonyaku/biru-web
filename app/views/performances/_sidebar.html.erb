@@ -428,6 +428,9 @@ $(function() {
       }
     );
 
+    monthly_yyyymm_from.disabled = true;
+    monthly_yyyymm_to.disabled = true;
+    
     $('#tree-yyyymm').bind('tree.select',　
       function(event) {
         if (event.node) {
@@ -437,6 +440,16 @@ $(function() {
           if(isNaN(num) == false){
             if(num >= 3000){
               $('#tree-yyyymm').tree('removeFromSelection', node);
+            }
+
+            // 1500の時に月次の活性を許可する
+            if(num == 1500){
+              monthly_yyyymm_from.disabled = false;
+              monthly_yyyymm_to.disabled = false;
+
+            } else{
+              monthly_yyyymm_from.disabled = true;
+              monthly_yyyymm_to.disabled = true;
             }
           }
         }
@@ -472,7 +485,6 @@ $(function() {
         }
       }
     );
-
 
 });
 
@@ -519,11 +531,6 @@ function graph_disp(){
 
   frm.yyyymm_s_monthly.value = monthly_yyyymm_from.value;
   frm.yyyymm_e_monthly.value = monthly_yyyymm_to.value;
-
-
-
-
-
 
   frm.item.value = $('#tree-item').tree('getSelectedNode').id;
   if(frm.item.value =='undefined' ){

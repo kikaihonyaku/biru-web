@@ -98,6 +98,7 @@ function FullScreenControl(map) {
 
 
 function MenuControll(map) {
+    
     var controlDiv = document.createElement('div');
     controlDiv.index = 1;
     controlDiv.style.padding = '5px';
@@ -176,8 +177,8 @@ function BarControll(map) {
 
     var divRadio = document.createElement('div');
     divRadio.style.position = 'absolute';
-    divRadio.style.top = '20px';
-    divRadio.style.left = '25px';
+    divRadio.style.top = '25px';
+    divRadio.style.left = '30px';
     divRadio.style.left = '25px';
     var strRadio = ""
 
@@ -208,7 +209,7 @@ function BarControll(map) {
     var divA = document.createElement('div');
     divA.style.position = 'absolute';
     divA.style.top = '75px';
-    divA.style.left = '0px';
+    divA.style.left = '10px';
     divA.id = "biru_icon"
 
     var strTable = ""
@@ -290,7 +291,7 @@ function DispControll(map) {
     controlUI.style.cursor = 'pointer';
     controlUI.style.textAlign = 'center';
     controlUI.style.boxShadow = '0px 2px 4px rgba(0,0,0,0.4)';
-    controlUI.style.height = '180px';
+    controlUI.style.height = '130px';
     controlUI.style.width = '200px';
     controlUI.style.top = '10px';
     controlDiv.appendChild(controlUI);
@@ -305,19 +306,56 @@ function DispControll(map) {
     strTable = strTable + '<label style="font-size:small;"><input type="checkbox" id="ownerChk"  onClick="javascript:dips_owners(ownerChk.checked);" />&nbsp;&nbsp;貸主マーカー</label>'
     strTable = strTable + '<label style="font-size:small;"><input type="checkbox" id="trustChk" onClick="javascript:dips_trusts(trustChk.checked);" />&nbsp;&nbsp;委託契約ライン</label>'
     strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;clear:both;"><input type="checkbox" id="shopChk" onClick="javascript:dips_shops(shopChk.checked);" checked/>&nbsp;&nbsp;営業所マーカー</label>'
-
     strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:20px;"><input type="checkbox" name="dispcheck01" id="circle01Chk" onClick="javascript:disp_shop_01(circle01Chk.checked);" />&nbsp;&nbsp;半径1Km</label>'
     strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:20px;"><input type="checkbox" name="dispcheck01" id="circle02Chk" onClick="javascript:disp_shop_02(circle02Chk.checked);" />&nbsp;&nbsp;半径2Km</label>'
-
-
     strTable = strTable + '</div>'  
-
     divA.innerHTML = strTable
     controlDiv.appendChild(divA);
 
     return controlDiv;
    
 }
+
+function ResultControll(map) {
+
+    var controlDiv = document.createElement('div');
+    controlDiv.index = 1;
+    controlDiv.style.padding = '5px';
+    controlDiv.style.marginRight = '10px';
+
+
+    // Set CSS for the control border.
+    var controlUI = document.createElement('div');
+    controlUI.style.backgroundColor = 'white';
+    controlUI.style.borderStyle = 'solid';
+    controlUI.style.borderWidth = '1px';
+    controlUI.style.borderColor = '#717b87';
+    controlUI.style.cursor = 'pointer';
+    controlUI.style.textAlign = 'center';
+    controlUI.style.boxShadow = '0px 2px 4px rgba(0,0,0,0.4)';
+    controlUI.style.height = '40px';
+    controlUI.style.width = '200px';
+    controlUI.style.top = '10px';
+    controlDiv.appendChild(controlUI);
+
+
+    var divA = document.createElement('div');
+    divA.style.position = 'absolute';
+    divA.style.top = '15px';
+    divA.style.left = '15px';
+
+    var strTable = "";
+    strTable = strTable + '&nbsp;&nbsp;&nbsp;<a href="javascript:win_result_biru();"><span style="font-size:small;">建物</span></a>';
+    strTable = strTable + '&nbsp;&nbsp;&nbsp;<a href="javascript:win_result_owner();"><span style="font-size:small;margin-left:20px;">貸主</span></a>';
+    strTable = strTable + '&nbsp;&nbsp;&nbsp;<a href="javascript:win_result_shop();"><span style="font-size:small;margin-left:20px;">営業所</span></a>';
+
+    divA.innerHTML = strTable
+    controlDiv.appendChild(divA);
+
+    return controlDiv;
+
+}
+
 
 
 function StreetViewControll(map) {
@@ -354,7 +392,8 @@ function StreetViewControll(map) {
 
     // Setup the click event listener
     google.maps.event.addDomListener(controlUI, 'click', function() {
-      if (!fullScreen) {
+//      if (!fullScreen) {
+      if (document.getElementById("panowide").style.display == "none") {
         street_veiw_window();
         refresh_view(panorama.getPosition());
 
@@ -463,6 +502,7 @@ function init_map(){
     mapCanvas = new google.maps.Map(mapDiv, {
       mapTypeId : google.maps.MapTypeId.ROADMAP
       ,scaleControl: true
+      ,minZoom:2
     });
 
     // フルスクリーンラベルを設定
@@ -472,6 +512,7 @@ function init_map(){
 
     mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new BarControll(mapCanvas));
     mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new DispControll(mapCanvas));
+    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new ResultControll(mapCanvas));
 
     /*----------------------------------------------------------------------*/
     /* ストリートビューオブジェクトを作成 （これはcreate markerを呼び出す前に定義する。）*/
