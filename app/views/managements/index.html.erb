@@ -117,12 +117,11 @@ function getCoords(position) {
 
 
   function win_owner(id) {
-    window.open('/managements/popup_owner/' + id   , "", "width=400,height=450");
+    window.open('/managements/popup_owner/' + id   , "", "width=400,height=450,resizable=yes,scrollbars=yes");
   }
 
   function win_building(id){
-    //window.open('/managements/popup_building/' + id   , "", "width=400,height=450");
-    $( "#myTabContent2" ).dialog();
+    window.open('/managements/popup_building/' + id   , "", "width=400,height=450,resizable=yes,scrollbars=yes");
   }
 
   function win_result_biru(){
