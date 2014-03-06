@@ -389,7 +389,71 @@
       ]
     }
   ];
-  
+
+
+  var layout_data = [
+    { label: '間取り', id: 6000,
+      children: [
+        { label: '全て', id: 1001, layout_list: [18100, 18105, 18110, 18120, 18125, 18200, 18205, 18210, 18215, 18220, 18300, 18305, 18310, 18315, 18320, 18400, 18405, 18410, 18415, 18420, 18500, 18505, 18510, 18515, 18520, 18600, 18605, 18610, 18615, 18620, 18705, 18998]},
+        { label: '１Ｒ〜１ＬＤＫ', id: 1010, layout_list: [18100, 18105, 18110, 18120, 18125],
+          children: [
+            { label: '１Ｒ', id:'1011' ,layout_list: [18100]},
+            { label: '１Ｋ', id:'1012' ,layout_list: [18105]},
+            { label: '１ＤＫ', id:'1013' ,layout_list: [18110]},
+            { label: '１ＬＤＫ', id:'1014' ,layout_list: [18120]},
+            { label: '１ＳＬＤＫ', id:'1015' ,layout_list: [18125]},
+          ]
+        },
+        { label: '２Ｋ〜２ＬＤＫ', id: 1020, layout_list: [18200, 18205, 18210, 18215, 18220],
+          children: [
+            { label: '２Ｋ', id:'1022' ,layout_list: [18200]},
+            { label: '２ＤＫ', id:'1023' ,layout_list: [18205]},
+            { label: '２ＳＤＫ', id:'1024' ,layout_list: [18210]},
+            { label: '２ＬＤＫ', id:'1025' ,layout_list: [18215]},
+            { label: '２ＳＬＤＫ', id:'1026' ,layout_list: [18220]},
+          ]
+        },
+        { label: '３Ｋ〜３ＬＤＫ', id: 1030, layout_list: [18300, 18305, 18310, 18315, 18320],
+          children: [
+            { label: '３Ｋ', id:'1032' ,layout_list: [18300]},
+            { label: '３ＤＫ', id:'1033' ,layout_list: [18305]},
+            { label: '３ＳＤＫ', id:'1034' ,layout_list: [18310]},
+            { label: '３ＬＤＫ', id:'1035' ,layout_list: [18315]},
+            { label: '３ＳＬＤＫ', id:'1036' ,layout_list: [18320]},
+          ]
+        },
+        { label: '４Ｋ〜４ＬＤＫ', id: 1040, layout_list: [18400, 18405, 18410, 18415, 18420],
+          children: [
+            { label: '４Ｋ', id:'1042' ,layout_list: [18400]},
+            { label: '４ＤＫ', id:'1043' ,layout_list: [18405]},
+            { label: '４ＳＤＫ', id:'1044' ,layout_list: [18410]},
+            { label: '４ＬＤＫ', id:'1045' ,layout_list: [18415]},
+            { label: '４ＳＬＤＫ', id:'1046' ,layout_list: [18420]},
+          ]
+        },
+        { label: '５Ｋ〜５ＬＤＫ', id: 1050, layout_list: [18500, 18505, 18510, 18515, 18520],
+          children: [
+            { label: '５Ｋ', id:'1052' ,layout_list: [18500]},
+            { label: '５ＤＫ', id:'1053' ,layout_list: [18505]},
+            { label: '５ＳＤＫ', id:'1054' ,layout_list: [18510]},
+            { label: '５ＬＤＫ', id:'1055' ,layout_list: [18515]},
+            { label: '５ＳＬＤＫ', id:'1056' ,layout_list: [18520]},
+          ]
+        },
+        { label: '６Ｋ〜６ＬＤＫ', id: 1060, layout_list: [18600, 18605, 18610, 18615, 18620],
+          children: [
+            { label: '６Ｋ', id:'1062' ,layout_list: [18600]},
+            { label: '６ＤＫ', id:'1063' ,layout_list: [18605]},
+            { label: '６ＳＤＫ', id:'1064' ,layout_list: [18610]},
+            { label: '６ＬＤＫ', id:'1065' ,layout_list: [18615]},
+            { label: '６ＳＬＤＫ', id:'1066' ,layout_list: [18620]},
+          ]
+        },
+        { label: 'その他', id: 1090, layout_list: [18705, 18998]},
+      ]
+    }
+  ];
+
 
 
 $(function() {
@@ -411,6 +475,11 @@ $(function() {
     $('#tree-shop').tree({
         data: shop_data,
         saveState: 'c-shop'
+    });
+
+    $('#tree-layout').tree({
+        data: layout_data,
+        saveState: 'c-layout'
     });
 
     $('#tree-item').bind('tree.select',　
@@ -480,6 +549,21 @@ $(function() {
           if(isNaN(num) == false){
             if(num >= 3000){
               $('#tree-shop').tree('removeFromSelection', node);
+            }
+          }
+        }
+      }
+    );
+
+    $('#tree-layout').bind('tree.select',　
+      function(event) {
+        if (event.node) {
+          // もしも選択されたNodeが非選択対象(3000以上)だったら、選択状態を解除
+          var node = event.node;
+          var num = parseInt(node.id);
+          if(isNaN(num) == false){
+            if(num >= 3000){
+              $('#tree-layout').tree('removeFromSelection', node);
             }
           }
         }
@@ -601,6 +685,29 @@ function vacant_dips(){
 }
 
 
+// 入居期間を表示
+function tenancy_period_dips(){
+
+  frm_build_age.shop.value = $('#tree-shop').tree('getSelectedNode').id;
+  if(frm_build_age.shop.value =='undefined' ){
+    alert('営業所を指定してください');
+    return;
+  }
+
+  frm_build_age.layout.value = $('#tree-layout').tree('getSelectedNode').layout_list;
+  if(frm_build_age.layout.value =='undefined' ){
+    alert('間取りを指定してください');
+    return;
+  }
+
+
+  frm_build_age.shop_nm.value = $('#tree-shop').tree('getSelectedNode').nm;
+  frm_build_age.action = (<%= raw("'") + performances_tenancy_period_path + raw("'") %>)
+
+  frm_build_age.submit();
+}
+
+
   // Ajaxのオープンクローズ
 function openClose(id, mid, disp_msg)
 {
@@ -684,17 +791,20 @@ function openClose(id, mid, disp_msg)
           <%= form_tag '' ,:name=>"frm_build_age" do %>
             <%= hidden_field_tag 'shop', '' %>
             <%= hidden_field_tag 'shop_nm', '' %>
+            <%= hidden_field_tag 'layout', '' %>
 
             <ul class="nav nav-list well" style="margin-bottom:15px;">
               <div id="tree-shop"　class="nav nav-list well"></div>
             </ul>
 
+            <!-- 築年数 -->
             <ul class="nav nav-list well" style="margin-bottom:15px;">
               <div style="text-align: center;">
                 <%= button_tag "築年数を表示" ,:type=>'button', :onClick=>"javascript:build_age_disp();" %>
               </div>
             </ul>
 
+            <!-- 空日数 -->
             <ul class="nav nav-list well"  style="margin-bottom:15px;">
               <div style="text-align: center;">
                 <div>
@@ -702,6 +812,17 @@ function openClose(id, mid, disp_msg)
                 </div>
 
                 <%= button_tag "空日数を表示" ,:type=>'button', :onClick=>"javascript:vacant_dips();" %>
+              </div>
+            </ul>
+
+            <ul class="nav nav-list well" style="margin-bottom:15px;">
+              <div id="tree-layout"　class="nav nav-list well"></div>
+            </ul>
+
+            <!-- 入居期間 -->
+            <ul class="nav nav-list well"  style="margin-bottom:15px;">
+              <div style="text-align: center;">
+                <%= button_tag "入居期間を表示" ,:type=>'button', :onClick=>"javascript:tenancy_period_dips();" %>
               </div>
             </ul>
 

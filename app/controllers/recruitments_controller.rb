@@ -72,7 +72,6 @@
       tmp_room = tmp_room.where('buildings.build_type_id'=>build_type)
     end
 
-
     # 間取りが選択されていたらそれを絞り込む
     if params[:layout_type]
       layout_arr = []
@@ -83,8 +82,6 @@
 
       tmp_room = tmp_room.where(:room_layout_id => layout_arr)
     end
-
-
 
     # 間取りを展開
     buildings = []
@@ -106,17 +103,15 @@
     if buildings.uniq
       @buildings = buildings.uniq
       @shops = shops.uniq
-   else
+    else
       @shops =  Shop.find(:all)
     end
 
- 
     gon.shops = @shops    # 関連する営業所
     gon.buildings = @buildings
     gon.room_of_building = room_of_building
     gon.around_flg = false
     
-
     render 'index'
 
   end

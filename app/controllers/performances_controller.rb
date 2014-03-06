@@ -319,6 +319,90 @@ class PerformancesController < ApplicationController
   end
 
 
+
+  # 入居期間分析
+  def tenancy_period
+
+    # 指定された営業所を取得
+    shops = []
+    Shop.find_all_by_code(params[:shop].split(',')).each do |shop|
+      shops.push(shop.id)
+    end
+
+    layouts = []
+    RoomLayout.find_all_by_code(params[:layout].split(',')).each do |layout|
+      layouts.push(layout.id)
+    end
+
+
+    # 指定された月数以上の入居期間を持つ契約の間取りと物件種別と築年数を出す。
+    # とりあえず現在入居中のもののみ。それを外せるようにもする。
+
+    base = LeaseContract.joins(:building => :shop).joins(:room => :room_type).joins(:room => :room_layout).scoped
+    base = base.where("buildings.shop_id In (?)", shops)
+    base = base.where("rooms.room_layout_id In (?)", layouts)
+    base = base.where("lease_contracts.lease_month >= (?)", 49)
+
+
+    #########################
+    # 間取り別の戸数の内訳を出す。
+    #########################
+    result = []
+    base.select('count(lease_contracts.code) as cnt, room_layouts.name as room_layout').group('room_layouts.name').order("cnt desc").each do |rec|
+      result.push([rec.room_layout, rec.cnt])
+    end
+
+    @layout_circle = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: "円グラフ")
+      f.chart(renderTo: "container", type: "pie")
+      f.series(name: 'グラフ', data: result )
+    end
+
+    # 契約単位で間取り・契約期間の散布図を出す。
+    result = []
+    base.select('lease_contracts.lease_month, room_layouts.code as room_layout').each do |rec|
+      result.push([rec.lease_month, 1])
+    end
+
+    @layout_scatter = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: "円グラフ")
+      f.chart(renderTo: "container", type: "scatter")
+      f.series(name: 'グラフ', data: result )
+    end
+
+
+
+    #########################
+    # 物件種別別の内訳
+    #########################
+    result = []
+    base.select('count(lease_contracts.code) as cnt, room_types.name as room_type').group('room_types.name').order("cnt desc").each do |rec|
+      result.push([rec.room_type, rec.cnt])
+    end
+
+    @room_type_circle = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: "円グラフ")
+      f.chart(renderTo: "container", type: "pie")
+      f.series(name: 'グラフ', data: result )
+    end
+
+
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 private
 
   def init
@@ -617,6 +701,8 @@ private
     return result
 
   end
+
+
 
 end
 

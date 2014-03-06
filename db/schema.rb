@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140212103337) do
+ActiveRecord::Schema.define(:version => 20140305115004) do
 
   create_table "backup_buildings", :force => true do |t|
     t.string   "code",                 :limit => nil
@@ -140,6 +140,18 @@ ActiveRecord::Schema.define(:version => 20140212103337) do
     t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "lease_contracts", :force => true do |t|
+    t.string   "code"
+    t.string   "start_date"
+    t.string   "leave_date"
+    t.integer  "building_id"
+    t.integer  "room_id"
+    t.integer  "lease_month"
+    t.integer  "rent"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "lines", :force => true do |t|

@@ -1670,7 +1670,6 @@ def regist_vacant_room(yyyymm, filename)
         throw :not_header
       end
 
-      cnt = cnt + 1
       row = line.split(",")
 
       # shop_id
@@ -1720,12 +1719,67 @@ def regist_vacant_room(yyyymm, filename)
       vacant_room.save!
 
       p vacant_room.building.name + ' ' + vacant_room.room.name + ' ' + vacant_room.vacant_cnt.to_s + '日'
+      cnt = cnt + 1
+
     end
   end
 
 
 end
 
+# 賃貸借契約を登録する
+def regist_lease_contract(filename)
+
+  unless File.exist?(filename)
+    puts 'file not exist'
+    return false
+  end
+
+  # データを登録
+  cnt = 0
+  open(filename).each do |line|
+    catch :not_header do
+
+      if cnt == 0
+        cnt = cnt + 1
+        throw :not_header
+      end
+
+      row = line.split(",")
+
+      #建物の取得
+      build = Building.find_by_code(row[1])
+      unless build
+        p "skip build " + row[1]
+        throw :not_header
+      end
+
+      #部屋の取得
+      room = Room.find_by_building_cd_and_code(row[1], row[2])
+      unless room
+        p "skip room " + row[1]
+        throw :not_header
+      end
+
+      lease_contract = LeaseContract.find_or_create_by_code(row[0])
+      lease_contract.code = row[0]
+      lease_contract.start_date = row[3]
+      lease_contract.leave_date = row[4]
+      lease_contract.building_id = build.id
+      lease_contract.room_id = room.id
+      lease_contract.lease_month = row[12]
+      lease_contract.rent = row[9]
+      lease_contract.save!
+
+      p lease_contract.building.name + ' ' + lease_contract.room.name + ' ' + lease_contract.lease_month.to_s + 'ヶ月'
+      cnt = cnt + 1
+
+    end
+  end
+
+
+
+end
 
 
 
@@ -1771,14 +1825,20 @@ end
 ###########################
 
 # 初期化処理
-performance_init
+#performance_init
 
 # 月次情報登録
 #monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
-monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
 
 ###########################
 # 業績分析(空室)
 ###########################
 # regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
 #regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))
+
+
+###########################
+# 賃貸借契約登録
+###########################
+regist_lease_contract(Rails.root.join( "tmp", "imp_tikeiyaku_20140305.csv"))

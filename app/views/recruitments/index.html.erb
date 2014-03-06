@@ -540,64 +540,50 @@ google.maps.event.addDomListener(window, "load", initialize);
   <!-- ここは span3で呼び出されている -->
 
     <div>
-      <ul class="nav nav-tabs">
-        <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab">条件を指定して検索</a></li>
-        <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
-      </ul>
+      <% if false %>
+        <ul class="nav nav-tabs">
+          <li class="<%= @tab_search %>"><a href="#tab_search" data-toggle="tab">条件を指定して検索</a></li>
+          <li class="<%= @tab_result %>"><a href="#tab_result" data-toggle="tab">結果を確認する</a></li>
+        </ul>
+      <% end %>
 
       <div id="myTabContent_search" class="tab-content">
 
         <!-- 検索条件設定 -->
-        <div class="tab-pane fade <%= @tab_search %>" id="tab_search">
+        <%= form_tag('/recruitments/search') do %>
 
-          <%= form_tag('/recruitments/search') do %>
-
-            <div style="text-align: center;padding-bottom:15px;">
-              <%= submit_tag "検索する", :class=>'btn btn-large btn-primary'  %>
-            </div>
-
-            <ul class="nav nav-tabs">
-              <li class="active"><a href="#tab2" data-toggle="tab">場所</a></li>
-              <li><a href="#tab1" data-toggle="tab">間取り</a></li>
-              <li><a href="#tab3" data-toggle="tab">家賃・その他</a></li>
-            </ul>
-
-            <div id="myTabContent1" class="tab-content">
-              <div class="tab-pane fade" id="tab1">
-                 <%= render :partial=>'search_layouts' %>
-              </div>
-              <div class="tab-pane fade active in" id="tab2">
-                 <%#= render :partial=>'search_layouts' %>
-              </div>
-              <div class="tab-pane fade" id="tab3">
-                 <%#= render :partial=>'search_etc' %>
-              </div>
-            </div>
-
-          <% end %>
-        </div>
-
-        <!-- 検索結果確認 -->
-        <div class="tab-pane fade <%= @tab_result %>" id="tab_result">
-          <ul class="nav nav-tabs">
-            <li><a class="active" href="#tab7" data-toggle="tab">表示設定</a></li>
-            <li><a href="#tab5" data-toggle="tab">建物</a></li>
-            <li><a href="#tab6" data-toggle="tab">営業所</a></li>
-          </ul>
-
-          <div id="myTabContent2" class="tab-content">
-            <div class="tab-pane active in fade" id="tab7">
-               <%= render :partial=>'disp' %>
-            </div>
-            <div class="tab-pane fade" id="tab5">
-               <%= render :partial=>'result_buildings' %>
-            </div>
-            <div class="tab-pane fade" id="tab6">
-               <%= render :partial=>'result_shops' %>
-            </div>
+          <div style="text-align: center;padding-bottom:15px;padding-top:20px;">
+            <%= submit_tag "検索する", :class=>'btn btn-large btn-primary'  %>
           </div>
 
-        </div>
+          <div id="myTabContent1" class="tab-content">
+             <%= render :partial=>'search_layouts' %>
+          </div>
+
+        <% end %>
+
+        <% if false %>
+          <!-- 検索結果確認 -->
+          <div class="tab-pane fade <%= @tab_result %>" id="tab_result">
+            <ul class="nav nav-tabs">
+              <li><a class="active" href="#tab7" data-toggle="tab">表示設定</a></li>
+              <li><a href="#tab5" data-toggle="tab">建物</a></li>
+              <li><a href="#tab6" data-toggle="tab">営業所</a></li>
+            </ul>
+
+            <div id="myTabContent2" class="tab-content">
+              <div class="tab-pane active in fade" id="tab7">
+                 <%= render :partial=>'disp' %>
+              </div>
+              <div class="tab-pane fade" id="tab5">
+                 <%= render :partial=>'result_buildings' %>
+              </div>
+              <div class="tab-pane fade" id="tab6">
+                 <%= render :partial=>'result_shops' %>
+              </div>
+            </div>
+          </div>
+        <% end %>
 
       </div>
 

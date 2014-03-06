@@ -1,0 +1,7 @@
+<%= render :partial=>'sidebar', :locals=>{:val => 2} %>
+
+<div style="text-align: center;margin: 0 auto;">
+  <div style="text-align: right;margin: 0 auto;"><%= high_chart("chart-10", @layout_circle) %></div>
+  <div style="text-align: right;margin: 0 auto;"><%= high_chart("chart-11", @layout_scatter) %></div>
+  <div style="text-align: right;margin: 0 auto;"><%= high_chart("chart-20", @room_type_circle) %></div>
+</div>
