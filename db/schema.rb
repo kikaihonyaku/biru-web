@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140305115004) do
+ActiveRecord::Schema.define(:version => 20140312043724) do
 
   create_table "backup_buildings", :force => true do |t|
     t.string   "code",                 :limit => nil
@@ -52,6 +52,16 @@ ActiveRecord::Schema.define(:version => 20140305115004) do
     t.string "code"
     t.string "name"
     t.string "icon"
+  end
+
+  create_table "building_routes", :force => true do |t|
+    t.integer  "building_id"
+    t.string   "code"
+    t.integer  "station_id"
+    t.boolean  "bus",         :default => false
+    t.integer  "minutes"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
   end
 
   create_table "buildings", :force => true do |t|
@@ -133,6 +143,13 @@ ActiveRecord::Schema.define(:version => 20140305115004) do
     t.string  "building_type_cd"
     t.integer "biru_age"
     t.string  "build_day"
+    t.string  "moyori_id"
+    t.string  "line_cd"
+    t.string  "line_nm"
+    t.string  "station_cd"
+    t.string  "station_nm"
+    t.integer "bus_exists"
+    t.integer "minuite"
   end
 
   create_table "items", :force => true do |t|

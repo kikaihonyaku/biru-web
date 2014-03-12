@@ -610,16 +610,24 @@ def import_data_oneself(filename)
       imp.building_address = row[10]
       imp.room_cd = row[11]
       imp.room_nm = row[12]
-      imp.room_aki = row[13]
-      imp.room_type_cd = row[14]
-      imp.room_type_nm = row[15]
-      imp.room_layout_cd = row[16]
-      imp.room_layout_nm = row[17]
-      imp.owner_cd = row[18]
-      imp.owner_nm = row[19]
-      imp.owner_kana = row[20]
-      imp.owner_address = row[21]
-      imp.build_day = row[22]
+      imp.room_aki = row[15]
+      imp.room_type_cd = row[16]
+      imp.room_type_nm = row[17]
+      imp.room_layout_cd = row[18]
+      imp.room_layout_nm = row[19]
+      imp.owner_cd = row[20]
+      imp.owner_nm = row[21]
+      imp.owner_kana = row[22]
+      imp.owner_address = row[23]
+      imp.build_day = row[24]
+      imp.moyori_id = row[25]
+      imp.line_cd = row[26]
+      imp.line_nm = row[27]
+      imp.station_cd = row[28]
+      imp.station_nm = row[29]
+      imp.bus_exists = row[30]
+      imp.minuite = row[31]
+
       imp.save!
 
       if imp
@@ -671,7 +679,7 @@ def update_imp_oneself()
   # 建物・部屋の登録
   ####################
   p "■自社物件登録（" + Time.now.to_s(:db) + "）"
-  ImpTable.group(:eigyo_cd, :eigyo_nm, :trust_cd,  :building_cd, :building_nm, :building_address, :owner_cd, :building_type_cd, :room_type_nm, :biru_age, :build_day ).select(:eigyo_cd).select(:eigyo_nm).select(:trust_cd).select(:building_cd).select(:building_nm).select(:building_address).select(:owner_cd).select(:building_type_cd).select(:room_type_nm).select(:biru_age).select(:build_day).each do |imp|
+  ImpTable.group(:eigyo_cd, :eigyo_nm, :trust_cd,  :building_cd, :building_nm, :building_address, :owner_cd, :building_type_cd, :room_type_nm, :biru_age, :build_day, :line_cd ,:station_cd ,:moyori_id ,:bus_exists,:minuite ).select(:eigyo_cd).select(:eigyo_nm).select(:trust_cd).select(:building_cd).select(:building_nm).select(:building_address).select(:owner_cd).select(:building_type_cd).select(:room_type_nm).select(:biru_age).select(:build_day).select(:line_cd).select(:station_cd).select(:moyori_id).select(:bus_exists).select(:minuite).each do |imp|
 
     # 建物の登録
     biru = Building.unscoped.find_or_create_by_code(imp.building_cd)
@@ -707,12 +715,40 @@ def update_imp_oneself()
       p "建物登録エラー:save :" + e.message
     end
 
+    ################
+    # 最寄り駅の登録
+    ################
+    ImpTable.where("building_cd = ?", biru.code ).group(:building_cd, :line_cd, :station_cd, :moyori_id, :bus_exists, :minuite ).select(:building_cd).select(:line_cd).select(:station_cd).select(:moyori_id).select(:bus_exists).select(:minuite).each  do |imp_route|
+      # 駅から建物までの位置を登録
+      station = Station.find_by_line_code_and_code(imp_route.line_cd, imp_route.station_cd)
+      if station
+
+        biru_route = BuildingRoute.find_or_create_by_building_id_and_code(biru.id, imp_route.moyori_id.to_s)
+        biru_route.code = imp_route.moyori_id.to_s
+        biru_route.building_id = biru.id
+        biru_route.station_id = station.id
+
+        if imp_route.bus_exists == 0
+          biru_route.bus = false
+        else
+          biru_route.bus = true
+        end
+
+        biru_route.minutes = imp_route.minuite
+        biru_route.save!
+      end
+    end
+
+
+    ################
     # 部屋の登録
+    ################
     kanri_room_num = 0 # 管理戸数
     free_num = 0
     owner_stop_num = 0
 
-    ImpTable.find_all_by_building_cd(biru.code).each do |imp_room|
+#    ImpTable.find_all_by_building_cd(biru.code).each do |imp_room|
+    ImpTable.where("building_cd = ?", biru.code ).group(:building_cd, :room_cd, :room_nm, :room_layout_cd, :room_type_cd, :room_aki).select(:building_cd).select(:room_cd).select(:room_nm).select(:room_layout_cd).select(:room_type_cd).select(:room_aki).each  do |imp_room|
 
       room = Room.unscoped.find_or_create_by_building_cd_and_code(biru.code, imp_room.room_cd)
       room.building = biru
@@ -1815,6 +1851,7 @@ end
 
 # データの登録(自社)
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
+regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 
 # データの登録(他社)
 #import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
@@ -1841,4 +1878,4 @@ end
 ###########################
 # 賃貸借契約登録
 ###########################
-regist_lease_contract(Rails.root.join( "tmp", "imp_tikeiyaku_20140305.csv"))
+#regist_lease_contract(Rails.root.join( "tmp", "imp_tikeiyaku_20140305.csv"))

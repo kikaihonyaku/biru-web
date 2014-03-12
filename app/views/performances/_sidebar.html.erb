@@ -455,6 +455,24 @@
   ];
 
 
+  var room_type_data = [
+    { label: '部屋種別', id: 6000,
+      children: [
+        { label: '全て', id: 1001, list: [17010,17015,17020,17025,17030,17035,17040,17045,17050,17055,17060,17065]},
+        { label: 'マンション', id:1002, list: [17010] },
+        { label: '分譲賃貸マンション', id:1003, list: [17015] },
+        { label: 'アパート', id:1004, list: [17020] },
+        { label: '一戸建貸家', id:1005, list: [17025] },
+        { label: 'テラスハウス', id:1006, list: [17030] },
+        { label: 'メゾネット', id:1007, list: [17035] },
+        { label: '店舗・事務所', id:1008, list: [17040, 17050] },
+        { label: '店舗付住宅', id:1009, list: [17045] },
+        { label: '工場・倉庫', id:1010, list: [17055, 17060, 17065] },
+
+      ]
+    }
+  ];
+
 
 $(function() {
     $('#tree-dept').tree({
@@ -480,6 +498,11 @@ $(function() {
     $('#tree-layout').tree({
         data: layout_data,
         saveState: 'c-layout'
+    });
+
+    $('#tree-room-type').tree({
+        data: room_type_data,
+        saveState: 'c-room_type'
     });
 
     $('#tree-item').bind('tree.select',　
@@ -569,6 +592,22 @@ $(function() {
         }
       }
     );
+
+    $('#tree-build-type').bind('tree.select',　
+      function(event) {
+        if (event.node) {
+          // もしも選択されたNodeが非選択対象(3000以上)だったら、選択状態を解除
+          var node = event.node;
+          var num = parseInt(node.id);
+          if(isNaN(num) == false){
+            if(num >= 3000){
+              $('#tree-build-type').tree('removeFromSelection', node);
+            }
+          }
+        }
+      }
+    );
+
 
 });
 
@@ -700,6 +739,25 @@ function tenancy_period_dips(){
     return;
   }
 
+  frm_build_age.room_type.value = $('#tree-room-type').tree('getSelectedNode').list;
+  if(frm_build_age.room_type.value =='undefined' ){
+    alert('部屋種別を指定してください');
+    return;
+  }
+
+  var number = frm_build_age.lease_month.value;
+  if(number == ''){
+    alert("入居期間のヶ月を設定してください。");
+    return;
+  }
+
+  if(number.match(/[^0-9]+/)){    		//数字以外の文字である場合
+    alert("ヶ月に数字以外の文字が入力されています。もう一度確認して下さい。");
+    return;
+  }
+
+  lease_month
+
 
   frm_build_age.shop_nm.value = $('#tree-shop').tree('getSelectedNode').nm;
   frm_build_age.action = (<%= raw("'") + performances_tenancy_period_path + raw("'") %>)
@@ -792,6 +850,7 @@ function openClose(id, mid, disp_msg)
             <%= hidden_field_tag 'shop', '' %>
             <%= hidden_field_tag 'shop_nm', '' %>
             <%= hidden_field_tag 'layout', '' %>
+            <%= hidden_field_tag 'room_type', '' %>
 
             <ul class="nav nav-list well" style="margin-bottom:15px;">
               <div id="tree-shop"　class="nav nav-list well"></div>
@@ -815,12 +874,17 @@ function openClose(id, mid, disp_msg)
               </div>
             </ul>
 
-            <ul class="nav nav-list well" style="margin-bottom:15px;">
-              <div id="tree-layout"　class="nav nav-list well"></div>
-            </ul>
 
             <!-- 入居期間 -->
             <ul class="nav nav-list well"  style="margin-bottom:15px;">
+              <div id="tree-layout"　class="nav nav-list well" style="margin-bottom:5px;"></div>
+              <div id="tree-room-type"　class="nav nav-list well" style="margin-bottom:5px;"></div>
+              <div style="margin-left:10px;margin-bottom: 0px;padding-bottom: 0px;">
+                <label><%= text_field_tag 'lease_month', @lease_month, :style=>'width:30px;text-align:center;' %>&nbsp;ヶ月以上の入居契約</label>
+              </div>
+              <div style="margin-left:25px;">
+                <label><%= check_box_tag('kaiyaku', true, @lease_kaiyaku) %>&nbsp;&nbsp;解約済みも含む</label>
+              </div>
               <div style="text-align: center;">
                 <%= button_tag "入居期間を表示" ,:type=>'button', :onClick=>"javascript:tenancy_period_dips();" %>
               </div>

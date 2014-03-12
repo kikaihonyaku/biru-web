@@ -1,7 +1,14 @@
 <%= render :partial=>'sidebar', :locals=>{:val => 2} %>
 
-<div style="text-align: center;margin: 0 auto;">
-  <div style="text-align: right;margin: 0 auto;"><%= high_chart("chart-10", @layout_circle) %></div>
-  <div style="text-align: right;margin: 0 auto;"><%= high_chart("chart-11", @layout_scatter) %></div>
-  <div style="text-align: right;margin: 0 auto;"><%= high_chart("chart-20", @room_type_circle) %></div>
+<div style="text-align: center;margin-bottom: 50px;;">
+  <div style="text-align: right;margin: 0 auto;float: left;width:50%;"><%= high_chart("chart-10", @layout_circle) %></div>
+  <div style="text-align: right;margin: 0 auto;float: left;width:50%;"><%= high_chart("chart-20", @room_type_circle) %></div>
+</div>
+
+<div style="text-align: center;clear: both;">
+  <div style="margin-top: 50px;"><%= high_chart("chart-30", @rent_scatter) %></div>
+</div>
+
+<div style="text-align: center;clear: both;">
+  <div style="margin-top: 50px;"><%= high_chart("chart-31", @minutes_scatter) %></div>
 </div>

@@ -334,6 +334,18 @@ class PerformancesController < ApplicationController
       layouts.push(layout.id)
     end
 
+    room_types = []
+    RoomType.find_all_by_code(params[:room_type].split(',')).each do |room_type|
+      room_types.push(room_type.id)
+    end
+
+    @lease_month = params[:lease_month]
+
+    if params[:kaiyaku].blank?
+      @lease_kaiyaku = false
+    else
+      @lease_kaiyaku = true
+    end
 
     # 指定された月数以上の入居期間を持つ契約の間取りと物件種別と築年数を出す。
     # とりあえず現在入居中のもののみ。それを外せるようにもする。
@@ -341,8 +353,12 @@ class PerformancesController < ApplicationController
     base = LeaseContract.joins(:building => :shop).joins(:room => :room_type).joins(:room => :room_layout).scoped
     base = base.where("buildings.shop_id In (?)", shops)
     base = base.where("rooms.room_layout_id In (?)", layouts)
-    base = base.where("lease_contracts.lease_month >= (?)", 49)
+    base = base.where("rooms.room_type_id In (?)", room_types)
+    base = base.where("lease_contracts.lease_month >= (?)", @lease_month)
 
+    unless @lease_kaiyaku
+      base = base.where("lease_contracts.leave_date =''")
+    end
 
     #########################
     # 間取り別の戸数の内訳を出す。
@@ -353,23 +369,208 @@ class PerformancesController < ApplicationController
     end
 
     @layout_circle = LazyHighCharts::HighChart.new('graph') do |f|
-      f.title(text: "円グラフ")
+      f.title(text: '間取り（' + params[:shop_nm] + '）')
       f.chart(renderTo: "container", type: "pie")
       f.series(name: 'グラフ', data: result )
     end
 
-    # 契約単位で間取り・契約期間の散布図を出す。
-    result = []
-    base.select('lease_contracts.lease_month, room_layouts.code as room_layout').each do |rec|
-      result.push([rec.lease_month, 1])
+    #####################################
+    # 金額・契約期間の散布図を出す。
+    #####################################
+    result_hash = {}
+    aa = base
+    aa = aa.where('lease_contracts.rent < ?', 500000) # 異常値を除く
+    aa = aa.where('lease_contracts.lease_month < ?', 250) # 異常値を除く
+    aa.select(' lease_contracts.lease_month, lease_contracts.rent').each do |rec|
+
+      key = "不明"
+      case rec.rent.to_i
+      when 0..50000
+        key = "５万円以下"
+      when 50001..80000
+        key = "８万円以下"
+      when 80001..110000
+        key = "１１万円以下"
+      when 110001..140000
+        key = "１４万円以下"
+      when 140001..1000000
+        key = "１４万円より上"
+      end
+
+      # ハッシュが未定義だったらその配列を設定する。
+      result_hash[key] = [] unless result_hash[key]
+      result_hash[key].push([rec.lease_month, rec.rent.to_i])
     end
 
-    @layout_scatter = LazyHighCharts::HighChart.new('graph') do |f|
-      f.title(text: "円グラフ")
-      f.chart(renderTo: "container", type: "scatter")
-      f.series(name: 'グラフ', data: result )
+    @rent_scatter = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: "賃料と契約期間")
+      f.chart(renderTo: "container", type: "scatter", zoomType: 'xy')
+
+      f.legend(
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'top',
+          x: 0,
+          y: 20,
+          floating: true,
+          backgroundColor: '#FFFFFF',
+          borderWidth: 1
+      )
+
+      f.plotOptions(
+          scatter: {
+              marker: {
+                  radius: 5,
+                  states: {
+                      hover: {
+                          enabled: true,
+                          lineColor: 'rgb(100,100,100)'
+                      }
+                  }
+              },
+              states: {
+                  hover: {
+                      marker: {
+                          enabled: false
+                      }
+                  }
+              },
+              tooltip: {
+                  headerFormat: '<b>{series.name}</b><br>',
+                  pointFormat: '{point.x} ヶ月, {point.y} 円'
+              }
+          }
+      )
+
+      f.xAxis(
+          title: {
+              enabled: true,
+              text: '契約期間 (ヶ月)'
+          },
+          startOnTick: true,
+          endOnTick: true,
+          showLastLabel: true
+      )
+
+      f.yAxis(
+          title: {
+              text: '家賃(千円)'
+          }
+      )
+
+
+      # 間取り別に出す。
+      result_hash.each_key do |key|
+        f.series(name: key, data: result_hash[key] )
+      end
     end
 
+
+    #####################################
+    # 駅からの距離・契約期間の散布図を出す。
+    #####################################
+    result_hash = {}
+    aa = base
+    aa = aa.where('lease_contracts.lease_month < ?', 250) # 異常値を除く
+    aa.select('lease_contracts.lease_month, buildings.id as building_id').each do |rec|
+
+
+      building_route = Building.find(rec.building_id).building_routes.first
+      if building_route
+
+        minute = building_route.minutes
+        if building_route.bus
+          # バスを使っていたら10分追加
+          minute = minute + 10
+        end
+
+
+        key = "不明"
+        case minute.to_i
+        when 0..5
+          key = "5分以下"
+        when 6..10
+          key = "10分以下"
+        when 11..15
+          key = "15分以下"
+        when 16..20
+          key = "20分以下"
+        when 21..1000
+          key = "25分以上"
+        end
+
+        # ハッシュが未定義だったらその配列を設定する。
+        result_hash[key] = [] unless result_hash[key]
+        result_hash[key].push([rec.lease_month, minute])
+
+
+      end
+
+    end
+
+    @minutes_scatter = LazyHighCharts::HighChart.new('graph') do |f|
+      f.title(text: "所要時間と契約期間")
+      f.chart(renderTo: "container", type: "scatter", zoomType: 'xy')
+
+      f.legend(
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'top',
+          x: 0,
+          y: 20,
+          floating: true,
+          backgroundColor: '#FFFFFF',
+          borderWidth: 1
+      )
+
+      f.plotOptions(
+          scatter: {
+              marker: {
+                  radius: 5,
+                  states: {
+                      hover: {
+                          enabled: true,
+                          lineColor: 'rgb(100,100,100)'
+                      }
+                  }
+              },
+              states: {
+                  hover: {
+                      marker: {
+                          enabled: false
+                      }
+                  }
+              },
+              tooltip: {
+                  headerFormat: '<b>{series.name}</b><br>',
+                  pointFormat: '{point.x} ヶ月, {point.y} 分'
+              }
+          }
+      )
+
+      f.xAxis(
+          title: {
+              enabled: true,
+              text: '契約期間 (ヶ月)'
+          },
+          startOnTick: true,
+          endOnTick: true,
+          showLastLabel: true
+      )
+
+      f.yAxis(
+          title: {
+              text: '駅までの所要時間(分)'
+          }
+      )
+
+      # 間取り別に出す。
+      result_hash.each_key do |key|
+        f.series(name: key, data: result_hash[key] )
+      end
+
+
+    end
 
 
     #########################
@@ -381,7 +582,7 @@ class PerformancesController < ApplicationController
     end
 
     @room_type_circle = LazyHighCharts::HighChart.new('graph') do |f|
-      f.title(text: "円グラフ")
+      f.title(text: '物件種別（' + params[:shop_nm] + '）')
       f.chart(renderTo: "container", type: "pie")
       f.series(name: 'グラフ', data: result )
     end
@@ -408,6 +609,9 @@ private
   def init
     @vacant_yyyymm_before = Date.today.prev_month.strftime("%Y/%m")
     @vacant_yyyymm_current = Date.today.strftime("%Y/%m")
+
+    @lease_month = 60;
+    @lease_kaiyaku = false
   end
 
   # vacant_dataより空日数のカウントをし、その結果をvacant_resultに返します

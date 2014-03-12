@@ -5,6 +5,7 @@ class Building < ActiveRecord::Base
   # belongs_to :biru_marker
   has_many :trusts
   has_many :owners, :through=>:trusts
+  has_many :building_routes
   belongs_to :shop
   belongs_to :build_type
   has_many :rooms
