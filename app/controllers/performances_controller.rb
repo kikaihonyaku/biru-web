@@ -37,10 +37,12 @@ class PerformancesController < ApplicationController
       # 年度指定
       yyyymm_s = params[:yyyymm_s]
       yyyymm_e = params[:yyyymm_e]
+      @yyyymm_pick = false
     else
       # 月個別指定
       yyyymm_s = params[:yyyymm_s_monthly].gsub('/','')
       yyyymm_e = params[:yyyymm_e_monthly].gsub('/','')
+      @yyyymm_pick = true
     end
 
     @yyyymm_s_monthly = params[:yyyymm_s_monthly]
@@ -98,16 +100,23 @@ class PerformancesController < ApplicationController
     ##############################################
    @group_result = LazyHighCharts::HighChart.new('graph') do |f|
      f.title(text: @graph_name.to_s + 'の' + @item.name + 'の実績一覧')
-     f.xAxis(categories: @result_arr[0]['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
-     #f.series(name: '実績', data: this_year_results, type: "spline")
+
+     if @result_arr[0]['categories'].length <= 12
+       f.xAxis(categories: @result_arr[0]['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+       #f.series(name: '実績', data: this_year_results, type: "spline")
+     else
+       interval = @result_arr[0]['categories'].length / 12
+       f.xAxis(categories: @result_arr[0]['categories'].collect do |ym| ym.slice(0..3) + "/" + ym.slice(4..5) end, tickInterval: interval) # 1とかは列の間隔の指定
+
+     end
 
      # 凡例
      f.legend(
          layout: 'vertical',
          backgroundColor: '#FFFFFF',
          floating: true,
-         align: 'right',
-         x: -20,
+         align: 'left',
+         x: 80,
          verticalAlign: 'top',
          y: 40
      )
@@ -282,12 +291,12 @@ class PerformancesController < ApplicationController
 
     # 当月の情報を取得する
     current_vacant = base.where("yyyymm = ?", params[:yyyymm_current].gsub('/',''))
-    @vacant_detail_current = current_vacant.select("vacant_cnt, manage_types.name as manage_type_nm, shops.name as shop_nm, buildings.code as building_cd, buildings.name as building_nm, rooms.name as room_nm, room_layouts.name as room_layout_nm").order("vacant_cnt, shops.code, room_layouts.code, buildings.code, rooms.code")
+    @vacant_detail_current = current_vacant.select("vacant_cnt, manage_types.name as manage_type_nm, shops.name as shop_nm, buildings.code as building_cd, buildings.name as building_nm, rooms.name as room_nm, room_layouts.name as room_layout_nm").order("vacant_cnt desc, shops.code, room_layouts.code, buildings.code, rooms.code")
     @vacant_current_map = vacant_count(@category_arr, @vacant_detail_current)
 
     # 前月の情報を取得する
     before_vacant = base.where("yyyymm = ?", params[:yyyymm_before].gsub('/',''))
-    @vacant_detail_before = before_vacant.select("vacant_cnt, manage_types.name as manage_type_nm, shops.name as shop_nm, buildings.code as building_cd, buildings.name as building_nm, rooms.name as room_nm, room_layouts.name as room_layout_nm").order("vacant_cnt, shops.code, room_layouts.code, buildings.code, rooms.code")
+    @vacant_detail_before = before_vacant.select("vacant_cnt, manage_types.name as manage_type_nm, shops.name as shop_nm, buildings.code as building_cd, buildings.name as building_nm, rooms.name as room_nm, room_layouts.name as room_layout_nm").order("vacant_cnt desc, shops.code, room_layouts.code, buildings.code, rooms.code")
     @vacant_before_map = vacant_count(@category_arr, @vacant_detail_before)
 
     @vacant_sum = LazyHighCharts::HighChart.new('graph') do |f|
@@ -612,6 +621,8 @@ private
 
     @lease_month = 60;
     @lease_kaiyaku = false
+
+    @yyyymm_pick = false
   end
 
   # vacant_dataより空日数のカウントをし、その結果をvacant_resultに返します
@@ -796,7 +807,13 @@ private
     #######################################
     result['graph_plan'] = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: dept_name + 'の' + item.name + '(' + graph_title + ')')
-      f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+
+      if result['categories'].length <= 12
+        f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+      else
+        interval = result['categories'].length / 12
+        f.xAxis(categories: result['categories'].collect do |ym| ym.slice(0..3) + "/" + ym.slice(4..5) end, tickInterval: interval) # 1とかは列の間隔の指定
+      end
 
       # 凡例
       f.legend(
@@ -824,7 +841,14 @@ private
     #######################################
     result['graph_cumulative'] = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: dept_name + 'の' + item.name + '(' + graph_title + ')')
-      f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+
+      if result['categories'].length <= 12
+        f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
+      else
+        interval = result['categories'].length / 12
+        f.xAxis(categories: result['categories'].collect do |ym| ym.slice(0..3) + "/" + ym.slice(4..5) end, tickInterval: interval) # 1とかは列の間隔の指定
+      end
+
 
       # 凡例
       f.legend(
@@ -861,6 +885,8 @@ private
         max_month = rec.yyyymm_max
       end
 
+      bar_attributes = get_bar_attribute
+
       if min_month
         dt_start = Date.parse(min_month + '01') # 最小月
         dt_end = dt_start >> 11 # ＋11ヶ月後
@@ -880,7 +906,15 @@ private
 
             year_sum_v2 = monthly.where("yyyymm between ? and ?", dt_start.strftime("%Y%m"), dt_end.strftime("%Y%m") ).select(func_summary + "(result_value) as result_value")
             year_sum_v2.each do |rec|
-              year_result.push(rec.result_value.to_f)
+
+              bar_attr = bar_attributes[dt_end.strftime("%Y%m")]
+
+              if bar_attr
+                year_result.push({:history=>bar_attr[:history], :color=>bar_attr[:color], :y=>rec.result_value.to_f})
+              else
+                year_result.push({:history=>'', :y=>rec.result_value.to_f})
+              end
+
             end
 
             # 1ヶ月進める
@@ -895,6 +929,25 @@ private
             f.title(text: dept_name + 'の' + item.name + 'の年計')
             f.xAxis(categories: year_category, tickInterval: interval) # 1とかは列の間隔の指定
             f.series(name: '実績', data: year_result, type: "column")
+
+#           f.series(name: '実績',
+#             data: [
+#               {
+#                 name: 'Point 1',
+#                 color: '#00FF00',
+#                 y: 0
+#               },
+#               {
+#                 name: 'Point 2',
+#                 color: '#FF00FF',
+#                 y: 5
+#               }
+#             ], type: "column"
+#           )
+
+            
+#            f.tooltip(formatter: 'function(){return this.series.data[1].name}'.js_code)
+            f.tooltip(formatter: "function(){console.log(this);return '年月' + this.x + '<br/>' + this.point.history}".js_code)
           end
 
         end
@@ -903,6 +956,90 @@ private
     end
 
     return result
+
+  end
+
+
+  # 履歴を表示
+  def get_bar_attribute
+
+    data = {}
+    data["199501"] = {:history=>"阪神・淡路大震災", :color=>'green'}
+    data["199503"] = {:history=>"地下鉄サリン事件", :color=>'green'}
+    data["199601"] = {:history=>"住専処理法が成立", :color=>'green'}
+    data["199612"] = {:history=>"在ペルー日本大使公邸占拠事件", :color=>'green'}
+    data["199704"] = {:history=>"消費税改定(5％)", :color=>'green'}
+    data["199705"] = {:history=>"アイヌ文化振興法の成立", :color=>'green'}
+
+    data["199709"] = {:history=>"日米保安条約の新ガイドライン合意", :color=>'green'}
+    data["199710"] = {:history=>"臓器移植法が成立", :color=>'green'}
+    data["199711"] = {:history=>"北海道拓殖銀行が経営破綻", :color=>'green'}
+    data["199711"] = {:history=>"山一證券が自主廃業", :color=>'green'}
+
+    data["199802"] = {:history=>"長野オリンピックが開催", :color=>'green'}
+    data["199810"] = {:history=>"旧国鉄債務処理法の成立により国鉄清算事業団を廃止<br>金融再生関連法(債権管理回収業に関する特別措置法など5法)の成立", :color=>'green'}
+
+    data["199905"] = {:history=>"情報公開法／周辺事態法の成立", :color=>'green'}
+    data["199907"] = {:history=>"通信傍受法の成立", :color=>'green'}
+    data["199908"] = {:history=>"国旗国歌法の成立", :color=>'green'}
+    data["199909"] = {:history=>"茨城県東海村で東海村JCO臨海事故", :color=>'green'}
+
+    data["200007"] = {:history=>"九州・沖縄サミット", :color=>'green'}
+    data["200010"] = {:history=>"白川秀樹がノーベル化学賞", :color=>'green'}
+    data["200104"] = {:history=>"小泉内閣の発足", :color=>'green'}
+    data["200109"] = {:history=>"アメリカ同時多発テロ発生<br/>対テロ戦争に参加", :color=>'green'}
+    data["200110"] = {:history=>"野依良治がノーベル化学賞を受賞する", :color=>'green'}
+    data["200112"] = {:history=>"皇太子夫婦の長女・愛子内親王が誕生", :color=>'green'}
+
+    data["200205"] = {:history=>"ワールドカップ日韓大会", :color=>'green'}
+    data["200209"] = {:history=>"小泉純一郎首相が北朝鮮の平壌を訪問し、日朝首脳会談(1回目)", :color=>'green'}
+    data["200212"] = {:history=>"小柴昌俊がノーベル物理学賞、田中耕一がノーベル化学賞を受賞", :color=>'green'}
+
+    data["200303"] = {:history=>"イラク戦争勃発", :color=>'green'}
+    data["200305"] = {:history=>"個人情報保護法が成立", :color=>'green'}
+    data["200312"] = {:history=>"自衛隊イラク派遣が始まる", :color=>'green'}
+
+
+    data["200410"] = {:history=>"イラク日本人人質事件", :color=>'green'}
+    data["200405"] = {:history=>"年金未納問題<br/>日朝首脳会談(2回目)", :color=>'green'}
+    data["200410"] = {:history=>"新潟県中越地震", :color=>'green'}
+    
+    data["200503"] = {:history=>"愛知県で愛知万博が開催", :color=>'green'}
+    data["200504"] = {:history=>"兵庫県尼崎市でJR福知山線脱線事故", :color=>'green'}
+    data["200509"] = {:history=>"郵政解散による衆議院総選挙で自民党大勝", :color=>'green'}
+    data["200510"] = {:history=>"郵政民営化の関連法成立", :color=>'green'}
+
+    data["200601"] = {:history=>"ライブドアショック、堀江メール問題", :color=>'green'}
+    data["200609"] = {:history=>"秋篠宮家の長男・悠仁親王が誕生<br/>第一次 安倍内閣が発足する", :color=>'green'}
+
+    data["200703"] = {:history=>"平成19年能登半島地震が発生", :color=>'green'}
+    data["200707"] = {:history=>"参議院通常選挙で民主党大勝<br/>新潟県中越沖地震が発生", :color=>'green'}
+    data["200709"] = {:history=>"福田康夫内閣が発足", :color=>'green'}
+
+
+    data["200802"] = {:history=>"野島沖でイージス艦衝突事故が発生", :color=>'green'}
+    data["200804"] = {:history=>"長野県長野市で北京オリンピックの聖火リレー", :color=>'green'}
+    data["200806"] = {:history=>"秋葉原通り魔事件が発生", :color=>'green'}
+    data["200807"] = {:history=>"北海道・洞爺湖サミットを開催", :color=>'green'}
+    data["200809"] = {:history=>"麻生内閣が発足する<br/>リーマンブラザーズ破綻", :color=>'green'}
+    data["200812"] = {:history=>"南部陽一郎・小林誠・益川敏英がノーベル物理学賞<br/>下村脩がノーベル化学賞を受賞", :color=>'green'}
+
+    data["200905"] = {:history=>"新型インフルエンザの感染が広がる<br/>裁判員制度が始まる", :color=>'green'}
+    data["200908"] = {:history=>"衆議院総選挙で民主党大勝", :color=>'green'}
+    data["200909"] = {:history=>"民主党・社会民主党・国民新党による連立政権である鳩山由紀夫内閣が発足", :color=>'green'}
+    data["200911"] = {:history=>"行政刷新会議の事業仕分けが行われる", :color=>'green'}
+
+    data["201004"] = {:history=>"九州南部で口蹄疫の感染が広がる", :color=>'green'}
+    data["201005"] = {:history=>"社会民主党が連立政権を離脱", :color=>'green'}
+    data["201006"] = {:history=>"管直人内閣が発足", :color=>'green'}
+    data["201007"] = {:history=>"参議院通常選挙で民主党が敗北し、自由民主党とみんなの党が躍進", :color=>'green'}
+    data["201012"] = {:history=>"鈴木章・根岸英一が、ノーベル化学賞を受賞する", :color=>'green'}
+
+
+    data["201103"] = {:history=>"東北地方太平洋沖地震、福島第一原子力発電所事故が発生(東日本大震災)", :color=>'green'}
+    data["201106"] = {:history=>"FIFA女子ワールドカップで日本代表が優勝", :color=>'green'}
+
+    return data
 
   end
 

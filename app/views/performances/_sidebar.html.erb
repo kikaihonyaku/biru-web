@@ -5,7 +5,8 @@
     { label:'年度',id: 6001,
       children: [
      //   {label: '2014年度', id:2014},
-        {label: '2013年度', id:2013, yyyymm_s:201304, yyyymm_e:201404, title:'2013年度' },
+        {label: '2014年度', id:2013, yyyymm_s:201404, yyyymm_e:201503, title:'2014年度' },
+        {label: '2013年度', id:2013, yyyymm_s:201304, yyyymm_e:201403, title:'2013年度' },
         {label: '2012年度', id:2012, yyyymm_s:201204, yyyymm_e:201303, title:'2012年度' },
         {label: '2011年度', id:2011, yyyymm_s:201104, yyyymm_e:201203, title:'2011年度' },
         {label: '2010年度', id:2010, yyyymm_s:201004, yyyymm_e:201103, title:'2010年度' },
@@ -93,13 +94,13 @@
                   },
                   { label: '千葉支店',id:247, graph_name: '千葉支店', dept_list:[247, 241, 242, 175, 232] ,
                     children: [
-                      { label:'常磐中央', id:241, graph_name: '常磐中央', dept_list:[241] ,
+                      { label:'常磐中央', id:241, graph_name: '常磐中央', dept_list:[241,171,172] ,
                         children:[
                           { label: '松戸', id:171, graph_name: '松戸', dept_list:[171] },
                           { label: '北松戸', id:172, graph_name: '北松戸', dept_list:[172] },
                         ]
                       },
-                      { label: '常磐西', id:242, graph_name: '常磐西', dept_list:[242] ,
+                      { label: '常磐西', id:242, graph_name: '常磐西', dept_list:[242,174,173] ,
                         children:[
                           { label: '南流山', id:174, graph_name: '南流山', dept_list:[174] },
                           { label: '柏', id:173, graph_name: '柏', dept_list:[173] }
@@ -208,14 +209,14 @@
           children: [
             { label: '保健課', id: 6051,
               children:[
-                { label: '保険代理店手数料（契約）', id: 'H-B0025' ,summary:1, calc:1},
-                { label: '保険代理店手数料（計上）', id: 'H-41060' ,summary:1, calc:1},
+                { label: '代理店手数料（契約）', id: 'H-B0025' ,summary:1, calc:1},
+                { label: '代理店手数料（計上）', id: 'H-41060' ,summary:1, calc:1},
                 { label: '火災独自新規契約件数', id: 'H-B0028' ,summary:1, calc:1},
                 { label: '自動車保険継続率', id: 'H-B0029' ,summary:2, calc:1},
-                { label: '自動車保険新規契約件数', id: 'H-B0031' ,summary:1, calc:1},
-                { label: '入居者保険更新手続完了率', id: 'H-B0033' ,summary:2, calc:1},
-                { label: '生命保険新規契約手数料', id: 'H-B0034' ,summary:1, calc:1},
-                { label: '火災保険新規契約手数料', id: 'H-B0094' ,summary:1, calc:1},
+                { label: '自動車保険新規件数', id: 'H-B0031' ,summary:1, calc:1},
+                { label: '入居者保険更新完了率', id: 'H-B0033' ,summary:2, calc:1},
+                { label: '生命保険新規手数料', id: 'H-B0034' ,summary:1, calc:1},
+                { label: '火災保険新規手数料', id: 'H-B0094' ,summary:1, calc:1},
                 { label: '火災保険更新手数料', id: 'H-B0095' ,summary:1, calc:1},
               ]
             },
@@ -322,45 +323,38 @@
           children: [
               { label: '東武支店',id:'3,11,16,1,18,8,7,21', nm:'東武支店',
                 children: [
-                  { label: '東武南',id:'3,11,16', nm:'東武南エリア',
+                  { label: '東武南',id:'3,11,16,1', nm:'東武南エリア',
                     children: [
                       { label: '草加', id: 3, nm:'草加営業所'},
                       { label: '草加新田', id: 11, nm:'草加新田営業所'},
-                      { label: '北千住', id: 16, nm:'北千住営業所'}
+                      { label: '北千住', id: 16, nm:'北千住営業所'},
+                      { label: '南越谷', id:1, nm:'南越谷営業所' },
                     ]
                   },
-                  { label: '東武中央',id:'1,18', nm:'東武中央エリア' ,
-                    children: [
-                      {label: '南越谷', id:1, nm:'南越谷営業所' },
-                      {label: '越谷', id:18, nm:'越谷営業所' }
-                    ]
-                  },
-                  { label: '東武北',id:'8,7,21', nm:'東武北エリア',
+                  { label: '東武北',id:'8,7,21,18', nm:'東武北エリア',
                     children:[
+                      { label: '越谷', id:18, nm:'越谷営業所' },
                       { label: '北越谷', id: 8, nm:'北越谷営業所'},
                       { label: '春日部', id: 7, nm:'春日部営業所'},
-                      { label: 'せんげん台', id: 21, nm:'せんげん台営業所'}
+                      { label: 'せんげん台', id: 21, nm:'せんげん台営業所'},
                     ]
                   },
                 ]
               },
-              { label: 'さいたま支店',id:'2,5,15,17,13,10,6,14', nm:'さいたま支店',
+              { label: 'さいたま支店',id:'22,5,15,17,13,10,6,14', nm:'さいたま支店',
                 children: [
-                  { label:'さいたま南', id:'2,5,15', nm:'さいたま南エリア',
+                  { label:'さいたま中央', id:'22,5,15,13', nm:'さいたま南エリア',
                     children:[
+                      { label: '戸田公園', id:22, nm:'戸田公園営業所'},
                       { label: '戸田', id:2, nm:'戸田営業所'},
                       { label: '武蔵浦和', id:5, nm:'武蔵浦和営業所'},
                       { label: '川口', id:15, nm:'川口営業所'},
-                    ]
-                  },
-                  { label: 'さいたま北', id:'17,13', nm:'さいたま北エリア',
-                    children:[
-                      { label: '浦和', id:17, nm:'浦和営業所'},
                       { label: '与野', id:13, nm:'与野営業所'}
                     ]
                   },
-                  { label:'さいたま東', id:'10,6,14', nm:'さいたま東エリア',
+                  { label:'さいたま東', id:'10,6,14,17', nm:'さいたま東エリア',
                     children: [
+                      { label: '浦和', id:17, nm:'浦和営業所'},
                       { label: '東浦和', id:10, nm:'東浦和営業所'},
                       { label: '東川口', id:6, nm:'東川口営業所'},
                       { label: '戸塚安行', id:14, nm:'戸塚安行営業所'}
@@ -370,14 +364,10 @@
               },
               { label: '千葉支店',id:'19,4,12,9', nm:'千葉支店',
                 children: [
-                  { label:'常磐中央', id:'19,4', nm:'常磐中央エリア',
+                  { label:'常磐エリア', id:'19,4,12,9', nm:'常磐中央エリア',
                     children:[
                       { label: '松戸', id:19, nm:'松戸営業所'},
                       { label: '北松戸', id:4, nm:'北松戸営業所'},
-                    ]
-                  },
-                  { label: '常磐西', id:'12,9', nm:'常磐西エリア',
-                    children:[
                       { label: '南流山', id:12, nm:'南流山営業所'},
                       { label: '柏', id:9, nm:'柏営業所'}
                     ]
@@ -609,6 +599,17 @@ $(function() {
     );
 
 
+    <%# yyyymm pikerの活性化 %>
+    <% if @yyyymm_pick %>
+      monthly_yyyymm_from.disabled = false;
+      monthly_yyyymm_to.disabled = false;
+
+    <% else %>
+      monthly_yyyymm_from.disabled = true;
+      monthly_yyyymm_to.disabled = true;
+    <%  end %>
+
+
 });
 
 function graph_disp(){
@@ -756,9 +757,6 @@ function tenancy_period_dips(){
     return;
   }
 
-  lease_month
-
-
   frm_build_age.shop_nm.value = $('#tree-shop').tree('getSelectedNode').nm;
   frm_build_age.action = (<%= raw("'") + performances_tenancy_period_path + raw("'") %>)
 
@@ -847,6 +845,7 @@ function openClose(id, mid, disp_msg)
         <div class="tab-pane fade <%= if val == 2 then raw('active in') end %>" id="tab_etc" >
 
           <%= form_tag '' ,:name=>"frm_build_age" do %>
+          
             <%= hidden_field_tag 'shop', '' %>
             <%= hidden_field_tag 'shop_nm', '' %>
             <%= hidden_field_tag 'layout', '' %>
@@ -873,7 +872,6 @@ function openClose(id, mid, disp_msg)
                 <%= button_tag "空日数を表示" ,:type=>'button', :onClick=>"javascript:vacant_dips();" %>
               </div>
             </ul>
-
 
             <!-- 入居期間 -->
             <ul class="nav nav-list well"  style="margin-bottom:15px;">
