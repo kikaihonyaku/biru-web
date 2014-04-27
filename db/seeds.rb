@@ -1865,14 +1865,19 @@ regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 #performance_init
 
 # 月次情報登録
-monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
-monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_getuji_201403.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_201402_201403.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201404.csv"))
 
 ###########################
 # 業績分析(空室)
 ###########################
-regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
-regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))
+# regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
+#regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))
+#regist_vacant_room("201403", Rails.root.join( "tmp", "vacant_201403.csv"))
+#regist_vacant_room("201404", Rails.root.join( "tmp", "vacant_201404.csv"))
 
 
 ###########################
