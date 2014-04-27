@@ -13,41 +13,6 @@
 
 ActiveRecord::Schema.define(:version => 20140312043724) do
 
-  create_table "backup_buildings", :force => true do |t|
-    t.string   "code",                 :limit => nil
-    t.string   "name"
-    t.string   "address"
-    t.integer  "shop_id"
-    t.integer  "build_type_id"
-    t.integer  "room_num"
-    t.float    "latitude"
-    t.float    "longitude"
-    t.boolean  "gmaps"
-    t.string   "tmp_manage_type_icon"
-    t.string   "tmp_build_type_icon"
-    t.datetime "created_at",                                             :null => false
-    t.datetime "updated_at",                                             :null => false
-    t.integer  "building_rank_id"
-    t.text     "memo"
-    t.boolean  "delete_flg",                          :default => false
-    t.integer  "attack_code"
-  end
-
-  create_table "backup_owners", :force => true do |t|
-    t.integer  "code"
-    t.string   "name"
-    t.string   "address"
-    t.float    "latitude"
-    t.float    "longitude"
-    t.boolean  "gmaps"
-    t.datetime "created_at",                       :null => false
-    t.datetime "updated_at",                       :null => false
-    t.text     "memo"
-    t.integer  "owner_rank_id"
-    t.boolean  "delete_flg",    :default => false
-    t.integer  "attack_code"
-  end
-
   create_table "build_types", :force => true do |t|
     t.string "code"
     t.string "name"

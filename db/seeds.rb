@@ -1830,7 +1830,7 @@ end
 #init_station
 
 # 営業所登録
-# init_shop
+init_shop
 
 # 物件種別登録
 #init_biru_type('/biruweb')
@@ -1865,17 +1865,17 @@ regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 #performance_init
 
 # 月次情報登録
-#monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
-#monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
+monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
+monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
 
 ###########################
 # 業績分析(空室)
 ###########################
-# regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
-#regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))
+regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
+regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))
 
 
 ###########################
 # 賃貸借契約登録
 ###########################
-#regist_lease_contract(Rails.root.join( "tmp", "imp_tikeiyaku_20140305.csv"))
+regist_lease_contract(Rails.root.join( "tmp", "imp_tikeiyaku_20140305.csv"))
