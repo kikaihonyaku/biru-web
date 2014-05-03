@@ -1,0 +1,27 @@
+<h1>Listing biru_users</h1>
+
+<table>
+  <tr>
+    <th>Code</th>
+    <th>Name</th>
+    <th>Password</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @biru_users.each do |biru_user| %>
+  <tr>
+    <td><%= biru_user.code %></td>
+    <td><%= biru_user.name %></td>
+    <td><%= biru_user.password %></td>
+    <td><%= link_to 'Show', biru_user %></td>
+    <td><%= link_to 'Edit', edit_biru_user_path(biru_user) %></td>
+    <td><%= link_to 'Destroy', biru_user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Biru user', new_biru_user_path %>

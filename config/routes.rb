@@ -1,4 +1,10 @@
 BiruWeb::Application.routes.draw do
+  resources :biru_users
+
+
+  resources :employes
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Code:</b>
+  <%= @biru_user.code %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @biru_user.name %>
+</p>
+
+<p>
+  <b>Password:</b>
+  <%= @biru_user.password %>
+</p>
+
+
+<%= link_to 'Edit', edit_biru_user_path(@biru_user) %> |
+<%= link_to 'Back', biru_users_path %>
