@@ -80,6 +80,7 @@ BiruWeb::Application.routes.draw do
   get "performances/build_age", :as => :performances_build_age
   get "performances/vacant_day", :as => :performances_vacant_day
   get "performances/tenancy_period", :as => :performances_tenancy_period
+  get "login/logout", :as => :logout
 
 #  get "managements/popup_owner/:id", :as => :popup_owner
 

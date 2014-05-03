@@ -16,7 +16,7 @@ class LoginController < ApplicationController
   
   def logout
     reset_session
-    ridirect_to '/'
+    redirect_to '/'
   end
 
 
