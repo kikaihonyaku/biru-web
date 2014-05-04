@@ -339,7 +339,7 @@ def init_biru_type(prefix)
   type_arr.push({:name=>'一戸建貸家', :code=>'01025', :icon=> prefix + '/assets/marker_red.png'})
   type_arr.push({:name=>'テラスハウス', :code=>'01030', :icon=> prefix + '/assets/marker_orange.png'})
   type_arr.push({:name=>'メゾネット', :code=>'01035', :icon=> prefix + '/assets/marker_green.png'})
-  type_arr.push({:name=>'店舗', :code=>'01040', :icon=> prefix + '/assets/marker_gray.png'})
+  type_arr.push({:NAME=>'店舗', :code=>'01040', :icon=> prefix + '/assets/marker_gray.png'})
   type_arr.push({:name=>'店舗付住宅', :code=>'01045', :icon=> prefix + '/assets/marker_gray.png'})
   type_arr.push({:name=>'事務所', :code=>'01050', :icon=> prefix + '/assets/marker_gray.png'})
   type_arr.push({:name=>'工場', :code=>'01055', :icon=> prefix + '/assets/marker_gray.png'})
@@ -858,7 +858,7 @@ def import_data_yourself_owner(filename)
       imp.building_cd = row[11]
       imp.building_nm = row[12]
       imp.building_address = row[15]
-      imp.building_type_code = row[19]
+      imp.building_type_cd = row[19]
 #      imp.room_cd = row[9]
 #      imp.room_nm = row[10]
 #      imp.kanri_start_date = row[11]
@@ -885,6 +885,7 @@ def import_data_yourself_owner(filename)
 
   # 他社の初期化(削除フラグをON)
   before_imp_init(2)
+  
 
   ####################
   # 貸主の登録
@@ -910,7 +911,7 @@ def import_data_yourself_owner(filename)
     ##############
     # 建物
     ##############
-    ImpTable.where(:owner_cd=>imp.owner_cd).group(:eigyo_cd, :eigyo_nm, :building_cd, :building_nm, :building_address, :building_type_code ).each do |imp_biru|
+    ImpTable.where(:owner_cd=>imp.owner_cd).group(:eigyo_cd, :eigyo_nm, :building_cd, :building_nm, :building_address, :building_type_cd ).each do |imp_biru|
     catch :next_building do
 
       # 建物の登録
@@ -919,7 +920,7 @@ def import_data_yourself_owner(filename)
       biru.name = imp_biru.building_nm
       biru.delete_flg = false
 
-      biru.build_type_id = convert_biru_type(imp_biru.building_type_code)
+      biru.build_type_id = convert_biru_type(imp_biru.building_type_cd)
       if biru.build_type_id
         biru.tmp_build_type_icon = biru.build_type.icon
       end
@@ -941,6 +942,7 @@ def import_data_yourself_owner(filename)
 
       # 管理委託契約を登録
       trust = Trust.unscoped.find_or_create_by_building_id_and_owner_id(biru.id, owner.id)
+      
       trust.delete_flg = false
       trust.code = 99999
       trust.manage_type = ManageType.find_by_code(99)
@@ -1830,7 +1832,7 @@ end
 #init_station
 
 # 営業所登録
-init_shop
+#init_shop
 
 # 物件種別登録
 #init_biru_type('/biruweb')
@@ -1851,10 +1853,10 @@ init_shop
 
 # データの登録(自社)
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
-regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
+#regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 
 # データの登録(他社)
-#import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
+import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
 
 
 ###########################
@@ -1883,4 +1885,4 @@ regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 ###########################
 # 賃貸借契約登録
 ###########################
-regist_lease_contract(Rails.root.join( "tmp", "imp_tikeiyaku_20140305.csv"))
+#regist_lease_contract(Rails.root.join( "tmp", "imp_tikeiyaku_20140305.csv"))

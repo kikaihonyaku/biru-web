@@ -18,8 +18,10 @@
 
     <% if @trust %>
     <li>委託CD&nbsp;&nbsp;<%= @trust.code + "  ( " + @trust.manage_type.name + " )"  %> </li>
-      <% if @trust.owner %>
+      <% if @trust.owner.code %>
         <li>貸主CD&nbsp;&nbsp;<%= @trust.owner.code + "  ( " + @trust.owner.name + " 様 )"  %> </li>
+	  <% else %>
+        <li>見込み貸主CD&nbsp;&nbsp;<%= @trust.owner.attack_code + "  ( " + @trust.owner.name + " 様 )"  %> </li>
       <% end %>
     <% end %>
 
