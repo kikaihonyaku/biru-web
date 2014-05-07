@@ -47,3 +47,6 @@ gem 'gon' # active_recordのデータをjavascript化する
 #gem 'roo' # excelなどのスプレッドシートを読めるようにする。
 gem 'spinjs-rails'
 gem 'lazy_high_charts'
+
+gem 'rspec-rails'
+gem "wice_grid" # Viewの表を整形する。2014/05/05

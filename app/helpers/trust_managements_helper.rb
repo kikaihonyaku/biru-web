@@ -1,0 +1,2 @@
+module TrustManagementsHelper
+end

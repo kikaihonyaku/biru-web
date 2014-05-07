@@ -19,6 +19,8 @@
 //= require highcharts/highcharts
 //= require highcharts/highcharts-more
 //= require highcharts/highstock
+//= require wice_grid
+//= require jquery.ui.datepicker
 //
 //= require_tree .
 

@@ -14,8 +14,6 @@ class ApplicationController < ActionController::Base
   # ログイン認証を行います。
   def check_logined
     
-    p 'session check!!!!!! ' + session[:biru_user].to_s
-    
     if session[:biru_user] then
       begin 
         @biru_user = BiruUser.find(session[:biru_user])

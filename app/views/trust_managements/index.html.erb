@@ -1,0 +1,14 @@
+
+<div style="margin-left:50px;margin-right:50px;">
+<h1>見込み客の情報</h1>
+<%= grid(@trust_arr) do |g|
+
+	g.column name: 'ID' do |obj| obj.id end
+	g.column name: '貸主CD' do |obj| link_to(obj.owner_id, root_path) end
+	g.column name: '貸主名' do |obj| obj.owner.name if obj.owner end
+	g.column name: '建物CD' do |obj| obj.building_id end
+	g.column name: '建物名' do |obj| obj.building.name if obj.building end
+	g.column name: '管理営業所' do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+end
+%>	
+</div>

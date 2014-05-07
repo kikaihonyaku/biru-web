@@ -1,8 +1,7 @@
 BiruWeb::Application.routes.draw do
   resources :biru_users
 
-
-  resources :employes
+  #resources :trust_managements
 
 
   # The priority is based upon order of creation:
@@ -81,13 +80,16 @@ BiruWeb::Application.routes.draw do
   get "performances/vacant_day", :as => :performances_vacant_day
   get "performances/tenancy_period", :as => :performances_tenancy_period
   get "login/logout", :as => :logout
+  
 
 #  get "managements/popup_owner/:id", :as => :popup_owner
-
   get "/recruitments/search_around", :as =>:search_around
 
   match "managements/bulk_search_file", :as => :bulk_search_file
   match "managements/bulk_search_text", :as => :bulk_search_text
+  
+  # trust_management
+  get "trust_managements/owner_show/:id" =>'trust_managements#owner_show' , :as => :owner_show
 
   # ↓これはActiveAdmin.routesよりは下にないと、メンテナンスでeditをする際に適応されて
   # 誤動作してしまう。

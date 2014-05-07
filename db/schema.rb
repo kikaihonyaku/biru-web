@@ -88,14 +88,6 @@ ActiveRecord::Schema.define(:version => 20140503041644) do
     t.datetime "updated_at",                    :null => false
   end
 
-  create_table "employes", :force => true do |t|
-    t.string   "code"
-    t.string   "name"
-    t.string   "password"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "imp_tables", :force => true do |t|
     t.string  "siten_cd"
     t.string  "eigyo_order"
