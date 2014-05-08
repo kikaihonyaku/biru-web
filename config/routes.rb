@@ -63,6 +63,8 @@ BiruWeb::Application.routes.draw do
 
 #  root :to => 'pages#index'
   root :to => "performances#index"
+  
+#  resources :owners
 
   get "repairs/index" ,:as => :repairs
 
@@ -89,7 +91,9 @@ BiruWeb::Application.routes.draw do
   match "managements/bulk_search_text", :as => :bulk_search_text
   
   # trust_management
-  get "trust_managements/owner_show/:id" =>'trust_managements#owner_show' , :as => :owner_show
+  get "trust_managements/owner_show/:id" => 'trust_managements#owner_show' , :as => :owner_show
+  #post "trust_managements/owner_update/id" => 'trust_managements#owner_update', :as => :owner_update
+  
 
   # ↓これはActiveAdmin.routesよりは下にないと、メンテナンスでeditをする際に適応されて
   # 誤動作してしまう。

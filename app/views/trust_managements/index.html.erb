@@ -4,7 +4,7 @@
 <%= grid(@trust_arr) do |g|
 
 	g.column name: 'ID' do |obj| obj.id end
-	g.column name: '貸主CD' do |obj| link_to(obj.owner_id, root_path) end
+	g.column name: '貸主CD' do |obj| link_to(obj.owner.attack_code, owner_show_path(obj.owner_id)) end
 	g.column name: '貸主名' do |obj| obj.owner.name if obj.owner end
 	g.column name: '建物CD' do |obj| obj.building_id end
 	g.column name: '建物名' do |obj| obj.building.name if obj.building end

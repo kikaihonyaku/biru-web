@@ -1,1 +1,18 @@
 <h1>test</h1>
+<%= simple_form_for @owner, :url =>{:controller => :trust_managements, :action => :owner_update, :id=>@owner.id }, :html => {:class => 'form-horizontal'} do |f| %>
+  <%= f.input :attack_code, label: '貸主CD', :input_html => {:class => 'input-medium'} %>
+  <%= f.input :name, label: '貸主名', hint: 'No special charactors' %>
+  <div class="form-actions">
+	  <%= f.button :submit, :class => 'btn-primary' %>
+  </div>
+    
+<% end %>
+
+<%= grid(@trust_arr) do |g|
+
+	g.column name: 'ID' do |obj| obj.id end
+	g.column name: '建物CD' do |obj| obj.building_id end
+	g.column name: '建物名' do |obj| obj.building.name if obj.building end
+	g.column name: '管理営業所' do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+end
+%>	

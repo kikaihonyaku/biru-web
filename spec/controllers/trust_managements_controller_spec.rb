@@ -92,6 +92,27 @@ describe TrustManagementsController do
     it 'パラメータが引きわたっていること' do
       assigns[:id].should eq("1")
     end
-  end
     
+  end
+  
+  describe '#update' do
+    render_views
+    
+    before(:each) do
+      post :owner_update, :id => 1
+    end
+    
+    it 'upateができること' do
+      # post :owner_update, :id => 1
+    end
+    
+    it 'またOwnerShowのテンプレートが表示されること' do
+      #response.should render_template('owner_show')
+      #response.should be_success
+      response.should redirect_to(:action => :owner_show)
+    end 
+  end
+  
+  
+  
 end
