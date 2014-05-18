@@ -3,8 +3,19 @@ class TrustManagementsController < ApplicationController
   
   def index
     # Owner Building Trust を連結した他社データを取得する
-    @trust_arr = initialize_grid(Trust.joins(:building => :shop ).joins(:owner))
-    #@trust_arr = initialize_grid(Trust, :joins => [:buidings, :owners] )
+    @trust_arr = initialize_grid(
+      Trust.joins(:building => :shop ).joins(:owner),
+      :order => 'shops.code',
+      :order_direction => 'desc',
+      :per_page => 40,
+      :name => 'g1',
+      :enable_export_to_csv => true,
+      :csv_file_name  => 'owner_buildings'      
+    )
+    
+    export_grid_if_requested('g1' => 'owner_building_list', 'g2' => 'projects_grid') do
+      # usual render or redirect code executed if the request is not a CSV export request
+    end    
     
   end
   
@@ -51,11 +62,9 @@ class TrustManagementsController < ApplicationController
     
     respond_to do |format|
       if @owner_approach.save
-        p '成功！！！！！！！！！！！！！！！！！！！！！！！'
         format.html { redirect_to :controller=>'trust_managements', :action => 'owner_show', :id => params[:owner_approach][:owner_id].to_i, notice: 'Book was successfully created.' }
         format.json { render json: @owner_approach, status: :created, location: @owner_approach }
       else
-        p '失敗！！！！！！！！！！！！！！！！！！！！！！！'
         get_owner_show(params[:owner_approach][:owner_id].to_i)
         format.html { render action: "owner_show" }
         format.json { render json: @owner_approach.errors, status: :unprocessable_entity }

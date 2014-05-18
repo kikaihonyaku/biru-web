@@ -1,0 +1,31 @@
+<%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
+	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+	g.column name: '貸主CD' , attribute: 'attack_code', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
+	g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj| obj.owner.name if obj.owner end
+	g.column name: '貸主住所' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
+	g.column name: '建物CD' , attribute: 'attack_code', model: 'Building' , :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.building.attack_code if obj.building end
+	g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj| obj.building.name if obj.building end
+	g.column name: '建物住所' , attribute: 'address', model: 'Building', :html =>{ :style => 'width:300px;'}   do |obj| obj.building.address if obj.building end
+
+    g.column  :html =>{ :style => 'width:80px;text-align:center;'} do |obj| 
+		link_owner = 
+		if obj.owner
+			link_to('貸主',owner_show_path(obj.owner_id)) 
+		else
+			''
+		end
+	
+		link_build = 
+		if obj.building
+			link_to('建物',building_show_path(obj.building)) 
+		else
+			''
+		end
+	
+		link_owner + '／' + link_build
+	
+	end
+
+
+end
+%>	
