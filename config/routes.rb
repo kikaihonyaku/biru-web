@@ -75,6 +75,7 @@ BiruWeb::Application.routes.draw do
   get "recruitments/index", :as => :recruitments
 
   get "managements/index", :as => :managements
+  get "trust_managements/index", :as => :trust_managements
 
   get "performances/index", :as => :performances
   get "performances/monthly", :as => :performances_monthly
@@ -92,6 +93,7 @@ BiruWeb::Application.routes.draw do
   
   # trust_management
   get "trust_managements/owner_show/:id" => 'trust_managements#owner_show' , :as => :owner_show
+  get "trust_managements/building_show/:id" => 'trust_managements#building_show', :as => :building_show
   #post "trust_managements/owner_update/id" => 'trust_managements#owner_update', :as => :owner_update
   
 

@@ -46,6 +46,14 @@ describe TrustManagementsController do
     @trust02.building_id = @b01.id
     @trust02.save!
     
+    
+    # 物件履歴を作成する
+    @owner_building_log = OwnerBuildingLog.new
+    @owner_building_log.owner_id = @owner.id
+    @owner_building_log.building_id = @b01.id
+    #@owner_biulding_log.trust_id = @trust01.id
+    @owner_building_log.save!
+        
       
     # login状態にする
     biru_user = BiruUser.new
@@ -89,13 +97,13 @@ describe TrustManagementsController do
       response.should be_success
     end
     
-    it 'パラメータが引きわたっていること' do
-      assigns[:id].should eq("1")
+    it '貸主履歴が１件存在していること' do
+      assigns[:owner_building_log].should eq(1)
     end
-    
+        
   end
   
-  describe '#update' do
+  describe '#owner_show update' do
     render_views
     
     before(:each) do
@@ -113,6 +121,34 @@ describe TrustManagementsController do
     end 
   end
   
+  describe '#buiding_show' do
+    
+    before(:each) do
+      get :building_show, :id => 1
+    end
+    
+    it '応答がサクセスであること' do
+      response.should be_success
+    end
+    
+    it '@buildingが取得できていること' do
+      assigns[:building].id.should == 1
+    end
+    
+  end
   
+  describe '#building_update' do
+    before(:each) do
+      post :building_update, :id => 1
+    end
+    
+    it 'updateがされること' do
+      #
+    end
+    
+    it 'またBuildingShowのテンプレートが表示されること' do
+      response.should redirect_to(:action => :building_show )
+    end
+  end
   
 end

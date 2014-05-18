@@ -461,6 +461,22 @@ def init_room_layout
 end
 
 
+# アプローチ種別を登録
+def init_approach_kind
+  arr = []
+  arr.push('訪問')
+  arr.push('電話')
+  arr.push('ＤＭ')
+  arr.push('その他')
+  
+  arr.each do |obj|
+    app =  ApproachKind.find_or_create_by_name(obj)
+    app.name = obj
+    app.save!
+    p app
+  end
+end
+
 # 物件種別
 def convert_biru_type(num)
   build_type = BuildType.find_by_code(num)
@@ -1846,6 +1862,8 @@ end
 # 部屋間取登録
 #init_room_layout
 
+# アプローチ種別登録
+init_approach_kind
 
 ########################
 # 地図管理物件登録
@@ -1856,7 +1874,7 @@ end
 #regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 
 # データの登録(他社)
-import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
+# import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
 
 
 ###########################

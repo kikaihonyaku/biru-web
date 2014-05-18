@@ -1,17 +1,15 @@
+#-*- encoding:utf-8 -*-
 class TrustManagementsController < ApplicationController
   
   def index
     # Owner Building Trust を連結した他社データを取得する
     @trust_arr = initialize_grid(Trust.joins(:building => :shop ).joins(:owner))
     #@trust_arr = initialize_grid(Trust, :joins => [:buidings, :owners] )
+    
   end
   
   def owner_show
-    
-    @id = params[:id]
-    
-    @owner = Owner.find(params[:id].to_i)
-    @trust_arr = initialize_grid(Trust.where("owner_id = ?", @owner.id))
+    get_owner_show(params[:id].to_i)
   end
   
   def owner_update
@@ -31,11 +29,47 @@ class TrustManagementsController < ApplicationController
        #format.json { render json: @book.errors, status: :unprocessable_entity }
      end
    
-   
+  end
+  
+  def building_show
+    @building = Building.find(params[:id].to_i)
+  end
+  
+  def building_update
+    @building = Building.find(params[:id].to_i)
+    if @building.update_attributes(params[:building])
+      redirect_to :controller=>'trust_managements', :action => 'building_show'
+    else
+      redirect_to :controller=>'trust_managements', :action => 'building_show'
+    end
+    
+  end
+  
+  # アプローチ履歴を登録する
+  def owner_approach_regist 
+    @owner_approach = OwnerApproach.new(params[:owner_approach])
+    
+    respond_to do |format|
+      if @owner_approach.save
+        p '成功！！！！！！！！！！！！！！！！！！！！！！！'
+        format.html { redirect_to :controller=>'trust_managements', :action => 'owner_show', :id => params[:owner_approach][:owner_id].to_i, notice: 'Book was successfully created.' }
+        format.json { render json: @owner_approach, status: :created, location: @owner_approach }
+      else
+        p '失敗！！！！！！！！！！！！！！！！！！！！！！！'
+        get_owner_show(params[:owner_approach][:owner_id].to_i)
+        format.html { render action: "owner_show" }
+        format.json { render json: @owner_approach.errors, status: :unprocessable_entity }
+      end
+    end    
     
   end
   
   
-  
+private
+def get_owner_show(owner_id)
+  @owner = Owner.find(owner_id)
+  @trust_arr = initialize_grid(Trust.where("owner_id = ?", @owner.id))
+  @owner_approaches = initialize_grid(OwnerApproach.joins(:owner).includes(:biru_user, :approach_kind).where(:owner_id => @owner) )
+end  
   
 end

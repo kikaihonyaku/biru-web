@@ -1,14 +1,13 @@
 
-<div style="margin-left:50px;margin-right:50px;">
+<div style="margin-left:100px;margin-right:100px;">
 <h1>見込み客の情報</h1>
-<%= grid(@trust_arr) do |g|
+<%= grid(@trust_arr, show_filters: :when_filtered) do |g|
 
-	g.column name: 'ID' do |obj| obj.id end
-	g.column name: '貸主CD' do |obj| link_to(obj.owner.attack_code, owner_show_path(obj.owner_id)) end
-	g.column name: '貸主名' do |obj| obj.owner.name if obj.owner end
-	g.column name: '建物CD' do |obj| obj.building_id end
-	g.column name: '建物名' do |obj| obj.building.name if obj.building end
-	g.column name: '管理営業所' do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+	g.column name: '管理営業所' , attribute: 'name', model: 'Shop'  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+	g.column name: '貸主CD' , attribute: 'attack_code', model: 'Owner'  do |obj| link_to(obj.owner.attack_code, owner_show_path(obj.owner_id)) end
+	g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj| obj.owner.name if obj.owner end
+	g.column name: '建物CD' , attribute: 'attack_code', model: 'Building'  do |obj| obj.building.attack_code end
+	g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj| obj.building.name if obj.building end
 end
 %>	
 </div>

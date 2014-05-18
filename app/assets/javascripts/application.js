@@ -11,16 +11,17 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require jquery-1.8.min
-//= require jquery.sidr.min
 //= require jquery_ujs
+//= require jquery.sidr.min
 //= require jquery.ui.ympicker
+//= require jquery.ui.datepicker
 //= require twitter/bootstrap
+//= require bootstrap
+//= require wice_grid
 //
 //= require highcharts/highcharts
 //= require highcharts/highcharts-more
 //= require highcharts/highstock
-//= require wice_grid
-//= require jquery.ui.datepicker
 //
 //= require_tree .
 

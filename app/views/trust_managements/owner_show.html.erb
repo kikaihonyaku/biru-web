@@ -1,18 +1,46 @@
-<h1>test</h1>
-<%= simple_form_for @owner, :url =>{:controller => :trust_managements, :action => :owner_update, :id=>@owner.id }, :html => {:class => 'form-horizontal'} do |f| %>
-  <%= f.input :attack_code, label: '貸主CD', :input_html => {:class => 'input-medium'} %>
-  <%= f.input :name, label: '貸主名', hint: 'No special charactors' %>
-  <div class="form-actions">
-	  <%= f.button :submit, :class => 'btn-primary' %>
-  </div>
+<div style="margin-left:100px;margin-right:100px;">
+
+	<h1><%= @owner.name + '／' + @owner.attack_code %></h1>
+	
+	<%= simple_form_for @owner, :url =>{:controller => :trust_managements, :action => :owner_update, :id => @owner.id }, :html => {:class => 'form-horizontal'} do |f| %>
+	　<table>
+		<tr>
+			<td><%= f.input :address, label: '住所', :disabled => true, :input_html => {:class => 'input-large'}  %></td>
+		</tr>
+	  </table>
+      <%= f.input :memo, label: '備考', :input_html => {:style =>"width:500px;height:100px;"} %>
+	  <div class="text-center">
+		  <%= f.button :submit, :class => 'btn-primary' %>
+	  </div>
     
-<% end %>
+	<% end %>
+	<%= grid(@trust_arr) do |g|
 
-<%= grid(@trust_arr) do |g|
-
-	g.column name: 'ID' do |obj| obj.id end
-	g.column name: '建物CD' do |obj| obj.building_id end
-	g.column name: '建物名' do |obj| obj.building.name if obj.building end
-	g.column name: '管理営業所' do |obj| obj.building.shop.name if obj.building && obj.building.shop end
-end
-%>	
+		g.column name: 'ID' do |obj| obj.id end
+		g.column name: '建物CD' do |obj| link_to(obj.building_id, building_show_path(obj.building_id)) end
+		g.column name: '建物名' do |obj| obj.building.name if obj.building end
+		g.column name: '管理営業所' do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+	end
+	%>
+	
+	<%= simple_form_for :owner_approach, :url=>{:controller => :trust_managements, :action => :owner_approach_regist}  do |f| %>
+	
+		<%= f.input :owner_id, :as => :hidden, :input_html => {:value => @owner.id } %>
+		<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
+		
+		<%#= f.input :approach_date, label: '日付', as: :datepicker %>
+		<%= f.input :approach_date, label: false, placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date'} %>
+		<%= f.input :approach_kind_id, label: false, collection: ApproachKind.find(:all), prompt: "種別" %>
+		<%= f.input :content, label: false, placeholder: '内容', :input_html => {:class => 'input-large' } %>
+        <%= f.button :submit, :class => 'btn-primary' %>
+	<% end %>
+	
+	<%= grid(@owner_approaches) do |g|
+ 		g.column name: 'アプローチ日' do |obj| obj.approach_date if obj.approach_date end
+		g.column name: '種別' do |obj| obj.approach_kind.name if obj.approach_kind end
+		g.column name: '内容' do |obj| obj.content if obj.content end
+		g.column name: '登録者' do |obj| obj.biru_user.name if obj.biru_user end
+		g.column name: '登録日' do |obj| obj.created_at if obj.created_at end
+	end
+	%>
+</div>

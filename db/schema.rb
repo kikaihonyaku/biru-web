@@ -11,7 +11,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140503041644) do
+ActiveRecord::Schema.define(:version => 20140517093548) do
+
+  create_table "approach_kinds", :force => true do |t|
+    t.string "name"
+  end
 
   create_table "biru_users", :force => true do |t|
     t.string   "code"
@@ -86,6 +90,14 @@ ActiveRecord::Schema.define(:version => 20140503041644) do
     t.boolean  "delete_flg", :default => false
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false
+  end
+
+  create_table "employes", :force => true do |t|
+    t.string   "code"
+    t.string   "name"
+    t.string   "password"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "imp_tables", :force => true do |t|
@@ -172,6 +184,28 @@ ActiveRecord::Schema.define(:version => 20140503041644) do
   add_index "monthly_statements", ["dept_id"], :name => "index_monthly_dept"
   add_index "monthly_statements", ["item_id"], :name => "index_monthly_item"
   add_index "monthly_statements", ["yyyymm"], :name => "index_monthly_yyyymm"
+
+  create_table "owner_approaches", :force => true do |t|
+    t.integer  "owner_id"
+    t.date     "approach_date"
+    t.integer  "approach_kind_id"
+    t.string   "content"
+    t.integer  "biru_user_id"
+    t.boolean  "delete_flg"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+  end
+
+  create_table "owner_building_logs", :force => true do |t|
+    t.integer  "owner_id"
+    t.integer  "building_id"
+    t.integer  "trust_id"
+    t.text     "message"
+    t.integer  "biru_user_id"
+    t.boolean  "delete_flg",   :default => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
+  end
 
   create_table "owners", :force => true do |t|
     t.string   "code"
