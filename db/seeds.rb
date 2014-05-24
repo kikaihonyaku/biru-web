@@ -268,6 +268,7 @@ def init_shop
   show_arr.push({:code=>21, :name=>'せんげん台営業所', :address=>'埼玉県越谷市千間台東1-8-1', :area_id=>3, :group_id=>1, :tel=>'0120-929-979', :tel2=>'048-973-3530', :holiday=>'火・水曜'})
 
   # さいたま支店
+  show_arr.push({:code=>22, :name=>'戸田公園営業所', :address=>'戸田市本町4-16-17 熊木ビル3F', :area_id=>11, :group_id=>2, :tel=>'xxxxx', :tel2=>'048-234-0057', :holiday=>'不明'})
   show_arr.push({:code=>2, :name=>'戸田営業所', :address=>'埼玉県戸田市大字新曽353-6', :area_id=>11, :group_id=>2, :tel=>'0120-654-021', :tel2=>'048-441-4021', :holiday=>'火曜'})
   show_arr.push({:code=>5, :name=>'武蔵浦和営業所', :address=>'埼玉県さいたま市南区別所7-9-5', :area_id=>12, :group_id=>2, :tel=>'0120-634-315', :tel2=>'048-838-8822', :holiday=>'水曜'})
   show_arr.push({:code=>15, :name=>'川口営業所', :address=>'埼玉県川口市川口1-1-1 キュポ・ラ専門店1F', :area_id=>13, :group_id=>2, :tel=>'0120-163-366', :tel2=>'048-227-3366', :holiday=>'水曜'})
@@ -874,7 +875,7 @@ def import_data_yourself_owner(filename)
       imp.building_cd = row[11]
       imp.building_nm = row[12]
       imp.building_address = row[15]
-      imp.building_type_cd = row[19]
+      imp.building_type_code = row[19]
 #      imp.room_cd = row[9]
 #      imp.room_nm = row[10]
 #      imp.kanri_start_date = row[11]
@@ -927,7 +928,7 @@ def import_data_yourself_owner(filename)
     ##############
     # 建物
     ##############
-    ImpTable.where(:owner_cd=>imp.owner_cd).group(:eigyo_cd, :eigyo_nm, :building_cd, :building_nm, :building_address, :building_type_cd ).each do |imp_biru|
+    ImpTable.where(:owner_cd=>imp.owner_cd).group(:eigyo_cd, :eigyo_nm, :building_cd, :building_nm, :building_address, :building_type_code ).each do |imp_biru|
     catch :next_building do
 
       # 建物の登録
@@ -936,7 +937,7 @@ def import_data_yourself_owner(filename)
       biru.name = imp_biru.building_nm
       biru.delete_flg = false
 
-      biru.build_type_id = convert_biru_type(imp_biru.building_type_cd)
+      biru.build_type_id = convert_biru_type(imp_biru.building_type_code)
       if biru.build_type_id
         biru.tmp_build_type_icon = biru.build_type.icon
       end
@@ -1315,6 +1316,8 @@ def performance_init
   # 部署マスタ登録
   ################
   dept_arr = []
+	dept_arr.push(:busyo_id=>'304', :code=>'W0053', :name=>'常盤エリア固有')
+	dept_arr.push(:busyo_id=>'302', :code=>'50122', :name=>'戸田公園営業所')
 	dept_arr.push(:busyo_id=>'295', :code=>'90012', :name=>'千葉資産活用課')
 	dept_arr.push(:busyo_id=>'294', :code=>'90011', :name=>'さいたま資産活用課')
 	dept_arr.push(:busyo_id=>'293', :code=>'90010', :name=>'東武資産活用課')
@@ -1409,30 +1412,24 @@ def performance_init
   # グループ部署マスタ登録
   ######################
   dept_group_arr = []
-
-  dept_group_arr.push(:busyo_id=>'234', :code=>'50030', :name=>'経理課')
-  dept_group_arr.push(:busyo_id=>'235', :code=>'50085', :name=>'家賃更新課')
-  dept_group_arr.push(:busyo_id=>'236', :code=>'50130', :name=>'東武南エリア')
-  dept_group_arr.push(:busyo_id=>'237', :code=>'50135', :name=>'東武中央エリア')
-  dept_group_arr.push(:busyo_id=>'238', :code=>'50140', :name=>'東武北エリア')
-  dept_group_arr.push(:busyo_id=>'239', :code=>'50230', :name=>'さいたま中央エリア')
-  dept_group_arr.push(:busyo_id=>'240', :code=>'50240', :name=>'さいたま東エリア')
-  dept_group_arr.push(:busyo_id=>'241', :code=>'50320', :name=>'常磐中央エリア')
-  dept_group_arr.push(:busyo_id=>'242', :code=>'50330', :name=>'常磐西エリア')
-  dept_group_arr.push(:busyo_id=>'243', :code=>'50250', :name=>'アセットマネジメント部')
-  dept_group_arr.push(:busyo_id=>'244', :code=>'50210', :name=>'業務管理部')
-  dept_group_arr.push(:busyo_id=>'245', :code=>'50100', :name=>'東武支店')
-  dept_group_arr.push(:busyo_id=>'246', :code=>'50200', :name=>'さいたま支店')
-  dept_group_arr.push(:busyo_id=>'247', :code=>'50300', :name=>'千葉支店')
-  dept_group_arr.push(:busyo_id=>'248', :code=>'50260', :name=>'工事部')
-  dept_group_arr.push(:busyo_id=>'249', :code=>'50000', :name=>'株式会社中央ビル管理')
-  dept_group_arr.push(:busyo_id=>'250', :code=>'50235', :name=>'さいたま西エリア')
-  dept_group_arr.push(:busyo_id=>'252', :code=>'T0001', :name=>'中央ビル管理単体')
-  dept_group_arr.push(:busyo_id=>'253', :code=>'W0900', :name=>'営業店合計')
-  dept_group_arr.push(:busyo_id=>'254', :code=>'50020', :name=>'建物管理係')
-  dept_group_arr.push(:busyo_id=>'269', :code=>'T0002', :name=>'ビル管理_ポラスアルファ合算')
-  dept_group_arr.push(:busyo_id=>'277', :code=>'50242', :name=>'さいたま北エリア')
-  dept_group_arr.push(:busyo_id=>'279', :code=>'50241', :name=>'さいたま南エリア')
+	dept_arr.push(:busyo_id=>'301', :code=>'80030', :name=>'常磐エリア')
+	dept_arr.push(:busyo_id=>'300', :code=>'80021', :name=>'さいたま東エリア')
+	dept_arr.push(:busyo_id=>'299', :code=>'80020', :name=>'さいたま中央エリア')
+	dept_arr.push(:busyo_id=>'297', :code=>'80011', :name=>'東武北エリア')
+	dept_arr.push(:busyo_id=>'296', :code=>'80010', :name=>'東武南エリア')
+	dept_arr.push(:busyo_id=>'269', :code=>'T0002', :name=>'ビル管理_ポラスアルファ合算')
+	dept_arr.push(:busyo_id=>'254', :code=>'50020', :name=>'建物管理係')
+	dept_arr.push(:busyo_id=>'253', :code=>'W0900', :name=>'営業店合計')
+	dept_arr.push(:busyo_id=>'252', :code=>'T0001', :name=>'中央ビル管理単体')
+	dept_arr.push(:busyo_id=>'249', :code=>'50000', :name=>'株式会社中央ビル管理')
+	dept_arr.push(:busyo_id=>'248', :code=>'50260', :name=>'ライフサービス課')
+	dept_arr.push(:busyo_id=>'247', :code=>'50300', :name=>'千葉支店')
+	dept_arr.push(:busyo_id=>'246', :code=>'50200', :name=>'さいたま支店')
+	dept_arr.push(:busyo_id=>'245', :code=>'50100', :name=>'東武支店')
+	dept_arr.push(:busyo_id=>'244', :code=>'50210', :name=>'業務管理部')
+	dept_arr.push(:busyo_id=>'243', :code=>'50250', :name=>'アセットマネジメント部')
+	dept_arr.push(:busyo_id=>'235', :code=>'50085', :name=>'家賃更新課')
+	dept_arr.push(:busyo_id=>'234', :code=>'50030', :name=>'経理課')
 
   dept_group_arr.each do |obj|
     dept_group = DeptGroup.find_or_create_by_busyo_id(obj[:busyo_id])
@@ -1448,6 +1445,144 @@ def performance_init
   ##########################
 
   dept_group_detail_arr = []
+  dept_group_detail_arr.push(:group_busyo_id=>'149', :busyo_id=>'145')
+  dept_group_detail_arr.push(:group_busyo_id=>'149', :busyo_id=>'146')
+  dept_group_detail_arr.push(:group_busyo_id=>'150', :busyo_id=>'147')
+  dept_group_detail_arr.push(:group_busyo_id=>'150', :busyo_id=>'148')
+  dept_group_detail_arr.push(:group_busyo_id=>'188', :busyo_id=>'152')
+  dept_group_detail_arr.push(:group_busyo_id=>'188', :busyo_id=>'153')
+  dept_group_detail_arr.push(:group_busyo_id=>'188', :busyo_id=>'154')
+  dept_group_detail_arr.push(:group_busyo_id=>'189', :busyo_id=>'155')
+  dept_group_detail_arr.push(:group_busyo_id=>'189', :busyo_id=>'156')
+  dept_group_detail_arr.push(:group_busyo_id=>'190', :busyo_id=>'227')
+  dept_group_detail_arr.push(:group_busyo_id=>'190', :busyo_id=>'228')
+  dept_group_detail_arr.push(:group_busyo_id=>'190', :busyo_id=>'229')
+  dept_group_detail_arr.push(:group_busyo_id=>'192', :busyo_id=>'163')
+  dept_group_detail_arr.push(:group_busyo_id=>'192', :busyo_id=>'164')
+  dept_group_detail_arr.push(:group_busyo_id=>'192', :busyo_id=>'165')
+  dept_group_detail_arr.push(:group_busyo_id=>'193', :busyo_id=>'166')
+  dept_group_detail_arr.push(:group_busyo_id=>'193', :busyo_id=>'167')
+  dept_group_detail_arr.push(:group_busyo_id=>'193', :busyo_id=>'168')
+  dept_group_detail_arr.push(:group_busyo_id=>'194', :busyo_id=>'171')
+  dept_group_detail_arr.push(:group_busyo_id=>'194', :busyo_id=>'172')
+  dept_group_detail_arr.push(:group_busyo_id=>'195', :busyo_id=>'173')
+  dept_group_detail_arr.push(:group_busyo_id=>'195', :busyo_id=>'174')
+  dept_group_detail_arr.push(:group_busyo_id=>'197', :busyo_id=>'181')
+  dept_group_detail_arr.push(:group_busyo_id=>'197', :busyo_id=>'182')
+  dept_group_detail_arr.push(:group_busyo_id=>'197', :busyo_id=>'224')
+  dept_group_detail_arr.push(:group_busyo_id=>'200', :busyo_id=>'211')
+  dept_group_detail_arr.push(:group_busyo_id=>'200', :busyo_id=>'218')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'152')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'153')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'154')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'155')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'156')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'159')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'160')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'227')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'228')
+  dept_group_detail_arr.push(:group_busyo_id=>'201', :busyo_id=>'229')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'161')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'162')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'163')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'164')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'165')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'166')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'167')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'168')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'169')
+  dept_group_detail_arr.push(:group_busyo_id=>'202', :busyo_id=>'170')
+  dept_group_detail_arr.push(:group_busyo_id=>'203', :busyo_id=>'171')
+  dept_group_detail_arr.push(:group_busyo_id=>'203', :busyo_id=>'172')
+  dept_group_detail_arr.push(:group_busyo_id=>'203', :busyo_id=>'173')
+  dept_group_detail_arr.push(:group_busyo_id=>'203', :busyo_id=>'174')
+  dept_group_detail_arr.push(:group_busyo_id=>'203', :busyo_id=>'175')
+  dept_group_detail_arr.push(:group_busyo_id=>'203', :busyo_id=>'176')
+  dept_group_detail_arr.push(:group_busyo_id=>'204', :busyo_id=>'186')
+  dept_group_detail_arr.push(:group_busyo_id=>'204', :busyo_id=>'207')
+  dept_group_detail_arr.push(:group_busyo_id=>'204', :busyo_id=>'208')
+  dept_group_detail_arr.push(:group_busyo_id=>'204', :busyo_id=>'223')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'141')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'142')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'143')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'144')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'145')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'146')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'147')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'148')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'151')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'152')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'153')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'154')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'155')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'156')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'159')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'160')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'161')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'162')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'163')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'164')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'165')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'166')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'167')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'168')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'169')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'170')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'171')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'172')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'173')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'174')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'175')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'176')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'177')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'178')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'179')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'180')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'181')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'182')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'183')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'184')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'185')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'186')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'187')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'209')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'227')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'228')
+  dept_group_detail_arr.push(:group_busyo_id=>'205', :busyo_id=>'229')
+  dept_group_detail_arr.push(:group_busyo_id=>'206', :busyo_id=>'161')
+  dept_group_detail_arr.push(:group_busyo_id=>'206', :busyo_id=>'162')
+  dept_group_detail_arr.push(:group_busyo_id=>'219', :busyo_id=>'209')
+  dept_group_detail_arr.push(:group_busyo_id=>'220', :busyo_id=>'211')
+  dept_group_detail_arr.push(:group_busyo_id=>'220', :busyo_id=>'225')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'152')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'153')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'154')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'155')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'156')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'159')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'160')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'161')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'162')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'163')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'164')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'165')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'166')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'167')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'168')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'169')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'170')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'171')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'172')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'173')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'174')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'175')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'176')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'227')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'228')
+  dept_group_detail_arr.push(:group_busyo_id=>'221', :busyo_id=>'229')
+  dept_group_detail_arr.push(:group_busyo_id=>'222', :busyo_id=>'159')
+  dept_group_detail_arr.push(:group_busyo_id=>'222', :busyo_id=>'169')
+  dept_group_detail_arr.push(:group_busyo_id=>'222', :busyo_id=>'175')
   dept_group_detail_arr.push(:group_busyo_id=>'234', :busyo_id=>'145')
   dept_group_detail_arr.push(:group_busyo_id=>'234', :busyo_id=>'146')
   dept_group_detail_arr.push(:group_busyo_id=>'235', :busyo_id=>'147')
@@ -1516,6 +1651,7 @@ def performance_init
   dept_group_detail_arr.push(:group_busyo_id=>'246', :busyo_id=>'289')
   dept_group_detail_arr.push(:group_busyo_id=>'246', :busyo_id=>'290')
   dept_group_detail_arr.push(:group_busyo_id=>'246', :busyo_id=>'294')
+  dept_group_detail_arr.push(:group_busyo_id=>'246', :busyo_id=>'302')
   dept_group_detail_arr.push(:group_busyo_id=>'247', :busyo_id=>'171')
   dept_group_detail_arr.push(:group_busyo_id=>'247', :busyo_id=>'172')
   dept_group_detail_arr.push(:group_busyo_id=>'247', :busyo_id=>'173')
@@ -1627,6 +1763,33 @@ def performance_init
   dept_group_detail_arr.push(:group_busyo_id=>'279', :busyo_id=>'162')
   dept_group_detail_arr.push(:group_busyo_id=>'279', :busyo_id=>'163')
   dept_group_detail_arr.push(:group_busyo_id=>'279', :busyo_id=>'262')
+  dept_group_detail_arr.push(:group_busyo_id=>'296', :busyo_id=>'152')
+  dept_group_detail_arr.push(:group_busyo_id=>'296', :busyo_id=>'153')
+  dept_group_detail_arr.push(:group_busyo_id=>'296', :busyo_id=>'154')
+  dept_group_detail_arr.push(:group_busyo_id=>'296', :busyo_id=>'155')
+  dept_group_detail_arr.push(:group_busyo_id=>'296', :busyo_id=>'259')
+  dept_group_detail_arr.push(:group_busyo_id=>'297', :busyo_id=>'156')
+  dept_group_detail_arr.push(:group_busyo_id=>'297', :busyo_id=>'227')
+  dept_group_detail_arr.push(:group_busyo_id=>'297', :busyo_id=>'228')
+  dept_group_detail_arr.push(:group_busyo_id=>'297', :busyo_id=>'229')
+  dept_group_detail_arr.push(:group_busyo_id=>'297', :busyo_id=>'261')
+  dept_group_detail_arr.push(:group_busyo_id=>'299', :busyo_id=>'161')
+  dept_group_detail_arr.push(:group_busyo_id=>'299', :busyo_id=>'162')
+  dept_group_detail_arr.push(:group_busyo_id=>'299', :busyo_id=>'164')
+  dept_group_detail_arr.push(:group_busyo_id=>'299', :busyo_id=>'165')
+  dept_group_detail_arr.push(:group_busyo_id=>'299', :busyo_id=>'263')
+  dept_group_detail_arr.push(:group_busyo_id=>'299', :busyo_id=>'302')
+  dept_group_detail_arr.push(:group_busyo_id=>'300', :busyo_id=>'163')
+  dept_group_detail_arr.push(:group_busyo_id=>'300', :busyo_id=>'166')
+  dept_group_detail_arr.push(:group_busyo_id=>'300', :busyo_id=>'167')
+  dept_group_detail_arr.push(:group_busyo_id=>'300', :busyo_id=>'168')
+  dept_group_detail_arr.push(:group_busyo_id=>'300', :busyo_id=>'264')
+  dept_group_detail_arr.push(:group_busyo_id=>'301', :busyo_id=>'171')
+  dept_group_detail_arr.push(:group_busyo_id=>'301', :busyo_id=>'172')
+  dept_group_detail_arr.push(:group_busyo_id=>'301', :busyo_id=>'173')
+  dept_group_detail_arr.push(:group_busyo_id=>'301', :busyo_id=>'174')
+  dept_group_detail_arr.push(:group_busyo_id=>'301', :busyo_id=>'304')
+
 
   DeptGroupDetail.delete_all
   dept_group_detail_arr.each do |obj|
@@ -1848,7 +2011,7 @@ end
 #init_station
 
 # 営業所登録
-#init_shop
+# init_shop
 
 # 物件種別登録
 #init_biru_type('/biruweb')
@@ -1863,7 +2026,7 @@ end
 #init_room_layout
 
 # アプローチ種別登録
-init_approach_kind
+#init_approach_kind
 
 ########################
 # 地図管理物件登録
@@ -1874,7 +2037,7 @@ init_approach_kind
 #regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 
 # データの登録(他社)
-# import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
+#import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
 
 
 ###########################
@@ -1882,14 +2045,19 @@ init_approach_kind
 ###########################
 
 # 初期化処理
-#performance_init
+performance_init
 
 # 月次情報登録
 #monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
-#monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_getuji_201403.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_201402_201403.csv"))
-#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201404.csv"))
+monthly_regist(Rails.root.join( "tmp", "monthley_201404_201405.csv"))
+
+
+# 来店客数／契約件数
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
+monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201405.csv"))
+
 
 ###########################
 # 業績分析(空室)
@@ -1898,7 +2066,7 @@ init_approach_kind
 #regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))
 #regist_vacant_room("201403", Rails.root.join( "tmp", "vacant_201403.csv"))
 #regist_vacant_room("201404", Rails.root.join( "tmp", "vacant_201404.csv"))
-
+#regist_vacant_room("201405", Rails.root.join( "tmp", "vacant_201405.csv"))
 
 ###########################
 # 賃貸借契約登録

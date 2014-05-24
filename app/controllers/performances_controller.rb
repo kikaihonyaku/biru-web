@@ -116,7 +116,7 @@ class PerformancesController < ApplicationController
          backgroundColor: '#FFFFFF',
          floating: true,
          align: 'left',
-         x: 80,
+         x: 250,
          verticalAlign: 'top',
          y: 40
      )
@@ -158,6 +158,11 @@ class PerformancesController < ApplicationController
     base.select('MIN(biru_age) as min_age, MAX(biru_age) as max_age').where('biru_age < 100').each do |rec|
       min_age = rec.min_age
       max_age = rec.max_age
+    end
+    
+    unless max_age
+      min_age = 0
+      max_age = 0
     end
 
     @category_arr = []
@@ -849,7 +854,6 @@ private
         f.xAxis(categories: result['categories'].collect do |ym| ym.slice(0..3) + "/" + ym.slice(4..5) end, tickInterval: interval) # 1とかは列の間隔の指定
       end
 
-
       # 凡例
       f.legend(
           layout: 'vertical',
@@ -947,7 +951,8 @@ private
 
             
 #            f.tooltip(formatter: 'function(){return this.series.data[1].name}'.js_code)
-            f.tooltip(formatter: "function(){console.log(this);return '年月' + this.x + '<br/>' + this.point.history}".js_code)
+#            f.tooltip(formatter: "function(){console.log(this);return '年月' + this.x + '<br/>' + this.point.history}".js_code)
+            f.tooltip(formatter: "function(){return '年月' + this.x + '<br/>' + this.point.history}".js_code)
           end
 
         end

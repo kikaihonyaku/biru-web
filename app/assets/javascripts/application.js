@@ -14,13 +14,14 @@
 //= require jquery_ujs
 //= require jquery.sidr.min
 //= require jquery.ui.ympicker
-//= require jquery.ui.datepicker
-//= require twitter/bootstrap
-//= require bootstrap
+//= require bootstrap.min
+
+//= require tree.jquery
+
+//= require biru-map
 //= require wice_grid
-//
-//= require highcharts/highcharts
-//= require highcharts/highcharts-more
+// 2014.05.24 del = require highcharts/highcharts
+// 2014.05.24 del = require highcharts/highcharts-more
 //= require highcharts/highstock
 //
 //= require_tree .

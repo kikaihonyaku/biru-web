@@ -1,6 +1,6 @@
 <div style="margin-left:100px;margin-right:100px;">
 
-	<h1><%= @owner.name + '／' + @owner.attack_code %></h1>
+	<h1><%= @owner.name + '／' + @owner.attack_code.to_s %></h1>
 	
 	<%= simple_form_for @owner, :url =>{:controller => :trust_managements, :action => :owner_update, :id => @owner.id }, :html => {:class => 'form-horizontal'} do |f| %>
 	　<table>
