@@ -3,8 +3,9 @@ class TrustManagementsController < ApplicationController
   
   def index
     # Owner Building Trust を連結した他社データを取得する
+    
     @trust_arr = initialize_grid(
-      Trust.joins(:building => :shop ).joins(:owner),
+      Trust.joins( :building => :shop ).joins(:owner).group('owners.name'),
       :order => 'shops.code',
       :order_direction => 'desc',
       :per_page => 40,
@@ -15,8 +16,9 @@ class TrustManagementsController < ApplicationController
     
     export_grid_if_requested('g1' => 'owner_building_list', 'g2' => 'projects_grid') do
       # usual render or redirect code executed if the request is not a CSV export request
-    end    
-    
+      render 'owner_building_list'      
+    end
+        
   end
   
   def owner_show

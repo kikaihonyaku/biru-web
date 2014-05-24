@@ -21,5 +21,4 @@ class Owner < ActiveRecord::Base
     "<span class=""foo"">#{name}</span>"
   end
 
-
 end

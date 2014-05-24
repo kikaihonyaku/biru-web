@@ -1,0 +1,67 @@
+<!-- For index -->
+
+<div style="margin-left:100px;margin-right:100px;">
+<h1>見込み客の情報</h1>
+
+
+<%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
+	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+	# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
+	g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj|
+	  if obj.owner
+		  
+		  if obj.owner.attack_code
+	  	    str = obj.owner.name + ' ／ ' + 'A' + obj.owner.attack_code.to_s
+		  else
+  	  	    str = obj.owner.name  + ' ／ ' + obj.owner.code.to_s
+		  end
+		  
+		  link_to(str, owner_show_path(obj.owner_id)) 
+		
+	  end
+	end
+	
+	g.column name: '貸主住所' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
+	#g.column name: '建物CD' , attribute: 'attack_code', model: 'Building' , :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.building.attack_code if obj.building end
+	g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj|
+  	  if obj.building
+		  
+  		  if obj.building.attack_code
+  	  	    str = obj.building.name + ' ／ ' + 'A' + obj.building.attack_code.to_s
+  		  else
+    	  	    str = obj.building.name  + ' ／ ' + obj.building.code.to_s
+  		  end
+		  
+  		  link_to(str, building_show_path(obj.building_id)) 
+		
+  	  end
+	end
+	
+	g.column name: '建物住所' , attribute: 'address', model: 'Building', :html =>{ :style => 'width:300px;'}   do |obj| obj.building.address if obj.building end
+
+
+#    g.column  :html =>{ :style => 'width:80px;text-align:center;'} do |obj| 
+#		link_owner = 
+#		if obj.owner
+#			link_to('貸主',owner_show_path(obj.owner_id)) 
+#		else
+#			''
+#		end
+#	
+#		link_build = 
+#		if obj.building
+#			link_to('建物',building_show_path(obj.building)) 
+#		else
+#			''
+#		end
+#	
+#		link_owner + '／' + link_build
+#	
+#	end
+
+
+end
+
+%>	
+</div>
+

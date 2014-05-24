@@ -8,5 +8,5 @@ class Trust < ActiveRecord::Base
 
   # デフォルトスコープを定義
   default_scope where(:delete_flg => false)
-
+  
 end
