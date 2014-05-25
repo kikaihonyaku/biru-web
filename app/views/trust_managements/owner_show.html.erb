@@ -1,27 +1,84 @@
+<% content_for :header do %>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
+<script type="text/javascript">
+
+function initialize(){
+	
+	/* 地図を作成 */
+	var mapDiv = document.getElementById("map_canvas");
+	mapCanvas = new google.maps.Map(mapDiv, {
+	  mapTypeId : google.maps.MapTypeId.ROADMAP
+	  ,scaleControl: true
+	  ,minZoom:2
+	});
+	
+    // infoウィンドウを１つだけ作成
+    infoWnd = new google.maps.InfoWindow();	
+	
+	/* 初期表示 */
+    var bounds = new google.maps.LatLngBounds();
+	
+	/* 貸主を表示 */
+    pos = new google.maps.LatLng(gon.owner.latitude, gon.owner.longitude);
+    bounds.extend(pos);
+	
+    var owner_marker = new google.maps.Marker({
+	    position : pos
+	    ,map : mapCanvas
+	});
+	
+    mapCanvas.fitBounds(bounds);
+	
+	
+}
+
+google.maps.event.addDomListener(window, "load", initialize);
+
+</script>
+<% end %>
+
 <div style="margin-left:100px;margin-right:100px;">
 
-	<h1><%= @owner.name + '／' + @owner.attack_code.to_s %></h1>
-	
-	<%= simple_form_for @owner, :url =>{:controller => :trust_managements, :action => :owner_update, :id => @owner.id }, :html => {:class => 'form-horizontal'} do |f| %>
-	　<table>
-		<tr>
-			<td><%= f.input :address, label: '住所', :disabled => true, :input_html => {:class => 'input-large'}  %></td>
-		</tr>
-	  </table>
-      <%= f.input :memo, label: '備考', :input_html => {:style =>"width:500px;height:100px;"} %>
-	  <div class="text-center">
-		  <%= f.button :submit, :class => 'btn-primary' %>
-	  </div>
-    
-	<% end %>
-	<%= grid(@trust_arr) do |g|
 
-		g.column name: 'ID' do |obj| obj.id end
-		g.column name: '建物CD' do |obj| link_to(obj.building_id, building_show_path(obj.building_id)) end
-		g.column name: '建物名' do |obj| obj.building.name if obj.building end
-		g.column name: '管理営業所' do |obj| obj.building.shop.name if obj.building && obj.building.shop end
-	end
-	%>
+    <div id="map_canvas" style="width: 500px;height:400px; float:left;"></div>
+	<div>
+		<%= simple_form_for @owner, :url =>{:controller => :trust_managements, :action => :owner_update, :id => @owner.id }, :html => {:class => 'form-horizontal'} do |f| %>
+		　<table>
+			<tr>
+				<td><%= @owner.name + '／' + @owner.attack_code.to_s  %></td>
+			</tr>
+			<tr>
+				<td><%= f.input :address, label: '住所', :disabled => true, :input_html => {:class => 'input-large'}  %></td>
+			</tr>
+			<tr>
+				<td><%= f.input :memo, label: '備考', :input_html => {:style =>"width:500px;height:100px;"} %></td>
+			</tr>
+			<tr>
+			  <td><%= f.button :submit, :class => 'btn-primary' %></td>
+			</tr>
+			<tr>
+			  <td>
+				 <div style="margin-left:50px;">
+					 
+				<%= grid(@trust_arr) do |g|
+
+					g.column name: '建物名' do |obj| obj.building.name if obj.building end
+					g.column name: '住所' do |obj| obj.building.address if obj.building end
+					g.column name: '管理営業所' do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+				end
+				%>
+					 
+				 </div> 
+				  
+			  </td>
+			</tr>
+		  </table>
+	      
+    
+		<% end %>
+		
+	</div>
+	
 	
 	<%= simple_form_for :owner_approach, :url=>{:controller => :trust_managements, :action => :owner_approach_regist}  do |f| %>
 	

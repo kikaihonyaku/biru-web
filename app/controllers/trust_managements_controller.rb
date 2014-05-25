@@ -81,8 +81,12 @@ class TrustManagementsController < ApplicationController
 private
 def get_owner_show(owner_id)
   @owner = Owner.find(owner_id)
+  
   @trust_arr = initialize_grid(Trust.where("owner_id = ?", @owner.id))
   @owner_approaches = initialize_grid(OwnerApproach.joins(:owner).includes(:biru_user, :approach_kind).where(:owner_id => @owner) )
+  
+  gon.owner = @owner # 関連する貸主
+  
 end  
   
 end
