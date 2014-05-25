@@ -4,6 +4,12 @@
 <h1>見込み客の情報</h1>
 
 
+<%# TODO:検索フィルタをかけられるのは、DBのカラムだけみたい。だから「貸主名／貸主CD」みたいなのを１列で検索することはできない。
+　　だけど、貸主CD列やアタック貸主CD列を別で増やすのは冗長になるので、とりあえず貸主名だけを検索対象とする。
+　　もし、貸主CDやアタック貸主CDの検索が必要になったら、その列を追加しかつ初期表示では非表示にする。そして貸主名の一部にリンクを置き、それを
+　　クリックすると貸主CD列がでるようにしよう。※建物についても同様。2014/05/25
+ %>
+
 <%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
 	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
 	# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	

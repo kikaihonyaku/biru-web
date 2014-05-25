@@ -1,13 +1,43 @@
 <%# export for csv %>
 
+<% content_for :out_charset do %>
+	<meta charset="shift_jis" />
+<% end %>
+
 <%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
-	g.column name: '管理営業所' do |obj| obj.building.shop.name if obj.building && obj.building.shop end
-	g.column name: '貸主CD' do |obj|  obj.owner.attack_code  if obj.owner end	
-	g.column name: '貸主名' do |obj| obj.owner.name    if obj.owner end	
-	g.column name: '貸主住所' do |obj| obj.owner.address if obj.owner end
-	g.column name: '建物CD'  do |obj| obj.building.attack_code if obj.building end
-	g.column name: '建物名'  do |obj| obj.building.name if obj.building end
-	g.column name: '建物住所' do |obj| obj.building.address if obj.building end
+
+	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| 
+		obj.building.shop.name.tosjis if obj.building && obj.building.shop
+	end
+	
+	g.column name: '貸主CD' do |obj|  
+  	  if obj.owner
+		  
+  		  if obj.owner.attack_code
+  	  	     'A' + obj.owner.attack_code.to_s.tosjis
+  		  else
+    	  	 obj.owner.code.to_s.tosjis
+  		  end
+		  
+  	  end
+	end
+		
+	g.column name: '貸主名', attribute: 'name', model: 'Owner' do |obj| obj.owner.name.tosjis if obj.owner end	
+	g.column name: '貸主住所', attribute: 'address', model: 'Owner' do |obj| obj.owner.address.tosjis if obj.owner end
+	g.column name: '建物CD'  do |obj| 
+	  if obj.building
+	  
+		  if obj.building.attack_code
+            'A' + obj.building.attack_code.to_s.tosjis
+		  else
+            obj.building.code.to_s.tosjis
+		  end
+	
+	  end
+  	end
+		
+	g.column name: '建物名', attribute: 'name', model: 'Building'    do |obj| obj.building.name.tosjis if obj.building end
+	g.column name: '建物住所' , attribute: 'address', model: 'Building' do |obj| obj.building.address.tosjis if obj.building end
 
 end
 %>	
