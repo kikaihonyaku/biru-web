@@ -867,19 +867,19 @@ function getCoords(position) {
       <!-- 検索条件設定 -->
       <div class="tab-pane fade active in" id="tab_search" style="padding:0;margin:0">
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#tab1" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:60px;text-align: center;">建物検索</a></li>
-          <li><a href="#tab2" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:60px;text-align: center;">貸主検索</a></li>
-          <li><a href="#tab3" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:75px;text-align: center;">バルク検索</a></li>
+          <li class="active"><a href="#tab1" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:90px;text-align: center;">建物検索</a></li>
+          <li><a href="#tab2" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:90px;text-align: center;">貸主検索</a></li>
+          <li><a href="#tab3" data-toggle="tab" style="padding-top:10px;padding-bottom:10px;width:105px;text-align: center;">バルク検索</a></li>
         </ul>
 
         <div id="myTabContent1" class="tab-content">
-          <div class="tab-pane fade active in" id="tab1" style="margin-left:15px;">
+          <div class="tab-pane fade active in" id="tab1">
              <%= render :partial=>'search_build' %>
           </div>
-          <div class="tab-pane fade" id="tab2" style="margin-left:15px;">
+          <div class="tab-pane fade" id="tab2" >
              <%= render :partial=>'search_owner' %>
           </div>
-          <div class="tab-pane fade" id="tab3" style="padding-left:15px;">
+          <div class="tab-pane fade" id="tab3" >
              <%= render :partial=>'search_bulk' %>
           </div>
         </div>

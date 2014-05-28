@@ -28,6 +28,8 @@ class ManagementsController < ApplicationController
     @shop_checked[:sai06] = false
     @shop_checked[:sai07] = false
     @shop_checked[:sai08] = false
+    @shop_checked[:sai09] = false
+    
     @shop_checked[:chiba01] = false
     @shop_checked[:chiba02] = false
     @shop_checked[:chiba03] = false

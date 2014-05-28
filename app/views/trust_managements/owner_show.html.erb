@@ -1,6 +1,41 @@
 <% content_for :header do %>
+  <!-- ↓simple_formで使っているformのスタイルを調整 -->
+  <style type="text/css">
+	  .form-horizontal  .controls {
+		  margin-left: 80px;
+	  }
+	  
+	  .form-horizontal  .control-label {
+		  width: 60px;
+	  }
+	  
+	  form {
+		  margin-bottom: 0px;
+	  }
+	  
+	  
+	  
+  </style>
+
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
 <script type="text/javascript">
+
+function createMarker_disp(opts){
+  var marker = new google.maps.Marker(opts);
+
+  google.maps.event.addListener(marker, "click", function(){
+
+    infoWnd.close();
+    infoWnd.setContent(opts.html);
+    infoWnd.open(opts.map, marker);
+
+    marker.set("visible", true);
+
+
+  });
+
+  return marker;
+}
 
 function initialize(){
 	
@@ -19,17 +54,40 @@ function initialize(){
     var bounds = new google.maps.LatLngBounds();
 	
 	/* 貸主を表示 */
-    pos = new google.maps.LatLng(gon.owner.latitude, gon.owner.longitude);
+	var owner = gon.owner
+    pos = new google.maps.LatLng(owner.latitude, owner.longitude);
+	
     bounds.extend(pos);
 	
-    var owner_marker = new google.maps.Marker({
-	    position : pos
-	    ,map : mapCanvas
-	});
+    if( owner.code == null){
+      owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
+    } else {
+      owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
+    }
+	
+    var owner_marker = createMarker_disp({
+      position : pos
+      ,map : mapCanvas
+      ,icon : owner_icon
+      ,html : owner.name
+    });
+	
+	/* 建物を表示 */
+	var buildings = gon.buildings;
+	for(var i in buildings){
+		
+        pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
+	    bounds.extend(pos);
+		
+	    var building_marker = createMarker_disp({
+	      position : pos
+	      ,map : mapCanvas
+	      ,html : buildings[i].name
+	    });
+		
+	}
 	
     mapCanvas.fitBounds(bounds);
-	
-	
 }
 
 google.maps.event.addDomListener(window, "load", initialize);
@@ -39,27 +97,42 @@ google.maps.event.addDomListener(window, "load", initialize);
 
 <div style="margin-left:100px;margin-right:100px;">
 
-
-    <div id="map_canvas" style="width: 500px;height:400px; float:left;"></div>
-	<div>
-		<%= simple_form_for @owner, :url =>{:controller => :trust_managements, :action => :owner_update, :id => @owner.id }, :html => {:class => 'form-horizontal'} do |f| %>
-		　<table>
-			<tr>
-				<td><%= @owner.name + '／' + @owner.attack_code.to_s  %></td>
-			</tr>
-			<tr>
-				<td><%= f.input :address, label: '住所', :disabled => true, :input_html => {:class => 'input-large'}  %></td>
-			</tr>
-			<tr>
-				<td><%= f.input :memo, label: '備考', :input_html => {:style =>"width:500px;height:100px;"} %></td>
-			</tr>
-			<tr>
-			  <td><%= f.button :submit, :class => 'btn-primary' %></td>
-			</tr>
-			<tr>
-			  <td>
-				 <div style="margin-left:50px;">
-					 
+    <div style="float:left;padding-left:10px;">
+	  <div style="border-width:3px; border-style:solid; border-color:silver;">
+		  <div id="map_canvas" style="width: 500px;height:500px;"></div>
+	  </div>
+    </div>
+	
+	<div style='float:left;margin-left:10px;padding-left:10px;'>
+		<%= simple_form_for @owner, :url =>{:controller => :trust_managements, :action => :owner_update, :id => @owner.id } do |f| %>
+			<table style="margin-top:20px;">
+				<tr>
+					<td style="padding-right:20px;">
+						<%= f.input :attack_code, label:'貸主CD', :input_html => {:style => 'width:100px;' }   %>
+					</td>
+					<td>
+						<%= f.input :name, label: '貸主名' %>
+					</td>
+				</tr>
+			</table>
+			
+			<table>
+				<tr>
+					<td style="padding-right:20px;">
+						<%= f.input :attack_code, label:'貸主CD', :input_html => {:style => 'width:50px;' }   %>
+					</td>
+					<td>
+						<%= f.input :address, label: '住所' %>
+					</td>
+				</tr>
+			</table>
+			
+			<%= f.input :memo, label: '覚え書き', :input_html => {:style => 'width:500px;height:100px;' } %>
+			<div style='text-align:center;'>
+				<%= f.button :submit  %>
+			</div>
+			
+			<div style='margin-top:20px;'>
 				<%= grid(@trust_arr) do |g|
 
 					g.column name: '建物名' do |obj| obj.building.name if obj.building end
@@ -67,37 +140,44 @@ google.maps.event.addDomListener(window, "load", initialize);
 					g.column name: '管理営業所' do |obj| obj.building.shop.name if obj.building && obj.building.shop end
 				end
 				%>
+			</div>
+		
 					 
-				 </div> 
-				  
-			  </td>
-			</tr>
-		  </table>
-	      
+					 
     
 		<% end %>
 		
 	</div>
 	
-	
-	<%= simple_form_for :owner_approach, :url=>{:controller => :trust_managements, :action => :owner_approach_regist}  do |f| %>
-	
-		<%= f.input :owner_id, :as => :hidden, :input_html => {:value => @owner.id } %>
-		<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
+	<div style="clear:both; margin-top:50px;padding-top:50px;">
 		
-		<%#= f.input :approach_date, label: '日付', as: :datepicker %>
-		<%= f.input :approach_date, label: false, placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date'} %>
-		<%= f.input :approach_kind_id, label: false, collection: ApproachKind.find(:all), prompt: "種別" %>
-		<%= f.input :content, label: false, placeholder: '内容', :input_html => {:class => 'input-large' } %>
-        <%= f.button :submit, :class => 'btn-primary' %>
-	<% end %>
+
+		<%= simple_form_for :owner_approach, :url=>{:controller => :trust_managements, :action => :owner_approach_regist}  do |f| %>
+			<%= f.input :owner_id, :as => :hidden, :input_html => {:value => @owner.id } %>
+			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
 	
-	<%= grid(@owner_approaches) do |g|
- 		g.column name: 'アプローチ日' do |obj| obj.approach_date if obj.approach_date end
-		g.column name: '種別' do |obj| obj.approach_kind.name if obj.approach_kind end
-		g.column name: '内容' do |obj| obj.content if obj.content end
-		g.column name: '登録者' do |obj| obj.biru_user.name if obj.biru_user end
-		g.column name: '登録日' do |obj| obj.created_at if obj.created_at end
-	end
-	%>
+			<table>
+				<tr>
+					<td><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:150px;margin-left:0px;padding-left:0px;' } %></td>
+					<td><%= f.input :approach_kind_id, label: '種別', collection: ApproachKind.find(:all), prompt: "--", :input_html => {:style=>'width:100px;margin-left:0px;padding-left:0px;' } %></td>
+					<td><%= f.input :content, label: '内容', placeholder: 'アプローチ内容をいれてください', :input_html => {:class => 'input-large', :style=>'width:300px;'} %></td>
+					<td><%= f.button :submit, :class => 'btn-primary', :style=>'margin-bottom:20px;margin-left:20px;' %></td>
+				</tr>
+			</table>
+		
+			<%#= f.input :approach_date, label: '日付', as: :datepicker %>
+		<% end %>
+	
+		<%= grid(@owner_approaches) do |g|
+	 		g.column name: 'アプローチ日' do |obj| obj.approach_date if obj.approach_date end
+			g.column name: '種別' do |obj| obj.approach_kind.name if obj.approach_kind end
+			g.column name: '内容' do |obj| obj.content if obj.content end
+			g.column name: '登録者' do |obj| obj.biru_user.name if obj.biru_user end
+			g.column name: '登録日' do |obj| obj.created_at if obj.created_at end
+		end
+		%>
+		
+	</div>
+	
+	
 </div>

@@ -2011,7 +2011,7 @@ end
 #init_station
 
 # 営業所登録
-# init_shop
+init_shop
 
 # 物件種別登録
 #init_biru_type('/biruweb')
@@ -2051,12 +2051,12 @@ performance_init
 #monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_getuji_201403.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_201402_201403.csv"))
-monthly_regist(Rails.root.join( "tmp", "monthley_201404_201405.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_201404_201405.csv"))
 
 
 # 来店客数／契約件数
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
-monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201405.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201405.csv"))
 
 
 ###########################

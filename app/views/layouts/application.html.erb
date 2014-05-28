@@ -66,18 +66,14 @@
   </head>
   <body>
 
-    <div class="navbar navbar-fluid-top" id="top-menu">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <%= link_to "中央ビル管理Webシステム", root_path, :class=>'brand' %>
-          <div class="container-fluid nav-collapse">
-            <ul class="nav">
-
+        <!-- Begin Navbar -->
+<div class="navbar navbar-static" style="margin-bottom: 0px;">
+    <div class="container">
+      <a class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+      </a>
+      <div class="nav-collapse collase">
+        <ul class="nav navbar-nav">  
               <li><%= link_to "管理", managements_path %></li>
               <li><%= link_to "アタックリスト", trust_managements_path %></li>
               <li><%= link_to "募集", recruitments_path %></li>
@@ -86,17 +82,11 @@
               <li><%= link_to "オーナー様専用", owners_path %></li>
               <li><%= link_to "入居者様専用", renters_path %></li>
               <li><%= link_to "ログアウト", logout_path %></li>
-              <!--
-              <li><%#= link_to "メンテナンス", admin_root_path, {:target=>"_blank"}  %></li>
-              -->
-            </ul>
-            <!--
-            <%#= render 'layouts/user_nav' %>
-            -->
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
+        </ul>
+      </div>		
     </div>
+</div><!-- /.navbar -->
+
 
     <div class="container-fluid" style="height:100%;width:100%;padding:0;margin:0">
       <%= bootstrap_flash %>

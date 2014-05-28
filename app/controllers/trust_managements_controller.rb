@@ -85,7 +85,17 @@ def get_owner_show(owner_id)
   @trust_arr = initialize_grid(Trust.where("owner_id = ?", @owner.id))
   @owner_approaches = initialize_grid(OwnerApproach.joins(:owner).includes(:biru_user, :approach_kind).where(:owner_id => @owner) )
   
-  gon.owner = @owner # 関連する貸主
+  # 貸主を取得
+  gon.owner = @owner 
+  
+  # 建物を取得
+  building_arr = []
+  
+  Trust.where("owner_id = ?", @owner.id).each do |trust|
+    building_arr.push(trust.building)
+  end
+  
+  gon.buildings = building_arr
   
 end  
   
