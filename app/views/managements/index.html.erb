@@ -885,42 +885,6 @@ function getCoords(position) {
         </div>
       </div>
 
-      <!-- 検索結果確認 -->
-      <div class="tab-pane fade " id="tab_result" >
-        <ul class="nav nav-tabs">
-          <!--
-          <li class="active"><a href="#tab7" data-toggle="tab" style="width:65px;text-align: center;">表示設定</a></li>
-          -->
-          <li class="active"><a href="#tab6" data-toggle="tab" style="width:45px;text-align: center;">営業所</a></li>
-          <li><a href="#tab4" data-toggle="tab" style="width:40px;text-align: center;">建物</a></li>
-          <li><a href="#tab5" data-toggle="tab" style="width:40px;text-align: center;">貸主</a></li>
-        </ul>
-
-        <div id="myTabContent2" class="tab-content" style="padding-left:10px;">
-          <div class="tab-pane fade" id="tab4">
-            <div id="result_biru" title="建物検索結果">
-             <%= render :partial=>'result_buildings' %>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="tab5">
-            <div id="result_owner" title="貸主検索結果">
-              <%= render :partial=>'result_owners' %>
-            </div>
-          </div>
-          <div class="tab-pane active in fade" id="tab6">
-            <div id="result_shop" title="営業所検索結果">
-              <%= render :partial=>'result_shops' %>
-            </div>
-          </div>
-          <!--
-          <div class="tab-pane active in fade" id="tab7" style="padding-left:10px;">
-             <%#= render :partial=>'disp' %>
-          </div>
-          -->
-        </div>
-
-      </div>
-
     </div>
 
   </div>

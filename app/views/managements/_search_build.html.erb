@@ -174,7 +174,7 @@
     //------------
     $("#tobu_siten input").attr("checked", false);
     $("#sai_siten input").attr("checked", false);
-    $("#chiba_north_siten input").attr("checked", false);
+    $("#chiba_siten input").attr("checked", false);
 
     //------------
     // 物件種別
@@ -197,11 +197,6 @@
     <div class="well" style="padding:0">
       <%= form_tag('/managements/search_buildings') do %>
 
-        <div style="padding-top:10px;text-align: center;">
-          <%= submit_tag "検索する", :class=>'btn btn-large'  %>
-          <button type="button" class="btn btn-default btn-sm btn3d" onClick="javascript:search_init();">クリア</button>
-        </div>
-		
 		<table style="margin-top:20px;">
 			<tr>
 				<td><label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'ji_only' ,@ji_only_flg %>自社のみ</label></td>
@@ -286,7 +281,7 @@
 		  	<tr><td><label><%= check_box_tag('build_type[soko]', '01060', @build_type_checked[:soko], {}) %>倉庫</label></td></tr>
 		  </table>
 		  
-		  <table style="margin-left:100px;">
+		  <table style="margin-left:100px;width:100px;">
             <tr><td><label><%= check_box_tag('build_type[kodate]', '01025', @build_type_checked[:kodate], {}) %>戸建て</label></td></tr>
             <tr><td><label><%= check_box_tag('build_type[terasu]', '01030', @build_type_checked[:terasu], {}) %>テラスハウス</label></td></tr>
             <tr><td><label><%= check_box_tag('build_type[mezo]', '01035', @build_type_checked[:mezo], {}) %>メゾネット</label></td></tr>
@@ -315,10 +310,13 @@
             <tr><td><label><%= check_box_tag('manage_type[kanri_gyoumu]', 10, @manage_type_checked[:kanri_gyoumu], {}) %>業務君</label></td></tr>
             <tr><td><label><%= check_box_tag('manage_type[kanri_gai]', 99, @manage_type_checked[:kanri_gai], {}) %>管理外</label></td></tr>
           </table>
+		  
         </div>
 
-        <div style="padding-top:20px;text-align: center;">
-          <%= submit_tag "検索する", :class=>'btn btn-large btn-primary'  %>
+
+        <div style="padding-top:10px;padding-bottom:20px;text-align: center;">
+          <%= submit_tag "検索する", :class=>'btn btn-large'  %>
+          <button type="button" class="btn btn-default btn-sm btn3d" onClick="javascript:search_init();">クリア</button>
         </div>
 
       <% end %>
