@@ -1,22 +1,25 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
-  # before_filter :auth
-  before_filter :check_logined
+  # 2014/06/02 
+  # change_biru_iconはrailsのformではなくhtmlのformで直接送ってくるから
+  # biru_userセッションを参照できない。それによってログインへリダイレクトされると
+  # 直前の地図凡例変更のイベントが失われてしまう。change_biru_iconだけは例外扱いとする。
+  #
+  # 2014/06/02 追記
+  # 一度sessionがクリアされてしまうと次検索した時に必ずログイン画面になってしまう。
+  # 検索条件もリセットされてしまうので使い勝手が悪いので、managementsコントローラの時は
+  # もうチェックしないようにする。（良い対策ができるまで）
+  before_filter :check_logined, :except => ['change_biru_icon', 'search_owners', 'search_buildings', 'bulk_search_text'] 
   
   private
-#  def auth
-#    authenticate_or_request_with_http_basic do |user,pass|
-#      user == 'user' && pass == 'pass'
-#    end
-#  end
 
   # ログイン認証を行います。
   def check_logined
     
     if session[:biru_user] then
       begin 
-        @biru_user = BiruUser.find(session[:biru_user])
+				@biru_user = BiruUser.find(session[:biru_user])
       rescue ActiveRecord::RecordNotFound
         reset_session
       end

@@ -181,17 +181,21 @@ class ManagementsController < ApplicationController
     tmp_buildings = tmp_buildings.includes(:trusts => :owner)
 
     # 建物名の絞り込み
-    word = params[:biru_name]
-    if word.length > 0
-      tmp_buildings = tmp_buildings.where("buildings.name like ?", "%#{word}%" )
-      @building_nm = word
+    if params[:biru_name]
+	    word = params[:biru_name]
+	    if word.length > 0
+	      tmp_buildings = tmp_buildings.where("buildings.name like ?", "%#{word}%" )
+	      @building_nm = word
+	    end
     end
-
-    address = params[:biru_address]
-    if address.length > 0
-      tmp_buildings = tmp_buildings.where("buildings.address like ?", "%#{address}%" )
-      @building_ad = address
-    end
+  
+		if params[:biru_address]
+	    address = params[:biru_address]
+	    if address.length > 0
+	      tmp_buildings = tmp_buildings.where("buildings.address like ?", "%#{address}%" )
+	      @building_ad = address
+	    end
+		end
 
     # 営業所チェックボックスが選択されていたら、それを絞り込む
     if params[:shop]
@@ -277,7 +281,7 @@ class ManagementsController < ApplicationController
 
   # 物件種別のiconを変更する時のコントローラ
   def change_biru_icon
-    p params[:disp_type]
+    p 'パラメータ ' + params[:disp_type].to_s
     @biru_icon = params[:disp_type]
   end
 

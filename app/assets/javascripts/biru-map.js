@@ -306,8 +306,11 @@ function DispControll(map) {
     strTable = strTable + '<label style="font-size:small;"><input type="checkbox" id="ownerChk"  onClick="javascript:dips_owners(ownerChk.checked);" />&nbsp;&nbsp;貸主マーカー</label>'
     strTable = strTable + '<label style="font-size:small;"><input type="checkbox" id="trustChk" onClick="javascript:dips_trusts(trustChk.checked);" />&nbsp;&nbsp;委託契約ライン</label>'
     strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;clear:both;"><input type="checkbox" id="shopChk" onClick="javascript:dips_shops(shopChk.checked);" checked/>&nbsp;&nbsp;営業所マーカー</label>'
-    strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:20px;"><input type="checkbox" name="dispcheck01" id="circle01Chk" onClick="javascript:disp_shop_01(circle01Chk.checked);" />&nbsp;&nbsp;半径1Km</label>'
-    strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:20px;"><input type="checkbox" name="dispcheck01" id="circle02Chk" onClick="javascript:disp_shop_02(circle02Chk.checked);" />&nbsp;&nbsp;半径2Km</label>'
+    strTable = strTable + '<table>'
+    strTable = strTable + '<tr><td><label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:15px;"><input type="checkbox" name="dispcheck01" id="circle01Chk" onClick="javascript:disp_shop_01(circle01Chk.checked);" />&nbsp;&nbsp;半径1Km</label></td></tr>'
+    strTable = strTable + '<tr><td><label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:15px;"><input type="checkbox" name="dispcheck01" id="circle02Chk" onClick="javascript:disp_shop_02(circle02Chk.checked);" />&nbsp;&nbsp;半径2Km</label></td></tr>'
+    strTable = strTable + '</table>'
+	
     strTable = strTable + '</div>'  
     divA.innerHTML = strTable
     controlDiv.appendChild(divA);
@@ -500,10 +503,65 @@ function init_map(){
     /* 地図を作成 */
     var mapDiv = document.getElementById("map_canvas");
     mapCanvas = new google.maps.Map(mapDiv, {
-      mapTypeId : google.maps.MapTypeId.ROADMAP
+		mapTypeControlOptions: {
+	        mapTypeIds: [google.maps.MapTypeId.ROADMAP,'noText', 'map_style']
+		}
       ,scaleControl: true
       ,minZoom:2
     });
+		
+	// スタイル定義
+	var lopanType = new google.maps.StyledMapType(
+		[
+			{
+				featureType: 'all'
+			   ,elementType: 'labels'
+			   ,stylers: [{ visibility: 'off' }]
+			}
+			,{
+				featureType: 'road'
+			   ,elementType: 'all'
+			   ,stylers: [{ visibility: 'off' }]
+			}
+			
+		
+		]
+		,{ name: '文字なし' }
+	);
+		
+	mapCanvas.mapTypes.set('noText', lopanType);
+	mapCanvas.setMapTypeId('noText');
+	
+	
+    // Create an array of styles.
+    var styledMap = new google.maps.StyledMapType(
+	    [
+	      {
+	        stylers: [
+	          { hue: "#00ffe6" },
+	          { saturation: -20 }
+	        ]
+	      },{
+	        featureType: "road",
+	        elementType: "geometry",
+	        stylers: [
+	          { lightness: 100 },
+	          { visibility: "simplified" }
+	        ]
+	      },{
+	        featureType: "road",
+	        elementType: "labels",
+	        stylers: [
+	          { visibility: "off" }
+	        ]
+	      }
+	    ]
+		, {name: "Styled Map"}
+	);	
+	mapCanvas.mapTypes.set('map_style', styledMap);	
+	mapCanvas.setMapTypeId('map_style');
+	
+	
 
     // フルスクリーンラベルを設定
     mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new MenuControll(mapCanvas));

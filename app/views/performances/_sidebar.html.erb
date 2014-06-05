@@ -352,7 +352,7 @@
                   },
                 ]
               },
-              { label: '千葉支店',id:'19,4,12,9', nm:'千葉支店',
+              { label: '千葉支店',id:'19,4,12,9,999', nm:'千葉支店',
                 children: [
                   { label:'常磐エリア', id:'19,4,12,9', nm:'常磐エリア',
                     children:[
@@ -454,7 +454,11 @@
   ];
 
 
+
 $(function() {
+	
+	$('#jcrop_target_01').Jcrop();
+	
     $('#tree-dept').tree({
         data: dept_data,
         saveState: 'c-dept'
