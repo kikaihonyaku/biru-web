@@ -112,12 +112,14 @@ class ManagementsController < ApplicationController
   # 建物情報確認用のwindowを表示する。
   def popup_building
     @building = Building.find(params[:id])
+    gon.building = @building
     @trust = Trust.find_by_building_id(@building)
     render :layout => 'popup'
   end
 
   def popup_building_update
     @building = Building.find(params[:id])
+    gon.building = @building
 
     if @building.update_attributes(params[:building])
     end

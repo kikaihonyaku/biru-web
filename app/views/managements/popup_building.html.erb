@@ -1,77 +1,143 @@
+<script type="text/javascript">
 
+// 表示なし(1)・ゴミ置き場(2)・募集図面(3)をクリックしたときに反応
+function click_radio(num){
+	
+	if(num == 1){
+		 $("#c01").css("display", "none");
+		 $("#c02").css("display", "none");
+		 
+	}else if(num == 2){
+		 $("#c01").css("display", "block");
+		 $("#c02").css("display", "none");
+		
+	}else if(num == 3){
+		 $("#c01").css("display", "none");
+		 $("#c02").css("display", "block");
+		
+	}else{
+		alert('不明');
+	}
+}
+
+</script>
 <%= form_for(@building, :url=>{:action=>'popup_building_update', :id=>@building}, :html=>{:class=>"form-horizontal"}) do |f|%>
-<fieldset>
-  <legend><%= @building.name %></legend>
+  <legend style="padding:20px;padding-botom:10px;"><%= @building.name %></legend>
+  
+<table>
+	<tr>
+		<td style="padding-left:20px;">
+			<div style="border-width:3px; border-style:solid; border-color:silver;">
+			  <!-- <div id="pop_map_canvas" style="width: 420px;height:298px;"></div> -->
+			  <div id="pop_map_canvas" style="width: 480px;height:350px;"></div>
+			</div>
+  
+		    <div id="c01" style="position:absolute; left:315px; top:270px; width:51px; height:51px; visibility: visible;display:none; ">
+		      <%= image_tag('center.png') %>
+		    </div>
+		    <div id="c02" style="position:absolute; left:355px; top:300px; width:51px; height:51px; visibility: visible;display:none; ">
+		      <%= image_tag('center.png') %>
+		    </div>
+			<div style="clear:both;padding-top:10px;">
+				<%= f.text_area :memo,  :size => "5x3", :class=>"form-control", :placeholder=>'メモ'  %>
+			</div>
+			
+			<div style="padding-top:10px;text-align:center;float:left;">
+				<%= f.submit 'メモ欄 更新', :class=>"btn btn-primary" %>
+			</div>
+			<div class="btn-group" data-toggle="buttons-radio" style="padding-top:5px;padding-left:20px;float:right;">
+				<button type="button" class="btn btn-default" onClick="javascript:click_radio(1);">表示なし</button>
+				<button type="button" class="btn btn-default" onClick="javascript:click_radio(2);">ゴミ置き場</button>
+				<button type="button" class="btn btn-default" onClick="javascript:click_radio(3);">募集図面</button>
+			</div>
+			
+			
+			
+		</td>
+		<td style="vertical-align:top;padding-left:20px;padding-top:10px;">
+			<table class="label-table" style="margin-bottom:30px;">
+				
+				<tr>
+					<% if @building.code %>
+						<td style="text-align:right;"><label>建物CD：</label></td>
+						<td><label><%= @building.code %></label></td>
+					<% else %>
+						<td style="text-align:right;"><label>見込み建物CD：</label></td>
+						<td><label><%= @building.attack_code %></label></td>
+					<% end%>
+				</tr>
+				
+				<tr>
+					<td style="text-align:right;"><label>住所：</label></td>
+					<td><label><%= @building.address %></label></td>
+				</tr>
+				<% if @building.shop %>
+					<tr>
+						<td style="text-align:right;"><label>管理店舗：</label></td>
+						<td><label><%= @building.shop.name %></label></td>
+					</tr>
+				<% end %>
+				<% if @trust %>
+					<tr>
+						<td style="text-align:right;"><label>管理委託CD：</label></td>
+						<td><label><%= @trust.code + "  ( " + @trust.manage_type.name + " )" %></label></td>
+					</tr>
 
-  <ul>
-    <li><%= @building.address %></li>
+					<tr>
+						<% if @trust.owner.code %>
+							<td style="text-align:right;"><label>貸主CD：</label></td>
+							<td><label><%= @trust.owner.code + "  ( " + @trust.owner.name + " 様 )" %></label></td>
+						<% else %>
+							<td style="text-align:right;"><label>見込み貸主CD：</label></td>
+							<td><label><%= @trust.owner.attack_code + "  ( " + @trust.owner.name + " 様 )" %></label></td>
+						<% end%>
+					</tr>
 
-    <% if @building.shop %>
-      <li><%= @building.shop.name %></li>
-    <% end %>
+				<% end %>
 
-    <% if @building.code %>
-      <li>建物CD&nbsp&nbsp;<%= @building.code %></li>
-    <% else %>
-      <li>アタック建物CD&nbsp;&nbsp;<%= @building.attack_code %></li>
-    <% end %>
+				<% if @building.build_type %>
+					<tr>
+						<td style="text-align:right;"><label>建物種別：</label></td>
+						<td><label><%= @building.build_type.name %></label></td>
+					</tr>
+				<% end %>				
+				
+			</table>
+						
+		    <table class="table table-striped table-condensed">
+		      <thead>
+		        <tr>
+		          <th>号室</th>
+		          <th>状態</th>
+		          <th>間取り</th>
+		          <th>管理方式</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        <% @building.rooms.each do |room| %>
+		        <tr>
+		          <td><%= room.name %></td>
 
-    <% if @trust %>
-    <li>委託CD&nbsp;&nbsp;<%= @trust.code + "  ( " + @trust.manage_type.name + " )"  %> </li>
-      <% if @trust.owner.code %>
-        <li>貸主CD&nbsp;&nbsp;<%= @trust.owner.code + "  ( " + @trust.owner.name + " 様 )"  %> </li>
-	  <% else %>
-        <li>見込み貸主CD&nbsp;&nbsp;<%= @trust.owner.attack_code + "  ( " + @trust.owner.name + " 様 )"  %> </li>
-      <% end %>
-    <% end %>
+		          <% if room.free_state %>
+		            <td><span class="label label-important">空き</span></td>
+		          <% else %>
+		            <td><span class="label label-success">入居中</span></td>
+		          <% end %>
+
+		          <td><%= room.room_layout.name if room.room_layout %></td>
+		          <td><%= room.manage_type.name if room.manage_type %></td>
+		        </tr>
+		        <% end %>
+		      </tbody>
+		    </table>
+			
+		</td>
+	</tr>
+</table>
+
+</div>
 
 
-    <% if @building.build_type %>
-      <li><%= @building.build_type.name %></li>
-    <% end %>
-
-
-  </ul>
-
-  <div style="padding-left:30px;">
-    <%= f.text_area :memo,  :size => "5x2", :class=>"form-control", :placeholder=>'メモ'  %>
-  </div>
-
-  <div class="form-actions" style="padding-left:120px;">
-    <%= f.submit '更新', :class=>"btn btn-primary" %>
-    <button type="reset" class="btn" onClick="window.close();return false;">閉じる</button>
-  </div>
-
-  <div style="padding-top:10px;">
-    <table class="table table-striped table-condensed">
-      <thead>
-        <tr>
-          <th>号室</th>
-          <th>状態</th>
-          <th>間取り</th>
-          <th>管理方式</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @building.rooms.each do |room| %>
-        <tr>
-          <td><%= room.name %></td>
-
-          <% if room.free_state %>
-            <td><span class="label label-important">空き</span></td>
-          <% else %>
-            <td><span class="label label-success">入居中</span></td>
-          <% end %>
-
-          <td><%= room.room_layout.name if room.room_layout %></td>
-          <td><%= room.manage_type.name if room.manage_type %></td>
-        </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-
-</fieldset>
-<% end %>
+  <% end %>
 
 

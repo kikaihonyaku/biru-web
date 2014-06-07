@@ -510,29 +510,7 @@ function init_map(){
       ,minZoom:2
     });
 		
-	// スタイル定義
-	var lopanType = new google.maps.StyledMapType(
-		[
-			{
-				featureType: 'all'
-			   ,elementType: 'labels'
-			   ,stylers: [{ visibility: 'off' }]
-			}
-			,{
-				featureType: 'road'
-			   ,elementType: 'all'
-			   ,stylers: [{ visibility: 'off' }]
-			}
-			
 		
-		]
-		,{ name: '文字なし' }
-	);
-		
-	mapCanvas.mapTypes.set('noText', lopanType);
-	mapCanvas.setMapTypeId('noText');
-	
-	
     // Create an array of styles.
     var styledMap = new google.maps.StyledMapType(
 	    [
@@ -560,9 +538,30 @@ function init_map(){
 	);	
 	mapCanvas.mapTypes.set('map_style', styledMap);	
 	mapCanvas.setMapTypeId('map_style');
+		
+	// スタイル定義
+	var lopanType = new google.maps.StyledMapType(
+		[
+			{
+				featureType: 'all'
+			   ,elementType: 'labels'
+			   ,stylers: [{ visibility: 'off' }]
+			}
+			,{
+				featureType: 'road'
+			   ,elementType: 'all'
+			   ,stylers: [{ visibility: 'off' }]
+			}
+			
+		
+		]
+		,{ name: '文字なし' }
+	);
+		
+	mapCanvas.mapTypes.set('noText', lopanType);
+	mapCanvas.setMapTypeId('noText');
 	
-	
-
+		
     // フルスクリーンラベルを設定
     mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new MenuControll(mapCanvas));
     mapCanvas.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(new StreetViewControll(mapCanvas));

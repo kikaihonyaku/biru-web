@@ -11,12 +11,13 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require jquery.min
+//= require jquery-ui.min
 //= require jquery_ujs
 //= require jquery.sidr.min
 //= require jquery.ui.ympicker
-//= require bootstrap.min
 //= require jquery.Jcrop
 //= require tree.jquery
+//= require bootstrap.min
 
 //= require biru-map
 //= require wice_grid
