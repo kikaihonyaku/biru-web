@@ -72,13 +72,14 @@
       </a>
       <div class="nav-collapse collase">
         <ul class="nav navbar-nav">  
-              <li><%= link_to "管理", managements_path %></li>
+              <li><%= link_to "トップ", root_path %></li>
+              <li><%= link_to "地図", managements_path %></li>
+              <li><%= link_to "業績分析", performances_path  %></li>
               <li><%= link_to "アタックリスト", trust_managements_path %></li>
               <li><%#= link_to "募集", recruitments_path %></li>
-              <li><%= link_to "カスタマーデスク", repairs_path %></li>
-              <li><%= link_to "業績分析", performances_path  %></li>
-              <li><%= link_to "オーナー様専用", owners_path %></li>
-              <li><%= link_to "入居者様専用", renters_path %></li>
+              <li><%#= link_to "カスタマーデスク", repairs_path %></li>
+              <li><%#= link_to "オーナー様専用", owners_path %></li>
+              <li><%#= link_to "入居者様専用", renters_path %></li>
               <li><%= link_to "ログアウト", logout_path %></li>
         </ul>
       </div>		

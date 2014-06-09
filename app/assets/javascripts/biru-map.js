@@ -152,7 +152,7 @@ function MenuControll(map) {
     return controlDiv;
 }
 
-function BarControll(map) {
+function BarControll(map, user_id) {
     
     var controlDiv = document.createElement('div');
     controlDiv.index = 1;
@@ -186,6 +186,7 @@ function BarControll(map) {
     strRadio = strRadio + '  <div style="margin:0;padding:0;display:inline">'
     strRadio = strRadio + '    <input name="utf8" type="hidden" value="&#x2713;" />'
     strRadio = strRadio + '    <input name="authenticity_token" type="hidden" value="JEzEMF2O+DTDMazjGjDPHR3BNof0wPWpYp3uIceXX7M=" /></div>'
+    strRadio = strRadio + '    <input name="user_id" type="hidden" value="' + user_id + '" />'
     strRadio = strRadio + '  </div>'
     strRadio = strRadio + '  <select id="disp_type" name="disp_type" onChange="change_icon();" style="width:150px;">'
     strRadio = strRadio + '    <option value="biru_kind">建物種別</option>'
@@ -268,8 +269,6 @@ function BarControll(map) {
 //   controlText.innerHTML = '<strong>メニュー&nbsp;&nbsp;表示</strong>';
 //   controlUI.appendChild(controlText);
 
-
-
     return controlDiv;
 }
 
@@ -348,9 +347,9 @@ function ResultControll(map) {
     divA.style.left = '15px';
 
     var strTable = "";
-    strTable = strTable + '&nbsp;&nbsp;&nbsp;<a href="javascript:win_result_biru();"><span style="font-size:small;">建物</span></a>';
-    strTable = strTable + '&nbsp;&nbsp;&nbsp;<a href="javascript:win_result_owner();"><span style="font-size:small;margin-left:20px;">貸主</span></a>';
-    strTable = strTable + '&nbsp;&nbsp;&nbsp;<a href="javascript:win_result_shop();"><span style="font-size:small;margin-left:20px;">営業所</span></a>';
+    strTable = strTable + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:win_result_biru();"><span style="font-size:small;">建物</span></a>';
+    strTable = strTable + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:win_result_owner();"><span style="font-size:small">貸主</span></a>';
+    strTable = strTable + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:win_result_shop();"><span style="font-size:small;">営業所</span></a>';
 
     divA.innerHTML = strTable
     controlDiv.appendChild(divA);
@@ -498,47 +497,48 @@ function createMarker(opts){
 }
 
 // 地図の初期設定を行います。
-function init_map(){
+function init_map(user_id){
 
     /* 地図を作成 */
     var mapDiv = document.getElementById("map_canvas");
     mapCanvas = new google.maps.Map(mapDiv, {
 		mapTypeControlOptions: {
 	        mapTypeIds: [google.maps.MapTypeId.ROADMAP,'noText', 'map_style']
+	       // mapTypeIds: [google.maps.MapTypeId.ROADMAP,'noText']
 		}
       ,scaleControl: true
       ,minZoom:2
     });
 		
 		
-    // Create an array of styles.
-    var styledMap = new google.maps.StyledMapType(
-	    [
-	      {
-	        stylers: [
-	          { hue: "#00ffe6" },
-	          { saturation: -20 }
-	        ]
-	      },{
-	        featureType: "road",
-	        elementType: "geometry",
-	        stylers: [
-	          { lightness: 100 },
-	          { visibility: "simplified" }
-	        ]
-	      },{
-	        featureType: "road",
-	        elementType: "labels",
-	        stylers: [
-	          { visibility: "off" }
-	        ]
-	      }
-	    ]
-		, {name: "Styled Map"}
-	);	
-	mapCanvas.mapTypes.set('map_style', styledMap);	
-	mapCanvas.setMapTypeId('map_style');
-		
+//    // Create an array of styles.
+//    var styledMap = new google.maps.StyledMapType(
+//	    [
+//	      {
+//	        stylers: [
+//	          { hue: "#00ffe6" },
+//	          { saturation: -20 }
+//	        ]
+//	      },{
+//	        featureType: "road",
+//	        elementType: "geometry",
+//	        stylers: [
+//	          { lightness: 100 },
+//	          { visibility: "simplified" }
+//	        ]
+//	      },{
+//	        featureType: "road",
+//	        elementType: "labels",
+//	        stylers: [
+//	          { visibility: "off" }
+//	        ]
+//	      }
+//	    ]
+//		, {name: "Styled Map"}
+//	);	
+//	mapCanvas.mapTypes.set('map_style', styledMap);	
+//	mapCanvas.setMapTypeId('map_style');
+//		
 	// スタイル定義
 	var lopanType = new google.maps.StyledMapType(
 		[
@@ -547,19 +547,13 @@ function init_map(){
 			   ,elementType: 'labels'
 			   ,stylers: [{ visibility: 'off' }]
 			}
-			,{
-				featureType: 'road'
-			   ,elementType: 'all'
-			   ,stylers: [{ visibility: 'off' }]
-			}
-			
 		
 		]
 		,{ name: '文字なし' }
 	);
 		
 	mapCanvas.mapTypes.set('noText', lopanType);
-	mapCanvas.setMapTypeId('noText');
+//	mapCanvas.setMapTypeId('noText');
 	
 		
     // フルスクリーンラベルを設定
@@ -567,7 +561,7 @@ function init_map(){
     mapCanvas.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(new StreetViewControll(mapCanvas));
     // mapCanvas.controls[google.maps.ControlPosition.TOP_LEFT].push(new FullScreenControl(mapCanvas));
 
-    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new BarControll(mapCanvas));
+    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new BarControll(mapCanvas, user_id));
     mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new DispControll(mapCanvas));
     mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new ResultControll(mapCanvas));
 

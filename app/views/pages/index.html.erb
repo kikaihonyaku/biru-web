@@ -1,23 +1,19 @@
 <%= content_for :sidebar do %>
         <div class="span3">
-          <div class="well sidebar-nav">
+          <div class="well sidebar-nav" style="margin-top:30px;margin-left:20px;">
             <ul class="nav nav-list">
               <li class="nav-header">メニュー</li>
-              <li><%= link_to "管理", managements_path %></li>
-              <li><%= link_to "募集", recruitments_path %></li>
-              <li><%= link_to "カスタマーデスク", repairs_path  %></li>
+              <li><%= link_to "トップ", root_path %></li>
+              <li><%= link_to "地図", managements_path %></li>
               <li><%= link_to "業績分析", performances_path  %></li>
-              <li><%= link_to "オーナー様専用ページ", owners_path %></li>
-              <li><%= link_to "入居者様専用ページ", renters_path %></li>
-              <!--
-              <li><%#= link_to "メンテナンス", admin_root_path, {:target=>"_blank"}  %></li>
-              -->
+              <li><%= link_to "アタックリスト", trust_managements_path %></li>
+              <li><%= link_to "ログアウト", logout_path %></li>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
 <% end %>
 
-<div class="hero-unit">
+<div style="margin-top:50px;margin-left:50px;">
     <h1>中央ビル管理Webシステム</h1>
     <p>Webで提供できる各種システムの統合トップページです。<br/>
     機能別にはヘッダの項目をクリックしてください。</p>

@@ -62,7 +62,7 @@ BiruWeb::Application.routes.draw do
   # match ':controller(/:action(/:id))(.:format)'
 
 #  root :to => 'pages#index'
-  root :to => "performances#index"
+  root :to => "pages#index"
   
 #  resources :owners
 

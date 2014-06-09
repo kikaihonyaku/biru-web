@@ -17,9 +17,16 @@ class ApplicationController < ActionController::Base
   # ログイン認証を行います。
   def check_logined
     
-    if session[:biru_user] then
+    if session[:biru_user] || params[:user_id] then
       begin 
-				@biru_user = BiruUser.find(session[:biru_user])
+        
+        if session[:biru_user]
+          user_id = session[:biru_user]
+        else
+          user_id = params[:user_id]
+        end
+        
+				@biru_user = BiruUser.find(user_id)
       rescue ActiveRecord::RecordNotFound
         reset_session
       end
