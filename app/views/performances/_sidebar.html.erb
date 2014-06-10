@@ -792,9 +792,8 @@ function openClose(id, mid, disp_msg)
 
     <div id="sidebar" style="padding-left:10px;padding-right:10px;">
       <ul class="nav nav-tabs">
-        <li <%= if val == 1 then raw('class="active"') end %>><a href="#tab_month" data-toggle="tab" style=";padding:10px 10px 5px 10px;width:50px;text-align: center;">月次</a></li>
-        <li><a href="#tab_daily" data-toggle="tab" style="padding:10px 10px 5px 10px;width:50px;text-align: center;">日次</a></li>
-        <li  <%= if val == 2 then raw('class="active"') end %>><a href="#tab_etc" data-toggle="tab" style="padding:10px 5px 5px 5px;width:60px;text-align: center;">その他</a></li>
+        <li <%= if val == 1 then raw('class="active"') end %>><a href="#tab_month" data-toggle="tab" style=";padding:10px 10px 5px 10px;width:100px;text-align: center;">策定項目</a></li>
+        <li  <%= if val == 2 then raw('class="active"') end %>><a href="#tab_etc" data-toggle="tab" style="padding:10px 5px 5px 5px;width:100px;text-align: center;">その他</a></li>
       </ul>
       <div id="myTabContent_search" class="tab-content">
         <div class="tab-pane fade <%= if val == 1 then raw('active in') end %>" id="tab_month" style="padding:0;margin:0">
@@ -820,7 +819,7 @@ function openClose(id, mid, disp_msg)
 
               <div id="tree-yyyymm"></div>
               <div>
-                <label ><%= text_field_tag 'monthly_yyyymm_from', @yyyymm_s_monthly, :class=>'ympicker', :style=>'width:65px;text-align:center;' %>&nbsp;＋&nbsp;<%= text_field_tag 'monthly_yyyymm_to', @yyyymm_e_monthly, :class=>'ympicker', :style=>'width:65px;text-align:center;' %></label>
+                <label ><%= text_field_tag 'monthly_yyyymm_from', @yyyymm_s_monthly, :class=>'ympicker', :style=>'width:80px;text-align:center;' %>&nbsp;＋&nbsp;<%= text_field_tag 'monthly_yyyymm_to', @yyyymm_e_monthly, :class=>'ympicker', :style=>'width:80px;text-align:center;' %></label>
               </div>
 
               <div id="tree-dept"></div>
@@ -832,9 +831,6 @@ function openClose(id, mid, disp_msg)
             </ul>
           <% end %>
 
-        </div>
-        <div class="tab-pane fade" id="tab_daily" >
-          指定月の新規来店客数の日別来店客数などを出す。
         </div>
         <div class="tab-pane fade <%= if val == 2 then raw('active in') end %>" id="tab_etc" >
 
@@ -859,15 +855,15 @@ function openClose(id, mid, disp_msg)
             <ul class="nav nav-list well"  style="margin-bottom:15px;">
               <div style="text-align: center;">
                 <div>
-                  <label ><%= text_field_tag 'yyyymm_before', @vacant_yyyymm_before, :class=>'ympicker', :style=>'width:65px;text-align:center;' %>&nbsp;＋&nbsp;<%= text_field_tag 'yyyymm_current', @vacant_yyyymm_current, :class=>'ympicker', :style=>'width:65px;text-align:center;' %></label>
+                  <label ><%= text_field_tag 'yyyymm_before', @vacant_yyyymm_before, :class=>'ympicker', :style=>'width:80px;text-align:center;' %>&nbsp;＋&nbsp;<%= text_field_tag 'yyyymm_current', @vacant_yyyymm_current, :class=>'ympicker', :style=>'width:80px;text-align:center;' %></label>
                 </div>
 
                 <%= button_tag "空日数を表示" ,:type=>'button', :onClick=>"javascript:vacant_dips();" %>
               </div>
             </ul>
 
-
             <!-- 入居期間 -->
+<!--
             <ul class="nav nav-list well"  style="margin-bottom:15px;">
               <div id="tree-layout"　class="nav nav-list well" style="margin-bottom:5px;"></div>
               <div id="tree-room-type"　class="nav nav-list well" style="margin-bottom:5px;"></div>
@@ -881,7 +877,7 @@ function openClose(id, mid, disp_msg)
                 <%= button_tag "入居期間を表示" ,:type=>'button', :onClick=>"javascript:tenancy_period_dips();" %>
               </div>
             </ul>
-
+-->
           <% end %>
 
 

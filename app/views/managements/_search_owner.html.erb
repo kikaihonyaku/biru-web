@@ -5,6 +5,7 @@
 
           <%= text_field_tag 'owner_name', @owner_nm, :placeholder=>'オーナー名' %>
           <%= text_field_tag 'owner_address', @owner_ad, :placeholder=>'住所' %>
+        	<%= hidden_field_tag 'user_id', @biru_user.id %>
 
           <div style="padding-top:20px;text-align: center;">
             <%= submit_tag "検索を実行", :class=>'btn btn-large btn-primary'  %>

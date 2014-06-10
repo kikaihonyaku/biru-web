@@ -10,23 +10,28 @@ class ApplicationController < ActionController::Base
   # 一度sessionがクリアされてしまうと次検索した時に必ずログイン画面になってしまう。
   # 検索条件もリセットされてしまうので使い勝手が悪いので、managementsコントローラの時は
   # もうチェックしないようにする。（良い対策ができるまで）
-  before_filter :check_logined, :except => ['change_biru_icon', 'search_owners', 'search_buildings', 'bulk_search_text'] 
+  #before_filter :check_logined, :except => ['change_biru_icon', 'search_owners', 'search_buildings', 'bulk_search_text'] 
+  
+  # 2014/06/10 paramでuser_idを送るようにして対応できた。
+  before_filter :check_logined
   
   private
 
   # ログイン認証を行います。
   def check_logined
+
+    if session[:biru_user]
+      user_id = session[:biru_user]
+	  elsif params[:user_id]
+      user_id = params[:user_id].to_i
+    else
+			user_id = nil
+    end
     
-    if session[:biru_user] || params[:user_id] then
-      begin 
-        
-        if session[:biru_user]
-          user_id = session[:biru_user]
-        else
-          user_id = params[:user_id]
-        end
-        
+    if user_id then
+      begin
 				@biru_user = BiruUser.find(user_id)
+				session[:biru_user] = @biru_user
       rescue ActiveRecord::RecordNotFound
         reset_session
       end

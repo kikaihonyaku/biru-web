@@ -313,8 +313,8 @@
 		  
         </div>
 
-
         <div style="padding-top:10px;padding-bottom:20px;text-align: center;">
+        	<%= hidden_field_tag 'user_id', @biru_user.id %>
           <%= submit_tag "検索する", :class=>'btn btn-large'  %>
           <button type="button" class="btn btn-default btn-sm btn3d" onClick="javascript:search_init();">クリア</button>
         </div>
