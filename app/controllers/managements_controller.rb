@@ -381,7 +381,8 @@ class ManagementsController < ApplicationController
       if biru.build_type
         biru.tmp_build_type_icon = biru.build_type.icon
       else
-        biru.tmp_build_type_icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e4%b8%8d|00FF00|000000'
+        # biru.tmp_build_type_icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e4%b8%8d|00FF00|000000'
+        biru.tmp_build_type_icon = view_context.image_path('marker_white.png')
       end
 
       biru.trusts.each do |trust|

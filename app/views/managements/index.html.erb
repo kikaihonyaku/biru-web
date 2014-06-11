@@ -33,12 +33,12 @@ function change_biru_icon(type){
     };
 
   } else if(type == "biru_kind" ){
-    // 管理方式のアイコンにする。
+    // 建物種別のアイコンにする。
     for(var item in build_arr){
       build_arr[item].setIcon(build_arr[item].build_type_icon );
     };
   } else if( type == "manage_type") {
-    // 建物種別のアイコンにする。
+    // 管理方式のICONを返しますのアイコンにする。
     for(var item in build_arr){
       build_arr[item].setIcon(build_arr[item].manage_icon );
     };
@@ -816,15 +816,6 @@ function getCoords(position) {
 //      };
 //    });
 
-    // マップをクリックしたらマーカーが落ちてくる。
-    google.maps.event.addListener(mapCanvas, 'click', function(e){
-      var click_marker = createMarker({
-        position : e.latLng
-        ,map : mapCanvas
-        ,animation: google.maps.Animation.DROP
-        ,html:'クリックして作りました！'
-      });
-    })
 
   } // end initialize
 
