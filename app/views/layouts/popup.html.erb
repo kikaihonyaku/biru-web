@@ -59,6 +59,8 @@
 	
 	function createMarker_pop(opts){
 	  var marker = new google.maps.Marker(opts);
+	  infoWnd.setContent(opts.html);
+	  infoWnd.open(opts.map, marker);
 
 	  google.maps.event.addListener(marker, "click", function(){
 	    // write_build(opts.info_msg);
@@ -69,10 +71,6 @@
 	    opts.map.panTo(opts.position);
 
 	    marker.set("visible", true);
-
-	    if(document.getElementById("panowide").style.display != "none"){
-	      refresh_view(opts.position);
-	    }
 
 	  });
 
@@ -119,47 +117,53 @@
         var biru_marker = createMarker_pop({
           position : pos
           ,map : mapCanvas
-//          ,icon : buildings[i].tmp_build_type_icon
-          ,shadow : '/assets/marker_shadow.png'
+		  ,html : building.name 
+		  ,icon : '/assets/building.gif'
+		  ,draggable: true
         });
 		
 //	    mapCanvas.fitBounds(bounds);
 		mapCanvas.setCenter(pos);
 		
-		// マップ上の位置でマーカーを生成  
+		// マップ上の位置でゴミ置き場マーカーを生成  
 	    google.maps.event.addListener(mapCanvas, 'click', function(event) {  
-	        addMarker(event.latLng);
+	        addGarbageArea(event.latLng);
 	    });
 		
 	}
 	
 	// マーカーの生成関数  
-	function addMarker(location) {  
+	function addGarbageArea(location) {  
 	    // マーカーを生成  
 	    marker = new google.maps.Marker({  
-	        position: location,  
-	        map: mapCanvas  
-	    });  
+	        position: location
+	        ,map: mapCanvas  
+			,icon: '/assets/s_garbage_area.png'
+			,draggable: true
+	    }); 
+		
 	    // 情報ウインドウの生成とクリックイベント関数の登録処理  
-	    setMarkerListener(marker, location);  
+	    setMarkerListener(marker, location, 'ゴミ置き場');  
+		
 	    // 生成されたマーカーを保存  
 	    markers.push(marker);  
 	}
 	
 	// 情報ウインドウの生成とクリックイベント関数の登録処理  
-	function setMarkerListener(marker, location) {  
+	function setMarkerListener(marker, location, msg) {  
 	    // 表示文字列の生成(緯度・経度)  
-	    var contentString = "lat:" + location.lat() + "<br>"  
-	                      + "lng:" + location.lng();  
-	    // 情報ウィンドウの生成  
-	    var infoWindow = new google.maps.InfoWindow({  
-	        content: contentString,  
-	        maxWidth: 200  
+	    // var contentString = "lat:" + location.lat() + "<br>" + "lng:" + location.lng();  
+		
+	    // 情報ウィンドウの生成
+	    var infoWindow_local = new google.maps.InfoWindow({  
+		        content: msg
 	    });  
+		
+        infoWindow_local.open(mapCanvas, marker);  
 	    // マーカーのクリックイベントの関数登録  
 	    google.maps.event.addListener(marker, 'click', function(event) {  
 	        // 情報ウィンドウの表示  
-	        infoWindow.open(map, marker);  
+	        infoWindow_local.open(mapCanvas, marker);  
 	    });  
 	} 	
 		

@@ -26,18 +26,26 @@ function click_radio(num){
   
 <table>
 	<tr>
-		<td style="padding-left:20px;">
+		<td style="vertical-align:top;padding-left:20px;">
+			<div style="padding-bottom:10px;">※クリックでゴミ置き場作成。ドラッグで移動することができます。</div>
 			<div style="border-width:3px; border-style:solid; border-color:silver;">
 			  <!-- <div id="pop_map_canvas" style="width: 420px;height:298px;"></div> -->
 			  <div id="pop_map_canvas" style="width: 480px;height:350px;"></div>
 			</div>
-  
-		    <div id="c01" style="position:absolute; left:60px; top:110px; visibility: visible;display:none; ">
-		      <%= image_tag('Z14LE_545.png') %>
-		    </div>
-		    <div id="c02" style="position:absolute; left:355px; top:300px; visibility: visible;display:none; ">
-		      <%= image_tag('Z14LE_547.png') %>
-		    </div>
+  		
+			<div id="c01" style="visibility: visible;display:none; ">
+		   	 <div style="position:absolute; left:60px; top:140px; "><%= image_tag('cursor_left_up.png') %></div>
+		   	 <div style="position:absolute; left:60px; top:383px; "><%= image_tag('cursor_left_down.png') %></div>
+		   	 <div style="position:absolute; left:450px; top:140px; "><%= image_tag('cursor_right_up.png') %></div>
+		   	 <div style="position:absolute; left:348px; top:375px; "><%= image_tag('cursor_right_down_547.png') %></div>
+			</div>
+		 
+			<div id="c02" style="visibility: visible;display:none; ">
+		   	 <div style="position:absolute; left:60px; top:140px; "><%= image_tag('cursor_left_up.png') %></div>
+		   	 <div style="position:absolute; left:60px; top:383px; "><%= image_tag('cursor_left_down.png') %></div>
+		   	 <div style="position:absolute; left:450px; top:140px; "><%= image_tag('cursor_right_up.png') %></div>
+		   	 <div style="position:absolute; left:348px; top:375px; "><%= image_tag('cursor_right_down_545.png') %></div>
+			</div>
 			<div style="clear:both;padding-top:10px;">
 				<%= f.text_area :memo,  :size => "5x3", :class=>"form-control", :placeholder=>'メモ'  %>
 			</div>
@@ -50,8 +58,6 @@ function click_radio(num){
 				<button type="button" class="btn btn-default" onClick="javascript:click_radio(2);">ゴミ置き場</button>
 				<button type="button" class="btn btn-default" onClick="javascript:click_radio(3);">募集図面</button>
 			</div>
-			
-			
 			
 		</td>
 		<td style="vertical-align:top;padding-left:20px;padding-top:10px;">
