@@ -7,7 +7,7 @@ class TrustManagementsController < ApplicationController
   def index
     # Owner Building Trust を連結した他社データを取得する
     @trust_arr = initialize_grid(
-      Trust.joins(:building => :shop ).joins(:owner),
+      Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("manage_types.code = '99999'"),
       :order => 'shops.code',
       :order_direction => 'desc',
       :per_page => 40,

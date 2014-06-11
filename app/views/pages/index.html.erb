@@ -5,16 +5,38 @@
               <li class="nav-header">メニュー</li>
               <li><%= link_to "トップ", root_path %></li>
               <li><%= link_to "地図", managements_path %></li>
-              <li><%= link_to "業績分析", performances_path  %></li>
+              <li><%= link_to "業績分析", performances_path %></li>
               <li><%= link_to "アタックリスト", trust_managements_path %></li>
               <li><%= link_to "ログアウト", logout_path %></li>
             </ul>
           </div><!--/.well -->
+		  
+          <div class="well sidebar-nav" style="margin-top:20px;margin-left:20px;">
+            <ul class="nav nav-list">
+              <li class="nav-header">おしらせ</li>
+              <li>6/12 リリース</li>
+            </ul>
+          </div><!--/.well -->		  
         </div><!--/span-->
 <% end %>
 
-<div style="margin-top:50px;margin-left:50px;">
-    <h1>中央ビル管理Webシステム</h1>
-    <p>Webで提供できる各種システムの統合トップページです。<br/>
-    機能別にはヘッダの項目をクリックしてください。</p>
+
+
+<div class="well" style="margin-top:30px;margin-left:30px;">
+
+	<h3><%= link_to "トップ", root_path %></h3>
+    <p>このページへのリンクです。</p>
+	
+	<h3 style="margin-top:30px;"><%= link_to "地図", managements_path %></h3>
+	<p>物件（自社・他社）を地図に展開します。</p>
+	
+	<h3 style="margin-top:30px;"><%= link_to "業績分析", performances_path %></h3>
+	<p>経営数値の情報をグラフで表示します。</p>
+	
+	<h3 style="margin-top:30px;"><%= link_to "アタックリスト", trust_managements_path %></h3>
+	<p>受託アタックリスト（まだ作成中です）</p>
+	
+	<h3 style="margin-top:30px;"><%= link_to "ログアウト", logout_path %></h3>
+	<p>ログアウトします。</p>
+	
 </div>

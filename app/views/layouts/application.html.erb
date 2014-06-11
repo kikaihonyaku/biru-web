@@ -65,13 +65,12 @@
   <body>
 
         <!-- Begin Navbar -->
-<div class="navbar navbar-static" style="margin-bottom: 0px;">
-    <div class="container">
-      <a class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="glyphicon glyphicon-chevron-down"></span>
-      </a>
-      <div class="nav-collapse collase">
-        <ul class="nav navbar-nav">  
+		
+    <div class="navbar navbar-default" style="margin-bottom:0;">
+      <div class="container">
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+			  
               <li><%= link_to "トップ", root_path %></li>
               <li><%= link_to "地図", managements_path %></li>
               <li><%= link_to "業績分析", performances_path  %></li>
@@ -88,7 +87,7 @@
 
 
     <div class="container-fluid" style="height:100%;width:100%;padding:0;margin:0">
-      <%= bootstrap_flash %>
+      <%#= bootstrap_flash %>
 
       <div class="row-fluid" style="height:100%;" id="top-wrapper">
         
