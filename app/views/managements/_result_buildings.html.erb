@@ -1,5 +1,32 @@
       <!-- Tables
       ================================================== -->
+<script type="text/javascript">
+	function building_table_disp(){
+		$("#building-table-other").attr("style","display:hide");
+	}
+	</script>
+<%
+	# データ０件の時も下で参照するため、最初に定義
+	arr_first = []
+	arr_second = []
+%>
+  
+<% @buildings.each_with_index do |biru, i| %>
+  <%
+	  str_tmp = ""
+	  str_tmp = str_tmp + "<tr>"  
+	  str_tmp = str_tmp + "<td><a href='javascript:link_building_click( #{biru.id.to_s}, #{biru.latitude.to_s}, #{biru.longitude.to_s} )'>#{biru.name}</a></td>"
+	  str_tmp = str_tmp + "<td>#{biru.address}</td>"  
+	  str_tmp = str_tmp + "</tr>"
+  %>
+
+  <% if i < 50 %>
+	 <% arr_first.push(str_tmp) %> 
+  <% else %>
+	 <% arr_second.push(str_tmp) %>
+  <% end %>
+<% end %>
+		  
 <pre class="pre-scrollable" style="background-color:white"><table class="table table-striped table-bordered table-hover table-condensed" style="padding:0 0 0 0;margin:0 0 0 0 ;">
         <thead>
           <tr>
@@ -8,14 +35,19 @@
           </tr>
         </thead>
         <tbody>
-          <% @buildings.each do |biru| %>
-          <tr>
-            <td><a href="<%= "javascript:link_building_click(" + biru.id.to_s + "," + biru.latitude.to_s + "," + biru.longitude.to_s + ")"%>"><%= biru.name %></a></td>
-            <td><%= biru.address %></td>
-          </tr>
-          <% end %>
+			<% arr_first.each do |str| %>
+				<%= raw(str) %>
+			<% end %>
         </tbody>
-      </table></pre>
+      </table>
+  <% if arr_second.length > 0 %>
+  	  <%= raw("<a href=""javascript:building_table_disp();"">残り#{arr_second.length}件も表示する</a>") %>
+	  <table class="table table-striped table-bordered table-hover table-condensed" style="padding:0 0 0 0;margin:0 0 0 0 ;display:none;" id="building-table-other" >
+		<% arr_second.each do |str| %>
+			<%= raw(str) %>
+		<% end %>
+	  </table>
+  <% end %></pre>
 
       <div style="padding-top:10px;">
         <table class="table table-striped table-bordered table-condensed">

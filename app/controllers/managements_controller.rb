@@ -290,7 +290,6 @@ class ManagementsController < ApplicationController
       buildings_to_gon(tmp_buildings)
     end
     
-    @building_pagenate = initialize_grid(@buildings)    
 
     render 'index'
 

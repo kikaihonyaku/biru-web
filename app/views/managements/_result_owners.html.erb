@@ -1,5 +1,32 @@
       <!-- Tables
       ================================================== -->
+<script type="text/javascript">
+	function owner_table_disp(){
+		$("#owner-table-other").attr("style","display:hide");
+	}
+	</script>
+<%
+	# データ０件の時も下で参照するため、最初に定義
+	arr_first = []
+	arr_second = []
+%>
+  
+<% @owners.each_with_index do |owner, i| %>
+  <%
+	  str_tmp = ""
+	  str_tmp = str_tmp + "<tr>"  
+	  str_tmp = str_tmp + "<td><a href='javascript:link_owner_click( #{owner.id.to_s}, #{owner.latitude.to_s}, #{owner.longitude.to_s} )'>#{owner.name}</a></td>"
+	  str_tmp = str_tmp + "<td>#{owner.address}</td>"  
+	  str_tmp = str_tmp + "</tr>"
+  %>
+
+  <% if i < 50 %>
+	 <% arr_first.push(str_tmp) %> 
+  <% else %>
+	 <% arr_second.push(str_tmp) %>
+  <% end %>
+<% end %>
+		  
 <pre class="pre-scrollable" style="background-color:white"><table class="table table-striped table-bordered table-hover table-condensed" style="padding:0 0 0 0;margin:0 0 0 0 ;">
         <thead>
           <tr>
@@ -8,11 +35,20 @@
           </tr>
         </thead>
         <tbody>
-          <% @owners.each do |owner| %>
-          <tr>
-            <td><a href="<%= "javascript:link_owner_click(" + owner.id.to_s  + "," + owner.latitude.to_s + "," + owner.longitude.to_s + ")"%>"><%= owner.name %></a></td>
-            <td><%= owner.address %></td>
-          </tr>
-          <% end %>
+			
+			<% arr_first.each do |str| %>
+				<%= raw(str) %>
+			<% end %>
+			
         </tbody>
-      </table></pre>
+      </table>
+  <% if arr_second.length > 0 %>
+  	  <%= raw("<a href=""javascript:owner_table_disp();"">残り#{arr_second.length}件も表示する</a>") %>
+	  <table class="table table-striped table-bordered table-hover table-condensed" style="padding:0 0 0 0;margin:0 0 0 0 ;display:none;" id="owner-table-other" >
+		<% arr_second.each do |str| %>
+			<%= raw(str) %>
+		<% end %>
+	  </table>
+  <% end %></pre>
+  
+ 

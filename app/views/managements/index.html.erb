@@ -117,15 +117,39 @@ function getCoords(position) {
 
 
   function win_result_biru(){
-    $( "#result_biru" ).dialog({ width: 500, height: 550 });
+    $( "#result_biru" ).dialog({
+		 width: 500
+	   , height: 550 
+	   , position: {
+	       of : window
+	      ,at: 'center'
+	      ,my: 'left top'
+	   }
+	 });
   }
 
   function win_result_owner(){
-    $( "#result_owner" ).dialog({ width: 500, height: 450 });
+    $( "#result_owner" ).dialog({ 
+		 width: 500
+		,height: 450
+ 	    ,position: {
+ 	       of : window
+ 	      ,at: 'center'
+ 	      ,my: 'left top'
+ 	   }
+	 });
   }
 
   function win_result_shop(){
-    $( "#result_shop" ).dialog({ width: 500, height: 450 });
+    $( "#result_shop" ).dialog({ 
+		width: 500
+	   ,height: 450
+	   ,position: {
+	       of : window
+	      ,at: 'center'
+	      ,my: 'left top'
+	   }
+    });
   }
 
 

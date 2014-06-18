@@ -4,14 +4,18 @@
         <thead>
           <tr>
             <th>営業所</th>
-            <th>住所</th>
+            <th>電話番号１</th>
+            <th>電話番号２</th>
+            <th>定休日</th>
           </tr>
         </thead>
         <tbody>
           <% @shops.each do |shop| %>
           <tr>
             <td style="min-width: 80px;"><a href="<%= "javascript:link_shop_click(" + shop.id.to_s + ")"%>"><%= shop.name %></a></td>
-            <td><%= shop.address %></td>
+            <td><%= shop.tel %></td>
+            <td><%= shop.tel2 %></td>
+            <td><%= shop.holiday %></td>
           </tr>
           <% end %>
         </tbody>
