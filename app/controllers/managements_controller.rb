@@ -96,6 +96,17 @@ class ManagementsController < ApplicationController
   # オーナー情報確認用のwindowを表示します。
   def popup_owner
     @owner = Owner.find(params[:id])
+    gon.owner = @owner
+    
+    if @owner.trusts
+      buildings = []
+      
+      @owner.trusts.each do |trust|
+        buildings.push(trust.building) if trust.building
+      end
+      gon.buildings = buildings
+      
+    end
     render :layout => 'popup'
   end
 
@@ -105,7 +116,8 @@ class ManagementsController < ApplicationController
     if @owner.update_attributes(params[:owner])
     end
 
-    render :action=>'popup_owner', :layout => 'popup'
+    # render :action=>'popup_owner', :layout => 'popup'
+    redirect_to :action=>'popup_owner', :id=>@owner.id
 
   end
 
@@ -119,12 +131,13 @@ class ManagementsController < ApplicationController
 
   def popup_building_update
     @building = Building.find(params[:id])
-    gon.building = @building
 
     if @building.update_attributes(params[:building])
     end
 
-    render :action=>'popup_building', :layout => 'popup'
+    #render :action=>'popup_building', :layout => 'popup'
+    redirect_to :action=>'popup_building', :id=>@building.id
+    
   end
 
   def index
@@ -276,6 +289,8 @@ class ManagementsController < ApplicationController
     if tmp_buildings
       buildings_to_gon(tmp_buildings)
     end
+    
+    @building_pagenate = initialize_grid(@buildings)    
 
     render 'index'
 

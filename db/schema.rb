@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140517093548) do
+ActiveRecord::Schema.define(:version => 20140616213859) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -161,6 +161,14 @@ ActiveRecord::Schema.define(:version => 20140517093548) do
     t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "login_histories", :force => true do |t|
+    t.integer  "biru_user_id"
+    t.string   "code"
+    t.string   "name"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "manage_types", :force => true do |t|

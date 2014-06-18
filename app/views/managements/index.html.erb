@@ -116,14 +116,6 @@ function getCoords(position) {
 }
 
 
-  function win_owner(id) {
-    window.open('/managements/popup_owner/' + id   , "", "width=400,height=450,resizable=yes,scrollbars=yes");
-  }
-
-  function win_building(id){
-    window.open('/managements/popup_building/' + id   , "", "width=850,height=650,resizable=yes,scrollbars=yes");
-  }
-
   function win_result_biru(){
     $( "#result_biru" ).dialog({ width: 500, height: 550 });
   }
@@ -844,6 +836,11 @@ function getCoords(position) {
       padding:0;
       margin:0;
     }
+	
+	a{
+	  text-decoration:underline;	
+	}
+	
   </style>
 
 <% end %>

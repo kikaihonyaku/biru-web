@@ -66,14 +66,14 @@ function click_radio(num){
 				<table class="table table-bordered">
 					<thead>
 						<tr class="active">
-							<td colspan="2" style="font-weight:bold">物件基本情報（<a href="" onClick="javascript:alert('この機能はまだ使えません')" >編集</a>）</td>
+							<td colspan="2" style="font-weight:bold">物件基本情報（<a href="" onClick="javascript:alert('この機能はまだ使えません');return false;" >編集</a>）</td>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
 							<% if @building.code %>
 								<td style="text-align:right;">建物CD</td>
-								<td class="text-success"><span class="glyphicon glyphicon-ok"></span> <span class="sr-only"><%= @building.code %></span></td>
+								<td><%= @building.code %></td>
 							<% else %>
 								<td style="text-align:right;font-size:12px;">見込み建物CD</td>
 								<td><%= @building.attack_code %></td>
@@ -99,10 +99,10 @@ function click_radio(num){
 							<tr>
 								<% if @trust.owner.code %>
 									<td style="text-align:right;">貸主CD</td>
-									<td><%= @trust.owner.code + "  ( " + @trust.owner.name + " 様 )" %></td>
+									<td><a href="javascript:win_owner(<%= @trust.owner.id %>);"><%= @trust.owner.code + "  ( " + @trust.owner.name + " 様 )" %></a></td>
 								<% else %>
 									<td style="text-align:right;font-size:12px;">見込み貸主CD</td>
-									<td><%= @trust.owner.attack_code + "  ( " + @trust.owner.name + " 様 )" %></td>
+									<td><a href="javascript:win_owner(<%= @trust.owner.id %>);"><%= @trust.owner.attack_code + "  ( " + @trust.owner.name + " 様 )" %></a></td>
 								<% end%>
 							</tr>
 

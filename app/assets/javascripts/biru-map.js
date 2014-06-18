@@ -594,3 +594,12 @@ function init_map(user_id){
 
   return mapCanvas;
 }
+
+function win_owner(id) {
+  window.open('/managements/popup_owner/' + id   , "", "width=900,height=650,resizable=yes,scrollbars=yes");
+}
+
+function win_building(id){
+  window.open('/managements/popup_building/' + id   , "", "width=850,height=650,resizable=yes,scrollbars=yes");
+}
+

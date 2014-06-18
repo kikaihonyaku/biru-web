@@ -1,26 +1,92 @@
-<!-- 所持物件／管理方式を表示する -->
 <%= form_for(@owner, :url=>{:action=>'popup_owner_update', :id=>@owner}, :html=>{:class=>"form-horizontal"}) do |f|%>
-<fieldset>
-  <legend><%= @owner.name %></legend>
+  <legend style="padding:20px;padding-botom:10px;"><%= @owner.name %></legend>
+  
+<table>
+	<tr>
+		<td style="vertical-align:top;padding-left:20px;">
+			<div style="border-width:3px; border-style:solid; border-color:silver;">
+			  <div id="pop_map_canvas" style="width: 480px;height:350px;"></div>
+			</div>
+			
+		</td>
+		<td style="vertical-align:top;padding-left:20px;">
 
-  <div class="control-group">
-    <label class="control-label" for="input01">住所</label>
-    <div class="controls" >
-        <%= @owner.address %>
-    </div>
-  </div>
+			<div class="table-responsive panel panel-default">
+				<table class="table table-bordered">
+					<thead>
+						<tr class="active">
+							<td colspan="2" style="font-weight:bold">貸主基本情報（<a href="" onClick="javascript:alert('この機能はまだ使えません');return false;" >編集</a>）</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<% if @owner.code %>
+								<td style="text-align:right;">貸主CD</td>
+								<td><%= @owner.code %></td>
+							<% else %>
+								<td style="text-align:right;font-size:12px;">見込み貸主CD</td>
+								<td><%= @owner.attack_code %></td>
+							<% end%>
+						</tr>
+						<tr>
+							<td style="text-align:right;">名前</td>
+							<td><%= @owner.name %></td>
+						</tr>
+						<tr>
+							<td style="text-align:right;">住所</td>
+							<td><%= @owner.address %></td>
+						</tr>
 
-  <div class="control-group">
-    <label class="control-label" for="input01">備考</label>
-    <div class="controls">
-        <%= f.text_area :memo,  :size => "3x2", :class=>"form-control"  %>
-    </div>
-  </div>
-  <div class="form-actions" style="padding-left:120px;">
-    <%= f.submit '更新', :class=>"btn btn-primary" %>
-    <button type="reset" class="btn" onClick="window.close();return false;">閉じる</button>
-  </div>
-</fieldset>
-<% end %>
+					</tbody>
+				</table>
+			</div>
+						
+			<div class="table-responsive panel panel-default">
+				<table class="table table-bordered table-condensed">
+			      <thead>
+			        <tr>
+			          <th class="active">建物名</th>
+			          <th class="active">住所</th>
+			          <th class="active">管理営業所</th>
+			        </tr>
+			      </thead>
+			      <tbody>
+			        <% @owner.trusts.each do |trust| %>
+						<% if trust.building %>
+						
+					        <tr>
+					          <td><a href="javascript:win_building(<%= trust.building.id %>);"><%= trust.building.name %></a></td>
+					          <td><%= trust.building.address %></td>
+							  
+							  <% if trust.building.shop %>
+							  	<td><%= trust.building.shop.name %></td>
+							  <% else %>
+							  	<td></td>
+							  <% end %>
+					        </tr>
+						
+						<% end %>
+			        <% end %>
+			      </tbody>
+			    </table>
+			</div>
+			
+			<div style="clear:both;margin-top:10px;">
+				<%= f.text_area :memo,  :size => "5x3", :class=>"form-control", :placeholder=>'メモ'  %>
+			</div>
+			
+			<div style="padding-top:10px;text-align:center;float:left;">
+				<%= f.submit 'メモ欄 更新', :class=>"btn btn-primary" %>
+			</div>
+			
+			
+		</td>
+	</tr>
+</table>
+
+</div>
+
+
+  <% end %>
 
 

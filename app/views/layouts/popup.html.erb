@@ -48,6 +48,11 @@
       .form-horizontal .controls {
         margin-left: 100px; /* ここを変更 */
       }
+	  
+  	a{
+  	  text-decoration:underline;	
+  	}
+	  
     </style>
 	
 	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
@@ -55,10 +60,10 @@
 		
 	var mapCanvas; // グローバル
     var markers = []; // マーカー保存配列
-	var infoWnd = new google.maps.InfoWindow(); //唯一のinfoWnd
 	
 	function createMarker_pop(opts){
 	  var marker = new google.maps.Marker(opts);
+	  var infoWnd = new google.maps.InfoWindow(); //唯一のinfoWnd
 	  infoWnd.setContent(opts.html);
 	  infoWnd.open(opts.map, marker);
 
@@ -106,13 +111,23 @@
 		
 		mapCanvas.mapTypes.set('noText', lopanType);
 		
+		<% if @building %>
+			init_building(); // 物件の地図情報を作成
+		<% elsif @owner %>
+			init_owner(); // 貸主の地図情報を作成
+		<% end %>
+	}
+	
+	// 物件の地図情報作成
+	function init_building(){
+		
 	    // 初期表示位置を調整
 	    var bounds = new google.maps.LatLngBounds();
+		var building = gon.building
 		
 		var pos;
-		var building = gon.building
         pos = new google.maps.LatLng(building.latitude, building.longitude);
-//        bounds.extend(pos);
+        // bounds.extend(pos);
 
         var biru_marker = createMarker_pop({
           position : pos
@@ -122,13 +137,50 @@
 		  ,draggable: true
         });
 		
-//	    mapCanvas.fitBounds(bounds);
+	    // mapCanvas.fitBounds(bounds);
 		mapCanvas.setCenter(pos);
 		
 		// マップ上の位置でゴミ置き場マーカーを生成  
 	    google.maps.event.addListener(mapCanvas, 'click', function(event) {  
 	        addGarbageArea(event.latLng);
 	    });
+		
+	}
+	
+	// 貸主の地図情報作成
+	function init_owner(){
+		var bounds = new google.maps.LatLngBounds();
+		var owner = gon.owner
+		var buildings = gon.buildings
+		
+		var pos;
+        pos = new google.maps.LatLng(owner.latitude, owner.longitude);
+        bounds.extend(pos);
+		
+        var owner_marker = createMarker_pop({
+          position : pos
+          ,map : mapCanvas
+		  ,html : owner.name 
+		  ,icon : '/assets/owner.png'
+		  ,draggable: true
+        });
+		
+		for( var i in buildings ){
+			
+	        pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
+	        bounds.extend(pos);
+			
+	        var building_marker = createMarker_pop({
+	          position : pos
+	          ,map : mapCanvas
+			  ,html : buildings[i].name 
+			  ,icon : '/assets/building.gif'
+			  ,draggable: true
+	        });
+		}
+		
+	    mapCanvas.fitBounds(bounds);
+		// mapCanvas.setCenter(pos);
 		
 	}
 	
