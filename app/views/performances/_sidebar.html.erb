@@ -101,7 +101,7 @@
                   },
                   { label: 'アセット',id:243, graph_name: 'アセットマネジメント部', dept_list:[243, 209, 181] ,
                     children: [
-                      { label: '保険課', id:209, graph_name: '保健課', dept_list:[209] },
+                      { label: '保険課', id:209, graph_name: '保険課', dept_list:[209] },
                       { label: '法人課', id:181, graph_name: '法人課', dept_list:[181] },
                     ]
                   },
@@ -197,7 +197,7 @@
         {
           label: 'アセット', id: 6050,
           children: [
-            { label: '保健課', id: 6051,
+            { label: '保険課', id: 6051,
               children:[
                 { label: '代理店手数料（契約）', id: 'H-B0025' ,summary:1, calc:1},
                 { label: '代理店手数料（計上）', id: 'H-41060' ,summary:1, calc:1},
@@ -792,7 +792,7 @@ function openClose(id, mid, disp_msg)
 
     <div id="sidebar" style="padding-left:10px;padding-right:10px;">
       <ul class="nav nav-tabs">
-        <li <%= if val == 1 then raw('class="active"') end %>><a href="#tab_month" data-toggle="tab" style=";padding:10px 10px 5px 10px;width:100px;text-align: center;">経営数値</a></li>
+        <li <%= if val == 1 then raw('class="active"') end %>><a href="#tab_month" data-toggle="tab" style=";padding:10px 10px 5px 10px;width:100px;text-align: center;">業績確認</a></li>
         <li  <%= if val == 2 then raw('class="active"') end %>><a href="#tab_etc" data-toggle="tab" style="padding:10px 5px 5px 5px;width:100px;text-align: center;">その他</a></li>
       </ul>
       <div id="myTabContent_search" class="tab-content">

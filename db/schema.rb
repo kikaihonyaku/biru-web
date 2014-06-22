@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140616213859) do
+ActiveRecord::Schema.define(:version => 20140622020217) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -135,6 +135,14 @@ ActiveRecord::Schema.define(:version => 20140616213859) do
     t.string  "station_nm"
     t.integer "bus_exists"
     t.integer "minuite"
+    t.string  "owner_postcode"
+    t.string  "owner_honorific_title"
+    t.text    "owner_memo"
+    t.text    "building_memo"
+    t.integer "owner_type"
+    t.integer "building_type"
+    t.integer "execute_status",        :default => 0
+    t.string  "execute_msg"
   end
 
   create_table "items", :force => true do |t|
@@ -222,12 +230,15 @@ ActiveRecord::Schema.define(:version => 20140616213859) do
     t.float    "latitude"
     t.float    "longitude"
     t.boolean  "gmaps"
-    t.datetime "created_at",                       :null => false
-    t.datetime "updated_at",                       :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.text     "memo"
     t.integer  "owner_rank_id"
-    t.boolean  "delete_flg",    :default => false
+    t.boolean  "delete_flg",      :default => false
     t.string   "attack_code"
+    t.string   "postcode"
+    t.string   "honorific_title"
+    t.string   "tel"
   end
 
   create_table "room_layouts", :force => true do |t|
@@ -271,6 +282,7 @@ ActiveRecord::Schema.define(:version => 20140616213859) do
     t.string  "tel"
     t.string  "holiday"
     t.string  "tel2"
+    t.boolean "delete_flg", :default => false
   end
 
   add_index "shops", ["area_id"], :name => "index_shops_on_area_id"

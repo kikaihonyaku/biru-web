@@ -95,18 +95,7 @@ class ManagementsController < ApplicationController
 
   # オーナー情報確認用のwindowを表示します。
   def popup_owner
-    @owner = Owner.find(params[:id])
-    gon.owner = @owner
-    
-    if @owner.trusts
-      buildings = []
-      
-      @owner.trusts.each do |trust|
-        buildings.push(trust.building) if trust.building
-      end
-      gon.buildings = buildings
-      
-    end
+    get_popup_owner_info(params[:id])
     render :layout => 'popup'
   end
 
@@ -118,7 +107,40 @@ class ManagementsController < ApplicationController
 
     # render :action=>'popup_owner', :layout => 'popup'
     redirect_to :action=>'popup_owner', :id=>@owner.id
-
+  end
+  
+  
+  # アプローチ履歴を登録する
+  def owner_approach_regist 
+    @owner_approach = OwnerApproach.new(params[:owner_approach])
+    
+    respond_to do |format|
+      if @owner_approach.save
+        format.html { redirect_to :controller=>'managements', :action => 'popup_owner', :id => params[:owner_approach][:owner_id].to_i, notice: 'Book was successfully created.' }
+        format.json { render json: @owner_approach, status: :created, location: @owner_approach }
+      else
+        get_popup_owner_info(params[:owner_approach][:owner_id].to_i)
+        
+        format.html { render action: "popup_owner" }
+        format.json { render json: @owner_approach.errors, status: :unprocessable_entity }
+      end
+    end    
+  end  
+  
+  def get_popup_owner_info(id)
+    @owner = Owner.find(id)
+    gon.owner = @owner
+    @owner_approaches = initialize_grid(OwnerApproach.joins(:owner).includes(:biru_user, :approach_kind).where(:owner_id => @owner) )
+    
+    if @owner.trusts
+      buildings = []
+      
+      @owner.trusts.each do |trust|
+        buildings.push(trust.building) if trust.building
+      end
+      gon.buildings = buildings
+      
+    end
   end
 
   # 建物情報確認用のwindowを表示する。
@@ -171,7 +193,8 @@ class ManagementsController < ApplicationController
     # 絞り込んだ貸主から、建物の配列を取得する
     @buildings = []
     tmp_owners.group("buildings.id").select("buildings.id").each do |id|
-      @buildings << Building.find_by_id(id)
+      biru = Building.find_by_id(id)
+      @buildings << biru if biru
     end
 
     if @buildings
@@ -241,6 +264,12 @@ class ManagementsController < ApplicationController
       ta_flg = false # 他社カウント
       
       manage_type = []
+      
+      # 一度すべて未チェックで初期化
+      @manage_type_checked.keys.each do |manage_type_check|
+        @manage_type_checked[manage_type_check] = false
+      end
+      
       params[:manage_type].keys.each do |key|
         manage_type.push(ManageType.find_by_code(params[:manage_type][key]).id)
         @manage_type_checked[key.to_sym] = true
@@ -392,18 +421,20 @@ class ManagementsController < ApplicationController
   # 建物インスタンスに物件種別・管理方式を設定する。
   def set_biru_obj(buildings)
     buildings.each do |biru|
+      
       if biru.build_type
         biru.tmp_build_type_icon = biru.build_type.icon
       else
         # biru.tmp_build_type_icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e4%b8%8d|00FF00|000000'
         biru.tmp_build_type_icon = view_context.image_path('marker_white.png')
       end
-
-      biru.trusts.each do |trust|
-        if trust.manage_type
-          biru.tmp_manage_type_icon = trust.manage_type.icon
+      
+      if biru.trusts
+        biru.trusts.each do |trust|
+          if trust.manage_type
+            biru.tmp_manage_type_icon = trust.manage_type.icon
+          end
         end
-
       end
 
     end

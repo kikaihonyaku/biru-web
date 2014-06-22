@@ -133,15 +133,26 @@ function MenuControll(map) {
     google.maps.event.addDomListener(controlUI, 'click', function() {
       var obj = document.getElementById("simple-menu");
 
+			// 2014/04/16 safari対応でクリックはクリックイベント経由で行う
+			var click_ev = document.createEvent("MouseEvent");
+			click_ev.initEvent("click", true, true);
+			
+
       if (!fullScreen) {
-        obj.click();
+      	// 2014/04/16 safari対応でクリックはクリックイベント経由で行う
+        //obj.click();
+        obj.dispatchEvent(click_ev);
+        
         controlText.innerHTML = '<strong>メニュー非表示</strong>';
         //divStyle.marginLeft = "500px";
         //divStyle.width = "80%";
 
       }
       else {
-        obj.click();
+      	// 2014/04/16 safari対応でクリックはクリックイベント経由で行う
+        //obj.click();
+        obj.dispatchEvent(click_ev);
+        
         controlText.innerHTML = '<strong>メニュー&nbsp;&nbsp;表示</strong>';
         //divStyle.marginLeft = "0px";
         //divStyle.width = "100%";

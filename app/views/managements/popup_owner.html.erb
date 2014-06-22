@@ -1,4 +1,4 @@
-<%= form_for(@owner, :url=>{:action=>'popup_owner_update', :id=>@owner}, :html=>{:class=>"form-horizontal"}) do |f|%>
+<%= form_for(@owner, :url=>{:action=>'popup_owner_update', :controller=>'managements', :id=>@owner}, :html=>{:class=>"form-horizontal"}) do |f|%>
   <legend style="padding:20px;padding-botom:10px;"><%= @owner.name %></legend>
   
 <table>
@@ -9,7 +9,7 @@
 			</div>
 			
 		</td>
-		<td style="vertical-align:top;padding-left:20px;">
+		<td style="vertical-align:top;padding-left:20px;padding-right:20px;">
 
 			<div class="table-responsive panel panel-default">
 				<table class="table table-bordered">
@@ -83,10 +83,40 @@
 		</td>
 	</tr>
 </table>
-
-</div>
-
-
   <% end %>
+
+
+	<div style="clear:both;margin-top:50px;">
+		
+
+		<%= simple_form_for :owner_approach, :url=>{:controller => :managements, :action => :owner_approach_regist}  do |f| %>
+			<%= f.input :owner_id, :as => :hidden, :input_html => {:value => @owner.id } %>
+			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
+	
+			<table>
+				<tr>
+					<td><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:120px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
+					<td><%= f.input :approach_kind_id, label: '種別', collection: ApproachKind.find(:all), prompt: "--", :input_html => {:style=>'width:100px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
+					<td><%= f.input :content, label: '内容', placeholder: 'アプローチ内容をいれてください', :input_html => {:class => 'input-large', :style=>'width:200px;vertical-align:botto'} %></td>
+					<td><%= f.submit '登録', :class => 'btn-primary', :style=>'margin-bottom:20px;margin-left:20px;' %></td>
+				</tr>
+			</table>
+		
+			<%#= f.input :approach_date, label: '日付', as: :datepicker %>
+		<% end %>
+
+		<div style="padding-left:20px;padding-right:20px;margin-top:20px;width:850px;">
+			<%= grid(@owner_approaches) do |g|
+		 		g.column name: 'アプローチ日' do |obj| obj.approach_date if obj.approach_date end
+				g.column name: '種別' do |obj| obj.approach_kind.name if obj.approach_kind end
+				g.column name: '内容' do |obj| obj.content if obj.content end
+				g.column name: '登録者' do |obj| obj.biru_user.name if obj.biru_user end
+				g.column name: '登録日' do |obj| obj.created_at if obj.created_at end
+			end
+			%>
+		</div>
+		
+	</div>
+
 
 

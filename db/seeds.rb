@@ -260,7 +260,7 @@ def init_shop
   # 東武支店
   show_arr.push({:code=>3, :name=>'草加営業所', :address=>'埼玉県草加市氷川町2131番地3', :area_id=>1, :group_id=>1, :tel=>'0120-278-342', :tel2=>'048-927-8311', :holiday=>'水曜'})
   show_arr.push({:code=>11, :name=>'草加新田営業所', :address=>'埼玉県草加市金明町276', :area_id=>1, :group_id=>1, :tel=>'0120-702-728', :tel2=>'048-930-2300', :holiday=>'火曜'})
-  show_arr.push({:code=>16, :name=>'北千住営業所', :address=>'東京都足立区千住3-1 石黒ビル2F', :area_id=>1, :group_id=>1, :tel=>'0120-956-776', :tel2=>'03-5813-1741', :holiday=>'水曜'})
+  show_arr.push({:code=>16, :name=>'北千住営業所', :address=>'東京都足立区千住2-22 マスミビル1F', :area_id=>1, :group_id=>1, :tel=>'0120-956-776', :tel2=>'03-5813-1741', :holiday=>'水曜'})
   show_arr.push({:code=>1, :name=>'南越谷営業所', :address=>'埼玉県越谷市南越谷1-20-17　中央ビル管理本社ビル内1F', :area_id=>2, :group_id=>1, :tel=>'0120-754-215', :tel2=>'048-988-8800', :holiday=>'無休'})
   show_arr.push({:code=>18, :name=>'越谷営業所', :address=>'埼玉県越谷市赤山本町2-14', :area_id=>2, :group_id=>1, :tel=>'0120-948-909', :tel2=>'048-969-0111', :holiday=>'水曜'})
   show_arr.push({:code=>8, :name=>'北越谷営業所', :address=>'埼玉県越谷市大沢3-19-17', :area_id=>3, :group_id=>1, :tel=>'0120-304-137', :tel2=>'048-979-4455', :holiday=>'水曜'})
@@ -268,11 +268,11 @@ def init_shop
   show_arr.push({:code=>21, :name=>'せんげん台営業所', :address=>'埼玉県越谷市千間台東1-8-1', :area_id=>3, :group_id=>1, :tel=>'0120-929-979', :tel2=>'048-973-3530', :holiday=>'火・水曜'})
 
   # さいたま支店
-  show_arr.push({:code=>22, :name=>'戸田公園営業所', :address=>'戸田市本町4-16-17 熊木ビル3F', :area_id=>11, :group_id=>2, :tel=>'xxxxx', :tel2=>'048-234-0057', :holiday=>'不明'})
+  show_arr.push({:code=>22, :name=>'戸田公園営業所', :address=>'戸田市本町4-16-17 熊木ビル3F', :area_id=>11, :group_id=>2, :tel=>'0120-925-009', :tel2=>'048-234-0056', :holiday=>'水曜'})
   show_arr.push({:code=>2, :name=>'戸田営業所', :address=>'埼玉県戸田市大字新曽353-6', :area_id=>11, :group_id=>2, :tel=>'0120-654-021', :tel2=>'048-441-4021', :holiday=>'火曜'})
   show_arr.push({:code=>5, :name=>'武蔵浦和営業所', :address=>'埼玉県さいたま市南区別所7-9-5', :area_id=>12, :group_id=>2, :tel=>'0120-634-315', :tel2=>'048-838-8822', :holiday=>'水曜'})
   show_arr.push({:code=>15, :name=>'川口営業所', :address=>'埼玉県川口市川口1-1-1 キュポ・ラ専門店1F', :area_id=>13, :group_id=>2, :tel=>'0120-163-366', :tel2=>'048-227-3366', :holiday=>'水曜'})
-  show_arr.push({:code=>17, :name=>'浦和営業所', :address=>'埼玉県さいたま市浦和区東仲町11-23 3F', :area_id=>14, :group_id=>2, :tel=>'0120-953-833', :tel2=>'048-871-2161', :holiday=>'火・水曜'})
+  show_arr.push({:code=>17, :name=>'浦和営業所', :address=>'埼玉県さいたま市浦和区東仲町11-23 3F', :area_id=>14, :group_id=>2, :tel=>'0120-953-833', :tel2=>'048-871-2161', :holiday=>'水曜'})
   show_arr.push({:code=>13, :name=>'与野営業所', :address=>'埼玉県さいたま市浦和区上木崎1丁目8-10', :area_id=>15, :group_id=>2, :tel=>'0120-234-495', :tel2=>'048-823-4388', :holiday=>'水曜'})
   show_arr.push({:code=>10, :name=>'東浦和営業所', :address=>'埼玉県さいたま市緑区東浦和1-14-7', :area_id=>16, :group_id=>2, :tel=>'0120-817-455', :tel2=>'048-876-1611', :holiday=>'水曜'})
   show_arr.push({:code=>6, :name=>'東川口営業所', :address=>'埼玉県川口市東川口2丁目3-35 サクセスＩＭ1F', :area_id=>17, :group_id=>2, :tel=>'0120-643-552', :tel2=>'048-297-3552', :holiday=>'火曜'})
@@ -860,22 +860,31 @@ def import_data_yourself_owner(filename)
 
       row = line.split(",")
 
-      unless row[10]
+      unless row[9]
         throw :not_header
       end
 
       imp = ImpTable.new
+      imp.eigyo_cd = row[0]
+      imp.eigyo_nm = row[1]
+      imp.building_cd = row[2]
+      imp.building_nm = row[3]
+      imp.building_address = row[4]
+    	imp.build_day = row[6]
+    	imp.building_memo = "物件種別：" + row[5] + ", 間取り：" + row[7] + ", 戸数：" + row[8]
+      
+      imp.owner_cd = row[9]
+      imp.owner_nm = row[10]
+      imp.owner_postcode = row[12]
+      imp.owner_address = row[13]
+      imp.owner_tel = row[14]
+      imp.owner_honorific_title = row[11]
+
 #      imp.siten_cd = row[0]
 #      imp.eigyo_order = row[1]
-      imp.eigyo_cd = row[1]
-      imp.eigyo_nm = row[2]
 #      imp.kanri_cd = row[4]
 #      imp.kanri_nm = row[5]
 #      imp.trust_cd = row[6]
-      imp.building_cd = row[11]
-      imp.building_nm = row[12]
-      imp.building_address = row[15]
-      imp.building_type_code = row[19]
 #      imp.room_cd = row[9]
 #      imp.room_nm = row[10]
 #      imp.kanri_start_date = row[11]
@@ -885,11 +894,7 @@ def import_data_yourself_owner(filename)
 #      imp.room_type_nm = row[15]
 #      imp.room_layout_cd = row[16]
 #      imp.room_layout_nm = row[17]
-      imp.owner_cd = row[0]
-      imp.owner_nm = row[3]
 #      imp.owner_kana = row[20]
-      imp.owner_address = row[5]
-      imp.owner_tel = row[6]
       imp.save!
 
       if imp
@@ -907,18 +912,21 @@ def import_data_yourself_owner(filename)
   ####################
   # 貸主の登録
   ####################
-  ImpTable.group(:owner_cd, :owner_nm, :owner_address ).each do |imp|
+  ImpTable.group(:owner_cd, :owner_nm, :owner_address, :owner_honorific_title, :owner_postcode, :owner_tel ).select("owner_cd, owner_nm, owner_address, owner_honorific_title, owner_postcode, owner_tel").each do |imp|
   catch :next_owner do
 
     owner = Owner.unscoped.find_or_create_by_attack_code(imp.owner_cd)
     owner.attack_code = imp.owner_cd
     owner.name = imp.owner_nm
+    owner.honorific_title = imp.owner_honorific_title
+    owner.postcode = imp.owner_postcode
     owner.address = imp.owner_address
+    owner.tel = imp.owner_tel
+    
     owner.delete_flg = false
     biru_geocode(owner, false)
     begin
       owner.save!
-
     rescue
       #p "エラー:save " + biru.name + ':' + biru.address
       p "貸主登録エラー:save "
@@ -928,16 +936,17 @@ def import_data_yourself_owner(filename)
     ##############
     # 建物
     ##############
-    ImpTable.where(:owner_cd=>imp.owner_cd).group(:eigyo_cd, :eigyo_nm, :building_cd, :building_nm, :building_address, :building_type_code ).each do |imp_biru|
+    ImpTable.where(:owner_cd=>imp.owner_cd).group(:eigyo_cd, :eigyo_nm, :building_cd, :building_nm, :building_address, :building_type_cd, :building_memo ).select("eigyo_cd, eigyo_nm, building_cd, building_nm, building_address, building_type_cd, building_memo").each do |imp_biru|
     catch :next_building do
 
       # 建物の登録
       biru = Building.unscoped.find_or_create_by_attack_code(imp_biru.building_cd)
       biru.attack_code = imp_biru.building_cd
       biru.name = imp_biru.building_nm
+      biru.memo = imp_biru.building_memo
       biru.delete_flg = false
 
-      biru.build_type_id = convert_biru_type(imp_biru.building_type_code)
+      biru.build_type_id = convert_biru_type(imp_biru.building_type_cd)
       if biru.build_type_id
         biru.tmp_build_type_icon = biru.build_type.icon
       end
@@ -995,8 +1004,173 @@ def update_gmap
   end
 end
 
-
 #update_gmap
+
+
+# 一括貸主登録を行います。
+# type:0 自社管理対象 1:アタックリスト
+# ▼受け取る項目
+# 0 貸主CD
+# 1 貸主名
+# 2 敬称
+# 3 郵便場号
+# 4 住所
+# 5 電話番号
+def bulk_owner_regist(type, filename)
+  
+  # ファイル存在チェック
+  unless File.exist?(filename)
+    puts 'file not exist'
+    return false
+  end
+
+  # imp_tablesを初期化
+  # ImpTable.delete_all
+  
+  # 元データを一時表に登録
+  open(filename).each_with_index do |line, cnt|
+    catch :not_header do
+
+      # 1行目は読み飛ばす
+      throw :not_header if cnt == 0
+        
+      # 必要項目に満たないものは読み飛ばす
+      row = line.split(",")
+      unless row[5] 
+        p cnt.to_s + "行目は項目が足りていないのでスキップ" 
+        throw :not_header
+      end
+      
+      imp = ImpTable.new
+      imp.owner_type = type
+      imp.owner_cd = row[0]
+      imp.owner_nm = row[1]
+      imp.owner_honorific_title = row[2]
+      imp.owner_postcode = row[3]
+      imp.owner_address = row[4]
+      imp.owner_tel = row[5]
+      imp.save!
+
+      p cnt.to_s + " " + imp.owner_nm
+    end
+  end
+
+  
+  # typeによって貸主の登録（同じ貸主CDの人がいたら上書き）
+  ImpTable.where("execute_status = 0").each do |imp|
+    
+    # 貸主CDを取得する
+    if type == 0
+      owner = Owner.find_or_create_by_code(imp.owner_cd)
+      owner.code = imp.owner_cd
+    else
+      owner = Owner.find_or_create_by_attack_code(imp.owner_cd)
+      owner.attack_code = imp.owner_cd
+    end
+    
+    owner.name = imp.owner_nm
+    owner.honorific_title = imp.owner_honorific_title
+    
+        
+    owner.name = imp.owner_nm
+    owner.honorific_title = imp.owner_honorific_title
+    owner.postcode = imp.owner_postcode
+    owner.address = imp.owner_address
+    owner.tel = imp.owner_tel
+    
+    owner.delete_flg = false
+    biru_geocode(owner, false)
+    begin
+      owner.save!
+      imp.execute_status = 1 #正常終了
+      imp.save!
+    rescue
+      p "貸主登録エラー:save " + owner.name
+      # 登録できなかったらimoprtテーブルへログを書き込み
+      imp.execute_status = 2 # error
+      imp.execute_msg = owner.errors.full_messages
+      imp.save!
+    end
+end
+
+
+# 一括建物登録を行います。
+# type:0 自社管理対象 1:アタックリスト
+# ▼受け取る項目（自は自社管理物件、他はアタックリスト）
+# 0 管理営業所CD（自他）
+# 1 管理営業所名（自他）
+# 2 建物CD（自他）
+# 3 建物名（自他）
+# 4 郵便場号（自他）
+# 5 住所（自他）
+# 6 築年月日（自他）
+# 7 物件種別CD（自）
+# 8 物件種別名
+# 9 総戸数
+# 10 間取り(他)
+# 11 貸主CD
+# 12 管理方式CD（自）
+# 13 管理方式名（自）
+# 14 管理委託契約CD(自)
+
+imp.eigyo_cd = row[2]
+imp.eigyo_nm = row[3]
+imp.building_cd = row[7]
+imp.building_nm = row[8]
+imp.building_type_cd = row[9]
+imp.building_address = row[10]
+
+def bulk_building_regist(type, filename)
+  # ファイル存在チェック
+  unless File.exist?(filename)
+    puts 'file not exist'
+    return false
+  end
+
+  
+  # 元データを一時表に登録
+  open(filename).each_with_index do |line, cnt|
+    catch :not_header do
+
+      # 1行目は読み飛ばす
+      throw :not_header if cnt == 0
+        
+      # 必要項目に満たないものは読み飛ばす
+      row = line.split(",")
+      unless row[11] 
+        p cnt.to_s + "行目は項目が足りていないのでスキップ" 
+        throw :not_header
+      end
+      
+      imp = ImpTable.new
+      imp.building_type = type
+      imp.eigyo_cd = row[0]
+      imp.eigyo_nm = row[1]
+      imp.building_cd = row[2]
+      imp.building_nm = row[3]
+      imp.building_postcode = row[4]
+      imp.building_address = row[5]
+      imp.build_day = row[6]
+      imp.building_type_cd = row[7]
+      imp.owner_cd = row[11]
+      imp.manage_type_cd = row[12]
+      imp.manage_type_nm = row[13]
+      imp.trust_cd = row[14]
+      
+    	imp.building_memo = "物件種別：" + row[8] + ", 間取り：" + row[10] + ", 戸数：" + row[9]
+      imp.save!
+
+      p cnt.to_s + " " + imp.owner_nm
+    end
+  end
+
+
+  
+  # typeによって建物の登録（同じ建物CDが存在したら上書き）
+  
+  # 管理委託CDの取得
+end
+
 
 
 # geocode されていないものをアップデート
@@ -1993,13 +2167,11 @@ def regist_lease_contract(filename)
 
     end
   end
-
-
-
 end
 
 
 
+end
 
 
 
@@ -2011,7 +2183,7 @@ end
 #init_station
 
 # 営業所登録
-init_shop
+# init_shop
 
 # 物件種別登録
 #init_biru_type('/biruweb')
@@ -2034,18 +2206,22 @@ init_shop
 
 # データの登録(自社)
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
-#regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20140529.csv"))
 
 # データの登録(他社)
-#import_data_yourself_owner(Rails.root.join( "tmp", "attack_owner1102.csv"))
+#import_data_yourself_owner(Rails.root.join( "tmp", "attack_02_sinden.csv"))
+#import_data_yourself_owner(Rails.root.join( "tmp", "attack_01_soka.csv"))
 
+# データの登録(他社貸主）
+bulk_owner_regist(1, Rails.root.join( "tmp", "attack_kasi_20140623.csv"))
 
 ###########################
 # 業績分析(月次)
 ###########################
 
 # 初期化処理
-performance_init
+#performance_init
 
 # 月次情報登録
 #monthly_regist(Rails.root.join( "tmp", "monthley.csv"))

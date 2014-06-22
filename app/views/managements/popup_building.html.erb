@@ -21,7 +21,7 @@ function click_radio(num){
 }
 
 </script>
-<%= form_for(@building, :url=>{:action=>'popup_building_update', :id=>@building}, :html=>{:class=>"form-horizontal"}) do |f|%>
+<%= form_for(@building, :url=>{:action=>'popup_building_update', :controller=>'managements', :id=>@building}, :html=>{:class=>"form-horizontal"}) do |f|%>
   <legend style="padding:20px;padding-botom:10px;"><%= @building.name %></legend>
   
 <table>
@@ -60,7 +60,7 @@ function click_radio(num){
 			</div>
 			
 		</td>
-		<td style="vertical-align:top;padding-left:20px;">
+		<td style="vertical-align:top;padding-left:20px;padding-right:20px;">
 
 			<div class="table-responsive panel panel-default">
 				<table class="table table-bordered">
