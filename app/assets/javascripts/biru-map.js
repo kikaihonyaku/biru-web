@@ -376,27 +376,27 @@ function StreetViewControll(map) {
     controlDiv.index = 1;
     controlDiv.style.padding = '5px';
     controlDiv.style.marginBottom = '30px';
-    controlDiv.style.marginRight = '50px';
+    controlDiv.style.marginLeft = '50px';
 
     // Set CSS for the control border.
     var controlUI = document.createElement('div');
-    controlUI.style.backgroundColor = 'white';
+    controlUI.style.backgroundColor = 'yellow';
     controlUI.style.borderStyle = 'solid';
     controlUI.style.borderWidth = '1px';
     controlUI.style.borderColor = '#717b87';
     controlUI.style.cursor = 'pointer';
     controlUI.style.textAlign = 'center';
-    controlUI.style.boxShadow = '0px 2px 4px rgba(1,0,0,0.4)';
+    controlUI.style.boxShadow = '0px 1px 4px rgba(1,0,0,0.4)';
     controlDiv.appendChild(controlUI);
 
     // Set CSS for the control interior.
     var controlText = document.createElement('div');
     controlText.style.fontFamily = 'Arial,sans-serif';
     controlText.style.fontSize = '13px';
-    controlText.style.paddingTop = '1px';
-    controlText.style.paddingBottom = '1px';
-    controlText.style.paddingLeft = '6px';
-    controlText.style.paddingRight = '6px';
+    controlText.style.paddingTop = '5px';
+    controlText.style.paddingBottom = '5px';
+    controlText.style.paddingLeft = '10px';
+    controlText.style.paddingRight = '10px';
     controlText.innerHTML = '<strong>ストリートビュー&nbsp;&nbsp;表示</strong>';
     controlUI.appendChild(controlText);
 
@@ -569,7 +569,7 @@ function init_map(user_id){
 		
     // フルスクリーンラベルを設定
     mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new MenuControll(mapCanvas));
-    mapCanvas.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(new StreetViewControll(mapCanvas));
+    mapCanvas.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(new StreetViewControll(mapCanvas));
     // mapCanvas.controls[google.maps.ControlPosition.TOP_LEFT].push(new FullScreenControl(mapCanvas));
 
     mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new BarControll(mapCanvas, user_id));

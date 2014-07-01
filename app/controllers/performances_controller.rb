@@ -100,6 +100,8 @@ class PerformancesController < ApplicationController
     ##############################################
    @group_result = LazyHighCharts::HighChart.new('graph') do |f|
      f.title(text: @graph_name.to_s + 'の' + @item.name + 'の実績一覧')
+     strTmp = get_scale_calc
+     f.yAxis(labels: {formatter: "function() {#{strTmp}}".js_code}, title:{ text: ''})
 
      if @result_arr[0]['categories'].length <= 12
        f.xAxis(categories: @result_arr[0]['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
@@ -107,7 +109,6 @@ class PerformancesController < ApplicationController
      else
        interval = @result_arr[0]['categories'].length / 12
        f.xAxis(categories: @result_arr[0]['categories'].collect do |ym| ym.slice(0..3) + "/" + ym.slice(4..5) end, tickInterval: interval) # 1とかは列の間隔の指定
-
      end
 
      # 凡例
@@ -606,18 +607,6 @@ class PerformancesController < ApplicationController
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 private
 
   def init
@@ -759,7 +748,11 @@ private
     cummulative_this_plans = 0
     cumulative_this_year = 0
     cumulative_prev_year = 0
-
+    
+    
+    ##################################
+    # 目盛で使う計算式を定義
+    ##################################
     this_year_monthly.each do |rec|
 
       # 今年度の計画／実績
@@ -767,8 +760,6 @@ private
       result['this_year_plans'].push(rec.plan_value.to_f)
       result['this_year_results'].push(rec.result_value.to_f)
       result['comparison_plan'].push(BigDecimal("#{(rec.result_value.to_f) / (rec.plan_value.to_f) *100}").floor(1))
-
-
 
       # 積み上げ棒グラフ用
       cummulative_this_plans = cummulative_this_plans + rec.plan_value.to_f
@@ -794,7 +785,6 @@ private
         cumulative_prev_year = cumulative_prev_year + rec2.result_value.to_f
         result['cumulative_prev_year_results'].push(cumulative_prev_year)
 
-
         result['prev_result_exists'] = true # 1件でも前年が存在すれば、前年有りと判定
         
         reg_flg = true
@@ -806,12 +796,16 @@ private
       end
 
     end
+    
+    # 目盛に使う数式を取得
+    strTmp = get_scale_calc
 
     #######################################
     # 計画／実績／前年の棒グラフを作成
     #######################################
     result['graph_plan'] = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: dept_name + 'の' + item.name + '(' + graph_title + ')')
+      f.yAxis(labels: {formatter: "function() {#{strTmp}}".js_code}, title:{ text: ''})
 
       if result['categories'].length <= 12
         f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
@@ -832,13 +826,15 @@ private
           y: 250
       )
 
-      f.series(name: '前年実績', data: result['cumulative_prev_year_results'], type: "line", color: '#8cc63f' )
+
+      f.series(name: '前年実績', data: result['prev_year_results'], type: "column", color: '#8cc63f')
 
       if result['plan_exists']
-        f.series(name: '計画', data: result['cumulative_this_year_plans'], type: "line", color: '#3276b1')
+        f.series(name: '計画', data: result['this_year_plans'], type: "column", color: '#3276b1')
       end
 
-      f.series(name: '実績', data: result['cumulative_this_year_results'], type: "line", color: '#d9534f')
+      f.series(name: '実績', data: result['this_year_results'], type: "column", color: '#d9534f')
+
     end
 
     #######################################
@@ -846,6 +842,7 @@ private
     #######################################
     result['graph_cumulative'] = LazyHighCharts::HighChart.new('graph') do |f|
       f.title(text: dept_name + 'の' + item.name + '(' + graph_title + ')')
+      f.yAxis(labels: {formatter: "function() {#{strTmp}}".js_code}, title:{ text: ''})
 
       if result['categories'].length <= 12
         f.xAxis(categories: result['categories'].collect do |ym| ym.slice(4..5).to_i.to_s + "月" end, tickInterval: 1) # 1とかは列の間隔の指定
@@ -865,16 +862,18 @@ private
           verticalAlign: 'top',
           y: 40
       )
-
-      f.series(name: '前年実績', data: result['prev_year_results'], type: "column", color: '#8cc63f')
+      
+      
+      f.series(name: '前年実績', data: result['cumulative_prev_year_results'], type: "line", color: '#8cc63f' )
 
       if result['plan_exists']
-        f.series(name: '計画', data: result['this_year_plans'], type: "column", color: '#3276b1')
+        f.series(name: '計画', data: result['cumulative_this_year_plans'], type: "line", color: '#3276b1')
       end
 
-      f.series(name: '実績', data: result['this_year_results'], type: "column", color: '#d9534f')
+      f.series(name: '実績', data: result['cumulative_this_year_results'], type: "line", color: '#d9534f')
+      
     end
-
+    
 
     ############################################################################
     # 集計種別が「最大」でない時、年計グラフを作成（管理戸数の累計などだしても意味が無いから）
@@ -928,10 +927,11 @@ private
           end
 
           interval = ((year_category.length)/12).to_i + 1
-
+          
           result['graph_years'] = LazyHighCharts::HighChart.new('graph') do |f|
             f.title(text: dept_name + 'の' + item.name + 'の年計')
             f.xAxis(categories: year_category, tickInterval: interval) # 1とかは列の間隔の指定
+            f.yAxis(labels: {formatter: "function() {#{strTmp}}".js_code}, title:{ text: ''})
             f.series(name: '実績', data: year_result, type: "column")
 
 #           f.series(name: '実績',
@@ -1047,6 +1047,15 @@ private
     return data
 
   end
+
+  # 数式を設定します
+  def get_scale_calc
+    strTmp = ""
+    strTmp = strTmp + "if(this.value > 1000000){ return this.value / 1000000 + '百万' }"
+    strTmp = strTmp + "else if(this.value > 1000000 ){return this.value / 10000 + '万' }"
+    strTmp = strTmp + "else{return this.value }"    
+  end
+  
 
 
 

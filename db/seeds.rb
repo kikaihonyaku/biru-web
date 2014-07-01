@@ -1091,6 +1091,7 @@ def bulk_owner_regist(type, filename)
       imp.execute_msg = owner.errors.full_messages
       imp.save!
     end
+  end
 end
 
 
@@ -1113,20 +1114,12 @@ end
 # 13 管理方式名（自）
 # 14 管理委託契約CD(自)
 
-imp.eigyo_cd = row[2]
-imp.eigyo_nm = row[3]
-imp.building_cd = row[7]
-imp.building_nm = row[8]
-imp.building_type_cd = row[9]
-imp.building_address = row[10]
-
 def bulk_building_regist(type, filename)
   # ファイル存在チェック
   unless File.exist?(filename)
     puts 'file not exist'
     return false
   end
-
   
   # 元データを一時表に登録
   open(filename).each_with_index do |line, cnt|
@@ -2114,8 +2107,6 @@ def regist_vacant_room(yyyymm, filename)
 
     end
   end
-
-
 end
 
 # 賃貸借契約を登録する
@@ -2171,9 +2162,6 @@ end
 
 
 
-end
-
-
 
 ########################
 # マスタ登録
@@ -2214,7 +2202,7 @@ end
 #import_data_yourself_owner(Rails.root.join( "tmp", "attack_01_soka.csv"))
 
 # データの登録(他社貸主）
-bulk_owner_regist(1, Rails.root.join( "tmp", "attack_kasi_20140623.csv"))
+# bulk_owner_regist(1, Rails.root.join( "tmp", "attack_kasi_20140623.csv"))
 
 ###########################
 # 業績分析(月次)
@@ -2224,7 +2212,7 @@ bulk_owner_regist(1, Rails.root.join( "tmp", "attack_kasi_20140623.csv"))
 #performance_init
 
 # 月次情報登録
-#monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
+monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_getuji_201403.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_201402_201403.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_201404_201405.csv"))

@@ -10,6 +10,12 @@
 　　クリックすると貸主CD列がでるようにしよう。※建物についても同様。2014/05/25
  %>
 
+
+<%= form_tag '/trust_managements/index' do %>
+	<div>営業所指定：<%= text_field_tag 'tack'  %></div>
+	<%= submit_tag '検索'%>
+<% end %>
+
 <%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
 	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
 	# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
@@ -22,7 +28,8 @@
   	  	    str = obj.owner.name  + ' ／ ' + obj.owner.code.to_s
 		  end
 		  
-		  link_to(str, owner_show_path(obj.owner_id)) 
+		  #link_to(str, owner_show_path(obj.owner_id)) 
+		  raw("<a href=""javascript:win_owner(" + obj.owner_id.to_s + ");"">" + str + "</a>")
 		
 	  end
 	end
@@ -35,11 +42,11 @@
   		  if obj.building.attack_code
   	  	    str = obj.building.name + ' ／ ' + 'A' + obj.building.attack_code.to_s
   		  else
-    	  	    str = obj.building.name  + ' ／ ' + obj.building.code.to_s
+    	  	str = obj.building.name  + ' ／ ' + obj.building.code.to_s
   		  end
 		  
-  		  link_to(str, building_show_path(obj.building_id)) 
-		
+  		  #link_to(str, building_show_path(obj.building_id)) 
+		  raw("<a href=""javascript:win_building(" + obj.building_id.to_s + ");"">" + str + "</a>")
   	  end
 	end
 	
