@@ -6,7 +6,12 @@ class TrustManagementsController < ApplicationController
   
   def index
     # Owner Building Trust を連結した他社データを取得する
-    trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("owners.code is null")
+    
+    if params[:tack]
+      trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("owners.code is null").where('shops.name like ?', '%' + params[:tack] + '%')
+    else
+      trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("owners.code is null")
+    end
     
     @trust_arr = initialize_grid(
       trust_data,

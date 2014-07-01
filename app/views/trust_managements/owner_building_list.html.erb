@@ -16,6 +16,20 @@
 	<%= submit_tag '検索'%>
 <% end %>
 
+
+<div class="accordion" id="code-accordion">
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a href="#collapse1" class="accordion-toggle" data-parent="#code-accordion" data-toggle="collapse">検索条件</a>
+		</div>
+		<div class="accordion-body collapse in" id="collapse1" style="height: auto;">
+			<div class="accordion-inner">test</div>
+		</div>
+	</div>
+</div>
+
+
+
 <%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
 	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
 	# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
