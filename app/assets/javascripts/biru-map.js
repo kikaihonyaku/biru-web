@@ -375,7 +375,7 @@ function StreetViewControll(map) {
     var controlDiv = document.createElement('div');
     controlDiv.index = 1;
     controlDiv.style.padding = '5px';
-    controlDiv.style.marginBottom = '30px';
+    controlDiv.style.marginBottom = '5px';
     controlDiv.style.marginLeft = '50px';
 
     // Set CSS for the control border.
@@ -421,6 +421,42 @@ function StreetViewControll(map) {
 
     return controlDiv;
 }
+
+
+function GoogleMessageControll(map) {
+    var controlDiv = document.createElement('div');
+    controlDiv.index = 1;
+    controlDiv.style.padding = '0px';
+    controlDiv.style.marginBottom = '0px';
+    controlDiv.style.marginLeft = '0px';
+
+    // Set CSS for the control border.
+    var controlUI = document.createElement('div');
+    controlUI.style.cursor = 'pointer';
+    controlUI.style.textAlign = 'center';
+	
+    controlDiv.appendChild(controlUI);
+
+    // Set CSS for the control interior.
+    var controlText = document.createElement('div');
+    controlText.style.fontFamily = 'Arial,sans-serif';
+    controlText.style.fontSize = '18px';
+    controlText.style.paddingTop = '0px';
+    controlText.style.paddingBottom = '0px';
+    controlText.style.paddingLeft = '10px';
+    controlText.style.paddingRight = '0px';
+    controlText.style.marginTop = '0px';
+    controlText.style.marginBottom = '0px';
+    controlText.style.marginLeft = '0px';
+    controlText.style.marginRight = '0px';
+    controlText.innerHTML = '<strong>↓↓Googleのページへ連動します</strong>';
+    controlUI.appendChild(controlText);
+
+    return controlDiv;
+}
+
+
+
 
 // ストリートビューを非表示にして map_canvasの高さを設定
 function init_display(){
@@ -569,6 +605,7 @@ function init_map(user_id){
 		
     // フルスクリーンラベルを設定
     mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new MenuControll(mapCanvas));
+    mapCanvas.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(new GoogleMessageControll(mapCanvas));
     mapCanvas.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(new StreetViewControll(mapCanvas));
     // mapCanvas.controls[google.maps.ControlPosition.TOP_LEFT].push(new FullScreenControl(mapCanvas));
 
