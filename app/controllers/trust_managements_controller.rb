@@ -4,6 +4,19 @@ require 'kconv'
 
 class TrustManagementsController < ApplicationController
   
+  def tack_out
+    @selected = params[:g1][:selected]
+    @trusts = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("trusts.id in (?)", @selected)
+    
+    aaa = []
+    @trusts.each do |t|
+      aaa.push(t.building.name) if t.building
+    end
+    
+    
+    send_data aaa.to_csv
+  end
+  
   def index
     # Owner Building Trust を連結した他社データを取得する
     
@@ -25,8 +38,12 @@ class TrustManagementsController < ApplicationController
     
     export_grid_if_requested('g1' => 'owner_building_list', 'g2' => 'projects_grid') do
       # usual render or redirect code executed if the request is not a CSV export request
-      render 'owner_building_list'      
+      render 'owner_building_list'   
     end
+    
+    if params[:g1] && params[:g1][:selected]
+      @selected = params[:g1][:selected]
+    end    
         
   end
   

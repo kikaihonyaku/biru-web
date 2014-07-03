@@ -15,6 +15,15 @@ class ApplicationController < ActionController::Base
   # 2014/06/10 paramでuser_idを送るようにして対応できた。
   before_filter :check_logined
   
+  # CSV出力する際、Windowsで開くためにShift_JISに変換する。
+  after_filter :change_charset_to_sjis, :if => :trust_managements?
+  
+  protected
+  def change_charset_to_sjis
+    response.body = NKF::nkf('-Ws', response.body)
+    headers["Content-Type"] = "text/html; charset=Shift_JIS"
+  end  
+  
   private
 
   # ログイン認証を行います。
@@ -51,6 +60,10 @@ class ApplicationController < ActionController::Base
     @search_type = search_type
     @tab_search = ""
     @tab_result = "active in"
+  end
+  
+  def trust_managements?
+    self.controller_name == 'trust_managements'
   end
 
 end

@@ -4,6 +4,7 @@
 	<meta charset="shift_jis" />
 <% end %>
 
+
 <%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
 
 	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| 

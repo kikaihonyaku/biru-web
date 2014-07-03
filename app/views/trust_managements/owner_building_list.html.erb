@@ -11,124 +11,103 @@
  %>
 
 
-<%= form_tag '/trust_managements/index' do %>
-	<div>営業所指定：<%= text_field_tag 'tack'  %></div>
-	<%= submit_tag '検索'%>
-<% end %>
-
-
-<div class="accordion" id="code-accordion">
-	<div class="accordion-group">
-		<div class="accordion-heading">
-			<a href="#collapse1" class="accordion-toggle" data-parent="#code-accordion" data-toggle="collapse">検索条件</a>
-		</div>
-		<div class="accordion-body collapse in" id="collapse1" style="height: auto;">
-			<div class="accordion-inner">test</div>
-		</div>
-	</div>
-</div>
-
 <div class="bs-example">
     <div class="panel-group" id="accordion">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">1. What is HTML?</a>
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">検索条件</a>
       </h4>
     </div>
     <div id="collapseOne" class="panel-collapse collapse in">
       <div class="panel-body">
-        <p>HTML stands for HyperText Markup Language. HTML is the main markup language for describing the structure of Web pages. <a href="http://www.tutorialrepublic.com/html-tutorial/" target="_blank">Learn more.</a></p>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">2. What is Twitter Bootstrap?</a>
-      </h4>
-    </div>
-    <div id="collapseTwo" class="panel-collapse collapse">
-      <div class="panel-body">
-        <p>Twitter Bootstrap is a powerful front-end framework for faster and easier web development. It is a collection of CSS and HTML conventions. <a href="http://www.tutorialrepublic.com/twitter-bootstrap-tutorial/" target="_blank">Learn more.</a></p>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">3. What is CSS?</a>
-      </h4>
-    </div>
-    <div id="collapseThree" class="panel-collapse collapse">
-      <div class="panel-body">
-        <p>CSS stands for Cascading Style Sheet. CSS allows you to specify various style properties for a given HTML element such as colors, backgrounds, fonts etc. <a href="http://www.tutorialrepublic.com/css-tutorial/" target="_blank">Learn more.</a></p>
+		  <div >
+			<%= form_tag '/trust_managements/index' do %>
+				<div>営業所指定：<%= text_field_tag 'tack'  %></div>
+				<%= submit_tag '検索'%>
+			<% end %>
+	  	
+		  </div>
+		  
       </div>
     </div>
   </div>
 </div>
 </div>
 
+<%= dump_filter_parameters_as_hidden_fields(@trust_arr) %>
+<%= form_tag '/trust_managements/tack_out'  do %>
+	<% if @selected %>
+		<%= @selected.to_sentence %>
+	<% end %>
+	
+	<%= text_field_tag 'tack_msg' %>
+	<button class='btn' style="margin-bottom:5px;" type='submit'>タックシール</button>
 
-<%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
-	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
-	# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
-	g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj|
-	  if obj.owner
+
+
+	<%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
+
+		g.action_column 
+
+		g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+		# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
+		g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj|
+		  if obj.owner
 		  
-		  if obj.owner.attack_code
-	  	    str = obj.owner.name + ' ／ ' + 'A' + obj.owner.attack_code.to_s
-		  else
-  	  	    str = obj.owner.name  + ' ／ ' + obj.owner.code.to_s
-		  end
+			  if obj.owner.attack_code
+		  	    str = obj.owner.name + ' ／ ' + 'A' + obj.owner.attack_code.to_s
+			  else
+	  	  	    str = obj.owner.name  + ' ／ ' + obj.owner.code.to_s
+			  end
 		  
-		  #link_to(str, owner_show_path(obj.owner_id)) 
-		  raw("<a href=""javascript:win_owner(" + obj.owner_id.to_s + ");"">" + str + "</a>")
+			  #link_to(str, owner_show_path(obj.owner_id)) 
+			  raw("<a href=""javascript:win_owner(" + obj.owner_id.to_s + ");"">" + str + "</a>")
 		
-	  end
-	end
+		  end
+		end
 	
-	g.column name: '貸主住所' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
-	#g.column name: '建物CD' , attribute: 'attack_code', model: 'Building' , :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.building.attack_code if obj.building end
-	g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj|
-  	  if obj.building
+		g.column name: '貸主住所' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
+		#g.column name: '建物CD' , attribute: 'attack_code', model: 'Building' , :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.building.attack_code if obj.building end
+		g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj|
+	  	  if obj.building
 		  
-  		  if obj.building.attack_code
-  	  	    str = obj.building.name + ' ／ ' + 'A' + obj.building.attack_code.to_s
-  		  else
-    	  	str = obj.building.name  + ' ／ ' + obj.building.code.to_s
-  		  end
+	  		  if obj.building.attack_code
+	  	  	    str = obj.building.name + ' ／ ' + 'A' + obj.building.attack_code.to_s
+	  		  else
+	    	  	str = obj.building.name  + ' ／ ' + obj.building.code.to_s
+	  		  end
 		  
-  		  #link_to(str, building_show_path(obj.building_id)) 
-		  raw("<a href=""javascript:win_building(" + obj.building_id.to_s + ");"">" + str + "</a>")
-  	  end
-	end
+	  		  #link_to(str, building_show_path(obj.building_id)) 
+			  raw("<a href=""javascript:win_building(" + obj.building_id.to_s + ");"">" + str + "</a>")
+	  	  end
+		end
 	
-	g.column name: '建物住所' , attribute: 'address', model: 'Building', :html =>{ :style => 'width:300px;'}   do |obj| obj.building.address if obj.building end
+		g.column name: '建物住所' , attribute: 'address', model: 'Building', :html =>{ :style => 'width:300px;'}   do |obj| obj.building.address if obj.building end
 
 
-#    g.column  :html =>{ :style => 'width:80px;text-align:center;'} do |obj| 
-#		link_owner = 
-#		if obj.owner
-#			link_to('貸主',owner_show_path(obj.owner_id)) 
-#		else
-#			''
-#		end
-#	
-#		link_build = 
-#		if obj.building
-#			link_to('建物',building_show_path(obj.building)) 
-#		else
-#			''
-#		end
-#	
-#		link_owner + '／' + link_build
-#	
-#	end
+	#    g.column  :html =>{ :style => 'width:80px;text-align:center;'} do |obj| 
+	#		link_owner = 
+	#		if obj.owner
+	#			link_to('貸主',owner_show_path(obj.owner_id)) 
+	#		else
+	#			''
+	#		end
+	#	
+	#		link_build = 
+	#		if obj.building
+	#			link_to('建物',building_show_path(obj.building)) 
+	#		else
+	#			''
+	#		end
+	#	
+	#		link_owner + '／' + link_build
+	#	
+	#	end
 
 
-end
+	end%>
+<% end %><!-- form_tag '/trust_managements/tack_out' -->
 
-%>	
 </div>
 
