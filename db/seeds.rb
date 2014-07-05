@@ -1567,7 +1567,7 @@ def performance_init
 
   dept_arr.each do |obj|
     dept = Dept.find_or_create_by_busyo_id(obj[:busyo_id])
-    dept.code = obj[:busyo_id]
+    dept.busyo_id = obj[:busyo_id]
     dept.code = obj[:code]
     dept.name = obj[:name]
     dept.save!
@@ -1579,28 +1579,28 @@ def performance_init
   # グループ部署マスタ登録
   ######################
   dept_group_arr = []
-	dept_arr.push(:busyo_id=>'301', :code=>'80030', :name=>'常磐エリア')
-	dept_arr.push(:busyo_id=>'300', :code=>'80021', :name=>'さいたま東エリア')
-	dept_arr.push(:busyo_id=>'299', :code=>'80020', :name=>'さいたま中央エリア')
-	dept_arr.push(:busyo_id=>'297', :code=>'80011', :name=>'東武北エリア')
-	dept_arr.push(:busyo_id=>'296', :code=>'80010', :name=>'東武南エリア')
-	dept_arr.push(:busyo_id=>'269', :code=>'T0002', :name=>'ビル管理_ポラスアルファ合算')
-	dept_arr.push(:busyo_id=>'254', :code=>'50020', :name=>'建物管理係')
-	dept_arr.push(:busyo_id=>'253', :code=>'W0900', :name=>'営業店合計')
-	dept_arr.push(:busyo_id=>'252', :code=>'T0001', :name=>'中央ビル管理単体')
-	dept_arr.push(:busyo_id=>'249', :code=>'50000', :name=>'株式会社中央ビル管理')
-	dept_arr.push(:busyo_id=>'248', :code=>'50260', :name=>'ライフサービス課')
-	dept_arr.push(:busyo_id=>'247', :code=>'50300', :name=>'千葉支店')
-	dept_arr.push(:busyo_id=>'246', :code=>'50200', :name=>'さいたま支店')
-	dept_arr.push(:busyo_id=>'245', :code=>'50100', :name=>'東武支店')
-	dept_arr.push(:busyo_id=>'244', :code=>'50210', :name=>'業務管理部')
-	dept_arr.push(:busyo_id=>'243', :code=>'50250', :name=>'アセットマネジメント部')
-	dept_arr.push(:busyo_id=>'235', :code=>'50085', :name=>'家賃更新課')
-	dept_arr.push(:busyo_id=>'234', :code=>'50030', :name=>'経理課')
+	dept_group_arr.push(:busyo_id=>'301', :code=>'80030', :name=>'常磐エリア')
+	dept_group_arr.push(:busyo_id=>'300', :code=>'80021', :name=>'さいたま東エリア')
+	dept_group_arr.push(:busyo_id=>'299', :code=>'80020', :name=>'さいたま中央エリア')
+	dept_group_arr.push(:busyo_id=>'297', :code=>'80011', :name=>'東武北エリア')
+	dept_group_arr.push(:busyo_id=>'296', :code=>'80010', :name=>'東武南エリア')
+	dept_group_arr.push(:busyo_id=>'269', :code=>'T0002', :name=>'ビル管理_ポラスアルファ合算')
+	dept_group_arr.push(:busyo_id=>'254', :code=>'50020', :name=>'建物管理係')
+	dept_group_arr.push(:busyo_id=>'253', :code=>'W0900', :name=>'営業店合計')
+	dept_group_arr.push(:busyo_id=>'252', :code=>'T0001', :name=>'中央ビル管理単体')
+	dept_group_arr.push(:busyo_id=>'249', :code=>'50000', :name=>'株式会社中央ビル管理')
+	dept_group_arr.push(:busyo_id=>'248', :code=>'50260', :name=>'ライフサービス課')
+	dept_group_arr.push(:busyo_id=>'247', :code=>'50300', :name=>'千葉支店')
+	dept_group_arr.push(:busyo_id=>'246', :code=>'50200', :name=>'さいたま支店')
+	dept_group_arr.push(:busyo_id=>'245', :code=>'50100', :name=>'東武支店')
+	dept_group_arr.push(:busyo_id=>'244', :code=>'50210', :name=>'業務管理部')
+	dept_group_arr.push(:busyo_id=>'243', :code=>'50250', :name=>'アセットマネジメント部')
+	dept_group_arr.push(:busyo_id=>'235', :code=>'50085', :name=>'家賃更新課')
+	dept_group_arr.push(:busyo_id=>'234', :code=>'50030', :name=>'経理課')
 
   dept_group_arr.each do |obj|
     dept_group = DeptGroup.find_or_create_by_busyo_id(obj[:busyo_id])
-    dept_group.code = obj[:busyo_id]
+    dept_group.busyo_id = obj[:busyo_id]
     dept_group.code = obj[:code]
     dept_group.name = obj[:name]
     dept_group.save!
