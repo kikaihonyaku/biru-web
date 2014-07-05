@@ -41,10 +41,10 @@
 		<%= @selected.to_sentence %>
 	<% end %>
 	
-	<%= text_field_tag 'tack_msg' %>
-	<button class='btn' style="margin-bottom:5px;" type='submit'>タックシール</button>
-
-
+	<div>
+		<%= text_field_tag 'tack_msg' %>
+		<button class='btn' style="margin-bottom:5px;" type='submit'>タックシール</button>
+	</div>
 
 	<%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
 

@@ -2209,10 +2209,10 @@ end
 ###########################
 
 # 初期化処理
-#performance_init
+performance_init
 
 # 月次情報登録
-monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_getuji_201403.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_201402_201403.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_201404_201405.csv"))

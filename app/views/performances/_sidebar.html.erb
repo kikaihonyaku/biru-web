@@ -1,6 +1,49 @@
   
 <script type="text/javascript">
 
+// 検索したときにローディング状態を表示
+$(document).ready(function(){
+
+	$('#graph-submit-top').click(function(){
+		$.blockUI({
+		    message: '検索中...しばらくおまちください',
+		    fadeIn: 200,
+		    fadeOut: 0,
+		    css: { padding: '15px 0 0 0', margin: 0, height: '50px', width: '250px', border: '2px solid #aaa' }
+		});		
+	});
+
+	$('#graph-submit-bottom').click(function(){
+		$.blockUI({
+		    message: '検索中...しばらくおまちください',
+		    fadeIn: 200,
+		    fadeOut: 0,
+		    css: { padding: '15px 0 0 0', margin: 0, height: '50px', width: '250px', border: '2px solid #aaa' }
+		});		
+	});
+
+	$('#search-vacant').click(function(){
+		$.blockUI({
+		    message: '検索中...しばらくおまちください',
+		    fadeIn: 200,
+		    fadeOut: 0,
+		    css: { padding: '15px 0 0 0', margin: 0, height: '50px', width: '250px', border: '2px solid #aaa' }
+		});		
+	});
+	
+	$('#search-build-age').click(function(){
+		$.blockUI({
+		    message: '検索中...しばらくおまちください',
+		    fadeIn: 200,
+		    fadeOut: 0,
+		    css: { padding: '15px 0 0 0', margin: 0, height: '50px', width: '250px', border: '2px solid #aaa' }
+		});		
+	});
+	
+
+});
+
+
   var yyyymm_data = [
     { label:'年度',id: 6001,
       children: [
@@ -814,7 +857,7 @@ function openClose(id, mid, disp_msg)
 
             <ul class="nav nav-list well" >
               <div style="text-align: center;">
-                <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-bottom:15px;margin-top:0px;', :onClick=>"javascript:graph_disp();" %>
+                <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-bottom:15px;margin-top:0px;', :id=>'graph-submit-top', :onClick=>"javascript:graph_disp();" %>
               </div>
 
               <div id="tree-yyyymm"></div>
@@ -826,7 +869,7 @@ function openClose(id, mid, disp_msg)
               <div id="tree-item"></div>
 
               <div style="text-align: center;">
-                <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-top:20px;', :onClick=>"javascript:graph_disp();" %>
+                <%= button_tag "グラフ表示" ,:type=>'button', :style=>'margin-top:20px;', :id=>'graph-submit-bottom', :onClick=>"javascript:graph_disp();" %>
               </div>
             </ul>
           <% end %>
@@ -847,7 +890,7 @@ function openClose(id, mid, disp_msg)
             <!-- 築年数 -->
             <ul class="nav nav-list well" style="margin-bottom:15px;">
               <div style="text-align: center;">
-                <%= button_tag "築年数を表示" ,:type=>'button', :onClick=>"javascript:build_age_disp();" %>
+                <%= button_tag "築年数を表示" ,:type=>'button', :id=>'search-build-age', :onClick=>"javascript:build_age_disp();" %>
               </div>
             </ul>
 
@@ -858,7 +901,7 @@ function openClose(id, mid, disp_msg)
                   <label ><%= text_field_tag 'yyyymm_before', @vacant_yyyymm_before, :class=>'ympicker', :style=>'width:80px;text-align:center;' %>&nbsp;＋&nbsp;<%= text_field_tag 'yyyymm_current', @vacant_yyyymm_current, :class=>'ympicker', :style=>'width:80px;text-align:center;' %></label>
                 </div>
 
-                <%= button_tag "空日数を表示" ,:type=>'button', :onClick=>"javascript:vacant_dips();" %>
+                <%= button_tag "空日数を表示" ,:type=>'button', :id=>'search-vacant', :onClick=>"javascript:vacant_dips();" %>
               </div>
             </ul>
 
