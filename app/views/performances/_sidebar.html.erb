@@ -2,22 +2,32 @@
 <script type="text/javascript">
 
 // 検索したときにローディング状態を表示
+var restut_status;
+
 $(document).ready(function(){
 
     $('#graph-submit-top').click(function(){
- 		screen_block();
+		if(restut_status == true){
+	 		screen_block();
+		}
     });
 	
     $('#graph-submit-bottom').click(function(){
- 		screen_block();
+		if(restut_status == true){
+	 		screen_block();
+		}
     });
 	
     $('#search-vacant').click(function(){
- 		screen_block();
+		if(restut_status == true){
+	 		screen_block();
+		}
     });
 	
     $('#search-build-age').click(function(){
- 		screen_block();
+		if(restut_status == true){
+	 		screen_block();
+		}
     });
 	
 });
@@ -630,6 +640,7 @@ $(function() {
 
 function graph_disp(){
 
+  restut_status = false;
 
   frm.yyyymm_s.value = $('#tree-yyyymm').tree('getSelectedNode').yyyymm_s;
   if(frm.yyyymm_s.value =='undefined' ){
@@ -708,12 +719,16 @@ function graph_disp(){
     return;
   }
 
+  restut_status = true;
   frm.submit();
 }
 
 
 // 築年数表示
 function build_age_disp(){
+	
+  restut_status = false;
+	
   frm_build_age.shop.value = $('#tree-shop').tree('getSelectedNode').id;
   if(frm_build_age.shop.value =='undefined' ){
     alert('営業所を指定してください');
@@ -723,11 +738,15 @@ function build_age_disp(){
   frm_build_age.shop_nm.value = $('#tree-shop').tree('getSelectedNode').nm;
   frm_build_age.action = (<%= raw("'") + performances_build_age_path + raw("'") %>)
 
+  restut_status = true;
   frm_build_age.submit();
 }
 
 // 空日数を表示
 function vacant_dips(){
+	
+  restut_status = false;
+	
   frm_build_age.shop.value = $('#tree-shop').tree('getSelectedNode').id;
   if(frm_build_age.shop.value =='undefined' ){
     alert('営業所を指定してください');
@@ -737,12 +756,15 @@ function vacant_dips(){
   frm_build_age.shop_nm.value = $('#tree-shop').tree('getSelectedNode').nm;
   frm_build_age.action = (<%= raw("'") + performances_vacant_day_path + raw("'") %>)
 
+  restut_status = true;
   frm_build_age.submit();
 }
 
 
 // 入居期間を表示
 function tenancy_period_dips(){
+
+  restut_status = false;
 
   frm_build_age.shop.value = $('#tree-shop').tree('getSelectedNode').id;
   if(frm_build_age.shop.value =='undefined' ){
@@ -776,6 +798,7 @@ function tenancy_period_dips(){
   frm_build_age.shop_nm.value = $('#tree-shop').tree('getSelectedNode').nm;
   frm_build_age.action = (<%= raw("'") + performances_tenancy_period_path + raw("'") %>)
 
+  restut_status = true;
   frm_build_age.submit();
 }
 
