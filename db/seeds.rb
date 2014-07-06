@@ -478,6 +478,30 @@ def init_approach_kind
   end
 end
 
+
+# アタックステータス
+def init_attack_state
+  arr = []
+  arr.push({:code=>'S', :name=>'見込みあり',:order=>'1'})
+  arr.push({:code=>'A', :name=>'見込みあり',:order=>'2'})
+  arr.push({:code=>'B', :name=>'見込みあり',:order=>'3'})
+  arr.push({:code=>'C', :name=>'見込みあり',:order=>'4'})
+  arr.push({:code=>'D', :name=>'見込みあり',:order=>'5'})
+  arr.push({:code=>'Z', :name=>'成約済',:order=>'6'})
+
+  arr.each do |obj|
+    attack_state = AttackState.find_or_create_by_code(obj[:code])
+    attack_state.code = obj[:code]
+    attack_state.name = obj[:name]
+    attack_state.order = obj[:order]
+    attack_state.save!
+    p attack_state
+  end
+
+end
+
+
+
 # 物件種別
 def convert_biru_type(num)
   build_type = BuildType.find_by_code(num)
@@ -2188,6 +2212,9 @@ end
 # アプローチ種別登録
 #init_approach_kind
 
+# アタックステータス登録
+init_attack_state
+
 ########################
 # 地図管理物件登録
 ########################
@@ -2209,7 +2236,7 @@ end
 ###########################
 
 # 初期化処理
-performance_init
+#performance_init
 
 # 月次情報登録
 #monthly_regist(Rails.root.join( "tmp", "monthley.csv"))

@@ -651,3 +651,20 @@ function win_building(id){
   window.open('/managements/popup_building/' + id   , "", "width=850,height=650,resizable=yes,scrollbars=yes");
 }
 
+
+function screen_block(){
+  //$.blockUI({ message: '検索中…しばらくお待ちください'});
+  $('#body-contents').block({
+    message: '検索中...しばらくおまちください',
+    fadeIn: 200,
+    fadeOut: 0,
+    css: {
+        padding: '15px 0 0 0',
+        margin: 0,
+        height: '50px',
+        width: '250px',
+        border: '2px solid #aaa',
+    }
+  });
+	
+}

@@ -1,7 +1,7 @@
 <!-- For index -->
 
 <div style="margin-left:100px;margin-right:100px;">
-<h1>管理受託アタックリスト（まだ作成中）</h1>
+<h1>管理受託アタックリスト</h1>
 
 
 <%# TODO:検索フィルタをかけられるのは、DBのカラムだけみたい。だから「貸主名／貸主CD」みたいなのを１列で検索することはできない。
@@ -21,9 +21,120 @@
     </div>
     <div id="collapseOne" class="panel-collapse collapse in">
       <div class="panel-body">
-		  <div >
+		  <div>
 			<%= form_tag '/trust_managements/index' do %>
-				<div>営業所指定：<%= text_field_tag 'tack'  %></div>
+				<table>
+					<tr>
+						<td style="vertical-align:top;padding-right:50px;"><!-- 左パート -->
+							<table class="attack-search">
+								<tr>
+									<td style="text-align:right">主担当者：</td>
+									<td><label><%= text_field_tag 'main_person', '22222', :size=>5 %>&nbsp;柴田貴史</label></td>
+								</tr>
+								<tr>
+									<td style="text-align:right">DM発送：</td>
+									<td>
+										<label><%= radio_button_tag 'dm[kbn]', 'ji_only' ,@ji_only_flg %>&nbsp;すべて</label>&nbsp;&nbsp;
+										<label><%= radio_button_tag 'dm[kbn]', 'ta_only' ,true %>&nbsp;対象のみ</label>&nbsp;&nbsp;
+										<label><%= radio_button_tag 'dm[kbn]', 'jita_both', @jita_both_flg %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
+									</td>
+								</tr>
+					
+								<tr>
+									<td style="text-align:right">物件ランク：</td>
+									<td>
+										<table>
+											<tr>
+												<td>
+													<label><%= radio_button_tag 'rank_um[kbn]', 'ta_only' ,true %>&nbsp;指定なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'rank_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;指定あり</label>&nbsp;&nbsp;
+												</td>
+												<td>
+													<table>
+														<tr>
+															<td style="padding-right:15px;">（</td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank[s]', '1') %>&nbsp;Ｓ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank[a]', '1') %>&nbsp;Ａ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank[b]', '1') %>&nbsp;Ｂ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank[c]', '1') %>&nbsp;Ｃ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank[d]', '1') %>&nbsp;Ｄ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank[e]', '1') %>&nbsp;Ｅ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank[z]', '1') %>&nbsp;Ｚ</label></td>
+															<td>）</td>
+														</tr>
+													</table>
+												</td>
+								
+											</tr>
+										</table>
+									</td>
+								</tr>
+					
+							</table>
+
+						</td>
+					
+						<td style="vertical-align:top;"><!-- 右パート -->
+						
+							<table class="attack-search">
+								<tr>
+									<td style="text-align:right">訪問リレキ：</td>
+									<td>
+										<table>
+											<tr>
+												<td>
+													<label><%= radio_button_tag 'visit_um[kbn]', 'ta_only' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;訪問なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;訪問あり</label>&nbsp;&nbsp;
+										（&nbsp;&nbsp;<%= text_field_tag 'visit_s', '1999/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'visit_e', '3000/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+												</td>
+								
+											</tr>
+										</table>
+									</td>
+								</tr>
+								
+								<tr>
+									<td style="text-align:right">訪問リレキ：</td>
+									<td>
+										<table>
+											<tr>
+												<td>
+													<label><%= radio_button_tag 'visit_um[kbn]', 'ta_only' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;訪問なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;訪問あり</label>&nbsp;&nbsp;
+										（&nbsp;&nbsp;<%= text_field_tag 'visit_s', '1999/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'visit_e', '3000/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+												</td>
+								
+											</tr>
+										</table>
+									</td>
+						
+								</tr>
+								<tr>
+									<td style="text-align:right">訪問リレキ：</td>
+									<td>
+										<table>
+											<tr>
+												<td>
+													<label><%= radio_button_tag 'visit_um[kbn]', 'ta_only' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;訪問なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;訪問あり</label>&nbsp;&nbsp;
+										（&nbsp;&nbsp;<%= text_field_tag 'visit_s', '1999/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'visit_e', '3000/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+												</td>
+								
+											</tr>
+										</table>
+									</td>
+						
+								</tr>
+								
+							</table>
+						
+						
+						</td>
+					</tr>
+				</table>
 				<%= submit_tag '検索'%>
 			<% end %>
 	  	

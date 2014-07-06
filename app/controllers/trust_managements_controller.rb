@@ -13,7 +13,6 @@ class TrustManagementsController < ApplicationController
       aaa.push(t.building.name) if t.building
     end
     
-    
     send_data aaa.to_csv
   end
   
@@ -32,7 +31,7 @@ class TrustManagementsController < ApplicationController
       :order_direction => 'desc',
       :per_page => 40,
       :name => 'g1',
-      :enable_export_to_csv => true,
+      :enable_export_to_csv => false, # データは別ボタンで出力する
       :csv_file_name  => 'owner_buildings'      
     )
     
