@@ -15,7 +15,7 @@ class LoginController < ApplicationController
     	
       session[:biru_user] = biru_user.id
       
-    	# TODO:refererがブランクだったらルートに飛ばす。      
+    	# refererがブランクだったらルートに飛ばす。      
       if params[:referer].blank?
         redirect_to '/managements/index'
       else

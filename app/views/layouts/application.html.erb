@@ -74,8 +74,13 @@
               <li><%#= link_to "カスタマーデスク", repairs_path, :style=>'text-decoration:none;'  %></li>
               <li><%#= link_to "オーナー様専用", owners_path, :style=>'text-decoration:none;'  %></li>
               <li><%#= link_to "入居者様専用", renters_path, :style=>'text-decoration:none;'  %></li>
-              <li><%= link_to "ログアウト", logout_path, :style=>'text-decoration:none;'  %></li>
+              <li ><%= link_to "ログアウト", logout_path, :style=>'text-decoration:none;'  %></li>
         </ul>
+		<% if @biru_user %>
+			<ul class='nav navbar-nav pull-right' >
+	              <li><%= link_to @biru_user.name + " さん", "" %></li>
+			</ul>
+		<% end %>
       </div>		
     </div>
 </div><!-- /.navbar -->

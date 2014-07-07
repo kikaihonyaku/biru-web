@@ -33,6 +33,8 @@ class ApplicationController < ActionController::Base
       user_id = session[:biru_user]
 	  elsif params[:user_id]
       user_id = params[:user_id].to_i
+    elsif params[:sid]
+      user_id = BiruUser.find_by_syain_id(params[:sid])
     else
 			user_id = nil
     end

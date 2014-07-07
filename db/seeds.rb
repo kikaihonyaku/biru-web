@@ -2213,7 +2213,7 @@ end
 #init_approach_kind
 
 # アタックステータス登録
-init_attack_state
+#init_attack_state
 
 ########################
 # 地図管理物件登録

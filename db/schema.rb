@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140705112749) do
+ActiveRecord::Schema.define(:version => 20140707210120) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(:version => 20140705112749) do
     t.datetime "created_at",                           :null => false
     t.datetime "updated_at",                           :null => false
     t.boolean  "attack_all_search", :default => false
+    t.string   "syain_id"
   end
 
   create_table "build_types", :force => true do |t|
