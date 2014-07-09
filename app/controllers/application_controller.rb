@@ -29,12 +29,15 @@ class ApplicationController < ActionController::Base
   # ログイン認証を行います。
   def check_logined
 
+    url_param_delete = false
+     
     if session[:biru_user]
       user_id = session[:biru_user]
 	  elsif params[:user_id]
       user_id = params[:user_id].to_i
     elsif params[:sid]
       user_id = BiruUser.find_by_syain_id(params[:sid])
+      url_param_delete = true
     else
 			user_id = nil
     end
@@ -50,8 +53,13 @@ class ApplicationController < ActionController::Base
     
     unless @biru_user
       flash[:referer] = request.fullpath
-      p flash[:referer]
       redirect_to :controller => 'login', :action => 'index'
+    end
+    
+    # URLパラメータを消すためにリダイレクトする
+    if url_param_delete
+      endpos = request.fullpath.index("?") - 1
+      redirect_to request.fullpath[0..endpos]
     end
     
   end
