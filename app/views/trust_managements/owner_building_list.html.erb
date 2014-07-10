@@ -9,7 +9,9 @@
 　　もし、貸主CDやアタック貸主CDの検索が必要になったら、その列を追加しかつ初期表示では非表示にする。そして貸主名の一部にリンクを置き、それを
 　　クリックすると貸主CD列がでるようにしよう。※建物についても同様。2014/05/25
  %>
-
+    <script>
+        $(document).ready(function() { $("#e1").select2(); });
+    </script>
 
 <div class="bs-example">
     <div class="panel-group" id="accordion">
@@ -29,12 +31,26 @@
 										<table>
 											<tr>
 												<td style="text-align:right;width:100px;"><b>主担当者：</b></td>
-												<td><label><%= text_field_tag 'main_person', '22222', :size=>5 %>&nbsp;柴田貴史</label></td>
+												<% if @biru_user.attack_all_search %>
+												
+												<% else %>
+												<!--
+													<td><label><%= text_field_tag 'main_person', @biru_user.code, :size=>5, :style=>'text-align:center;' %>&nbsp;<%= @biru_user.name %></label></td>
+													-->
+													
+<td>
+	    <select id="main_person">
+        <option value="AL">全員</option>
+        <option value="AC">柴田 幸治</option>
+        <option value="WY">山田 太郎</option>
+    </select>												
+</td>													
+												<% end %>
 												<td style="text-align:right;padding-left:50px;"><b>DM発送：</b></td>
 												<td>
-													<label><%= radio_button_tag 'dm[kbn]', 'ji_only' ,@ji_only_flg %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'dm[kbn]', 'ta_only' ,true %>&nbsp;対象のみ</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'dm[kbn]', 'jita_both', @jita_both_flg %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'dm', '0', true %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'dm', '1' %>&nbsp;対象のみ</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'dm', '2' %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
 												</td>
 												
 												
@@ -49,20 +65,20 @@
 										<table>
 											<tr>
 												<td>
-													<label><%= radio_button_tag 'rank_um[kbn]', 'ta_only' ,true %>&nbsp;指定なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'rank_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;指定あり</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'rank', '0' ,true %>&nbsp;指定なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'rank', '1', @jita_both_flg %>&nbsp;指定あり</label>&nbsp;&nbsp;
 												</td>
 												<td>
 													<table>
 														<tr>
 															<td style="padding-right:15px;">（</td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank[s]', '1') %>&nbsp;Ｓ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank[a]', '1') %>&nbsp;Ａ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank[b]', '1') %>&nbsp;Ｂ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank[c]', '1') %>&nbsp;Ｃ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank[d]', '1') %>&nbsp;Ｄ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank[e]', '1') %>&nbsp;Ｅ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank[z]', '1') %>&nbsp;Ｚ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[s]', '1', true) %>&nbsp;Ｓ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[a]', '1', true) %>&nbsp;Ａ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[b]', '1', true) %>&nbsp;Ｂ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[c]', '1', true) %>&nbsp;Ｃ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[d]', '1', true) %>&nbsp;Ｄ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[e]', '1', true) %>&nbsp;Ｅ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[z]', '1', true) %>&nbsp;Ｚ</label></td>
 															<td>）</td>
 														</tr>
 													</table>
@@ -79,9 +95,9 @@
 										<table>
 											<tr>
 												<td>
-													<label><%= radio_button_tag 'visit_um[kbn]', 'ta_only' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_visit', '0' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_visit', '1', @jita_both_flg %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_visit', '2', @jita_both_flg %>&nbsp;履歴あり</label>&nbsp;&nbsp;
 										（&nbsp;&nbsp;<%= text_field_tag 'visit_s', '1999/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'visit_e', '3000/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
 												</td>
 								
@@ -96,9 +112,9 @@
 										<table>
 											<tr>
 												<td>
-													<label><%= radio_button_tag 'visit_um[kbn]', 'ta_only' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_dm', '0' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_dm', '1', @jita_both_flg %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_dm', '2', @jita_both_flg %>&nbsp;履歴あり</label>&nbsp;&nbsp;
 										（&nbsp;&nbsp;<%= text_field_tag 'visit_s', '1999/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'visit_e', '3000/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
 												</td>
 								
@@ -113,9 +129,9 @@
 										<table>
 											<tr>
 												<td>
-													<label><%= radio_button_tag 'visit_um[kbn]', 'ta_only' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'visit_um[kbn]', 'jita_both', @jita_both_flg %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_tel', '0' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_tel', '1', @jita_both_flg %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_tel', '2', @jita_both_flg %>&nbsp;履歴あり</label>&nbsp;&nbsp;
 										（&nbsp;&nbsp;<%= text_field_tag 'visit_s', '1999/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'visit_e', '3000/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
 												</td>
 								

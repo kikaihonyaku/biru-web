@@ -71,6 +71,11 @@
 			    </table>
 			</div>
 			
+			<div>
+				DM発送&nbsp;&nbsp;あり&nbsp;<%= f.radio_button 'dm_delivery', true %>
+				&nbsp;&nbsp;なし&nbsp;<%= f.radio_button 'dm_delivery', false %>
+			</div>
+			
 			<div style="clear:both;margin-top:10px;">
 				<%= f.text_area :memo,  :size => "5x3", :class=>"form-control", :placeholder=>'メモ'  %>
 			</div>

@@ -25,6 +25,7 @@
 // 2014.05.24 del = require highcharts/highcharts-more
 //= require highcharts/highstock
 //= require jquery.blockUI
+//= require select2
 //
 //= require_tree .
 

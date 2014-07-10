@@ -18,13 +18,7 @@ class TrustManagementsController < ApplicationController
   
   def index
     # Owner Building Trust を連結した他社データを取得する
-    
-    if params[:tack]
-      trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("owners.code is null").where('shops.name like ?', '%' + params[:tack] + '%')
-    else
-      trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("owners.code is null")
-    end
-    
+    trust_data = get_trust_data
     @trust_arr = initialize_grid(
       trust_data,
       :order => 'shops.code',
@@ -32,7 +26,7 @@ class TrustManagementsController < ApplicationController
       :per_page => 40,
       :name => 'g1',
       :enable_export_to_csv => false, # データは別ボタンで出力する
-      :csv_file_name  => 'owner_buildings'      
+      :csv_file_name => 'owner_buildings'      
     )
     
     export_grid_if_requested('g1' => 'owner_building_list', 'g2' => 'projects_grid') do
@@ -121,5 +115,62 @@ def get_owner_show(owner_id)
   gon.buildings = building_arr
   
 end  
+
+def get_trust_data()
+  
+  trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("owners.code is null")
+  
+  unless params[:dm]
+    #------------------------------------------------#
+    # 検索条件が指定されていない時（最初に画面遷移してきた時）
+    #------------------------------------------------#
+    
+    # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
+    unless @biru_user.attack_all_search 
+      trust_data = trust_data.where('buildings.main_employee_id = ?', @biru_user.id)
+    end
+    
+  else
+    #-----------------------#
+    # 検索条件が指定されている時
+    #-----------------------#
+    
+    # 主担当者が指定
+    if params[:main_person]
+      unless params[:main_person] == 'all'
+        trust_data = trust_data.where('buildings.main_employee_id = ?', params[:main_person] )
+      end
+    end
+    
+    # ダイレクトメール発送有無
+    if params[:dm] == '1'
+      # 対象のみ
+      trust_data = trust_data.where('owners.dm_delivery = ?', true)
+    elsif  params[:dm] == '2'
+      # 対象外のみ
+      trust_data = trust_data.where('owners.dm_delivery = ?', false)
+    end
+    
+    # 物件ランク
+    if params[:rank] == '1'
+      arr = []
+      
+      arr.push(AttackState.find_by_code('S').id) if params[:rank_kind][:s]
+      arr.push(AttackState.find_by_code('A').id) if params[:rank_kind][:a]
+      arr.push(AttackState.find_by_code('B').id) if params[:rank_kind][:b]
+      arr.push(AttackState.find_by_code('C').id) if params[:rank_kind][:c]
+      arr.push(AttackState.find_by_code('D').id) if params[:rank_kind][:d]
+      arr.push(AttackState.find_by_code('Z').id) if params[:rank_kind][:z]
+      
+      trust_data = trust_data.where('buildings.attack_state_id In (?)', arr)
+      
+    end
+    
+  end
+  
+  
+  
+  trust_data
+end
   
 end
