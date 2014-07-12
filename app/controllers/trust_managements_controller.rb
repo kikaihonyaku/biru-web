@@ -4,6 +4,8 @@ require 'kconv'
 
 class TrustManagementsController < ApplicationController
   
+  before_filter :search_init
+  
   def tack_out
     @selected = params[:g1][:selected]
     @trusts = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("trusts.id in (?)", @selected)
@@ -143,10 +145,10 @@ def get_trust_data()
     end
     
     # ダイレクトメール発送有無
-    if params[:dm] == '1'
+    if params[:dm] == 'only'
       # 対象のみ
       trust_data = trust_data.where('owners.dm_delivery = ?', true)
-    elsif  params[:dm] == '2'
+    elsif  params[:dm] == 'not_only'
       # 対象外のみ
       trust_data = trust_data.where('owners.dm_delivery = ?', false)
     end
@@ -168,9 +170,136 @@ def get_trust_data()
     
   end
   
-  
-  
   trust_data
 end
+
+# 検索条件を初期化します。
+def search_init
   
+  #---------------
+  # ダイレクトメール
+  #---------------
+  @dm = {}
+  @dm[:all] = false
+  @dm[:only] = false
+  @dm[:not_only] = false
+  
+  if params[:dm]
+    @dm[params[:dm].to_sym] = true
+  else
+    @dm[:all] = true
+  end
+  
+  #---------------
+  # 物件ランク
+  #---------------
+  @rank = {}
+  @rank[:all] = false
+  @rank[:only] = false
+  
+  if params[:rank]
+    @rank[params[:rank].to_sym] = true
+  else
+    @rank[:all] = true
+  end
+  
+  #---------------
+  # 物件ランク指定
+  #---------------
+  @rank_kind = {}
+  
+  if params[:rank_kind]
+    if params[:rank_kind][:s] then @rank_kind[:s] = true else @rank_kind[:s] = false end
+    if params[:rank_kind][:a] then @rank_kind[:a] = true else @rank_kind[:a] = false end
+    if params[:rank_kind][:b] then @rank_kind[:b] = true else @rank_kind[:b] = false end
+    if params[:rank_kind][:c] then @rank_kind[:c] = true else @rank_kind[:c] = false end
+    if params[:rank_kind][:d] then @rank_kind[:d] = true else @rank_kind[:d] = false end
+    if params[:rank_kind][:z] then @rank_kind[:z] = true else @rank_kind[:z] = false end
+  else
+    @rank_kind[:s] = false
+    @rank_kind[:a] = false
+    @rank_kind[:b] = false
+    @rank_kind[:c] = false
+    @rank_kind[:d] = false
+    @rank_kind[:z] = false
+  end
+  
+  #---------------
+  # 訪問リレキ
+  #---------------
+  @history_visit = {}
+  @history_visit[:all] = false
+  @history_visit[:exist] = false
+  @history_visit[:not_exist] = false
+  
+  if params[:history_visit]
+    @history_visit[params[:history_visit].to_sym] = true
+  else
+    @history_visit[:all] = true
+  end
+  
+  @history_visit_from = '1900/01/01'
+  @history_visit_to = '3000/01/01'
+  
+  if params[:history_visit_from]
+    @history_visit_from =  params[:history_visit_from]
+  end
+  
+  if params[:history_visit_to]
+    @history_visit_to =  params[:history_visit_to]
+  end
+
+
+  #---------------------
+  # ダイレクトメールリレキ
+  #---------------------
+  @history_dm = {}
+  @history_dm[:all] = false
+  @history_dm[:exist] = false
+  @history_dm[:not_exist] = false
+  
+  if params[:history_dm]
+    @history_dm[params[:history_dm].to_sym] = true
+  else
+    @history_dm[:all] = true
+  end
+  
+  @history_dm_from = '1900/01/01'
+  @history_dm_to = '3000/01/01'
+  
+  if params[:history_dm_from]
+    @history_dm_from =  params[:history_dm_from]
+  end
+  
+  if params[:history_dm_to]
+    @history_dm_to =  params[:history_dm_to]
+  end
+
+  #---------------
+  # 電話リレキ
+  #---------------
+  @history_tel = {}
+  @history_tel[:all] = false
+  @history_tel[:exist] = false
+  @history_tel[:not_exist] = false
+  
+  if params[:history_tel]
+    @history_tel[params[:history_tel].to_sym] = true
+  else
+    @history_tel[:all] = true
+  end
+  
+  @history_tel_from = '1900/01/01'
+  @history_tel_to = '3000/01/01'
+  
+  if params[:history_tel_from]
+    @history_tel_from =  params[:history_tel_from]
+  end
+  
+  if params[:history_tel_to]
+    @history_tel_to =  params[:history_tel_to]
+  end
+  
+end
+
 end

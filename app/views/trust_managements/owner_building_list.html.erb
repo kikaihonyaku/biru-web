@@ -10,7 +10,7 @@
 　　クリックすると貸主CD列がでるようにしよう。※建物についても同様。2014/05/25
  %>
     <script>
-        $(document).ready(function() { $("#e1").select2(); });
+        $(document).ready(function() { $("#page_name").select2(); });
     </script>
 
 <div class="bs-example">
@@ -39,18 +39,15 @@
 													-->
 													
 <td>
-	    <select id="main_person">
-        <option value="AL">全員</option>
-        <option value="AC">柴田 幸治</option>
-        <option value="WY">山田 太郎</option>
+<%= select_tag 'page[name]', options_from_collection_for_select(BiruUser.all, :id, :name, 2),  :prompt => "選択してください" %>
     </select>												
 </td>													
 												<% end %>
 												<td style="text-align:right;padding-left:50px;"><b>DM発送：</b></td>
 												<td>
-													<label><%= radio_button_tag 'dm', '0', true %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'dm', '1' %>&nbsp;対象のみ</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'dm', '2' %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'dm', 'all', @dm[:all] %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'dm', 'only', @dm[:only]  %>&nbsp;対象のみ</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'dm', 'not_only', @dm[:not_only] %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
 												</td>
 												
 												
@@ -65,20 +62,20 @@
 										<table>
 											<tr>
 												<td>
-													<label><%= radio_button_tag 'rank', '0' ,true %>&nbsp;指定なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'rank', '1', @jita_both_flg %>&nbsp;指定あり</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'rank', 'all' , @rank[:all] %>&nbsp;指定なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'rank', 'only', @rank[:only] %>&nbsp;指定あり</label>&nbsp;&nbsp;
 												</td>
 												<td>
 													<table>
 														<tr>
 															<td style="padding-right:15px;">（</td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[s]', '1', true) %>&nbsp;Ｓ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[a]', '1', true) %>&nbsp;Ａ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[b]', '1', true) %>&nbsp;Ｂ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[c]', '1', true) %>&nbsp;Ｃ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[d]', '1', true) %>&nbsp;Ｄ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[e]', '1', true) %>&nbsp;Ｅ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[z]', '1', true) %>&nbsp;Ｚ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[s]', '1', @rank_kind[:s]) %>&nbsp;Ｓ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[a]', '1', @rank_kind[:a]) %>&nbsp;Ａ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[b]', '1', @rank_kind[:b]) %>&nbsp;Ｂ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[c]', '1', @rank_kind[:c]) %>&nbsp;Ｃ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[d]', '1', @rank_kind[:d]) %>&nbsp;Ｄ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[e]', '1', @rank_kind[:e]) %>&nbsp;Ｅ</label></td>
+															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[z]', '1', @rank_kind[:z]) %>&nbsp;Ｚ</label></td>
 															<td>）</td>
 														</tr>
 													</table>
@@ -95,10 +92,10 @@
 										<table>
 											<tr>
 												<td>
-													<label><%= radio_button_tag 'history_visit', '0' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_visit', '1', @jita_both_flg %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_visit', '2', @jita_both_flg %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-										（&nbsp;&nbsp;<%= text_field_tag 'visit_s', '1999/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'visit_e', '3000/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+													<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+										（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
 												</td>
 								
 											</tr>
@@ -112,10 +109,10 @@
 										<table>
 											<tr>
 												<td>
-													<label><%= radio_button_tag 'history_dm', '0' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_dm', '1', @jita_both_flg %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_dm', '2', @jita_both_flg %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-										（&nbsp;&nbsp;<%= text_field_tag 'visit_s', '1999/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'visit_e', '3000/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+													<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+										（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
 												</td>
 								
 											</tr>
@@ -129,10 +126,10 @@
 										<table>
 											<tr>
 												<td>
-													<label><%= radio_button_tag 'history_tel', '0' ,true %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_tel', '1', @jita_both_flg %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_tel', '2', @jita_both_flg %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-										（&nbsp;&nbsp;<%= text_field_tag 'visit_s', '1999/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'visit_e', '3000/01/01', :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+													<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+													<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+										（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
 												</td>
 								
 											</tr>
