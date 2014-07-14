@@ -9,9 +9,6 @@
 　　もし、貸主CDやアタック貸主CDの検索が必要になったら、その列を追加しかつ初期表示では非表示にする。そして貸主名の一部にリンクを置き、それを
 　　クリックすると貸主CD列がでるようにしよう。※建物についても同様。2014/05/25
  %>
-    <script>
-        $(document).ready(function() { $("#page_name").select2(); });
-    </script>
 
 <div class="bs-example">
     <div class="panel-group" id="accordion">
@@ -32,16 +29,17 @@
 											<tr>
 												<td style="text-align:right;width:100px;"><b>主担当者：</b></td>
 												<% if @biru_user.attack_all_search %>
+												    <script>
+												        $(document).ready(function() { $("#main_person_name").select2(); });
+												    </script>
+												
+													<td>
+														<%= select_tag 'main_person[name]', options_from_collection_for_select(BiruUser.all, :id, :name, @main_person),  :prompt => "選択してください" %>
+													</td>													
 												
 												<% else %>
-												<!--
-													<td><label><%= text_field_tag 'main_person', @biru_user.code, :size=>5, :style=>'text-align:center;' %>&nbsp;<%= @biru_user.name %></label></td>
-													-->
-													
-<td>
-<%= select_tag 'page[name]', options_from_collection_for_select(BiruUser.all, :id, :name, 2),  :prompt => "選択してください" %>
-    </select>												
-</td>													
+													<%= hidden_field_tag 'main_person[name]', @biru_user.id %>
+													<td><label><%= @biru_user.name %></label></td>
 												<% end %>
 												<td style="text-align:right;padding-left:50px;"><b>DM発送：</b></td>
 												<td>
@@ -170,6 +168,11 @@
 	<%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
 
 		g.action_column 
+
+
+		g.column name: '主担当者' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
+		g.column name: 'ＤＭ発送' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
+		g.column name: '物件ランク' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
 
 		g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
 		# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	

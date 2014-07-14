@@ -139,8 +139,9 @@ def get_trust_data()
     
     # 主担当者が指定
     if params[:main_person]
-      unless params[:main_person] == 'all'
-        trust_data = trust_data.where('buildings.main_employee_id = ?', params[:main_person] )
+      if params[:main_person][:name] 
+        trust_data = trust_data.where('buildings.main_employee_id = ?', params[:main_person][:name] )
+        p trust_data.to_sql
       end
     end
     
@@ -175,6 +176,10 @@ end
 
 # 検索条件を初期化します。
 def search_init
+  
+  if params[:main_person]
+    @main_person = params[:main_person][:name]
+  end
   
   #---------------
   # ダイレクトメール
