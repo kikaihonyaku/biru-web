@@ -53,7 +53,6 @@
 			      <tbody>
 			        <% @owner.trusts.each do |trust| %>
 						<% if trust.building %>
-						
 					        <tr>
 					          <td><a href="javascript:win_building(<%= trust.building.id %>);"><%= trust.building.name %></a></td>
 					          <td><%= trust.building.address %></td>
@@ -92,7 +91,6 @@
 
 
 	<div style="clear:both;margin-top:50px;">
-		
 
 		<%= simple_form_for :owner_approach, :url=>{:controller => :managements, :action => :owner_approach_regist}  do |f| %>
 			<%= f.input :owner_id, :as => :hidden, :input_html => {:value => @owner.id } %>

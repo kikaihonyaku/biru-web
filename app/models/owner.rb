@@ -20,5 +20,14 @@ class Owner < ActiveRecord::Base
   def gmaps4rails_sidebar
     "<span class=""foo"">#{name}</span>"
   end
+  
+  def self.to_csv
+    CSV.generate do |csv|
+      csv << column_names
+      all.each do |owner|
+        csv << owner.attributes.values_at(*column_names)
+      end
+    end
+  end  
 
 end

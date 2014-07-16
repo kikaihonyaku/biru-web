@@ -8,21 +8,36 @@ class TrustManagementsController < ApplicationController
   
   def tack_out
     @selected = params[:g1][:selected]
-    @trusts = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("trusts.id in (?)", @selected)
+    # @trusts = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("trusts.id in (?)", @selected)
+    #
+    # aaa = []
+    # @trusts.each do |t|
+    #   aaa.push(t.building.name) if t.building
+    # end
     
-    aaa = []
-    @trusts.each do |t|
-      aaa.push(t.building.name) if t.building
+    owner_id_arr = []
+    Trust.where("id in (?)", @selected).each do |trust|
+      owner_id_arr.push(trust.owner_id)
     end
     
-    send_data aaa.to_csv
+    
+    @owners = Owner.where("id in (?)", owner_id_arr)
+    send_data @owners.to_csv, :filename=>'tack.csv'
+    
+    
+    # tack_data = []
+    # @owners.each do |t|
+    #   tack_data.push(t.name)
+    # end
+    # send_data tack_data, :filename=>'tack.csv'
+     
   end
   
   def index
     # Owner Building Trust を連結した他社データを取得する
-    trust_data = get_trust_data
-    @trust_arr = initialize_grid(
-      trust_data,
+    @trust_data = get_trust_data
+    @trust_grid = initialize_grid(
+      @trust_data,
       :order => 'shops.code',
       :order_direction => 'desc',
       :per_page => 40,
@@ -120,54 +135,50 @@ end
 
 def get_trust_data()
   
-  trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("owners.code is null")
+  # trustについているdelete_flg の　default_scopeの副作用で、biru_usersのLEFT_OUTER_JOINが効かなくなっている？（空白のものは出てこない・・）なのでそうであればINNER JOINでつないでしまう（2014/07/15）
+  #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").where("owners.code is null")
+  trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
   
-  unless params[:dm]
-    #------------------------------------------------#
-    # 検索条件が指定されていない時（最初に画面遷移してきた時）
-    #------------------------------------------------#
-    
-    # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
-    unless @biru_user.attack_all_search 
-      trust_data = trust_data.where('buildings.main_employee_id = ?', @biru_user.id)
-    end
-    
-  else
-    #-----------------------#
-    # 検索条件が指定されている時
-    #-----------------------#
+  # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
+  unless @biru_user.attack_all_search 
+    trust_data = trust_data.where('trusts.biru_user_id = ?', @biru_user.id)
+  end
+  
+  #----------------------------------#
+  # 検索条件が指定されている時の絞り込み
+  #----------------------------------#
+  if params[:dm] # TODO:検索条件の設定
     
     # 主担当者が指定
-    if params[:main_person]
-      if params[:main_person][:name] 
-        trust_data = trust_data.where('buildings.main_employee_id = ?', params[:main_person][:name] )
-        p trust_data.to_sql
-      end
-    end
-    
-    # ダイレクトメール発送有無
-    if params[:dm] == 'only'
-      # 対象のみ
-      trust_data = trust_data.where('owners.dm_delivery = ?', true)
-    elsif  params[:dm] == 'not_only'
-      # 対象外のみ
-      trust_data = trust_data.where('owners.dm_delivery = ?', false)
-    end
-    
-    # 物件ランク
-    if params[:rank] == '1'
-      arr = []
-      
-      arr.push(AttackState.find_by_code('S').id) if params[:rank_kind][:s]
-      arr.push(AttackState.find_by_code('A').id) if params[:rank_kind][:a]
-      arr.push(AttackState.find_by_code('B').id) if params[:rank_kind][:b]
-      arr.push(AttackState.find_by_code('C').id) if params[:rank_kind][:c]
-      arr.push(AttackState.find_by_code('D').id) if params[:rank_kind][:d]
-      arr.push(AttackState.find_by_code('Z').id) if params[:rank_kind][:z]
-      
-      trust_data = trust_data.where('buildings.attack_state_id In (?)', arr)
-      
-    end
+    # if params[:main_person]
+    #   if params[:main_person][:name]
+    #     trust_data = trust_data.where('buildings.main_employee_id = ?', params[:main_person][:name] )
+    #   end
+    # end
+    #
+    # # ダイレクトメール発送有無
+    # if params[:dm] == 'only'
+    #   # 対象のみ
+    #   trust_data = trust_data.where('owners.dm_delivery = ?', true)
+    # elsif  params[:dm] == 'not_only'
+    #   # 対象外のみ
+    #   trust_data = trust_data.where('owners.dm_delivery = ?', false)
+    # end
+    #
+    # # 物件ランク
+    # if params[:rank] == '1'
+    #   arr = []
+    #
+    #   arr.push(AttackState.find_by_code('S').id) if params[:rank_kind][:s]
+    #   arr.push(AttackState.find_by_code('A').id) if params[:rank_kind][:a]
+    #   arr.push(AttackState.find_by_code('B').id) if params[:rank_kind][:b]
+    #   arr.push(AttackState.find_by_code('C').id) if params[:rank_kind][:c]
+    #   arr.push(AttackState.find_by_code('D').id) if params[:rank_kind][:d]
+    #   arr.push(AttackState.find_by_code('Z').id) if params[:rank_kind][:z]
+    #
+    #   trust_data = trust_data.where('buildings.attack_state_id In (?)', arr)
+    #
+    # end
     
   end
   
@@ -177,57 +188,57 @@ end
 # 検索条件を初期化します。
 def search_init
   
-  if params[:main_person]
-    @main_person = params[:main_person][:name]
-  end
+#  if params[:main_person]
+#    @main_person = params[:main_person][:name]
+#  end
   
   #---------------
   # ダイレクトメール
   #---------------
-  @dm = {}
-  @dm[:all] = false
-  @dm[:only] = false
-  @dm[:not_only] = false
-  
-  if params[:dm]
-    @dm[params[:dm].to_sym] = true
-  else
-    @dm[:all] = true
-  end
-  
-  #---------------
-  # 物件ランク
-  #---------------
-  @rank = {}
-  @rank[:all] = false
-  @rank[:only] = false
-  
-  if params[:rank]
-    @rank[params[:rank].to_sym] = true
-  else
-    @rank[:all] = true
-  end
-  
-  #---------------
-  # 物件ランク指定
-  #---------------
-  @rank_kind = {}
-  
-  if params[:rank_kind]
-    if params[:rank_kind][:s] then @rank_kind[:s] = true else @rank_kind[:s] = false end
-    if params[:rank_kind][:a] then @rank_kind[:a] = true else @rank_kind[:a] = false end
-    if params[:rank_kind][:b] then @rank_kind[:b] = true else @rank_kind[:b] = false end
-    if params[:rank_kind][:c] then @rank_kind[:c] = true else @rank_kind[:c] = false end
-    if params[:rank_kind][:d] then @rank_kind[:d] = true else @rank_kind[:d] = false end
-    if params[:rank_kind][:z] then @rank_kind[:z] = true else @rank_kind[:z] = false end
-  else
-    @rank_kind[:s] = false
-    @rank_kind[:a] = false
-    @rank_kind[:b] = false
-    @rank_kind[:c] = false
-    @rank_kind[:d] = false
-    @rank_kind[:z] = false
-  end
+  # @dm = {}
+  # @dm[:all] = false
+  # @dm[:only] = false
+  # @dm[:not_only] = false
+  #
+  # if params[:dm]
+  #   @dm[params[:dm].to_sym] = true
+  # else
+  #   @dm[:all] = true
+  # end
+  #
+  # #---------------
+  # # 物件ランク
+  # #---------------
+  # @rank = {}
+  # @rank[:all] = false
+  # @rank[:only] = false
+  #
+  # if params[:rank]
+  #   @rank[params[:rank].to_sym] = true
+  # else
+  #   @rank[:all] = true
+  # end
+  #
+  # #---------------
+  # # 物件ランク指定
+  # #---------------
+  # @rank_kind = {}
+  #
+  # if params[:rank_kind]
+  #   if params[:rank_kind][:s] then @rank_kind[:s] = true else @rank_kind[:s] = false end
+  #   if params[:rank_kind][:a] then @rank_kind[:a] = true else @rank_kind[:a] = false end
+  #   if params[:rank_kind][:b] then @rank_kind[:b] = true else @rank_kind[:b] = false end
+  #   if params[:rank_kind][:c] then @rank_kind[:c] = true else @rank_kind[:c] = false end
+  #   if params[:rank_kind][:d] then @rank_kind[:d] = true else @rank_kind[:d] = false end
+  #   if params[:rank_kind][:z] then @rank_kind[:z] = true else @rank_kind[:z] = false end
+  # else
+  #   @rank_kind[:s] = false
+  #   @rank_kind[:a] = false
+  #   @rank_kind[:b] = false
+  #   @rank_kind[:c] = false
+  #   @rank_kind[:d] = false
+  #   @rank_kind[:z] = false
+  # end
   
   #---------------
   # 訪問リレキ

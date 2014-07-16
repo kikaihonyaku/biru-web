@@ -11,10 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= content_for?(:title) ? yield(:title) : "中央ビル管理Webシステム" %></title>
     <%= csrf_meta_tags %>
-
-
     <%= include_gon %>
-
 
     <%= stylesheet_link_tag "application", :media => "all" %>
     <%= stylesheet_link_tag "jquery.sidr.light", :media => "all" %>

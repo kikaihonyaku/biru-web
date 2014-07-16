@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140707210120) do
+ActiveRecord::Schema.define(:version => 20140716065626) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -73,7 +73,6 @@ ActiveRecord::Schema.define(:version => 20140707210120) do
     t.integer  "owner_stop_num",       :default => 0
     t.integer  "biru_age",             :default => 0
     t.string   "build_day"
-    t.integer  "main_employee_id"
     t.integer  "attack_state_id"
   end
 
@@ -320,9 +319,11 @@ ActiveRecord::Schema.define(:version => 20140707210120) do
     t.integer  "building_id"
     t.integer  "manage_type_id"
     t.string   "code"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-    t.boolean  "delete_flg",     :default => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.boolean  "delete_flg",      :default => false
+    t.integer  "biru_user_id"
+    t.integer  "attack_state_id"
   end
 
   add_index "trusts", ["building_id"], :name => "index_trusts_on_building_id"

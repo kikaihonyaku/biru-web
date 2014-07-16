@@ -159,7 +159,14 @@ class ManagementsController < ApplicationController
 
     #render :action=>'popup_building', :layout => 'popup'
     redirect_to :action=>'popup_building', :id=>@building.id
+  end
+  
+  # 建物情報画面から委託契約の更新
+  def popup_building_trust_update
+    @trust = Trust.find(params[:trust][:id])
     
+    @trust.update_attributes(params[:trust])
+    redirect_to :action=>'popup_building', :id=>@trust.building_id
   end
 
   def index

@@ -482,12 +482,14 @@ end
 # アタックステータス
 def init_attack_state
   arr = []
-  arr.push({:code=>'S', :name=>'見込みあり',:order=>'1'})
-  arr.push({:code=>'A', :name=>'見込みあり',:order=>'2'})
-  arr.push({:code=>'B', :name=>'見込みあり',:order=>'3'})
-  arr.push({:code=>'C', :name=>'見込みあり',:order=>'4'})
-  arr.push({:code=>'D', :name=>'見込みあり',:order=>'5'})
-  arr.push({:code=>'Z', :name=>'成約済',:order=>'6'})
+  arr.push({:code=>'S', :name=>'S:見込みあり',:order=>'1'})
+  arr.push({:code=>'A', :name=>'A:見込みあり',:order=>'2'})
+  arr.push({:code=>'B', :name=>'B:見込みあり',:order=>'3'})
+  arr.push({:code=>'C', :name=>'C:見込みあり',:order=>'4'})
+  arr.push({:code=>'D', :name=>'D:見込みあり',:order=>'5'})
+  arr.push({:code=>'X', :name=>'X:不明',:order=>'6'})
+  arr.push({:code=>'Y', :name=>'Y:不成立',:order=>'7'})
+  arr.push({:code=>'Z', :name=>'Z:成約済',:order=>'8'})
 
   arr.each do |obj|
     attack_state = AttackState.find_or_create_by_code(obj[:code])

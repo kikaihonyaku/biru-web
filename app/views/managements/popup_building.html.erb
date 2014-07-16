@@ -21,7 +21,6 @@ function click_radio(num){
 }
 
 </script>
-<%= form_for(@building, :url=>{:action=>'popup_building_update', :controller=>'managements', :id=>@building}, :html=>{:class=>"form-horizontal"}) do |f|%>
   <legend style="padding:20px;padding-botom:10px;"><%= @building.name %></legend>
   
 <table>
@@ -45,20 +44,23 @@ function click_radio(num){
 		   	 <div style="position:absolute; left:450px; top:120px; "><%= image_tag('cursor_right_up.png') %></div>
 		   	 <div style="position:absolute; left:348px; top:355px; "><%= image_tag('cursor_right_down_545.png') %></div>
 			</div>
-			<div style="padding:5px;">※クリックでゴミ置き場作成。ドラッグで移動することができます。</div>
-			<div style="clear:both;">
-				<%= f.text_area :memo,  :size => "5x3", :class=>"form-control", :placeholder=>'メモ'  %>
-			</div>
+			<%= form_for(@building, :url=>{:action=>'popup_building_update', :controller=>'managements', :id=>@building}, :html=>{:class=>"form-horizontal"}) do |f|%>
 			
-			<div style="padding-top:10px;text-align:center;float:left;">
-				<%= f.submit 'メモ欄 更新', :class=>"btn btn-primary" %>
-			</div>
-			<div class="btn-group" data-toggle="buttons-radio" style="padding-top:5px;padding-left:20px;float:right;">
-				<button type="button" class="btn btn-default" onClick="javascript:click_radio(1);">表示なし</button>
-				<button type="button" class="btn btn-default" onClick="javascript:click_radio(2);">ゴミ置き場</button>
-				<button type="button" class="btn btn-default" onClick="javascript:click_radio(3);">募集図面</button>
-			</div>
+				<div style="padding:5px;">※クリックでゴミ置き場作成。ドラッグで移動することができます。</div>
+				<div style="clear:both;">
+					<%= f.text_area :memo,  :size => "5x3", :class=>"form-control", :placeholder=>'メモ'  %>
+				</div>
 			
+				<div style="padding-top:10px;text-align:center;float:left;">
+					<%= f.submit 'メモ欄 更新', :class=>"btn btn-primary" %>
+				</div>
+				<div class="btn-group" data-toggle="buttons-radio" style="padding-top:5px;padding-left:20px;float:right;">
+					<button type="button" class="btn btn-default" onClick="javascript:click_radio(1);">表示なし</button>
+					<button type="button" class="btn btn-default" onClick="javascript:click_radio(2);">ゴミ置き場</button>
+					<button type="button" class="btn btn-default" onClick="javascript:click_radio(3);">募集図面</button>
+				</div>
+
+		    <% end %>
 		</td>
 		<td style="vertical-align:top;padding-left:20px;padding-right:20px;">
 
@@ -90,6 +92,25 @@ function click_radio(num){
 								<td><%= @building.shop.name %></td>
 							</tr>
 						<% end %>
+
+						<% if @building.build_type %>
+							<tr>
+								<td style="text-align:right;">建物種別</td>
+								<td><%= @building.build_type.name %></td>
+							</tr>
+						<% end %>				
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="table-responsive panel panel-default">
+				<table class="table table-bordered">
+					<thead>
+						<tr class="active">
+							<td colspan="2" style="font-weight:bold">管理委託契約（<a data-toggle="modal" href="#myModal"  >編集</a>）</td>
+						</tr>
+					</thead>
+					<tbody>
 						<% if @trust %>
 					
 							<tr>
@@ -104,19 +125,50 @@ function click_radio(num){
 									<td style="text-align:right;font-size:12px;">見込み貸主CD</td>
 									<td><a href="javascript:win_owner(<%= @trust.owner.id %>);"><%= @trust.owner.attack_code + "  ( " + @trust.owner.name + " 様 )" %></a></td>
 								<% end%>
+								
 							</tr>
-
+							<% unless @trust.owner.code %>
+								<tr>
+									<td style="text-align:right;font-size:12px;">状態</td>
+									<% if @trust.attack_state %>
+										<td><%= @trust.attack_state.code + "  ( " + @trust.attack_state.name + ")" %></td>
+									<% else %>
+										<td>未設定</td>
+									<% end %>
+								</tr>
+							<% end %>
 						<% end %>
-
-						<% if @building.build_type %>
-							<tr>
-								<td style="text-align:right;">建物種別</td>
-								<td><%= @building.build_type.name %></td>
-							</tr>
-						<% end %>				
 					</tbody>
 				</table>
 			</div>
+			
+			<!-- モーダルダイアログ -->
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+				<%= simple_form_for :trust, :url=>{:controller => :managements, :action => :popup_building_trust_update } do |f| %>
+					
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			        <h4 class="modal-title" id="myModalLabel">委託契約編集</h4>
+			      </div>
+				  
+			      <div class="modal-body">
+
+						<%= f.input :id, :as => :hidden, :input_html => {:value => @trust.id } %>
+						<%#= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
+						<%= f.input :attack_state_id, collection: AttackState.all %>
+			       
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+			        <%= f.submit '登録', :class => 'btn btn-primary' %>
+			      </div>
+				<% end %>
+				  
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
 						
 			<div class="table-responsive panel panel-default">
 				<table class="table table-bordered table-condensed">
@@ -153,7 +205,5 @@ function click_radio(num){
 
 </div>
 
-
-  <% end %>
 
 

@@ -1,5 +1,13 @@
 <!-- For index -->
 
+  <style type="text/css">
+	
+	a{
+	  text-decoration:underline;	
+	}
+	
+  </style>
+  
 <div style="margin-left:100px;margin-right:100px;">
 <h1>管理受託アタックリスト</h1>
 
@@ -23,6 +31,7 @@
 		  <div style="padding-left:30px;">
 			<%= form_tag '/trust_managements/index' do %>
 							<table class="attack-search">
+								<!-- 主担当者の検索条件は表で行っているので削除ー開始
 								<tr>
 									<td colspan="2">
 										<table>
@@ -34,23 +43,34 @@
 												    </script>
 												
 													<td>
-														<%= select_tag 'main_person[name]', options_from_collection_for_select(BiruUser.all, :id, :name, @main_person),  :prompt => "選択してください" %>
+														<%#= select_tag 'main_person[name]', options_from_collection_for_select(BiruUser.all, :id, :name, @main_person),  :prompt => "選択してください" %>
 													</td>													
 												
 												<% else %>
-													<%= hidden_field_tag 'main_person[name]', @biru_user.id %>
+													<%#= hidden_field_tag 'main_person[name]', @biru_user.id %>
 													<td><label><%= @biru_user.name %></label></td>
 												<% end %>
 												<td style="text-align:right;padding-left:50px;"><b>DM発送：</b></td>
 												<td>
-													<label><%= radio_button_tag 'dm', 'all', @dm[:all] %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'dm', 'only', @dm[:only]  %>&nbsp;対象のみ</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'dm', 'not_only', @dm[:not_only] %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
+													<label><%#= radio_button_tag 'dm', 'all', @dm[:all] %>&nbsp;すべて</label>&nbsp;&nbsp;
+													<label><%#= radio_button_tag 'dm', 'only', @dm[:only]  %>&nbsp;対象のみ</label>&nbsp;&nbsp;
+													<label><%#= radio_button_tag 'dm', 'not_only', @dm[:not_only] %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
 												</td>
 												
 												
 											</tr>
 										</table>
+									</td>
+								</tr>
+									主担当者の検索条件は表で行っているので削除ー終了 -->
+								
+								<!--　DM発送、物件ランクの検索条件は表で行っているので削除ー開始
+								<tr>
+									<td style="text-align:right;padding-left:50px;"><b>DM発送：</b></td>
+									<td>
+										<label><%#= radio_button_tag 'dm', 'all', @dm[:all] %>&nbsp;すべて</label>&nbsp;&nbsp;
+										<label><%#= radio_button_tag 'dm', 'only', @dm[:only]  %>&nbsp;対象のみ</label>&nbsp;&nbsp;
+										<label><%#= radio_button_tag 'dm', 'not_only', @dm[:not_only] %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
 									</td>
 								</tr>
 					
@@ -60,20 +80,20 @@
 										<table>
 											<tr>
 												<td>
-													<label><%= radio_button_tag 'rank', 'all' , @rank[:all] %>&nbsp;指定なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'rank', 'only', @rank[:only] %>&nbsp;指定あり</label>&nbsp;&nbsp;
+													<label><%#= radio_button_tag 'rank', 'all' , @rank[:all] %>&nbsp;指定なし</label>&nbsp;&nbsp;
+													<label><%#= radio_button_tag 'rank', 'only', @rank[:only] %>&nbsp;指定あり</label>&nbsp;&nbsp;
 												</td>
 												<td>
 													<table>
 														<tr>
 															<td style="padding-right:15px;">（</td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[s]', '1', @rank_kind[:s]) %>&nbsp;Ｓ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[a]', '1', @rank_kind[:a]) %>&nbsp;Ａ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[b]', '1', @rank_kind[:b]) %>&nbsp;Ｂ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[c]', '1', @rank_kind[:c]) %>&nbsp;Ｃ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[d]', '1', @rank_kind[:d]) %>&nbsp;Ｄ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[e]', '1', @rank_kind[:e]) %>&nbsp;Ｅ</label></td>
-															<td style="padding-right:15px;"><label><%= check_box_tag('rank_kind[z]', '1', @rank_kind[:z]) %>&nbsp;Ｚ</label></td>
+															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[s]', '1', @rank_kind[:s]) %>&nbsp;Ｓ</label></td>
+															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[a]', '1', @rank_kind[:a]) %>&nbsp;Ａ</label></td>
+															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[b]', '1', @rank_kind[:b]) %>&nbsp;Ｂ</label></td>
+															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[c]', '1', @rank_kind[:c]) %>&nbsp;Ｃ</label></td>
+															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[d]', '1', @rank_kind[:d]) %>&nbsp;Ｄ</label></td>
+															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[e]', '1', @rank_kind[:e]) %>&nbsp;Ｅ</label></td>
+															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[z]', '1', @rank_kind[:z]) %>&nbsp;Ｚ</label></td>
 															<td>）</td>
 														</tr>
 													</table>
@@ -83,6 +103,7 @@
 										</table>
 									</td>
 								</tr>
+								DM発送、物件ランクの検索条件は表で行っているので削除ー終了 -->
 								
 								<tr>
 									<td style="text-align:right"><b>訪問リレキ：</b></td>
@@ -154,7 +175,7 @@
 </div>
 </div>
 
-<%= dump_filter_parameters_as_hidden_fields(@trust_arr) %>
+<%= dump_filter_parameters_as_hidden_fields(@trust_grid) %>
 <%= form_tag '/trust_managements/tack_out'  do %>
 	<% if @selected %>
 		<%= @selected.to_sentence %>
@@ -165,15 +186,12 @@
 		<button class='btn' style="margin-bottom:5px;" type='submit'>タックシール</button>
 	</div>
 
-	<%= grid(@trust_arr,  upper_pagination_panel: true ) do |g|
+	<%= grid(@trust_grid,  upper_pagination_panel: true ) do |g|
 
 		g.action_column 
 
 
-		g.column name: '主担当者' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
-		g.column name: 'ＤＭ発送' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
-		g.column name: '物件ランク' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
-
+		g.column name: '主担当者' , attribute: 'name', model: 'BiruUser' , :html =>{ :style => 'width:300x;'}, custom_filter: @trust_data.uniq.pluck("biru_users.name").map{|pr| [pr, pr]} do |obj| obj.biru_user.name if obj.biru_user end
 		g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
 		# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
 		g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj|
@@ -192,6 +210,9 @@
 		end
 	
 		g.column name: '貸主住所' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
+		g.column name: 'ＤＭ発送可' , attribute: 'dm_delivery', model: 'Owner' , :html =>{ :style => 'width:100px;text-align:center'} do |obj| obj.owner.dm_delivery if obj.owner end
+			
+			
 		#g.column name: '建物CD' , attribute: 'attack_code', model: 'Building' , :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.building.attack_code if obj.building end
 		g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj|
 	  	  if obj.building
@@ -208,6 +229,7 @@
 		end
 	
 		g.column name: '建物住所' , attribute: 'address', model: 'Building', :html =>{ :style => 'width:300px;'}   do |obj| obj.building.address if obj.building end
+		g.column name: '物件ランク' , attribute: 'code', model: 'AttackState' , :html =>{ :style => 'width:100px;'}, custom_filter: AttackState.find(:all).map{|pr| [pr.code, pr.code]} do |obj| obj.attack_state.code if obj.attack_state end
 
 
 	#    g.column  :html =>{ :style => 'width:80px;text-align:center;'} do |obj| 
