@@ -51,3 +51,4 @@ gem 'lazy_high_charts'
 gem 'rspec-rails'
 gem "wice_grid" # Viewの表を整形する。2014/05/05
 gem 'simple_form'
+gem 'thinreports'

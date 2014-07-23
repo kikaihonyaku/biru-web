@@ -7,6 +7,8 @@ class TrustManagementsController < ApplicationController
   before_filter :search_init
   
   def tack_out
+    require 'thinreports'
+    
     @selected = params[:g1][:selected]
     # @trusts = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).where("trusts.id in (?)", @selected)
     #
@@ -22,14 +24,19 @@ class TrustManagementsController < ApplicationController
     
     
     @owners = Owner.where("id in (?)", owner_id_arr)
-    send_data @owners.to_csv, :filename=>'tack.csv'
+    #send_data @owners.to_csv, :filename=>'tack.csv'
     
     
-    # tack_data = []
-    # @owners.each do |t|
-    #   tack_data.push(t.name)
-    # end
-    # send_data tack_data, :filename=>'tack.csv'
+
+     report = ThinReports::Report.create :layout => File.join(Rails.root, 'app/reports', 'pdf_layout.tlf') do |r|
+       r.start_new_page do |page|
+         page.item(:text).value('aaaaa')
+       end
+     end
+
+     send_data report.generate, :filename    => 'foo.pdf', 
+                                :type        => 'application/pdf', 
+                                :disposition => 'attachment'
      
   end
   

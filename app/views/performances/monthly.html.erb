@@ -98,6 +98,7 @@
 <!-- 折れ線グラフを表示する -->
 <% if @group_result %>
   <div style="text-align: right;margin-top:80px;padding-bottom:100px;" ><%= high_chart("gropu_result-1", @group_result) %></div>
+
 <% end %>
 
 
@@ -226,10 +227,4 @@
 
 
 
-<script type="text/javascript">
-  <!--
-    <% @result_arr.each_with_index do |result, i| %>
-      // openClose('p_4000<%= i %>','p_4000<%= i %>_detail', '<%= result['dept_name'] %>');
-    <% end %>
-  //-->
-</script>
+
