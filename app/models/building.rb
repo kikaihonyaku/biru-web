@@ -9,6 +9,7 @@ class Building < ActiveRecord::Base
   belongs_to :shop
   belongs_to :build_type
   has_many :rooms
+  belongs_to :biru_user
 
   attr_accessible :address, :code, :name, :shop_id, :manage_type_id, :build_type_id, :icon, :room_num, :manage_icon, :memo, :building_rank_id, :self_type, :tmp_build_type_icon, :build_day, :attack_code
 

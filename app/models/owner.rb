@@ -4,6 +4,7 @@ class Owner < ActiveRecord::Base
 
   attr_accessible :address, :code, :name, :memo, :attack_code, :dm_delivery
 
+  belongs_to :biru_user
   has_many :trusts
 
   # デフォルトスコープを定義

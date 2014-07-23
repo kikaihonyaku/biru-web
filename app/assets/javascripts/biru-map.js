@@ -644,11 +644,11 @@ function init_map(user_id){
 }
 
 function win_owner(id) {
-  window.open('/managements/popup_owner/' + id   , "", "width=900,height=650,resizable=yes,scrollbars=yes");
+  window.open('/managements/popup_owner/' + id   , "", "width=1200,height=1000,resizable=yes,scrollbars=yes");
 }
 
 function win_building(id){
-  window.open('/managements/popup_building/' + id   , "", "width=850,height=650,resizable=yes,scrollbars=yes");
+  window.open('/managements/popup_building/' + id   , "", "width=1000,height=850,resizable=yes,scrollbars=yes");
 }
 
 

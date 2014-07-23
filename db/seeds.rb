@@ -3,6 +3,8 @@
 require 'csv'
 require 'kconv'
 require 'date'
+#require "moji"
+require 'digest/md5'
 
 # 文字列を日付に変換
 def custom_parse(str)
@@ -17,6 +19,17 @@ def custom_parse(str)
   return date
 end
 
+
+# コード用に変換方法を統一
+def conv_code(str)
+#  str = str.gsub(/(\s|　)+/, '')
+#  str = str.upcase
+#  str = Moji.han_to_zen(str.encode('utf-8'))
+#  return str
+
+ # ハッシュ化して先頭6文字を取得
+ return Digest::MD5.new.update(str).to_s[0,5]
+end
 
 #------------------------------
 # 路線マスタ／駅マスタを登録します。
@@ -530,6 +543,17 @@ end
 def biru_geocode(biru, force)
   begin
 
+    # 住所が空白のみだったらそもそもgeocodeを行わない
+    if biru.address.gsub(" ", "").gsub("　", "").length == 0
+      if biru.name.nil?
+        p "住所が空白のみなのでスキップ "
+      else
+        p "住所が空白のみなのでスキップ " + biru.name
+      end
+      
+      raise # 例外発生させrescueへ飛ばす
+    end
+
     skip_flg = biru.gmaps
     skip_flg = false if force
 
@@ -1032,28 +1056,230 @@ end
 
 #update_gmap
 
+#
+# # 一括貸主登録を行います。
+# # type:0 自社管理対象 1:アタックリスト
+# # ▼受け取る項目
+# # 0 貸主CD
+# # 1 貸主名
+# # 2 敬称
+# # 3 郵便場号
+# # 4 住所
+# # 5 電話番号
+# def bulk_owner_regist(type, filename)
+#
+#   # ファイル存在チェック
+#   unless File.exist?(filename)
+#     puts 'file not exist'
+#     return false
+#   end
+#
+#   # imp_tablesを初期化
+#   # ImpTable.delete_all
+#
+#   # 元データを一時表に登録
+#   open(filename).each_with_index do |line, cnt|
+#     catch :not_header do
+#
+#       # 1行目は読み飛ばす
+#       throw :not_header if cnt == 0
+#
+#       # 必要項目に満たないものは読み飛ばす
+#       row = line.split(",")
+#       unless row[5]
+#         p cnt.to_s + "行目は項目が足りていないのでスキップ"
+#         throw :not_header
+#       end
+#
+#       imp = ImpTable.new
+#       imp.owner_type = type
+#       imp.owner_cd = row[0]
+#       imp.owner_nm = row[1]
+#       imp.owner_honorific_title = row[2]
+#       imp.owner_postcode = row[3]
+#       imp.owner_address = row[4]
+#       imp.owner_tel = row[5]
+#       imp.save!
+#
+#       p cnt.to_s + " " + imp.owner_nm
+#     end
+#   end
+#
+#
+#   # typeによって貸主の登録（同じ貸主CDの人がいたら上書き）
+#   ImpTable.where("execute_status = 0").each do |imp|
+#
+#     # 貸主CDを取得する
+#     if type == 0
+#       owner = Owner.find_or_create_by_code(imp.owner_cd)
+#       owner.code = imp.owner_cd
+#     else
+#       owner = Owner.find_or_create_by_attack_code(imp.owner_cd)
+#       owner.attack_code = imp.owner_cd
+#     end
+#
+#     owner.name = imp.owner_nm
+#     owner.honorific_title = imp.owner_honorific_title
+#
+#
+#     owner.name = imp.owner_nm
+#     owner.honorific_title = imp.owner_honorific_title
+#     owner.postcode = imp.owner_postcode
+#     owner.address = imp.owner_address
+#     owner.tel = imp.owner_tel
+#
+#     owner.delete_flg = false
+#     biru_geocode(owner, false)
+#     begin
+#       owner.save!
+#       imp.execute_status = 1 #正常終了
+#       imp.save!
+#     rescue
+#       p "貸主登録エラー:save " + owner.name
+#       # 登録できなかったらimoprtテーブルへログを書き込み
+#       imp.execute_status = 2 # error
+#       imp.execute_msg = owner.errors.full_messages
+#       imp.save!
+#     end
+#   end
+# end
+#
+#
+# # 一括建物登録を行います。
+# # type:0 自社管理対象 1:アタックリスト
+# # ▼受け取る項目（自は自社管理物件、他はアタックリスト）
+# # 0 管理営業所CD（自他）
+# # 1 管理営業所名（自他）
+# # 2 建物CD（自他）
+# # 3 建物名（自他）
+# # 4 郵便場号（自他）
+# # 5 住所（自他）
+# # 6 築年月日（自他）
+# # 7 物件種別CD（自）
+# # 8 物件種別名
+# # 9 総戸数
+# # 10 間取り(他)
+# # 11 貸主CD
+# # 12 管理方式CD（自）
+# # 13 管理方式名（自）
+# # 14 管理委託契約CD(自)
+#
+# def bulk_building_regist(type, filename)
+#   # ファイル存在チェック
+#   unless File.exist?(filename)
+#     puts 'file not exist'
+#     return false
+#   end
+#
+#   # 元データを一時表に登録
+#   open(filename).each_with_index do |line, cnt|
+#     catch :not_header do
+#
+#       # 1行目は読み飛ばす
+#       throw :not_header if cnt == 0
+#
+#       # 必要項目に満たないものは読み飛ばす
+#       row = line.split(",")
+#       unless row[11]
+#         p cnt.to_s + "行目は項目が足りていないのでスキップ"
+#         throw :not_header
+#       end
+#
+#       imp = ImpTable.new
+#       imp.building_type = type
+#       imp.eigyo_cd = row[0]
+#       imp.eigyo_nm = row[1]
+#       imp.building_cd = row[2]
+#       imp.building_nm = row[3]
+#       imp.building_postcode = row[4]
+#       imp.building_address = row[5]
+#       imp.build_day = row[6]
+#       imp.building_type_cd = row[7]
+#       imp.owner_cd = row[11]
+#       imp.manage_type_cd = row[12]
+#       imp.manage_type_nm = row[13]
+#       imp.trust_cd = row[14]
+#
+#       imp.building_memo = "物件種別：" + row[8] + ", 間取り：" + row[10] + ", 戸数：" + row[9]
+#       imp.save!
+#
+#       p cnt.to_s + " " + imp.owner_nm
+#     end
+#   end
+#
+#
+#
+#   # typeによって建物の登録（同じ建物CDが存在したら上書き）
+#
+#   # 管理委託CDの取得
+# end
 
-# 一括貸主登録を行います。
-# type:0 自社管理対象 1:アタックリスト
-# ▼受け取る項目
-# 0 貸主CD
-# 1 貸主名
-# 2 敬称
-# 3 郵便場号
-# 4 住所
-# 5 電話番号
-def bulk_owner_regist(type, filename)
+# 指定した受託担当者のアタックリストのExcelの情報を登録します。
+# -ファイル要素-----------------------------
+# 0：NO
+# 1：登録年月日（リスト記載日）
+# 2：ランク
+# 3：物件所在地①（市区町村丁目）
+# 4：物件所在地②（番地等）
+# 5：地番
+# 6：駅
+# 7：距離
+# 8：時間
+# 9：物件名
+# 10：総戸数
+# 11：間取①
+# 12：戸数
+# 13：間取②
+# 14：戸数
+# 15：建築年月(1999/1)と入力してください。
+# 16：築年数（自動計算のため入力禁止）
+# 17：構造（リスト）
+# 18：階数
+# 19：貸主様名
+# 20：敬称
+# 21：フリガナ
+# 22：〒
+# 23：貸主住所①（都道府県）
+# 24：貸主住所②（市区町村丁目）
+# 25：貸主住所③（番地等）
+# 26：貸主住所④マンション名等
+# 27：貸主電話
+# 28：現管理会社
+# 29：募集会社
+# 30：サブリース会社
+# 31：現管理会社
+# 32：連絡先
+# 33：備考1
+# 34：備考2
+# 35：DM送付区分（DMをお送りする方に○を記載してください。）
+# 36：アプローチ状況①
+# 37：アプローチ状況②
+# 38：アプローチ状況①
+# 39：アプローチ状況②
+# 40：アプローチ状況①
+def reg_attack_owner_building(biru_user_code, shop_name, filename)
+	
+	# 指定された担当者が存在するかチェック
+	biru_user = BiruUser.find_by_code(biru_user_code)
+	unless biru_user	
+		puts 'user not exist'
+		return false
+  end
   
+  shop = Shop.find_by_name(shop_name)
+	unless shop	
+		puts 'shop not exist'
+		return false
+  end
+
   # ファイル存在チェック
   unless File.exist?(filename)
     puts 'file not exist'
     return false
   end
-
-  # imp_tablesを初期化
-  # ImpTable.delete_all
-  
-  # 元データを一時表に登録
+	
+	# imp_tableへ書き込み
+	ImpTable.delete_all("imp_tables.biru_user_id = " + biru_user.id.to_s)
   open(filename).each_with_index do |line, cnt|
     catch :not_header do
 
@@ -1062,135 +1288,102 @@ def bulk_owner_regist(type, filename)
         
       # 必要項目に満たないものは読み飛ばす
       row = line.split(",")
-      unless row[5] 
-        p cnt.to_s + "行目は項目が足りていないのでスキップ" 
-        throw :not_header
-      end
-      
+#      unless row[40] 
+#        p cnt.to_s + "行目は項目が足りていないのでスキップ" 
+#        throw :not_header
+#      end
+
       imp = ImpTable.new
-      imp.owner_type = type
-      imp.owner_cd = row[0]
-      imp.owner_nm = row[1]
-      imp.owner_honorific_title = row[2]
-      imp.owner_postcode = row[3]
-      imp.owner_address = row[4]
-      imp.owner_tel = row[5]
+      imp.biru_user_id = biru_user.id
+      imp.building_address = row[3] + ' ' + row[4] + ' ' + row[5]
+      imp.building_nm = row[9]
+      imp.building_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.building_address + '_' + imp.building_nm)
+
+      imp.owner_nm = row[19]
+      imp.owner_honorific_title = row[20]
+      imp.owner_kana = row[21]
+      imp.owner_postcode = row[22]
+      imp.owner_address = row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]
+      imp.owner_tel = row[27]
+      imp.owner_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
       imp.save!
 
       p cnt.to_s + " " + imp.owner_nm
     end
   end
-
   
-  # typeによって貸主の登録（同じ貸主CDの人がいたら上書き）
-  ImpTable.where("execute_status = 0").each do |imp|
-    
-    # 貸主CDを取得する
-    if type == 0
-      owner = Owner.find_or_create_by_code(imp.owner_cd)
-      owner.code = imp.owner_cd
-    else
-      owner = Owner.find_or_create_by_attack_code(imp.owner_cd)
-      owner.attack_code = imp.owner_cd
-    end
-    
-    owner.name = imp.owner_nm
-    owner.honorific_title = imp.owner_honorific_title
-    
-        
-    owner.name = imp.owner_nm
-    owner.honorific_title = imp.owner_honorific_title
-    owner.postcode = imp.owner_postcode
-    owner.address = imp.owner_address
-    owner.tel = imp.owner_tel
-    
-    owner.delete_flg = false
-    biru_geocode(owner, false)
-    begin
-      owner.save!
-      imp.execute_status = 1 #正常終了
-      imp.save!
-    rescue
-      p "貸主登録エラー:save " + owner.name
-      # 登録できなかったらimoprtテーブルへログを書き込み
-      imp.execute_status = 2 # error
-      imp.execute_msg = owner.errors.full_messages
-      imp.save!
-    end
+	
+	# 指定された担当者、建物ユニークキーを元に該当のオーナーを取得(なければ新規作成)
+		#空白の項目があったらupdateしてあげよう(確定はまた今度で)
+		# エラーだったら以下を読み飛ばす。
+	ImpTable.find_all_by_biru_user_id(biru_user.id).each do |imp|
+	  catch :next_rec do
+	  	
+	  	######################
+	  	# 貸主の登録・特定
+	  	######################
+			owner = Owner.find_or_create_by_attack_code(imp.owner_cd)
+			owner.attack_code = imp.owner_cd
+			owner.name = imp.owner_nm
+			owner.address = imp.owner_address
+			owner.postcode = imp.owner_postcode
+			owner.honorific_title = imp.owner_honorific_title
+			owner.tel = imp.owner_tel
+			owner.biru_user_id = biru_user.id
+			owner.delete_flg = false
+      		
+			biru_geocode(owner, false)
+			
+	    begin
+	      owner.save!
+	    rescue
+	      #p "エラー:save " + biru.name + ':' + biru.address
+	      p "貸主登録エラー:save " + owner.name
+	      throw :next_rec
+	    end
+	  	
+	  	######################
+	  	# 建物の登録・特定
+	  	######################
+	  	building = Building.find_or_create_by_attack_code(imp.building_cd)
+	  	building.attack_code = imp.building_cd
+	  	building.address = imp.building_address
+	  	building.name = imp.building_nm
+	  	building.delete_flg = false
+			building.shop_id = shop.id
+      building.biru_user_id = biru_user.id
+			biru_geocode(building, false)
+			
+	    begin
+	      building.save!
+	    rescue
+	      #p "エラー:save " + biru.name + ':' + biru.address
+	      p "建物登録エラー:save " + building.name
+	      throw :next_rec
+	    end
+	  	
+	  	######################
+	  	# 委託契約の登録
+	  	######################
+	  	trust = Trust.find_or_create_by_owner_id_and_building_id(owner.id, building.id)
+	  	trust.owner_id = owner.id
+	  	trust.building_id = building.id
+      trust.biru_user_id = biru_user.id
+	  	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外
+	  	trust.delete_flg = false
+	  	
+	    begin
+	      trust.save!
+	    rescue
+	      p "委託契約登録失敗:save "
+	      throw :next_rec
+	    end
+	  	
+	  end
+	
   end
+	
 end
-
-
-# 一括建物登録を行います。
-# type:0 自社管理対象 1:アタックリスト
-# ▼受け取る項目（自は自社管理物件、他はアタックリスト）
-# 0 管理営業所CD（自他）
-# 1 管理営業所名（自他）
-# 2 建物CD（自他）
-# 3 建物名（自他）
-# 4 郵便場号（自他）
-# 5 住所（自他）
-# 6 築年月日（自他）
-# 7 物件種別CD（自）
-# 8 物件種別名
-# 9 総戸数
-# 10 間取り(他)
-# 11 貸主CD
-# 12 管理方式CD（自）
-# 13 管理方式名（自）
-# 14 管理委託契約CD(自)
-
-def bulk_building_regist(type, filename)
-  # ファイル存在チェック
-  unless File.exist?(filename)
-    puts 'file not exist'
-    return false
-  end
-  
-  # 元データを一時表に登録
-  open(filename).each_with_index do |line, cnt|
-    catch :not_header do
-
-      # 1行目は読み飛ばす
-      throw :not_header if cnt == 0
-        
-      # 必要項目に満たないものは読み飛ばす
-      row = line.split(",")
-      unless row[11] 
-        p cnt.to_s + "行目は項目が足りていないのでスキップ" 
-        throw :not_header
-      end
-      
-      imp = ImpTable.new
-      imp.building_type = type
-      imp.eigyo_cd = row[0]
-      imp.eigyo_nm = row[1]
-      imp.building_cd = row[2]
-      imp.building_nm = row[3]
-      imp.building_postcode = row[4]
-      imp.building_address = row[5]
-      imp.build_day = row[6]
-      imp.building_type_cd = row[7]
-      imp.owner_cd = row[11]
-      imp.manage_type_cd = row[12]
-      imp.manage_type_nm = row[13]
-      imp.trust_cd = row[14]
-      
-    	imp.building_memo = "物件種別：" + row[8] + ", 間取り：" + row[10] + ", 戸数：" + row[9]
-      imp.save!
-
-      p cnt.to_s + " " + imp.owner_nm
-    end
-  end
-
-
-  
-  # typeによって建物の登録（同じ建物CDが存在したら上書き）
-  
-  # 管理委託CDの取得
-end
-
-
 
 # geocode されていないものをアップデート
 def update_geocode
@@ -2215,7 +2408,7 @@ end
 #init_approach_kind
 
 # アタックステータス登録
-init_attack_state
+#init_attack_state
 
 ########################
 # 地図管理物件登録
@@ -2232,6 +2425,13 @@ init_attack_state
 
 # データの登録(他社貸主）
 # bulk_owner_regist(1, Rails.root.join( "tmp", "attack_kasi_20140623.csv"))
+
+
+###########################
+# アタックリストの登録
+###########################
+reg_attack_owner_building('05928', '松戸営業所', Rails.root.join( "tmp", "list_attack_matudo.csv"))
+
 
 ###########################
 # 業績分析(月次)

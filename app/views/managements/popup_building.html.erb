@@ -103,44 +103,50 @@ function click_radio(num){
 				</table>
 			</div>
 			
-			<div class="table-responsive panel panel-default">
-				<table class="table table-bordered">
-					<thead>
-						<tr class="active">
-							<td colspan="2" style="font-weight:bold">管理委託契約（<a data-toggle="modal" href="#myModal"  >編集</a>）</td>
-						</tr>
-					</thead>
-					<tbody>
-						<% if @trust %>
-					
-							<tr>
-								<td style="text-align:right;">管理委託CD</td>
-								<td><%= @trust.code + "  ( " + @trust.manage_type.name + " )" %></td>
-							</tr>
-							<tr>
-								<% if @trust.owner.code %>
-									<td style="text-align:right;">貸主CD</td>
-									<td><a href="javascript:win_owner(<%= @trust.owner.id %>);"><%= @trust.owner.code + "  ( " + @trust.owner.name + " 様 )" %></a></td>
-								<% else %>
-									<td style="text-align:right;font-size:12px;">見込み貸主CD</td>
-									<td><a href="javascript:win_owner(<%= @trust.owner.id %>);"><%= @trust.owner.attack_code + "  ( " + @trust.owner.name + " 様 )" %></a></td>
-								<% end%>
-								
-							</tr>
-							<% unless @trust.owner.code %>
-								<tr>
-									<td style="text-align:right;font-size:12px;">状態</td>
-									<% if @trust.attack_state %>
-										<td><%= @trust.attack_state.code + "  ( " + @trust.attack_state.name + ")" %></td>
-									<% else %>
-										<td>未設定</td>
-									<% end %>
-								</tr>
+			<% if @trust %>
+				<div class="table-responsive panel panel-default">
+					<table class="table table-bordered">
+							<% if @trust.owner.code %>
+								<thead>
+									<tr class="active">
+										<td colspan="2" style="font-weight:bold">管理委託契約（<a data-toggle="modal" href="#myModal"  >編集</a>）</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td style="text-align:right;">管理委託CD</td>
+										<td><%= @trust.code + "  ( " + @trust.manage_type.name + " )" %></td>
+									</tr>
+									<tr>
+										<td style="text-align:right;">貸主CD</td>
+										<td><a href="javascript:win_owner(<%= @trust.owner.id %>);"><%= @trust.owner.code + "  ( " + @trust.owner.name + " 様 )" %></a></td>
+									</tr>
+								</tbody>
+							<% else %>
+								<thead>
+									<tr class="active">
+										<td colspan="2" style="font-weight:bold">アタック管理情報（<a data-toggle="modal" href="#myModal"  >編集</a>）</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td style="text-align:right;font-size:12px;">見込み貸主CD</td>
+										<td><a href="javascript:win_owner(<%= @trust.owner.id %>);"><%= @trust.owner.attack_code + "  ( " + @trust.owner.name + " 様 )" %></a></td>
+									</tr>
+									<tr>
+										<td style="text-align:right;font-size:12px;">状態</td>
+										<% if @trust.attack_state %>
+											<td><%= @trust.attack_state.code + "  ( " + @trust.attack_state.name + ")" %></td>
+										<% else %>
+											<td>未設定</td>
+										<% end %>
+									</tr>
+								</tbody>
 							<% end %>
-						<% end %>
-					</tbody>
-				</table>
-			</div>
+						
+					</table>
+				</div>
+			<% end %>
 			
 			<!-- モーダルダイアログ -->
 			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

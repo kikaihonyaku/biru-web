@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140716065626) do
+ActiveRecord::Schema.define(:version => 20140723074549) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -73,7 +73,7 @@ ActiveRecord::Schema.define(:version => 20140716065626) do
     t.integer  "owner_stop_num",       :default => 0
     t.integer  "biru_age",             :default => 0
     t.string   "build_day"
-    t.integer  "attack_state_id"
+    t.integer  "biru_user_id"
   end
 
   add_index "buildings", ["build_type_id"], :name => "index_buildings_on_build_type_id"
@@ -154,6 +154,7 @@ ActiveRecord::Schema.define(:version => 20140716065626) do
     t.integer "building_type"
     t.integer "execute_status",        :default => 0
     t.string  "execute_msg"
+    t.integer "biru_user_id"
   end
 
   create_table "items", :force => true do |t|
@@ -241,17 +242,17 @@ ActiveRecord::Schema.define(:version => 20140716065626) do
     t.float    "latitude"
     t.float    "longitude"
     t.boolean  "gmaps"
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.text     "memo"
     t.integer  "owner_rank_id"
-    t.boolean  "delete_flg",       :default => false
+    t.boolean  "delete_flg",      :default => false
     t.string   "attack_code"
     t.string   "postcode"
     t.string   "honorific_title"
     t.string   "tel"
-    t.boolean  "dm_delivery",      :default => true
-    t.integer  "main_employee_id"
+    t.boolean  "dm_delivery",     :default => true
+    t.integer  "biru_user_id"
   end
 
   create_table "room_layouts", :force => true do |t|

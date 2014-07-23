@@ -198,7 +198,7 @@
 		  if obj.owner
 		  
 			  if obj.owner.attack_code
-		  	    str = obj.owner.name + ' ／ ' + 'A' + obj.owner.attack_code.to_s
+		  	    str = obj.owner.name + ' ／ ' + obj.owner.attack_code.to_s
 			  else
 	  	  	    str = obj.owner.name  + ' ／ ' + obj.owner.code.to_s
 			  end
@@ -218,7 +218,7 @@
 	  	  if obj.building
 		  
 	  		  if obj.building.attack_code
-	  	  	    str = obj.building.name + ' ／ ' + 'A' + obj.building.attack_code.to_s
+	  	  	    str = obj.building.name + ' ／ ' + obj.building.attack_code.to_s
 	  		  else
 	    	  	str = obj.building.name  + ' ／ ' + obj.building.code.to_s
 	  		  end
@@ -229,7 +229,7 @@
 		end
 	
 		g.column name: '建物住所' , attribute: 'address', model: 'Building', :html =>{ :style => 'width:300px;'}   do |obj| obj.building.address if obj.building end
-		g.column name: '物件ランク' , attribute: 'code', model: 'AttackState' , :html =>{ :style => 'width:100px;'}, custom_filter: AttackState.find(:all).map{|pr| [pr.code, pr.code]} do |obj| obj.attack_state.code if obj.attack_state end
+		g.column name: '見込ランク' , attribute: 'code', model: 'AttackState' , :html =>{ :style => 'width:100px;'}, custom_filter: AttackState.find(:all).map{|pr| [pr.code, pr.code]} do |obj| obj.attack_state.code if obj.attack_state end
 
 
 	#    g.column  :html =>{ :style => 'width:80px;text-align:center;'} do |obj| 

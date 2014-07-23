@@ -48,6 +48,7 @@
 			          <th class="active">建物名</th>
 			          <th class="active">住所</th>
 			          <th class="active">管理営業所</th>
+			          <th class="active">見込ランク</th>
 			        </tr>
 			      </thead>
 			      <tbody>
@@ -62,6 +63,13 @@
 							  <% else %>
 							  	<td></td>
 							  <% end %>
+							  
+							  <% if trust.attack_state %>
+							  	<td><%= trust.attack_state.name %></td>
+							  <% else %>
+							  	<td></td>
+							  <% end %>
+							  
 					        </tr>
 						
 						<% end %>
@@ -88,7 +96,6 @@
 	</tr>
 </table>
   <% end %>
-
 
 	<div style="clear:both;margin-top:50px;">
 
