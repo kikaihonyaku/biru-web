@@ -1,5 +1,6 @@
 #-*- encoding:utf-8 -*- 
-
+require 'nokogiri'
+require 'open-uri'
 class ManagementsController < ApplicationController
 
   before_filter :init_managements
@@ -148,7 +149,21 @@ class ManagementsController < ApplicationController
     @building = Building.find(params[:id])
     gon.building = @building
     @trust = Trust.find_by_building_id(@building)
+    
+    # レンターズAPIをコールする
+#    url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&room_cd=7527190")
+#    xml = open(url).read
+#    doc = Nokogiri::XML(xml)
+#    @ssss = doc.xpath('/results/room/picture/true_url').first.inner_text
+    
     render :layout => 'popup'
+
+
+#    open(url) do |http|
+#      response = http.read
+#      @xml =  "response: #{response.inspect}"
+#    end
+    
   end
 
   def popup_building_update

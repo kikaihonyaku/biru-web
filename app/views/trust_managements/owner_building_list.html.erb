@@ -176,7 +176,7 @@
 </div>
 
 <%= dump_filter_parameters_as_hidden_fields(@trust_grid) %>
-<%= form_tag '/trust_managements/tack_out'  do %>
+<%= form_tag({:controller=>'pdf_outputs', :action=>'tack_out'}, {:method=>'post'}) do %>
 	<% if @selected %>
 		<%= @selected.to_sentence %>
 	<% end %>

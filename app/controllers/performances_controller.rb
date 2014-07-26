@@ -1,5 +1,6 @@
 # -*- encoding:utf-8 *-*
 require 'date'
+
 class PerformancesController < ApplicationController
 
   before_filter :init
@@ -963,7 +964,7 @@ private
     return result
 
   end
-
+  
 
   # 履歴を表示
   def get_bar_attribute

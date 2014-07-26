@@ -22,7 +22,6 @@ function click_radio(num){
 
 </script>
   <legend style="padding:20px;padding-botom:10px;"><%= @building.name %></legend>
-  
 <table>
 	<tr>
 		<td style="vertical-align:top;padding-left:20px;">
@@ -47,6 +46,7 @@ function click_radio(num){
 			<%= form_for(@building, :url=>{:action=>'popup_building_update', :controller=>'managements', :id=>@building}, :html=>{:class=>"form-horizontal"}) do |f|%>
 			
 				<div style="padding:5px;">※クリックでゴミ置き場作成。ドラッグで移動することができます。</div>
+				<%= image_tag @ssss %>
 				<div style="clear:both;">
 					<%= f.text_area :memo,  :size => "5x3", :class=>"form-control", :placeholder=>'メモ'  %>
 				</div>
