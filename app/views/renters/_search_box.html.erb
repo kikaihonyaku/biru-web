@@ -1,0 +1,6 @@
+
+<div style="padding:20px">
+	<%= form_tag({:action=>:search}) do  %>
+	建物CD：<%= text_field_tag 'building_cd', @search_building_cd %>&nbsp;<%= submit_tag '検索' %>
+	<% end %>
+</div>
