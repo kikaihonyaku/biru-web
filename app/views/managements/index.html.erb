@@ -585,7 +585,7 @@ function getCoords(position) {
     init_display();
 
     // 地図・ストリートビューを作成します。
-    init_map(<%= @biru_user.id %>);
+    init_map(<%= @biru_user.id %>, <%= @search_bar_disp_flg %>);
 
 
     // 初期表示位置を調整

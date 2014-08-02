@@ -544,14 +544,13 @@ function createMarker(opts){
 }
 
 // 地図の初期設定を行います。
-function init_map(user_id){
+function init_map(user_id, search_bar_disp_flg){
 
     /* 地図を作成 */
     var mapDiv = document.getElementById("map_canvas");
     mapCanvas = new google.maps.Map(mapDiv, {
 		mapTypeControlOptions: {
-	        mapTypeIds: [google.maps.MapTypeId.ROADMAP,'noText', 'map_style']
-	       // mapTypeIds: [google.maps.MapTypeId.ROADMAP,'noText']
+	        mapTypeIds: [google.maps.MapTypeId.ROADMAP,'noText', 'map_style','noText2', 'noRoad']
 		}
       ,scaleControl: true
       ,minZoom:2
@@ -586,7 +585,7 @@ function init_map(user_id){
 //	mapCanvas.mapTypes.set('map_style', styledMap);	
 //	mapCanvas.setMapTypeId('map_style');
 //		
-	// スタイル定義
+	// スタイル定義(文字なし)
 	var lopanType = new google.maps.StyledMapType(
 		[
 			{
@@ -598,20 +597,87 @@ function init_map(user_id){
 		]
 		,{ name: '文字なし' }
 	);
-		
 	mapCanvas.mapTypes.set('noText', lopanType);
-//	mapCanvas.setMapTypeId('noText');
+	
+	
+	var lopanType2 = new google.maps.StyledMapType(
+		[
+		
+			
+			{
+				featureType: 'landscape'
+			   ,elementType: 'all'
+			   ,stylers: [{ visibility: 'off' }]
+			},
+			
+			{
+				featureType: 'poi'
+			   ,elementType: 'all'
+			   ,stylers: [{ visibility: 'off' }]
+			},
+		
+			
+			{
+				featureType: 'all'
+			   ,elementType: 'labels'
+			   ,stylers: [{ visibility: 'off' }]
+			}
+			
+		
+		]
+		,{ name: '文字なし２' }
+	);
+	mapCanvas.mapTypes.set('noText2', lopanType2);
+	
+	var lopanType3 = new google.maps.StyledMapType(
+		[
+		
+			{
+				featureType: 'road.local'
+			   ,elementType: 'all'
+			   ,stylers: [{ visibility: 'off' }]
+			},
+			
+			{
+				featureType: 'landscape'
+			   ,elementType: 'all'
+			   ,stylers: [{ visibility: 'off' }]
+			},
+			
+			{
+				featureType: 'poi'
+			   ,elementType: 'all'
+			   ,stylers: [{ visibility: 'off' }]
+			},
+		
+			
+			{
+				featureType: 'all'
+			   ,elementType: 'labels'
+			   ,stylers: [{ visibility: 'off' }]
+			}
+			
+		
+		]
+		,{ name: '文字なし・細い道路なし' }
+	);
+	mapCanvas.mapTypes.set('noRoad', lopanType3);
 	
 		
-    // フルスクリーンラベルを設定
-    mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new MenuControll(mapCanvas));
-    mapCanvas.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(new GoogleMessageControll(mapCanvas));
-    mapCanvas.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(new StreetViewControll(mapCanvas));
-    // mapCanvas.controls[google.maps.ControlPosition.TOP_LEFT].push(new FullScreenControl(mapCanvas));
+	
+    if(search_bar_disp_flg == true){
+    	
+	    // フルスクリーンラベルを設定
+	    mapCanvas.controls[google.maps.ControlPosition.TOP_RIGHT].push(new MenuControll(mapCanvas));
+	    mapCanvas.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(new GoogleMessageControll(mapCanvas));
+	    mapCanvas.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(new StreetViewControll(mapCanvas));
+	    // mapCanvas.controls[google.maps.ControlPosition.TOP_LEFT].push(new FullScreenControl(mapCanvas));
 
-    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new BarControll(mapCanvas, user_id));
-    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new DispControll(mapCanvas));
-    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new ResultControll(mapCanvas));
+	    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new BarControll(mapCanvas, user_id));
+	    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new DispControll(mapCanvas));
+	    mapCanvas.controls[google.maps.ControlPosition.RIGHT_CENTER].push(new ResultControll(mapCanvas));
+    }
+	 
 
     /*----------------------------------------------------------------------*/
     /* ストリートビューオブジェクトを作成 （これはcreate markerを呼び出す前に定義する。）*/

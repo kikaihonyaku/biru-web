@@ -2418,6 +2418,9 @@ end
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140529.csv"))
+regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
+
+
 
 # データの登録(他社)
 #import_data_yourself_owner(Rails.root.join( "tmp", "attack_02_sinden.csv"))
@@ -2430,7 +2433,7 @@ end
 ###########################
 # アタックリストの登録
 ###########################
-reg_attack_owner_building('05928', '松戸営業所', Rails.root.join( "tmp", "list_attack_matudo.csv"))
+#reg_attack_owner_building('05928', '松戸営業所', Rails.root.join( "tmp", "list_attack_matudo.csv"))
 
 
 ###########################
