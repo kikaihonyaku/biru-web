@@ -808,7 +808,6 @@ def update_imp_oneself()
       end
     end
 
-
     ################
     # 部屋の登録
     ################
@@ -2407,7 +2406,7 @@ end
 #init_room_layout
 
 # アプローチ種別登録
-init_approach_kind
+#init_approach_kind
 
 # アタックステータス登録
 #init_attack_state
@@ -2420,7 +2419,7 @@ init_approach_kind
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140529.csv"))
-# regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
+regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
 
 
 

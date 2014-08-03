@@ -1,4 +1,6 @@
 BiruWeb::Application.routes.draw do
+  get "building_rooms/index"
+
   resources :biru_users
 
   #resources :trust_managements
@@ -69,6 +71,7 @@ BiruWeb::Application.routes.draw do
   get "repairs/index" ,:as => :repairs
 
   get "renters/index" ,:as => :renters
+  match "renters/update_all", :as =>:renters_update_all
 
   get "owners/index" ,:as => :owners
 
@@ -76,6 +79,8 @@ BiruWeb::Application.routes.draw do
 
   get "managements/index", :as => :managements
   get "trust_managements/index", :as => :trust_managements
+  
+  get "building_rooms/index", :as =>:building_rooms
 
   get "performances/index", :as => :performances
   get "performances/monthly", :as => :performances_monthly

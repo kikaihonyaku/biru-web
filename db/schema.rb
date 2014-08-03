@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140802234532) do
+ActiveRecord::Schema.define(:version => 20140803101151) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -256,6 +256,27 @@ ActiveRecord::Schema.define(:version => 20140802234532) do
     t.integer  "biru_user_id"
   end
 
+  create_table "renters_rooms", :force => true do |t|
+    t.string   "room_code"
+    t.string   "building_code"
+    t.string   "clientcorp_room_cd"
+    t.string   "clientcorp_building_cd"
+    t.string   "store_code"
+    t.string   "store_name"
+    t.string   "building_name"
+    t.string   "real_building_name"
+    t.string   "real_room_no"
+    t.string   "floor"
+    t.string   "building_type"
+    t.string   "pref_code"
+    t.string   "pref_name"
+    t.string   "picture_top"
+    t.string   "zumen"
+    t.boolean  "delete_flg",             :default => false
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
+  end
+
   create_table "room_layouts", :force => true do |t|
     t.string "code"
     t.string "name"
@@ -282,6 +303,7 @@ ActiveRecord::Schema.define(:version => 20140802234532) do
     t.boolean  "free_state",       :default => true
     t.boolean  "owner_stop_state", :default => false
     t.boolean  "advertise_state",  :default => false
+    t.integer  "renters_room_id"
   end
 
   create_table "shops", :force => true do |t|

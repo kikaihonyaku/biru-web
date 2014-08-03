@@ -1,17 +1,6 @@
 <%= content_for :sidebar do %>
-        <div class="span3">
-          <div class="well sidebar-nav" style="margin-top:30px;margin-left:20px;">
-            <ul class="nav nav-list">
-              <li class="nav-header">メニュー</li>
-              <li><%= link_to "トップ", root_path %></li>
-              <li><%= link_to "地図", managements_path %></li>
-              <li><%= link_to "業績分析", performances_path %></li>
-              <li><%= link_to "アタックリスト", trust_managements_path %></li>
-              <li><%= link_to "ログアウト", logout_path %></li>
-            </ul>
-          </div><!--/.well -->
-		  
-          <div class="well sidebar-nav" style="margin-top:20px;margin-left:20px;">
+        <div class="span3" >
+          <div class="well sidebar-nav" style="margin-top:30px;margin-left:20px;height:800px;">
 			  <div style="padding-bottom:5px;">おしらせ</div>
 			  <table>
 				  <tr>
@@ -25,7 +14,7 @@
 
 
 
-<div class="well" style="margin-top:30px;margin-left:30px;">
+<div class="well" style="margin-top:30px;margin-left:30px;height:800px;">
 
 	<h3><%= link_to "トップ", root_path %></h3>
     <p>このページへのリンクです。</p>
@@ -35,6 +24,9 @@
 	
 	<h3 style="margin-top:30px;"><%= link_to "業績分析", performances_path %></h3>
 	<p>経営数値の情報をグラフで表示します。</p>
+
+	<h3 style="margin-top:30px;"><%= link_to "物件一覧", building_rooms_path %></h3>
+	<p>管理物件の一覧を表示します。空室やレンターズの登録状況などを確認できます。</p>
 	
 	<h3 style="margin-top:30px;"><%= link_to "アタックリスト", trust_managements_path %></h3>
 	<p>受託アタックリスト</p>

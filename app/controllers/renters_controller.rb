@@ -9,13 +9,47 @@ class RentersController < ApplicationController
     
   end
   
+  # 管理物件からレンターズの登録内容を更新取得します。
+  def update_all
+    
+    Room.update_all("renters_room_id = null")
+    
+    Room.joins(:building => :shop).joins(:building => :trusts).each do |room|
+            
+      # 取得した建物CD, 部屋CD を元にレンターズAPIを呼び出す
+      url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&clientcorp_building_cd=#{sprintf("%06d", room.building_cd.to_s)}&clientcorp_room_cd=#{sprintf("%03d", room.code.to_s)}")
+      xml = open(url).read
+      doc = REXML::Document.new(xml)
+      
+      ret_status = doc.elements['results/results_returned']
+      if ret_status && ret_status.text != "0"
+        
+        # データが取得できた！
+        room_code = doc.elements['results/room/room_cd'].text
+        
+        renters_room = RentersRoom.find_or_create_by_room_code(room_code)
+        
+        renters_room.room_code = room_code
+        renters_room.save!
+        
+        # 部屋マスタに登録したRenters_idを登録
+        room_data = Room.find(room.id)
+        room_data.renters_room_id = renters_room.id
+        room_data.save!
+        
+      end
+    end
+    
+  end
+  
+  
   
   def search
     
     @search_building_cd = params[:building_cd]
     
     # レンターズAPIを呼び出し
-    url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&clientcorp_buiiding_cd=#{@search_building_cd}")
+    url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&clientcorp_building_cd=#{@search_building_cd}")
     xml = open(url).read
     doc = REXML::Document.new(xml)
     

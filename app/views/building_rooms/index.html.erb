@@ -1,0 +1,41 @@
+<!-- For index -->
+
+  <style type="text/css">
+	
+	a{
+	  text-decoration:underline;	
+	}
+	
+  </style>
+  
+<div style="margin-left:100px;margin-right:100px;">
+<h1>管理物件一覧</h1>
+<p>レンターズデータ取得：2014/xx/xx 11:11:11</p>
+
+<%= grid(@building_rooms,  upper_pagination_panel: true ) do |g| 
+
+	#g.action_column 
+	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+		
+	g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj|
+  	  if obj.building
+  
+  		  if obj.building.attack_code
+  	  	    str = obj.building.name + ' ／ ' + obj.building.attack_code.to_s
+  		  else
+    	  	str = obj.building.name  + ' ／ ' + obj.building.code.to_s
+  		  end
+  
+  		  #link_to(str, building_show_path(obj.building_id)) 
+		  raw("<a href=""javascript:win_building(" + obj.building_id.to_s + ");"">" + str + "</a>")
+  	  end
+	end
+
+	g.column name: '部屋' , attribute: 'name', model: 'Room'  do |obj| obj.name end
+	g.column name: '空室状態' , attribute: 'free_state', model: 'Room'  do |obj| if obj.free_state == true then '入居中' else '空室' end end
+	g.column name: 'レンターズ' , attribute: 'room_code', model: 'RentersRoom'  do |obj| link_to(obj.renters_room.room_code, "http://www.roomspot.net/area/room.php?room=#{obj.renters_room.room_code}",{:target=>"_blank"}) if obj.renters_room  end
+		
+ end %>
+ 
+</div>
+

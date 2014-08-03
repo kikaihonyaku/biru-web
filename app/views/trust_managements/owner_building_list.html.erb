@@ -217,7 +217,7 @@
 			end
 	
 			g.column name: '貸主住所' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
-			g.column name: 'ＤＭ発送可' , attribute: 'dm_delivery', model: 'Owner' , :html =>{ :style => 'width:100px;text-align:center'} do |obj| obj.owner.dm_delivery if obj.owner end
+			g.column name: 'ＤＭ発送可' , attribute: 'dm_delivery', model: 'Owner' , :html =>{ :style => 'width:100px;text-align:center'} do |obj| if obj.owner.dm_delivery == true then 'ＯＫ' else '不可' end if obj.owner end
 			
 			
 			#g.column name: '建物CD' , attribute: 'attack_code', model: 'Building' , :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.building.attack_code if obj.building end
