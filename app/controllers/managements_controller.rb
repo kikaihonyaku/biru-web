@@ -92,6 +92,8 @@ class ManagementsController < ApplicationController
     @ta_only_flg = false
     @jita_both_flg = false
     
+    @search_bar_disp_flg = true
+    
   end
 
   # オーナー情報確認用のwindowを表示します。

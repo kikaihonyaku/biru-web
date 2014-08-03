@@ -7,26 +7,36 @@ class TrustManagementsController < ApplicationController
   before_filter :search_init
     
   def index
-    # Owner Building Trust を連結した他社データを取得する
-    @trust_data = get_trust_data
-    @trust_grid = initialize_grid(
-      @trust_data,
-      :order => 'shops.code',
-      :order_direction => 'desc',
-      :per_page => 40,
-      :name => 'g1',
-      :enable_export_to_csv => false, # データは別ボタンで出力する
-      :csv_file_name => 'owner_buildings'      
-    )
+        
+    if @error_msg.size == 0
+      # 検索条件にエラーが存在しないとき
+      
+      # Owner Building Trust を連結した他社データを取得する
+      @trust_data = get_trust_data
+      @trust_grid = initialize_grid(
+        @trust_data,
+        :order => 'shops.code',
+        :order_direction => 'desc',
+        :per_page => 40,
+        :name => 'g1',
+        :enable_export_to_csv => false, # データは別ボタンで出力する
+        :csv_file_name => 'owner_buildings'      
+      )
     
-    export_grid_if_requested('g1' => 'owner_building_list', 'g2' => 'projects_grid') do
-      # usual render or redirect code executed if the request is not a CSV export request
+      export_grid_if_requested('g1' => 'owner_building_list', 'g2' => 'projects_grid') do
+        # usual render or redirect code executed if the request is not a CSV export request
+        render 'owner_building_list'   
+      end
+    
+      if params[:g1] && params[:g1][:selected]
+        @selected = params[:g1][:selected]
+      end    
+      
+    else
+      # 不正な検索条件が指定されたとき
       render 'owner_building_list'   
     end
     
-    if params[:g1] && params[:g1][:selected]
-      @selected = params[:g1][:selected]
-    end    
         
   end
   
@@ -120,41 +130,85 @@ def get_trust_data()
   #----------------------------------#
   # 検索条件が指定されている時の絞り込み
   #----------------------------------#
-  if params[:dm] # TODO:検索条件の設定
+  
+  arr_exist = []
+  arr_exist.push(99999)
+
+  arr_not_exist = []
+  arr_not_exist.push(99999)
+  
+  filter_flg = false
+
+  
+  # 訪問リレキのチェック
+  unless @history_visit[:all]
     
-    # 主担当者が指定
-    # if params[:main_person]
-    #   if params[:main_person][:name]
-    #     trust_data = trust_data.where('buildings.main_employee_id = ?', params[:main_person][:name] )
-    #   end
-    # end
-    #
-    # # ダイレクトメール発送有無
-    # if params[:dm] == 'only'
-    #   # 対象のみ
-    #   trust_data = trust_data.where('owners.dm_delivery = ?', true)
-    # elsif  params[:dm] == 'not_only'
-    #   # 対象外のみ
-    #   trust_data = trust_data.where('owners.dm_delivery = ?', false)
-    # end
-    #
-    # # 物件ランク
-    # if params[:rank] == '1'
-    #   arr = []
-    #
-    #   arr.push(AttackState.find_by_code('S').id) if params[:rank_kind][:s]
-    #   arr.push(AttackState.find_by_code('A').id) if params[:rank_kind][:a]
-    #   arr.push(AttackState.find_by_code('B').id) if params[:rank_kind][:b]
-    #   arr.push(AttackState.find_by_code('C').id) if params[:rank_kind][:c]
-    #   arr.push(AttackState.find_by_code('D').id) if params[:rank_kind][:d]
-    #   arr.push(AttackState.find_by_code('Z').id) if params[:rank_kind][:z]
-    #
-    #   trust_data = trust_data.where('buildings.attack_state_id In (?)', arr)
-    #
-    # end
+    filter_flg = true
+    
+    # 訪問リレキで「すべて」以外が選択されているとき
+    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", Date.parse(@history_visit_from), Date.parse(@history_visit_to))
+    
+    if @history_visit[:exist]
+      approaches.each do |approach|
+        arr_exist.push(approach.owner_id)
+      end
+      
+    elsif @history_visit[:not_exist]
+      approaches.each do |approach|
+        arr_not_exist.push(approach.owner_id)
+      end
+    end
     
   end
   
+
+  # DMリレキのチェック
+  unless @history_dm[:all]
+    
+    filter_flg = true
+    
+    # 訪問リレキで「すべて」以外が選択されているとき
+    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", Date.parse(@history_dm_from), Date.parse(@history_dm_to))
+    
+    if @history_dm[:exist]
+      approaches.each do |approach|
+        arr_exist.push(approach.owner_id)
+      end
+      
+    elsif @history_dm[:not_exist]
+      approaches.each do |approach|
+        arr_not_exist.push(approach.owner_id)
+      end
+    end
+    
+  end
+  
+  # TELリレキのチェック
+  unless @history_tel[:all]
+    
+    filter_flg = true
+    
+    # 訪問リレキで「すべて」以外が選択されているとき
+    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040')").where("approach_date between ? and ? ", Date.parse(@history_tel_from), Date.parse(@history_tel_to))
+    
+    if @history_tel[:exist]
+      approaches.each do |approach|
+        arr_exist.push(approach.owner_id)
+      end
+      
+    elsif @history_tel[:not_exist]
+      approaches.each do |approach|
+        arr_not_exist.push(approach.owner_id)
+      end
+    end
+  end
+  
+  # 絞り込み条件が指定されていた時
+  if filter_flg 
+      trust_data = trust_data.where("owners.id in (?)", arr_exist) 
+      trust_data = trust_data.where("owners.id not in (?)", arr_not_exist) 
+  end
+
   trust_data
 end
 
@@ -213,6 +267,12 @@ def search_init
   #   @rank_kind[:z] = false
   # end
   
+  
+  #---------------
+  # エラーメッセージ
+  #---------------
+  @error_msg = []
+  
   #---------------
   # 訪問リレキ
   #---------------
@@ -232,10 +292,19 @@ def search_init
   
   if params[:history_visit_from]
     @history_visit_from =  params[:history_visit_from]
+    
+    unless date_check(@history_visit_from)
+      @error_msg.push('訪問リレキ(FROM)に不正な日付が入力されました。')
+    end
+    
   end
   
   if params[:history_visit_to]
     @history_visit_to =  params[:history_visit_to]
+    
+    unless date_check(@history_visit_to)
+      @error_msg.push('訪問リレキ(TO)に不正な日付が入力されました。')
+    end
   end
 
 
@@ -257,11 +326,20 @@ def search_init
   @history_dm_to = '3000/01/01'
   
   if params[:history_dm_from]
-    @history_dm_from =  params[:history_dm_from]
+    @history_dm_from =  params[:history_dm_from] 
+    
+    unless date_check(@history_dm_from)
+      @error_msg.push('ＤＭリレキ(FROM)に不正な日付が入力されました。')
+    end
   end
   
   if params[:history_dm_to]
     @history_dm_to =  params[:history_dm_to]
+    
+    unless date_check(@history_dm_to)
+      @error_msg.push('ＤＭリレキ(TO)に不正な日付が入力されました。')
+    end
+    
   end
 
   #---------------
@@ -283,10 +361,20 @@ def search_init
   
   if params[:history_tel_from]
     @history_tel_from =  params[:history_tel_from]
+    
+    unless date_check(@history_tel_from)
+      @error_msg.push('ＴＥＬリレキ(FROM)に不正な日付が入力されました。')
+    end
+    
   end
   
   if params[:history_tel_to]
     @history_tel_to =  params[:history_tel_to]
+    
+    unless date_check(@history_tel_to)
+      @error_msg.push('ＴＥＬリレキ(TO)に不正な日付が入力されました。')
+    end
+    
   end
   
 end

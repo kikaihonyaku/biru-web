@@ -11,10 +11,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140723074549) do
+ActiveRecord::Schema.define(:version => 20140802234532) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
+    t.string "code"
   end
 
   create_table "attack_states", :force => true do |t|

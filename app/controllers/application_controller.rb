@@ -75,5 +75,20 @@ class ApplicationController < ActionController::Base
   def trust_managements?
     self.controller_name == 'trust_managements'
   end
+  
+  # 文字列の日付が正しいかチェックします
+  def date_check(str_date)
+
+    result = true
+    
+    begin
+      Date.parse(str_date)
+    rescue => ex
+      result = false
+    end  
+    
+    result
+    
+  end
 
 end

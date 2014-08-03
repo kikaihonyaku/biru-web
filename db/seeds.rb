@@ -478,14 +478,16 @@ end
 # アプローチ種別を登録
 def init_approach_kind
   arr = []
-  arr.push('訪問')
-  arr.push('電話')
-  arr.push('ＤＭ')
-  arr.push('その他')
+  arr.push({:name=>'訪問(在宅)', :code=>'0010'} )
+  arr.push({:name=>'訪問(留守)', :code=>'0020'} )
+  arr.push({:name=>'ＤＭ', :code=>'0030'} )
+  arr.push({:name=>'電話', :code=>'0040'} )
+  arr.push({:name=>'その他', :code=>'0050'} )
   
   arr.each do |obj|
-    app =  ApproachKind.find_or_create_by_name(obj)
-    app.name = obj
+    app =  ApproachKind.find_or_create_by_code(obj[:code])
+    app.name = obj[:name]
+    app.code = obj[:code]
     app.save!
     p app
   end
@@ -2405,7 +2407,7 @@ end
 #init_room_layout
 
 # アプローチ種別登録
-#init_approach_kind
+init_approach_kind
 
 # アタックステータス登録
 #init_attack_state
@@ -2418,7 +2420,7 @@ end
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140529.csv"))
-regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
 
 
 
