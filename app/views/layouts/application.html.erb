@@ -21,6 +21,7 @@
     <%= stylesheet_link_tag "jquery-ui", :media => "all" %>
     <%= stylesheet_link_tag "jqtree", :media => "all" %>
 	
+	
     <!-- For third-generation iPad with high-resolution Retina display: -->
     <!-- Size should be 144 x 144 pixels -->
     <%= favicon_link_tag 'apple-touch-icon-144x144-precomposed.png', :rel => 'apple-touch-icon-precomposed', :type => 'image/png', :sizes => '144x144' %>
@@ -46,6 +47,7 @@
     <%= javascript_include_tag "tree.jquery" %>
     <%= javascript_include_tag "jquery.cookie" %>
     <%= javascript_include_tag "biru-map" %>
+	
     <% if content_for?(:header) %>
       <%= yield :header %>
     <% end %>
@@ -55,10 +57,10 @@
 
         <!-- Begin Navbar -->
 		
-    <div class="navbar  navbar-fixed-top" style="margin-bottom:0;">
+    <div class="navbar  navbar-fixed-top" style="margin:0;height:5px;padding:0">
       <div class="container">
         <div class="navbar-collapse collapse" id="navbar-main" >
-          <ul class="nav navbar-nav">
+          <ul class="nav navbar-nav" >
 			  
               <li><%= link_to "トップ", root_path, :style=>'text-decoration:none;' %></li>
               <li><%= link_to "地図", managements_path, :style=>'text-decoration:none;'  %></li>
@@ -167,6 +169,7 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->  
+	
 	
   </body>
 </html>

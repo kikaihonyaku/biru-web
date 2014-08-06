@@ -1,0 +1,73 @@
+<div style="margin:20px;">
+
+<div style="width:800px;">
+
+	<h3>システム登録状況</h3>
+
+	<table class="table table-striped table-bordered table-hover" style="margin-bottom:50px;">
+
+	  <thead>
+	    <tr>
+	      <th></th>
+	      <th style="text-align:center">賃貸管理システム</th>
+	      <th style="text-align:center">レンターズ</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+		<tr>
+			<td>建物CD/部屋CD</td>
+			<td><%= @room.building.code + "／" + @room.code %></td>
+			<td><%= @room_renters.building_code + "／" + @room_renters.room_code %></td>
+		</tr>
+		<tr>
+			<td>物件名</td>
+			<td><%= @room.building.name + " " + @room.name %></td>
+			<td><%= @room_renters.building_name + " " + if @room_renters.room_no then @room_renters.room_no else '' end  %></td>
+		</tr>
+		<tr>
+			<td>住所</td>
+			<td><%= @room.building.address %></td>
+			<td><%= @room_renters.detail_address %></td>
+		</tr>
+		<tr>
+			<td>管理営業所</td>
+			<td><%= @room.building.shop.name %></td>
+			<td><%= @room_renters.store_name %></td>
+		</tr>
+		<tr>
+			<td>建物種別</td>
+			<td><%= @room.room_type.name %></td>
+			<td><%= @room_renters.building_type %></td>
+		</tr>
+		<tr>
+			<td>間取り</td>
+			<td><%= @room.room_layout.name %></td>
+			<td><%= @room_renters.room_layout_type %></td>
+		</tr>
+		<tr>
+			<td>空室状況</td>
+			<td><%= if @room.free_state then '空室' else '入居中' end %></td>
+			<td><%= @room_renters.vacant_div %></td>
+		</tr>
+		<tr>
+			<td>入居可能日</td>
+			<td></td>
+			<td><%= @room_renters.enter_ym %></td>
+		</tr>
+	  </body>
+	</table>
+
+</div>
+
+
+<h3>レンターズ登録画像 <%= @room_renters.renters_room_pictures.size.to_s + "枚"%> </h3>
+<div>
+	<% @room_renters.renters_room_pictures.each do |pic| %>
+	    <a href="<%= pic.true_url %>" >
+	        <img src="<%= pic.large_url %>" >
+	    </a>
+	<% end %>
+</div>
+
+</div>
+

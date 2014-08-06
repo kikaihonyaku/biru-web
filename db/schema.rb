@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140803101151) do
+ActiveRecord::Schema.define(:version => 20140806082517) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -256,6 +256,17 @@ ActiveRecord::Schema.define(:version => 20140803101151) do
     t.integer  "biru_user_id"
   end
 
+  create_table "renters_room_pictures", :force => true do |t|
+    t.integer  "renters_room_id"
+    t.integer  "idx"
+    t.string   "true_url"
+    t.string   "large_url"
+    t.string   "mini_url"
+    t.boolean  "delete_flg",      :default => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+  end
+
   create_table "renters_rooms", :force => true do |t|
     t.string   "room_code"
     t.string   "building_code"
@@ -264,17 +275,28 @@ ActiveRecord::Schema.define(:version => 20140803101151) do
     t.string   "store_code"
     t.string   "store_name"
     t.string   "building_name"
+    t.string   "room_no"
     t.string   "real_building_name"
     t.string   "real_room_no"
     t.string   "floor"
     t.string   "building_type"
-    t.string   "pref_code"
-    t.string   "pref_name"
+    t.string   "structure"
+    t.string   "construction"
+    t.string   "room_num"
+    t.string   "address"
+    t.string   "detail_address"
+    t.string   "vacant_div"
+    t.string   "enter_ym"
+    t.string   "new_status"
+    t.string   "completion_ym"
+    t.string   "square"
+    t.string   "room_layout_type"
     t.string   "picture_top"
     t.string   "zumen"
     t.boolean  "delete_flg",             :default => false
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
+    t.integer  "picture_num",            :default => 0
   end
 
   create_table "room_layouts", :force => true do |t|

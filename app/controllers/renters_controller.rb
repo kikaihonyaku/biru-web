@@ -9,6 +9,14 @@ class RentersController < ApplicationController
     
   end
   
+  # 画像一覧を表示します
+  def pictures
+    @room = Room.find(params[:id])
+    @room_renters = RentersRoom.find(@room.renters_room_id)
+    
+  end
+  
+  
   # 管理物件からレンターズの登録内容を更新取得します。
   def update_all
     
@@ -30,12 +38,70 @@ class RentersController < ApplicationController
         renters_room = RentersRoom.find_or_create_by_room_code(room_code)
         
         renters_room.room_code = room_code
+        renters_room.building_code = doc.elements['results/room/building_cd'].text
+        renters_room.clientcorp_room_cd = doc.elements['results/room/clientcorp_room_cd'].text
+        renters_room.clientcorp_building_cd = doc.elements['results/room/clientcorp_building_cd'].text
+        renters_room.store_code = doc.elements['results/room/store/code'].text
+        renters_room.store_name = doc.elements['results/room/store/name'].text
+        renters_room.building_name = doc.elements['results/room/building_name'].text
+        renters_room.room_no = doc.elements['results/room/room_no'].text
+        
+        renters_room.real_building_name = doc.elements['results/room/real_building_name'].text
+        renters_room.real_room_no = doc.elements['results/room/real_room_no'].text
+        renters_room.floor = doc.elements['results/room/floor'].text
+        renters_room.building_type = doc.elements['results/room/building_type'].text
+        renters_room.structure = doc.elements['results/room/structure'].text
+
+
+        renters_room.construction = doc.elements['results/room/construction'].text
+        renters_room.room_num = doc.elements['results/room/room_num'].text
+        renters_room.address = doc.elements['results/room/address'].text
+        renters_room.detail_address = doc.elements['results/room/detail_address'].text
+        renters_room.vacant_div = doc.elements['results/room/vacant_div'].text
+        renters_room.enter_ym = doc.elements['results/room/enter_ym'].text
+        renters_room.new_status = doc.elements['results/room/new_status'].text
+        renters_room.completion_ym = doc.elements['results/room/completion_ym'].text
+        renters_room.square = doc.elements['results/room/square'].text
+        renters_room.room_layout_type = doc.elements['results/room/room_layout_type'].text
+        
+        renters_room.picture_top = doc.elements['results/room/picture/large_url'].text
+        renters_room.zumen = doc.elements['results/room/zumen_url'].text
+
+
+        
         renters_room.save!
         
         # 部屋マスタに登録したRenters_idを登録
         room_data = Room.find(room.id)
         room_data.renters_room_id = renters_room.id
         room_data.save!
+        
+        
+        # 画像を登録
+        RentersRoomPicture.where("renters_room_id = ?", renters_room.id ).update_all("delete_flg = ?", true)
+        
+        picture_num = 0
+        
+        doc.elements.each_with_index('results/room/picture') do |pic, i|
+          room_picture = RentersRoomPicture.find_or_create_by_renters_room_id_and_idx(renters_room.id, i)
+          room_picture.renters_room_id = renters_room.id
+          room_picture.idx = i
+          
+          room_picture.true_url = pic.elements['true_url'].text
+          room_picture.large_url = pic.elements['large_url'].text
+          room_picture.mini_url = pic.elements['mini_url'].text
+          
+          room_picture.delete_flg = false
+          room_picture.save!
+          
+          
+          picture_num = picture_num + 1
+        end
+        
+        # 画像の枚数を保存
+        renters_room.picture_num = picture_num
+        renters_room.save!
+        
         
       end
     end

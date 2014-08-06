@@ -16,15 +16,18 @@
 
 	#g.action_column 
 	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+
+	g.column name: '建物CD' , attribute: 'code', model: 'Building'  do |obj| obj.building.code if obj.building end
+
 		
 	g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj|
   	  if obj.building
   
   		  if obj.building.attack_code
-  	  	    str = obj.building.name + ' ／ ' + obj.building.attack_code.to_s
+  	  	    str = obj.building.name 
   		  else
-    	  	str = obj.building.name  + ' ／ ' + obj.building.code.to_s
-  		  end
+    	  	str = obj.building.name 
+		  end
   
   		  #link_to(str, building_show_path(obj.building_id)) 
 		  raw("<a href=""javascript:win_building(" + obj.building_id.to_s + ");"">" + str + "</a>")
@@ -33,8 +36,10 @@
 
 	g.column name: '部屋' , attribute: 'name', model: 'Room'  do |obj| obj.name end
 	g.column name: '管理方式' , attribute: 'name', model: 'ManageType', custom_filter: ManageType.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.manage_type.name if obj.manage_type end
-	g.column name: '空室状態' , attribute: 'free_state', model: 'Room'  do |obj| if obj.free_state == true then '入居中' else '空室' end end
-	g.column name: 'レンターズ' , attribute: 'room_code', model: 'RentersRoom'  do |obj| link_to(obj.renters_room.room_code, "http://www.roomspot.net/area/room.php?room=#{obj.renters_room.room_code}",{:target=>"_blank"}) if obj.renters_room  end
+	g.column name: '空室状態' , attribute: 'free_state', model: 'Room'  do |obj| if obj.free_state == true then '空室' else '入居中' end end
+	g.column name: 'レンターズ' , attribute: 'room_code', model: 'RentersRoom'  do |obj| link_to(obj.renters_room.room_code, "http://www.roomspot.net/area/room.php?room=#{obj.renters_room.room_code}",{:target=>["_blank"]}) if obj.renters_room  end
+
+	g.column name: '登録画像' , attribute: 'picture_num', model: 'RentersRoom'  do |obj| unless obj.renters_room then "" else link_to( obj.renters_room.picture_num.to_s + "枚", renters_pictures_path(obj.id) , {:target=>["_blank"]}) + "  （" +  if obj.renters_room.zumen then link_to('図面あり', obj.renters_room.zumen, {:target=>"_blank"}) else '図面なし' end + ")"  end  end
 		
  end %>
  

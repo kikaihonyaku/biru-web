@@ -72,6 +72,7 @@ BiruWeb::Application.routes.draw do
 
   get "renters/index" ,:as => :renters
   match "renters/update_all", :as =>:renters_update_all
+  get "renters/pictures/:id" => "renters#pictures" , :as => :renters_pictures
 
   get "owners/index" ,:as => :owners
 
