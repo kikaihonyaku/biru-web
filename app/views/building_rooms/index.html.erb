@@ -9,8 +9,9 @@
   </style>
   
 <div style="margin-left:100px;margin-right:100px;">
+
 <h1>管理物件一覧</h1>
-<p>レンターズデータ取得：2014/xx/xx 11:11:11</p>
+<p style="text-align:right;">レンターズデータ取得：<%= @data_update.update_datetime %></p>
 
 <%= grid(@building_rooms,  upper_pagination_panel: true ) do |g| 
 

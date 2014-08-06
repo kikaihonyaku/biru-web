@@ -5,7 +5,7 @@ require 'rexml/document'
 class RentersController < ApplicationController
   
   def index
-    
+    @data_update = DataUpdateTime.find_by_code("310")
     
   end
   
@@ -21,6 +21,15 @@ class RentersController < ApplicationController
   def update_all
     
     Room.update_all("renters_room_id = null")
+    
+    @data_update = DataUpdateTime.find_by_code("310")
+    @data_update.start_datetime = Time.now
+    @data_update.update_datetime = nil
+    
+    @data_update.biru_user_id = @biru_user.id
+    @data_update.save!
+    
+    
     
     Room.joins(:building => :shop).joins(:building => :trusts).each do |room|
             
@@ -67,7 +76,6 @@ class RentersController < ApplicationController
         renters_room.picture_top = doc.elements['results/room/picture/large_url'].text
         renters_room.zumen = doc.elements['results/room/zumen_url'].text
 
-
         
         renters_room.save!
         
@@ -105,6 +113,11 @@ class RentersController < ApplicationController
         
       end
     end
+    
+    @data_update.update_datetime = Time.now
+    @data_update.save!
+    
+    render 'index'
     
   end
   

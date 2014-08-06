@@ -517,6 +517,28 @@ def init_attack_state
 
 end
 
+# データアップデート日時管理テーブル
+def init_data_update
+
+  arr = []
+  arr.push({:code=>'110', :name=>'自社物件'})
+  arr.push({:code=>'115', :name=>'入居・空室状態'})
+  arr.push({:code=>'120', :name=>'受託アタックリスト'})
+  arr.push({:code=>'210', :name=>'月次データ（売上日報・経営数値）'})
+  arr.push({:code=>'220', :name=>'月次データ（来店客数）'})
+  arr.push({:code=>'230', :name=>'空き日数'})
+  arr.push({:code=>'310', :name=>'レンターズ'})
+  arr.push({:code=>'320', :name=>'スーモ'})
+
+  arr.each do |obj|
+    rec = DataUpdateTime.find_or_create_by_code(obj[:code])
+    rec.code = obj[:code]
+    rec.name = obj[:name]
+    rec.save!
+    p rec
+  end
+  
+end
 
 
 # 物件種別
@@ -2412,6 +2434,9 @@ end
 # アタックステータス登録
 #init_attack_state
 
+# システムアップデート管理
+init_data_update
+
 ########################
 # 地図管理物件登録
 ########################
@@ -2420,7 +2445,7 @@ end
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140529.csv"))
-regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
 
 
 

@@ -1,1 +1,10 @@
-<%= render :partial=>'search_box' %>
+<%#= render :partial=>'search_box' %>
+
+
+<div style="margin:50px">
+	
+	<h3>レンターズ連動</h3> 
+	<%= form_tag({:action=>'update_all'}) do %>
+		<%= submit_tag '同期' %>&nbsp;&nbsp;最新更新開始：<%= @data_update.start_datetime %>&nbsp;最新更新日時：<%= @data_update.update_datetime %>  更新者：<%= @data_update.biru_user.name if @data_update.biru_user %>
+	<% end %>
+</div>
