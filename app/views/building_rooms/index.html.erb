@@ -32,6 +32,7 @@
 	end
 
 	g.column name: '部屋' , attribute: 'name', model: 'Room'  do |obj| obj.name end
+	g.column name: '管理方式' , attribute: 'name', model: 'ManageType', custom_filter: ManageType.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.manage_type.name if obj.manage_type end
 	g.column name: '空室状態' , attribute: 'free_state', model: 'Room'  do |obj| if obj.free_state == true then '入居中' else '空室' end end
 	g.column name: 'レンターズ' , attribute: 'room_code', model: 'RentersRoom'  do |obj| link_to(obj.renters_room.room_code, "http://www.roomspot.net/area/room.php?room=#{obj.renters_room.room_code}",{:target=>"_blank"}) if obj.renters_room  end
 		

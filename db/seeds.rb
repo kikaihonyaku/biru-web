@@ -816,13 +816,14 @@ def update_imp_oneself()
     owner_stop_num = 0
 
 #    ImpTable.find_all_by_building_cd(biru.code).each do |imp_room|
-    ImpTable.where("building_cd = ?", biru.code ).group(:building_cd, :room_cd, :room_nm, :room_layout_cd, :room_type_cd, :room_aki).select(:building_cd).select(:room_cd).select(:room_nm).select(:room_layout_cd).select(:room_type_cd).select(:room_aki).each  do |imp_room|
+    ImpTable.where("building_cd = ?", biru.code ).group(:building_cd, :room_cd, :room_nm, :room_layout_cd, :room_type_cd, :room_aki, :manage_type_cd ).select(:building_cd).select(:room_cd).select(:room_nm).select(:room_layout_cd).select(:room_type_cd).select(:room_aki).select(:manage_type_cd).each  do |imp_room|
 
       room = Room.unscoped.find_or_create_by_building_cd_and_code(biru.code, imp_room.room_cd)
       room.building = biru
       room.name = imp_room.room_nm
       room.room_layout = RoomLayout.find_by_code(imp_room.room_layout_cd)
       room.room_type = RoomType.find_by_code(imp_room.room_type_cd)
+      room.manage_type_id = ManageType.where("code=?", imp_room.manage_type_cd.to_i).first.id
 
       kanri_room_num = kanri_room_num + 1 # TODO:本来はB管理以上とかが必要かも。管理方式に戸数カウントフラグを持たせてそれで判定させよう。
 
