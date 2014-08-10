@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140806171100) do
+ActiveRecord::Schema.define(:version => 20140810081626) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -77,7 +77,10 @@ ActiveRecord::Schema.define(:version => 20140806171100) do
     t.integer  "biru_user_id"
   end
 
+  add_index "buildings", ["attack_code"], :name => "index_buildings_on_attack_code"
   add_index "buildings", ["build_type_id"], :name => "index_buildings_on_build_type_id"
+  add_index "buildings", ["code"], :name => "index_buildings_on_code"
+  add_index "buildings", ["name"], :name => "index_buildings_on_name"
   add_index "buildings", ["shop_id"], :name => "index_buildings_on_shop_id"
 
   create_table "data_update_times", :force => true do |t|

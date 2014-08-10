@@ -44,50 +44,51 @@
 //      }
 //    });
 
-    /* 自社チェック */
-    $("#jita_kbn_ji_only").change(function(){
-      
-      $("#manage_type_kanri_i").prop("checked", true);
-      $("#manage_type_kanri_a").prop("checked", true);
-      $("#manage_type_kanri_b").prop("checked", true);
-      $("#manage_type_kanri_c").prop("checked", true);
-      $("#manage_type_kanri_d").prop("checked", true);
-      $("#manage_type_kanri_soumu").prop("checked", true);
-      $("#manage_type_kanri_toku").prop("checked", true);
-      $("#manage_type_kanri_teiki").prop("checked", true);
-      $("#manage_type_kanri_gyoumu").prop("checked", true);
-
-      $("#manage_type_kanri_gai").attr("checked", false);
-      
-    });
-
-    $("#jita_kbn_ta_only").change(function(){
-      $("#manage_type_kanri_i").attr("checked", false);
-      $("#manage_type_kanri_a").attr("checked", false);
-      $("#manage_type_kanri_b").attr("checked", false);
-      $("#manage_type_kanri_c").attr("checked", false);
-      $("#manage_type_kanri_d").attr("checked", false);
-      $("#manage_type_kanri_soumu").attr("checked", false);
-      $("#manage_type_kanri_toku").attr("checked", false);
-      $("#manage_type_kanri_teiki").attr("checked", false);
-      $("#manage_type_kanri_gyoumu").attr("checked", false);
-
-      $("#manage_type_kanri_gai").prop("checked", true);
-    });
-
-    $("#jita_kbn_jita_both").change(function(){
-      
-      $("#manage_type_kanri_i").attr("checked", false);
-      $("#manage_type_kanri_a").attr("checked", false);
-      $("#manage_type_kanri_b").attr("checked", false);
-      $("#manage_type_kanri_c").attr("checked", false);
-      $("#manage_type_kanri_d").attr("checked", false);
-      $("#manage_type_kanri_soumu").attr("checked", false);
-      $("#manage_type_kanri_toku").attr("checked", false);
-      $("#manage_type_kanri_teiki").attr("checked", false);
-      $("#manage_type_kanri_gyoumu").attr("checked", false);
-      $("#manage_type_kanri_gai").attr("checked", false);
-    });
+    // 2014/08/10 この画面では自社物のみ対象とするので他社フラグは外す
+    // /* 自社チェック */
+    // $("#jita_kbn_ji_only").change(function(){
+    //
+    //   $("#manage_type_kanri_i").prop("checked", true);
+    //   $("#manage_type_kanri_a").prop("checked", true);
+    //   $("#manage_type_kanri_b").prop("checked", true);
+    //   $("#manage_type_kanri_c").prop("checked", true);
+    //   $("#manage_type_kanri_d").prop("checked", true);
+    //   $("#manage_type_kanri_soumu").prop("checked", true);
+    //   $("#manage_type_kanri_toku").prop("checked", true);
+    //   $("#manage_type_kanri_teiki").prop("checked", true);
+    //   $("#manage_type_kanri_gyoumu").prop("checked", true);
+    //
+    //   $("#manage_type_kanri_gai").attr("checked", false);
+    //
+    // });
+    //
+    // $("#jita_kbn_ta_only").change(function(){
+    //   $("#manage_type_kanri_i").attr("checked", false);
+    //   $("#manage_type_kanri_a").attr("checked", false);
+    //   $("#manage_type_kanri_b").attr("checked", false);
+    //   $("#manage_type_kanri_c").attr("checked", false);
+    //   $("#manage_type_kanri_d").attr("checked", false);
+    //   $("#manage_type_kanri_soumu").attr("checked", false);
+    //   $("#manage_type_kanri_toku").attr("checked", false);
+    //   $("#manage_type_kanri_teiki").attr("checked", false);
+    //   $("#manage_type_kanri_gyoumu").attr("checked", false);
+    //
+    //   $("#manage_type_kanri_gai").prop("checked", true);
+    // });
+    //
+    // $("#jita_kbn_jita_both").change(function(){
+    //
+    //   $("#manage_type_kanri_i").attr("checked", false);
+    //   $("#manage_type_kanri_a").attr("checked", false);
+    //   $("#manage_type_kanri_b").attr("checked", false);
+    //   $("#manage_type_kanri_c").attr("checked", false);
+    //   $("#manage_type_kanri_d").attr("checked", false);
+    //   $("#manage_type_kanri_soumu").attr("checked", false);
+    //   $("#manage_type_kanri_toku").attr("checked", false);
+    //   $("#manage_type_kanri_teiki").attr("checked", false);
+    //   $("#manage_type_kanri_gyoumu").attr("checked", false);
+    //   $("#manage_type_kanri_gai").attr("checked", false);
+    // });
 	
 	// 検索したときにローディング状態を表示
     $('#search-submit').click(function(){
@@ -186,14 +187,25 @@
     //------------
     $("#build_type input").attr("checked", false);
 
-    //------------------
-    // 自社他社(管理方式)
-    //------------------
-    $("#jita_kbn_ji_only").prop('checked', true);
-    $("#jita_kbn_ji_only").change();
-
+    //------------
+    // 管理方式
+    //------------
+	$("#manage_type_kanri_b").prop("checked", true);
+	$("#manage_type_kanri_c").prop("checked", true);
+	$("#manage_type_kanri_d").prop("checked", true);
+	$("#manage_type_kanri_soumu").prop("checked", true);
+	$("#manage_type_kanri_toku").prop("checked", true);
+	$("#manage_type_kanri_teiki").prop("checked", true);
+	$("#manage_type_kanri_i").attr("checked", false);
+	$("#manage_type_kanri_a").attr("checked", false);
+	
+    // 2014/08/10 この画面では自社物のみ対象とするので他社フラグは外す
+    // //------------------
+    // // 自社他社(管理方式)
+    // //------------------
+    // $("#jita_kbn_ji_only").prop('checked', true);
+    // $("#jita_kbn_ji_only").change();
   }
-  
   
 </script>
 
@@ -203,13 +215,20 @@
     <div class="well" style="padding:0">
       <%= form_tag('/managements/search_buildings') do %>
 
-		<table style="margin-top:20px;">
+        <!-- 2014/08/10 この画面では自社物のみ対象とするので他社フラグは外す -->
+		<!-- <table style="margin-top:20px;">
 			<tr>
 				<td><label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'ji_only' ,@ji_only_flg %>自社のみ</label></td>
 				<td style="padding-left:10px;"><label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'ta_only' ,@ta_only_flg %>他社のみ</label></td>
 				<td style="padding-left:10px;"><label class="radio inline"><%= radio_button_tag 'jita[kbn]', 'jita_both', @jita_both_flg %>両方</label></td>
 			</tr>
-		</table>
+		</table> -->
+			
+        <div style="padding-top:20px;padding-bottom:10px;text-align: center;">
+        	<%= hidden_field_tag 'user_id', @biru_user.id %>
+          <%= submit_tag "検索する", :class=>'btn btn-large', :id=>'search-submit'  %>
+          <button type="button" class="btn btn-default btn-sm btn3d" onClick="javascript:search_init();">クリア</button>
+        </div>
 
         建物名&nbsp;<%= text_field_tag 'biru_name', @building_nm, :placeholder=>'建物名' %>
         住所&nbsp;<%= text_field_tag 'biru_address', @building_ad, :placeholder=>'住所' %>
@@ -303,27 +322,28 @@
 
         <div id="manage_type" class="checkbox"  style="padding-left:30px;">
           <table style="float: left;">
-            <tr><td><label><%= check_box_tag('manage_type[kanri_i]', 1, @manage_type_checked[:kanri_i], {}) %>一般</label></td></tr>
-            <tr><td><label><%= check_box_tag('manage_type[kanri_a]', 2, @manage_type_checked[:kanri_a], {}) %>A管理</label></td></tr>
             <tr><td><label><%= check_box_tag('manage_type[kanri_b]', 3, @manage_type_checked[:kanri_b], {}) %>B管理</label></td></tr>
             <tr><td><label><%= check_box_tag('manage_type[kanri_c]', 4, @manage_type_checked[:kanri_c], {}) %>C管理</label></td></tr>
             <tr><td><label><%= check_box_tag('manage_type[kanri_d]', 6, @manage_type_checked[:kanri_d], {}) %>D管理</label></td></tr>
+            <tr><td><label><%= check_box_tag('manage_type[kanri_soumu]', 7, @manage_type_checked[:kanri_soumu], {}) %>総務君</label></td></tr>
+            <tr><td><label><%= check_box_tag('manage_type[kanri_gyoumu]', 10, @manage_type_checked[:kanri_gyoumu], {}) %>業務君</label></td></tr>
           </table>
           <table style="margin-left:100px;">
-            <tr><td><label><%= check_box_tag('manage_type[kanri_soumu]', 7, @manage_type_checked[:kanri_soumu], {}) %>総務君</label></td></tr>
             <tr><td><label><%= check_box_tag('manage_type[kanri_toku]', 8, @manage_type_checked[:kanri_toku], {}) %>特優賃</label></td></tr>
             <tr><td><label><%= check_box_tag('manage_type[kanri_teiki]', 9, @manage_type_checked[:kanri_teiki], {}) %>定期借地</label></td></tr>
-            <tr><td><label><%= check_box_tag('manage_type[kanri_gyoumu]', 10, @manage_type_checked[:kanri_gyoumu], {}) %>業務君</label></td></tr>
-            <tr><td><label><%= check_box_tag('manage_type[kanri_gai]', 99, @manage_type_checked[:kanri_gai], {}) %>管理外</label></td></tr>
+            <tr><td><label><%= check_box_tag('manage_type[kanri_i]', 1, @manage_type_checked[:kanri_i], {}) %>一般</label></td></tr>
+            <tr><td><label><%= check_box_tag('manage_type[kanri_a]', 2, @manage_type_checked[:kanri_a], {}) %>A管理</label></td></tr>
+            <!-- <tr><td><label><%= check_box_tag('manage_type[kanri_gai]', 99, @manage_type_checked[:kanri_gai], {}) %>管理外</label></td></tr> -->
           </table>
 		  
         </div>
+        <div style="padding-bottom:20px;">&nbsp;</div>
 
-        <div style="padding-top:10px;padding-bottom:20px;text-align: center;">
+        <!-- <div style="padding-top:10px;padding-bottom:20px;text-align: center;">
         	<%= hidden_field_tag 'user_id', @biru_user.id %>
           <%= submit_tag "検索する", :class=>'btn btn-large', :id=>'search-submit'  %>
           <button type="button" class="btn btn-default btn-sm btn3d" onClick="javascript:search_init();">クリア</button>
-        </div>
+        </div> -->
 
       <% end %>
 

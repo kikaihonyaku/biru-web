@@ -17,6 +17,7 @@ class Building < ActiveRecord::Base
   #default_scope where(:delete_flg => false).includes(:shop).includes(:build_type).includes(:trusts).includes(:trusts => :owner)
   # ↑ 最初からスコープでincludesを指定しようと思ったが、管理では使うが募集では不要な結合なので、使う検索の時に別途結合するようにする。
   default_scope where(:delete_flg => false)
+  scope :oneself , -> { where(:attack_code => nil )}
 
   def gmaps4rails_address
    "#{self.address}"

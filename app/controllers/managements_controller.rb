@@ -55,8 +55,8 @@ class ManagementsController < ApplicationController
 
     # 管理方式指定
     @manage_type_checked = {}
-    @manage_type_checked[:kanri_i] = true
-    @manage_type_checked[:kanri_a] = true
+    @manage_type_checked[:kanri_i] = false
+    @manage_type_checked[:kanri_a] = false
     @manage_type_checked[:kanri_b] = true
     @manage_type_checked[:kanri_c] = true
     @manage_type_checked[:kanri_d] = true
@@ -64,7 +64,7 @@ class ManagementsController < ApplicationController
     @manage_type_checked[:kanri_toku] = true
     @manage_type_checked[:kanri_teiki] = true
     @manage_type_checked[:kanri_gyoumu] = true
-    @manage_type_checked[:kanri_gai] = false
+#    @manage_type_checked[:kanri_gai] = false
 
     # オブジェクトの初期化
     @buildings = []
@@ -88,9 +88,9 @@ class ManagementsController < ApplicationController
     @tab_result = ""
 
     # 自社・他社種別
-    @ji_only_flg = true
-    @ta_only_flg = false
-    @jita_both_flg = false
+#    @ji_only_flg = true
+#    @ta_only_flg = false
+#    @jita_both_flg = false
     
     @search_bar_disp_flg = true
     
@@ -246,8 +246,8 @@ class ManagementsController < ApplicationController
 
     search_result_init(1) # 建物を初期表示
 
-    # 委託契約がされてないものも削除フラグが立っていない建物ならば出力する。
-    tmp_buildings = Building.scoped
+    # 自社物件のみを対象とする
+    tmp_buildings = Building.oneself.scoped
     tmp_buildings = tmp_buildings.includes(:build_type)
     tmp_buildings = tmp_buildings.includes(:shop)
     tmp_buildings = tmp_buildings.includes(:trusts)
@@ -295,8 +295,9 @@ class ManagementsController < ApplicationController
     # 管理方式で絞り込み
     if params[:manage_type]
 
-      ji_flg = false # 自社カウント
-      ta_flg = false # 他社カウント
+      # ↓2014/08/12 自社管理物件のみ対象にするのでコメントアウト
+      # ji_flg = false # 自社カウント
+      # ta_flg = false # 他社カウント
       
       manage_type = []
       
@@ -309,44 +310,46 @@ class ManagementsController < ApplicationController
         manage_type.push(ManageType.find_by_code(params[:manage_type][key]).id)
         @manage_type_checked[key.to_sym] = true
 
-        if key.to_sym == :kanri_gai
-          ta_flg = true # 管理外の時
-        else
-          ji_flg = true # 通常の管理方式の時
-        end
+        # ↓2014/08/12 自社管理物件のみ対象にするのでコメントアウト
+        # if key.to_sym == :kanri_gai
+        #   ta_flg = true # 管理外の時
+        # else
+        #   ji_flg = true # 通常の管理方式の時
+        # end
       end
 
-      # 自社他社ラジオボタン判定
-      if ji_flg == true && ta_flg == true
-        # 自社と他社のどちらも選択された時
-        @ji_only_flg = false
-        @ta_only_flg = false
-        @jita_both_flg = true
-
-      else
-        if ji_flg == true
-          # 自社のみ選択
-          @ji_only_flg = true
-          @ta_only_flg = false
-          @jita_both_flg = false
-
-        else
-
-          # 他社のみ選択
-          @ji_only_flg = false
-          @ta_only_flg = true
-          @jita_both_flg = false
-
-        end
-      end
+      # ↓2014/08/12 自社管理物件のみ対象にするのでコメントアウト
+      # # 自社他社ラジオボタン判定
+      # if ji_flg == true && ta_flg == true
+      #   # 自社と他社のどちらも選択された時
+      #   @ji_only_flg = false
+      #   @ta_only_flg = false
+      #   @jita_both_flg = true
+      #
+      # else
+      #   if ji_flg == true
+      #     # 自社のみ選択
+      #     @ji_only_flg = true
+      #     @ta_only_flg = false
+      #     @jita_both_flg = false
+      #
+      #   else
+      #
+      #     # 他社のみ選択
+      #     @ji_only_flg = false
+      #     @ta_only_flg = true
+      #     @jita_both_flg = false
+      #
+      #   end
+      # end
 
       # ここでInner Joinをして管理方式が存在するもののみを絞り込む
       tmp_buildings = tmp_buildings.where("trusts.manage_type_id"=>manage_type)
     else
       # 管理方式がひとつも選択されていない時は、種別は両方を設定
-      @ji_only_flg = false
-      @ta_only_flg = false
-      @jita_both_flg = true
+      # @ji_only_flg = false
+      # @ta_only_flg = false
+      # @jita_both_flg = true
     end
 
     # 物件情報を出力
