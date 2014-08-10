@@ -4,8 +4,8 @@
 			  <div style="padding-bottom:5px;">おしらせ</div>
 			  <table>
 				  <tr>
-					  <td style="vertical-align:top;padding-right:10px;">7/30</td>
-					  <td>システム自動ログイン リリース予定</td>
+					  <td style="vertical-align:top;padding-right:10px;">TODO：</td>
+					  <td>募集（地図）で募集中の物件を表示したい</td>
 				  </tr>
 			  </table>
           </div><!--/.well -->		  
@@ -16,20 +16,20 @@
 
 <div class="well" style="margin-top:30px;margin-left:30px;height:800px;">
 
-	<h3><%= link_to "トップ", root_path %></h3>
-    <p>このページへのリンクです。</p>
-	
-	<h3 style="margin-top:30px;"><%= link_to "地図", managements_path %></h3>
-	<p>物件（自社・他社）を地図に展開します。</p>
-	
-	<h3 style="margin-top:30px;"><%= link_to "業績分析", performances_path %></h3>
-	<p>経営数値の情報をグラフで表示します。</p>
+	<h3 style="margin-top:30px;"><%= link_to "管理（地図）", managements_path %></h3>
+	<p>管理物件を地図に展開します</p>
 
+	<h3 style="margin-top:30px;"><%= link_to "募集（地図）", recruitments_path %></h3>
+	<p>募集物件（自社物・レンターズ登録の他社物）を地図に展開します</p>
+	
 	<h3 style="margin-top:30px;"><%= link_to "物件一覧", building_rooms_path %></h3>
-	<p>管理物件の一覧を表示します。空室やレンターズの登録状況などを確認できます。</p>
+	<p>自社管理物件・募集中の他社物件の一覧を表示します</p>
 	
 	<h3 style="margin-top:30px;"><%= link_to "アタックリスト", trust_managements_path %></h3>
 	<p>受託アタックリスト</p>
+
+	<h3 style="margin-top:30px;"><%= link_to "業績分析", performances_path %></h3>
+	<p>経営数値の情報をグラフで表示します。</p>
 
 	<h3 style="margin-top:30px;"><%= link_to "レンターズ連動テスト", renters_path %></h3>
 	<p>レンターズ連動のテストです</p>
