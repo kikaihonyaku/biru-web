@@ -15,8 +15,8 @@ class ApplicationController < ActionController::Base
   # 2014/06/10 paramでuser_idを送るようにして対応できた。
   before_filter :check_logined
   
-  # CSV出力する際、Windowsで開くためにShift_JISに変換する。
-  after_filter :change_charset_to_sjis, :if => :trust_managements?
+  # CSV出力する際、Windowsで開くためにShift_JISに変換する。■2014/08/12 当面はpdfで出力するため、文字コードはutf-8に戻す。
+  #after_filter :change_charset_to_sjis, :if => :trust_managements?
   
   protected
   def change_charset_to_sjis

@@ -1,6 +1,7 @@
 #-*- encoding:utf-8 -*-
 
 require 'kconv'
+require 'thinreports'
 
 class TrustManagementsController < ApplicationController
   
@@ -36,9 +37,79 @@ class TrustManagementsController < ApplicationController
       # 不正な検索条件が指定されたとき
       render 'owner_building_list'   
     end
-    
-        
   end
+  
+  
+  # タックシールを出力する
+  def tack_out
+
+    @selected = params[:g1][:selected]
+    
+    if params[:dm_history] == "1"
+      reg_flg = true
+    else
+      reg_flg = false
+    end
+    
+    owner_id_arr = []
+    Trust.where("id in (?)", @selected).each do |trust|
+      owner_id_arr.push(trust.owner_id)
+    end
+    
+    
+    # 出力対象が１つもないときはエラー
+    if owner_id_arr.length == 0
+      flash[:notice] = '印刷対象のチェックボックスをチェックしてください。'
+      redirect_to :action => "index" 
+    else
+
+      @owners = Owner.where("id in (?)", owner_id_arr)
+      #send_data @owners.to_csv, :filename=>'tack.csv'
+  
+      # pdfファイルを作成
+      #report = ThinReports::Report.create :layout => File.join(Rails.root, 'app/reports', 'pdf_layout.tlf') do |r|
+      report = ThinReports::Report.create :layout => File.join(Rails.root, 'app/reports', 'pdf_layout.tlf') do |r|
+     
+         @owners.each_with_index do |owner, idx|
+       
+           lbl_num = (idx).modulo(8) # 剰余を求める
+       
+           if lbl_num == 0
+             r.start_new_page
+           end
+       
+           r.page.values "post_%02d"%(lbl_num + 1) => owner.postcode
+           r.page.values "address_%02d"%(lbl_num + 1) => owner.address 
+           r.page.values "name_%02d"%(lbl_num + 1) => owner.name + ' ' + if owner.honorific_title then owner.honorific_title  else '様' end 
+           r.page.values "biru_%02d"%(lbl_num + 1) => '(株)中央ビル管理 ' + @biru_user.name
+           
+           
+           
+           # アプローチデータ登録
+           if reg_flg
+             owner_approach = OwnerApproach.new
+             owner_approach.owner_id = owner.id
+             owner_approach.approach_kind_id = ApproachKind.find_by_code('0030').id
+             owner_approach.approach_date = params[:dm_out_date]
+             owner_approach.content = params[:dm_out_msg]
+             owner_approach.biru_user_id = @biru_user.id
+             owner_approach.delete_flg = false
+             owner_approach.save!
+           end
+         end
+     
+       end
+
+       send_data report.generate, :filename    => 'DM_' +  Date.today.to_s +  '.pdf', 
+                                  :type        => 'application/pdf', 
+                                  :disposition => 'attachment'
+    
+    end
+      
+      
+
+  end
+    
   
   def owner_show
     get_owner_show(params[:id].to_i)
@@ -133,30 +204,33 @@ def get_trust_data()
   
   arr_exist = []
   arr_exist.push(99999)
+  filter_exist_flg = false
 
   arr_not_exist = []
   arr_not_exist.push(99999)
-  
-  filter_flg = false
-
+  filter_not_exist_flg = false
   
   # 訪問リレキのチェック
   unless @history_visit[:all]
-    
-    filter_flg = true
-    
+      
     # 訪問リレキで「すべて」以外が選択されているとき
     approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", Date.parse(@history_visit_from), Date.parse(@history_visit_to))
+    
+    p Date.parse(@history_visit_from)
+    p Date.parse(@history_visit_to)
+    p approaches.to_sql
     
     if @history_visit[:exist]
       approaches.each do |approach|
         arr_exist.push(approach.owner_id)
       end
+      filter_exist_flg = true
       
     elsif @history_visit[:not_exist]
       approaches.each do |approach|
         arr_not_exist.push(approach.owner_id)
       end
+      filter_not_exist_flg = true
     end
     
   end
@@ -165,8 +239,6 @@ def get_trust_data()
   # DMリレキのチェック
   unless @history_dm[:all]
     
-    filter_flg = true
-    
     # 訪問リレキで「すべて」以外が選択されているとき
     approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", Date.parse(@history_dm_from), Date.parse(@history_dm_to))
     
@@ -174,19 +246,20 @@ def get_trust_data()
       approaches.each do |approach|
         arr_exist.push(approach.owner_id)
       end
+      filter_exist_flg = true
       
     elsif @history_dm[:not_exist]
       approaches.each do |approach|
         arr_not_exist.push(approach.owner_id)
       end
+      filter_not_exist_flg = true
+      
     end
     
   end
   
   # TELリレキのチェック
   unless @history_tel[:all]
-    
-    filter_flg = true
     
     # 訪問リレキで「すべて」以外が選択されているとき
     approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040')").where("approach_date between ? and ? ", Date.parse(@history_tel_from), Date.parse(@history_tel_to))
@@ -195,19 +268,26 @@ def get_trust_data()
       approaches.each do |approach|
         arr_exist.push(approach.owner_id)
       end
+      filter_exist_flg = true
       
     elsif @history_tel[:not_exist]
       approaches.each do |approach|
         arr_not_exist.push(approach.owner_id)
       end
+      filter_not_exist_flg = true
+      
     end
   end
   
   # 絞り込み条件が指定されていた時
-  if filter_flg 
+  if filter_exist_flg 
       trust_data = trust_data.where("owners.id in (?)", arr_exist) 
-      trust_data = trust_data.where("owners.id not in (?)", arr_not_exist) 
   end
+  
+  if filter_not_exist_flg
+    trust_data = trust_data.where("owners.id not in (?)", arr_not_exist) 
+  end
+
 
   trust_data
 end

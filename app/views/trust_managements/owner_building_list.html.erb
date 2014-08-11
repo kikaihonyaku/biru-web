@@ -18,154 +18,74 @@
 　　クリックすると貸主CD列がでるようにしよう。※建物についても同様。2014/05/25
  %>
 
-<div class="bs-example">
+<div class="bs-example" style="width:700px;float:left">
+<%= form_tag '/trust_managements/index' do %>
     <div class="panel-group" id="accordion">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">検索条件</a>
+        
+		<%= submit_tag '以下で指定した条件で検索する' , :class=>"btn btn-primary btn-sm", :style=>"margin:0" %>
       </h4>
     </div>
+	
     <div id="collapseOne" class="panel-collapse collapse in">
       <div class="panel-body">
-		  <div style="padding-left:30px;">
-			<%= form_tag '/trust_managements/index' do %>
-							<table class="attack-search">
-								<!-- 主担当者の検索条件は表で行っているので削除ー開始
-								<tr>
-									<td colspan="2">
-										<table>
-											<tr>
-												<td style="text-align:right;width:100px;"><b>主担当者：</b></td>
-												<% if @biru_user.attack_all_search %>
-												    <script>
-												        $(document).ready(function() { $("#main_person_name").select2(); });
-												    </script>
-												
-													<td>
-														<%#= select_tag 'main_person[name]', options_from_collection_for_select(BiruUser.all, :id, :name, @main_person),  :prompt => "選択してください" %>
-													</td>													
-												
-												<% else %>
-													<%#= hidden_field_tag 'main_person[name]', @biru_user.id %>
-													<td><label><%= @biru_user.name %></label></td>
-												<% end %>
-												<td style="text-align:right;padding-left:50px;"><b>DM発送：</b></td>
-												<td>
-													<label><%#= radio_button_tag 'dm', 'all', @dm[:all] %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%#= radio_button_tag 'dm', 'only', @dm[:only]  %>&nbsp;対象のみ</label>&nbsp;&nbsp;
-													<label><%#= radio_button_tag 'dm', 'not_only', @dm[:not_only] %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
-												</td>
-												
-												
-											</tr>
-										</table>
-									</td>
-								</tr>
-									主担当者の検索条件は表で行っているので削除ー終了 -->
-								
-								<!--　DM発送、物件ランクの検索条件は表で行っているので削除ー開始
-								<tr>
-									<td style="text-align:right;padding-left:50px;"><b>DM発送：</b></td>
-									<td>
-										<label><%#= radio_button_tag 'dm', 'all', @dm[:all] %>&nbsp;すべて</label>&nbsp;&nbsp;
-										<label><%#= radio_button_tag 'dm', 'only', @dm[:only]  %>&nbsp;対象のみ</label>&nbsp;&nbsp;
-										<label><%#= radio_button_tag 'dm', 'not_only', @dm[:not_only] %>&nbsp;対象外のみ</label>&nbsp;&nbsp;
-									</td>
-								</tr>
+		  <div style="padding-left:10px;">
+				<table class="attack-search">
 					
+					<tr>
+						<td style="text-align:right"><b>訪問リレキ：</b></td>
+						<td>
+							<table>
 								<tr>
-									<td style="text-align:right"><b>物件ランク：</b></td>
 									<td>
-										<table>
-											<tr>
-												<td>
-													<label><%#= radio_button_tag 'rank', 'all' , @rank[:all] %>&nbsp;指定なし</label>&nbsp;&nbsp;
-													<label><%#= radio_button_tag 'rank', 'only', @rank[:only] %>&nbsp;指定あり</label>&nbsp;&nbsp;
-												</td>
-												<td>
-													<table>
-														<tr>
-															<td style="padding-right:15px;">（</td>
-															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[s]', '1', @rank_kind[:s]) %>&nbsp;Ｓ</label></td>
-															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[a]', '1', @rank_kind[:a]) %>&nbsp;Ａ</label></td>
-															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[b]', '1', @rank_kind[:b]) %>&nbsp;Ｂ</label></td>
-															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[c]', '1', @rank_kind[:c]) %>&nbsp;Ｃ</label></td>
-															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[d]', '1', @rank_kind[:d]) %>&nbsp;Ｄ</label></td>
-															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[e]', '1', @rank_kind[:e]) %>&nbsp;Ｅ</label></td>
-															<td style="padding-right:15px;"><label><%#= check_box_tag('rank_kind[z]', '1', @rank_kind[:z]) %>&nbsp;Ｚ</label></td>
-															<td>）</td>
-														</tr>
-													</table>
-												</td>
-								
-											</tr>
-										</table>
+										<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+										<label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+										<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+							（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
 									</td>
-								</tr>
-								DM発送、物件ランクの検索条件は表で行っているので削除ー終了 -->
-								
-								<tr>
-									<td style="text-align:right"><b>訪問リレキ：</b></td>
-									<td>
-										<table>
-											<tr>
-												<td>
-													<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-										（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-												</td>
-								
-											</tr>
-										</table>
-									</td>
-								</tr>
-								
-								<tr>
-									<td style="text-align:right"><b>ＤＭリレキ：</b></td>
-									<td>
-										<table>
-											<tr>
-												<td>
-													<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-										（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-												</td>
-								
-											</tr>
-										</table>
-									</td>
-						
-								</tr>
-								<tr>
-									<td style="text-align:right"><b>ＴＥLリレキ：</b></td>
-									<td>
-										<table>
-											<tr>
-												<td>
-													<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-													<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-										（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-												</td>
-								
-											</tr>
-										</table>
-									</td>
-						
-								</tr>
-								
 					
+								</tr>
 							</table>
-
-						
+						</td>
+					</tr>
+					
+					<tr>
+						<td style="text-align:right"><b>ＤＭリレキ：</b></td>
+						<td>
+							<table>
+								<tr>
+									<td>
+										<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+										<label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+										<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+							（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+									</td>
+					
+								</tr>
+							</table>
+						</td>
+			
+					</tr>
+					<tr>
+						<td style="text-align:right"><b>ＴＥLリレキ：</b></td>
+						<td>
+							<table>
+								<tr>
+									<td>
+										<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+										<label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+										<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+							（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+									</td>
+					
+								</tr>
+							</table>
 						</td>
 					</tr>
 				</table>
-				<%= submit_tag '検索'%>
-			<% end %>
+
 	  	
 		  </div>
 		  
@@ -173,8 +93,102 @@
     </div>
   </div>
 </div>
+<% end %>
 </div>
 
+<script type="text/javascript">
+function dm_msg_regist_on(msg_flg){
+	var curfrm = document.tack_frm;
+	
+	if(msg_flg == true){
+		curfrm.dm_out_date.disabled = false;
+		curfrm.dm_out_date.style.backgroundColor="";
+		curfrm.dm_out_msg.disabled = false;
+		curfrm.dm_out_msg.style.backgroundColor="";
+	}else{
+		curfrm.dm_out_date.disabled = true;
+		curfrm.dm_out_date.style.backgroundColor="gray";
+		curfrm.dm_out_msg.disabled = true;
+		curfrm.dm_out_msg.style.backgroundColor="gray";
+	}
+	
+}
+
+// タックシール用のpdfを出力します
+function tack_out_go(){
+	
+	// 出力対象がチェックボックスが１件以上チェックされていることを確認
+	// ※これはうまくいかなかったから、サーバー側でエラーを返す
+	
+	// DM発行リレキがONの時、日付とメッセージが正しく登録されているか確認
+	if(document.tack_frm.dm_history.value == 1){
+		if(document.tack_frm.dm_out_date.value.length == 0){
+			alert('リレキに残す日付を設定してください。');
+			return false;
+		}
+		
+		if(document.tack_frm.dm_out_msg.value.length == 0){
+			alert('リレキに残すメッセージを設定してください。');
+			return false;
+		}
+	}
+	
+	// DM発行リレキに応じて出力
+	if(document.tack_frm.dm_history.value == 1){
+		if(window.confirm('ＤＭ発行リレキに登録します。よろしいですか？')){
+		}else{
+			return false;
+		}
+		
+	}else{
+		if(window.confirm('リレキに保存されません。よろしいですか？')){
+		}else{
+			return false;
+		}
+		
+	}
+		
+	return true;
+}
+</script>
+<%= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm', :onSubmit=>"return tack_out_go()" }) do %>
+<div class="bs-example" style="width:500px;float:left;margin-left:20px;">
+	<div class="panel-group" id="accordion">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+			  <h4 class="panel-title">
+    
+				<%= submit_tag '宛名ラベル出力' , :class=>"btn btn-primary btn-sm", :style=>"margin:0" %>
+			  </h4>
+			</div>
+
+			<div id="collapseOne" class="panel-collapse collapse in">
+			  <div class="panel-body">
+				  <div style="padding-left:10px;">
+		  
+		  			<div style="margin-bottom:10px;">
+						<%= radio_button_tag :dm_history, 1, true,  :onclick=>"dm_msg_regist_on(true);" %>
+						<%= label :dm_history, "ＤＭリレキを残す", :value => 0 %>
+						&nbsp;&nbsp;&nbsp;
+						<%= radio_button_tag :dm_history, 0, false, :onclick=>"dm_msg_regist_on(false);" %>
+						<%= label :dm_history, "ＤＭリレキを残さない", :value => 0  %>
+		  			</div>
+					<div>
+
+						<%= text_field_tag 'dm_out_date', Date.today.strftime("%Y-%m-%d"), :type=>'date' , :style=>"margin:0;padding:0" %>  
+						<%= text_field_tag 'dm_out_msg' %>
+					
+						<div style="color:red">
+							<%= flash[:notice] %>
+						</div>
+					</div>
+				  </div>
+			  </div>
+			</div>
+		</div>
+	</div>
+</div>
+<div style="clear:both"></dvi>
 <% if @error_msg.size > 0 %>
 	<% @error_msg.each do |msg| %>
 		<p style="color:red"><%= msg %></p>
@@ -183,91 +197,80 @@
 
 	<%# 検索条件に日付エラーなどが存在しないとき %>
 	<%= dump_filter_parameters_as_hidden_fields(@trust_grid) %>
-	<%= form_tag({:controller=>'pdf_outputs', :action=>'tack_out'}, {:method=>'post'}) do %>
-		<% if @selected %>
-			<%= @selected.to_sentence %>
-		<% end %>
+	<% if @selected %>
+		<%= @selected.to_sentence %>
+	<% end %>
 	
-		<div>
-			<%= text_field_tag 'tack_msg' %>
-			<button class='btn' style="margin-bottom:5px;" type='submit'>タックシール</button>
-		</div>
+	<%= grid(@trust_grid,  upper_pagination_panel: true ) do |g|
 
-		<%= grid(@trust_grid,  upper_pagination_panel: true ) do |g|
-
-			g.action_column 
+		g.action_column 
 
 
-			g.column name: '主担当者' , attribute: 'name', model: 'BiruUser' , :html =>{ :style => 'width:300x;'}, custom_filter: @trust_data.uniq.pluck("biru_users.name").map{|pr| [pr, pr]} do |obj| obj.biru_user.name if obj.biru_user end
-			g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
-			# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
-			g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj|
-			  if obj.owner
-		  
-				  if obj.owner.attack_code
-			  	    str = obj.owner.name + ' ／ ' + obj.owner.attack_code.to_s
-				  else
-		  	  	    str = obj.owner.name  + ' ／ ' + obj.owner.code.to_s
-				  end
-		  
-				  #link_to(str, owner_show_path(obj.owner_id)) 
-				  raw("<a href=""javascript:win_owner(" + obj.owner_id.to_s + ");"">" + str + "</a>")
-		
+		g.column name: '主担当者' , attribute: 'name', model: 'BiruUser' , :html =>{ :style => 'width:300x;'}, custom_filter: @trust_data.uniq.pluck("biru_users.name").map{|pr| [pr, pr]} do |obj| obj.biru_user.name if obj.biru_user end
+		g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
+		# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
+		g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj|
+		  if obj.owner
+	  
+			  if obj.owner.attack_code
+		  	    str = obj.owner.name + ' ／ ' + obj.owner.attack_code.to_s
+			  else
+	  	  	    str = obj.owner.name  + ' ／ ' + obj.owner.code.to_s
 			  end
-			end
+	  
+			  #link_to(str, owner_show_path(obj.owner_id)) 
+			  raw("<a href=""javascript:win_owner(" + obj.owner_id.to_s + ");"">" + str + "</a>")
 	
-			g.column name: '貸主住所' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
-			g.column name: 'ＤＭ発送可' , attribute: 'dm_delivery', model: 'Owner' , :html =>{ :style => 'width:100px;text-align:center'} do |obj| if obj.owner.dm_delivery == true then 'ＯＫ' else '不可' end if obj.owner end
-			
-			
-			#g.column name: '建物CD' , attribute: 'attack_code', model: 'Building' , :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.building.attack_code if obj.building end
-			g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj|
-		  	  if obj.building
-		  
-		  		  if obj.building.attack_code
-		  	  	    str = obj.building.name + ' ／ ' + obj.building.attack_code.to_s
-		  		  else
-		    	  	str = obj.building.name  + ' ／ ' + obj.building.code.to_s
-		  		  end
-		  
-		  		  #link_to(str, building_show_path(obj.building_id)) 
-				  raw("<a href=""javascript:win_building(" + obj.building_id.to_s + ");"">" + str + "</a>")
-		  	  end
-			end
-	
-			g.column name: '建物住所' , attribute: 'address', model: 'Building', :html =>{ :style => 'width:300px;'}   do |obj| obj.building.address if obj.building end
-			g.column name: '見込ランク' , attribute: 'code', model: 'AttackState' , :html =>{ :style => 'width:100px;'}, custom_filter: AttackState.find(:all).map{|pr| [pr.code, pr.code]} do |obj| obj.attack_state.code if obj.attack_state end
+		  end
+		end
+
+		g.column name: '貸主住所' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
+		g.column name: 'ＤＭ発送可' , attribute: 'dm_delivery', model: 'Owner' , :html =>{ :style => 'width:100px;text-align:center'} do |obj| if obj.owner.dm_delivery == true then 'ＯＫ' else '不可' end if obj.owner end
+		
+		
+		#g.column name: '建物CD' , attribute: 'attack_code', model: 'Building' , :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.building.attack_code if obj.building end
+		g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj|
+	  	  if obj.building
+	  
+	  		  if obj.building.attack_code
+	  	  	    str = obj.building.name + ' ／ ' + obj.building.attack_code.to_s
+	  		  else
+	    	  	str = obj.building.name  + ' ／ ' + obj.building.code.to_s
+	  		  end
+	  
+	  		  #link_to(str, building_show_path(obj.building_id)) 
+			  raw("<a href=""javascript:win_building(" + obj.building_id.to_s + ");"">" + str + "</a>")
+	  	  end
+		end
+
+		g.column name: '建物住所' , attribute: 'address', model: 'Building', :html =>{ :style => 'width:300px;'}   do |obj| obj.building.address if obj.building end
+		g.column name: '見込ランク' , attribute: 'code', model: 'AttackState' , :html =>{ :style => 'width:100px;'}, custom_filter: AttackState.find(:all).map{|pr| [pr.code, pr.code]} do |obj| obj.attack_state.code if obj.attack_state end
 
 
-		#    g.column  :html =>{ :style => 'width:80px;text-align:center;'} do |obj| 
-		#		link_owner = 
-		#		if obj.owner
-		#			link_to('貸主',owner_show_path(obj.owner_id)) 
-		#		else
-		#			''
-		#		end
-		#	
-		#		link_build = 
-		#		if obj.building
-		#			link_to('建物',building_show_path(obj.building)) 
-		#		else
-		#			''
-		#		end
-		#	
-		#		link_owner + '／' + link_build
-		#	
-		#	end
+	#    g.column  :html =>{ :style => 'width:80px;text-align:center;'} do |obj| 
+	#		link_owner = 
+	#		if obj.owner
+	#			link_to('貸主',owner_show_path(obj.owner_id)) 
+	#		else
+	#			''
+	#		end
+	#	
+	#		link_build = 
+	#		if obj.building
+	#			link_to('建物',building_show_path(obj.building)) 
+	#		else
+	#			''
+	#		end
+	#	
+	#		link_owner + '／' + link_build
+	#	
+	#	end
 
 
-		end%>
-	<% end %><!-- form_tag '/trust_managements/tack_out' -->
+	end%>
 
 <% end %>
 
-
-
-
-
-
 </div>
+	<% end %><!-- form_tag '/trust_managements/tack_out' -->
 
