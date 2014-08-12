@@ -90,5 +90,119 @@ class ApplicationController < ActionController::Base
     result
     
   end
+  
+  
+  
+  # 指定した建物情報を元に、出力用のjavascriptオブジェクトを作成します。
+  def buildings_to_gon(buildings)
+
+      @manage_line_color = make_manage_line_list
+
+      if buildings.size == 0
+        # 表示する建物が存在しない時
+        @owners = []
+        @trusts = []
+        @owner_to_buildings = []
+        @building_to_owners = []
+        @shops =  Shop.find(:all)
+      
+      else
+
+        # 建物にマーカーを設定
+        set_biru_obj(buildings)
+        @buildings = buildings
+
+        # 建物に紐づく貸主／委託契約を取得(合わせて管理方式の絞り込み)
+        @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(buildings)
+
+      end
+
+      gon.buildings = @buildings
+      gon.owners = @owners # 関連する貸主
+      gon.trusts = @trusts # 関連する委託契約
+      gon.shops = @shops    # 関連する営業所
+      gon.owner_to_buildings = @owner_to_buildings # 建物と貸主をひもづける情報
+      gon.building_to_owners = @building_to_owners
+      gon.manage_line_color = @manage_line_color
+      gon.all_shops = Shop.find(:all)
+    
+  end
+
+  # 指定された建物に紐づく営業所・貸主・委託情報を取得する
+  def get_building_info(buildings)
+
+    shops = []
+    owners = []
+    trusts = []
+    owner_to_buildings = []
+    building_to_owners = []
+
+    buildings.each do |biru|
+
+      shops << biru.shop if biru.shop
+
+      biru.trusts.each do |trust|
+
+        trusts << trust
+
+        # 貸主登録
+        if trust.owner
+          tmp_owner = trust.owner
+          owners << tmp_owner
+
+          # 貸主に紐づく建物一覧を作成する。
+          owner_to_buildings[tmp_owner.id] = [] unless owner_to_buildings[tmp_owner.id]
+          owner_to_buildings[tmp_owner.id] << biru
+
+          # 建物に紐づく貸主一覧を作成する。※本来建物に対するオーナーは１人だが、念のため複数オーナーも対応する。
+          building_to_owners[biru.id] = [] unless building_to_owners[biru.id]
+          building_to_owners[biru.id] << tmp_owner
+
+        end
+      end
+
+    end
+
+    owners.uniq! if owners
+    trusts.uniq! if trusts
+    shops.uniq! if shops
+
+    return shops, owners, trusts, owner_to_buildings, building_to_owners
+
+  end
+
+  # 管理方式のIDに応じた色リストを作成する
+  def make_manage_line_list
+    arr = []
+    ManageType.all.each do |manage_type|
+      arr[manage_type.id] = manage_type.line_color
+    end
+
+    return arr
+  end
+  
+  # 建物インスタンスに物件種別・管理方式を設定する。
+  def set_biru_obj(buildings)
+    buildings.each do |biru|
+      
+      if biru.build_type
+        biru.tmp_build_type_icon = biru.build_type.icon
+      else
+        # biru.tmp_build_type_icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%e4%b8%8d|00FF00|000000'
+        biru.tmp_build_type_icon = view_context.image_path('marker_white.png')
+      end
+      
+      if biru.trusts
+        biru.trusts.each do |trust|
+          if trust.manage_type
+            biru.tmp_manage_type_icon = trust.manage_type.icon
+          end
+        end
+      end
+
+    end
+
+  end
+
 
 end

@@ -153,34 +153,7 @@ function getCoords(position) {
   }
 
 
-  // 管理委託契約と建物・貸主の紐付け（このように関数で呼び出すようにする必要がある）
-  function create_relation_listener(trust_ev, owner_ev, build_ev){
 
-    // 貸主マーカーにて委託契約ONのイベント
-    google.maps.event.addDomListener(owner_ev, "trust_on", function(){
-      trust_ev.set("visible", true);
-      build_ev.set("visible", true);
-    });
-
-    // 貸主マーカーにて委託契約OFFのイベント
-    google.maps.event.addDomListener(owner_ev, "trust_off", function(){
-      trust_ev.set("visible", false);
-      build_ev.set("visible", false);
-    });
-
-    // 建物マーカーにて委託契約ONのイベント
-    google.maps.event.addDomListener(build_ev, "trust_on", function(){
-      trust_ev.set("visible", true);
-      owner_ev.set("visible", true);
-    });
-
-    // 建物マーカーにて委託契約OFFのイベント
-    google.maps.event.addDomListener(build_ev, "trust_off", function(){
-      trust_ev.set("visible", false);
-      owner_ev.set("visible", false);
-    });
-
-  }
 
   // infoWindowで委託ライン有無を押下された時に動作します。(貸主)
   function owner_trust_disp(id, flg){
@@ -562,14 +535,6 @@ function getCoords(position) {
     return icon;
   }
 
-  // 変換用配列などを作成します。
-  function init_process(){
-
-    // 営業所IDを添字、営業所CODEを値に変換用配列を作成します。。
-    for(var i in gon.all_shops){
-      convert_shop[gon.all_shops[i].id] = parseInt(gon.all_shops[i].code);
-    }
-  }
 
   //-------------------
   // グローバル変数定義

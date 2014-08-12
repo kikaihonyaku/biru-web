@@ -80,6 +80,7 @@ BiruWeb::Application.routes.draw do
 
   get "managements/index", :as => :managements
   get "trust_managements/index", :as => :trust_managements
+  get "trust_managements/trust_user_report", :as => :trust_user_report
   
   get "building_rooms/index", :as =>:building_rooms
 

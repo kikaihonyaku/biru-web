@@ -1,0 +1,205 @@
+<% content_for :header do %>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
+<script type="text/javascript">
+
+
+
+//-------------------
+// グローバル変数定義
+//-------------------
+var convert_shop = [];
+  
+// 初期化処理
+function initialize(){
+	
+    // 表示用のmapCanvasを作成
+    var mapDiv = document.getElementById("map_canvas");
+    mapCanvas = new google.maps.Map(mapDiv, {
+		mapTypeControlOptions: {
+			mapTypeIds: [google.maps.MapTypeId.ROADMAP,'noText', 'map_style']
+		}
+		,scaleControl: true
+		,zoom: 19
+		,minZoom: 2
+    });
+	
+	// スタイル定義
+	var lopanType = new google.maps.StyledMapType(
+		[
+			{
+				featureType: 'all'
+			   ,elementType: 'labels'
+			   ,stylers: [{ visibility: 'off' }]
+			}
+		]
+		,{ name: '文字を消す' }
+	);
+	
+	mapCanvas.mapTypes.set('noText', lopanType);
+	
+	
+    // 営業所IDを添字、営業所CODEを値に変換用配列を作成します。
+    for(var i in gon.all_shops){
+      convert_shop[gon.all_shops[i].id] = parseInt(gon.all_shops[i].code);
+    }
+		
+    // 初期表示位置を調整
+    var bounds = new google.maps.LatLngBounds();
+
+    /* 建物オブジェクトを作成 */
+    build_arr = {}; // グローバル
+    kyori_text = ""
+    var pos;
+    var idx = 0;
+    var biru_latlngs = [];
+    var populations = [];
+
+    var building_to_owners = gon.building_to_owners
+    var buildings = gon.buildings
+    for(var i in buildings){
+        pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
+
+        <% if @search_type == 2 # 貸主の時、初期状態で非表示%>
+          var build_disp = false
+        <% else %>
+          var build_disp = true
+          bounds.extend(pos);
+        <% end %>
+
+        var shop_code = convert_shop[buildings[i].shop_id];
+
+        build_arr[buildings[i].id] = createMarker({
+          position : pos
+          ,map : mapCanvas
+          ,icon : buildings[i].tmp_build_type_icon
+          ,manage_icon : buildings[i].tmp_manage_type_icon
+          ,build_type_icon : buildings[i].tmp_build_type_icon
+          ,shadow : '/assets/marker_shadow.png'
+     //     ,html : info_msg_biru(buildings[i], building_to_owners[buildings[i].id])
+          ,visible : build_disp
+        });
+
+        /* 戸数別のヒートマップを作る為のオブジェクト */
+        populations.push({
+          location : pos
+          ,weight : buildings[i].room_num
+        })
+
+        biru_latlngs[idx] = pos;
+        idx = idx + 1;
+    }
+
+    /* 貸主オブジェクトを作成 */
+    owner_arr = {}; // varを外してグローバル化
+    var owners = gon.owners
+    var owner_to_buildings = gon.owner_to_buildings
+    var owner_icon;
+    var owner_disp;
+
+    for(var i in owners){
+      pos = new google.maps.LatLng(owners[i].latitude, owners[i].longitude);
+
+      <% if @search_type == 1 # 建物検索の時、初期状態で非表示%>
+        owner_disp = false
+      <% else %>
+        owner_disp = true
+        bounds.extend(pos);
+      <% end %>
+
+      // 貸主かどうかでアタックを決める。
+      if( owners[i].code == null){
+        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
+      } else {
+        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
+      }
+
+      owner_arr[owners[i].id] = createMarker({
+        position : pos
+        ,map : mapCanvas
+        ,icon : owner_icon
+      //  ,html : info_msg_owner(owners[i], owner_to_buildings[owners[i].id])
+        ,visible : owner_disp
+      });
+    }
+
+    /* 委託契約CDのラインを引く */
+    trust_arr = {}; // varを外してグローバル化
+    var trusts = gon.trusts
+    for(var i in trusts){
+
+      // 貸主マスタ・建物マスタに委託で指定した貸主CD・建物CDが存在することを確認
+      if ( !owner_arr[trusts[i].owner_id] ){
+          continue;
+      }
+
+      if ( !build_arr[trusts[i].building_id]){
+          continue;
+      }
+
+      trust_arr[trusts[i].id] = new google.maps.Polyline({
+         map : mapCanvas
+        ,path : [owner_arr[trusts[i].owner_id].position, build_arr[trusts[i].building_id].position]
+        ,strokeColor: gon.manage_line_color[trusts[i].manage_type_id]
+        ,strokeOpacity:0.5
+        ,strokeWeight:3
+        ,zIndex:1
+      });
+
+      // 初期状態は非表示
+      trust_arr[trusts[i].id].set("visible", false);
+
+      // ダブルクリック時のイベント登録
+      trust_ev = trust_arr[trusts[i].id]
+      owner_ev = owner_arr[trusts[i].owner_id]
+      build_ev = build_arr[trusts[i].building_id]
+
+      // クリックした時のオブジェクトを保存するために、イベントは関数呼び出しで登録する。
+      create_relation_listener(trust_ev, owner_ev, build_ev)
+    }
+
+    /* 営業所の情報を表示する */
+    shop_arr = {}; // varを消してグローバル化
+    shop_circle01_arr = {}; // varを消してグローバル化
+    shop_circle02_arr = {}; // varを消してグローバル化
+    var distination = new google.maps.MVCArray();
+    var distination_arr = [];
+
+    var shops = gon.shops
+    for(var i in shops){
+
+      pos = new google.maps.LatLng(shops[i].latitude, shops[i].longitude);
+      bounds.extend(pos);
+
+      shop_arr[shops[i].id] = createMarker({
+        position : pos
+        ,map : mapCanvas
+        ,animation: google.maps.Animation.DROP
+        ,icon : shops[i].icon
+        ,info_msg : shops[i].name
+//        ,html : info_msg_shop(shops[i])
+      });
+
+      /* 営業所の円を作成 */
+      shop_circle01_arr[shops[i].id] = create_circle(1000, mapCanvas, pos);
+      shop_circle02_arr[shops[i].id] = create_circle(2000, mapCanvas, pos);
+
+      /* 距離を測る対象を設定 */
+      distination.push({name:shops[i].name, latLng:[shops[i].latitude,shops[i].longitude]});
+      distination_arr.push(pos);
+    }
+
+    mapCanvas.fitBounds(bounds);
+
+}  // end initialize
+
+	
+google.maps.event.addDomListener(window, "load", initialize);
+
+</script>
+<% end %>
+<div style="padding:20px;">
+<%= @start_date %>
+<%= @end_date %>
+<div id="map_canvas" style="width: 800px;height:500px;border-color:blue"></div>
+test
+</div>

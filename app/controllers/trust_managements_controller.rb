@@ -5,7 +5,7 @@ require 'thinreports'
 
 class TrustManagementsController < ApplicationController
   
-  before_filter :search_init
+  before_filter :search_init, :except => ['trust_user_report']
     
   def index
         
@@ -83,8 +83,6 @@ class TrustManagementsController < ApplicationController
            r.page.values "name_%02d"%(lbl_num + 1) => owner.name + ' ' + if owner.honorific_title then owner.honorific_title  else '様' end 
            r.page.values "biru_%02d"%(lbl_num + 1) => '(株)中央ビル管理 ' + @biru_user.name
            
-           
-           
            # アプローチデータ登録
            if reg_flg
              owner_approach = OwnerApproach.new
@@ -105,12 +103,49 @@ class TrustManagementsController < ApplicationController
                                   :disposition => 'attachment'
     
     end
-      
-      
 
   end
-    
   
+  # 個人別のユーザーレポートを表示します
+  def trust_user_report
+    
+    # ランクがB以上のもの
+    # DMを送ったもの
+    # 訪問をしたもの
+    # TELアプローチしたもの
+    
+    month = ""
+    
+    if params[:monthly]
+      month = params[:monthly]
+    else
+      # 当月の月を出す。
+      if Date.today.day > 20
+        # 翌月
+        cur_date = Date.today.next_month
+      else
+        # 当月
+        cur_date = Date.today
+      end 
+      
+      month = "%04d%02d"%[cur_date.year.to_s, cur_date.month.to_s]
+    end
+    
+    @start_date = Date.parse(Date.parse(month + "01").prev_month.strftime("%Y%m")+"21")
+    @end_date = Date.parse(month + "20")
+    
+    # TODO:リンク時にユーザーを絞り込む
+    
+    # ランクが高い物件を表示
+    #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
+    
+    tmp_building = Building.joins(:trusts).where("buildings.code is null")
+    buildings_to_gon(tmp_building)
+    
+    @search_type = 1
+    
+  end  
+    
   def owner_show
     get_owner_show(params[:id].to_i)
   end
