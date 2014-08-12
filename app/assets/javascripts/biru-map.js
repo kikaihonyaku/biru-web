@@ -570,9 +570,12 @@ function createMarker(opts){
 
     marker.set("visible", true);
 
-    if(document.getElementById("panowide").style.display != "none"){
-      refresh_view(opts.position);
-    }
+	// ストリートビュー用の領域を定義している時のみ処理
+	if(document.getElementById("panowide") != null){
+	    if(document.getElementById("panowide").style.display != "none"){
+	      refresh_view(opts.position);
+	    }
+	}
 
   });
 
@@ -771,6 +774,178 @@ function screen_block(){
 	
 }
 
+// 建物のInfoBoxを登録する。
+function info_msg_biru(biru, owners){
+  var inner_text = "";
+  var vhtml;
+  var code_msg;
+
+  if(biru.code != null){
+    // 通常建物CDの時
+    code_msg = "建物CD：" + biru.code;
+  }else{
+    // 他社建物CDの時
+    code_msg = "他社建物CD：" + biru.attack_code;
+  }
+
+  for(var j in owners){
+    inner_text = inner_text +
+      '<li>' +
+      '  <a href="javascript:link_owner_click(' + owners[j].id + ',' + owners[j].latitude + ',' + owners[j].longitude + ')">' + owners[j].name + '</a></td>' +
+      '</li>'
+  }
+
+  vhtml = '<div><b>' + biru.name + '（<a href="javascript:win_building(' + biru.id + ');">詳細</a>）</b><br>' +
+    '<div>住所：' + biru.address +'</div>' +
+    '<div>' + code_msg +'</div>' +
+    '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
+    '<hr/>' +
+    '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
+    '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="building_trust_disp(' + biru.id  + ', this.checked);" />&nbsp;委託</label>' +
+    '</div>' +
+    '<div style="padding-left:10px;float:left;">' +
+    '  <a href="javascript:void(0)" onClick="changeZoom(' + biru.id + ', 1); return false;">ズーム</a>' +
+    '</div>' +
+    '<div style="padding-left:120px;">' +
+    '  <a href="javascript:void(0)" onClick="view_disp( true, ' + biru.latitude + ',' + biru.longitude  + '); return false;">View</a>' +
+    '</div>' +
+    '</div>';
+
+  return vhtml;
+
+}
+
+
+// 貸主のInfoBoxのメッセージを作成する。
+function info_msg_owner(owner, buildings){
+
+  var inner_text = "";
+  for(var j in buildings){
+    inner_text = inner_text +
+      '<li>' +
+      '  <a href="javascript:link_building_click(' + buildings[j].id + ',' + buildings[j].latitude + ',' + buildings[j].longitude + ')">' + buildings[j].name + '</a></td>' +
+      '</li>'
+  }
+
+  var code_msg;
+  if(owner.code != null){
+    // 通常建物CDの時
+    code_msg = "貸主CD：" + owner.code;
+  }else{
+    // 他社建物CDの時
+    code_msg = "他社貸主CD：" + owner.attack_code;
+  }
+
+  var vhtml = '<div><b>' + owner.name + '（<a href="javascript:win_owner(' + owner.id + ');">詳細</a>）</b><br>' +
+    '<div>住所：' + owner.address +'</div>' +
+    '<div>' + code_msg +'</div>' +
+    '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
+    '<hr/>' +
+    '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
+    '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="owner_trust_disp(' + owner.id  + ', this.checked);" />&nbsp;委託</label>' +
+    '</div>' +
+    '<div style="padding-left:10px;float:left;">' +
+    '  <a href="javascript:void(0)" onClick="changeZoom(' + owner.id  + ', 2); return false;">ズーム</a>' +
+    '</div>' +
+    '<div style="padding-left:120px;">' +
+    '  <a href="javascript:void(0)" onClick="view_disp( true, ' + owner.latitude + ',' + owner.longitude  + '); return false;">View</a>' +
+    '</div>' +
+    '</div>';
+
+  return vhtml;
+}
+
+
+
+
+
+// infoWindowで委託ライン有無を押下された時に動作します。(貸主)
+function owner_trust_disp(id, flg){
+  if(flg == true){
+   google.maps.event.trigger(owner_arr[id], "trust_on");
+  }else{
+   google.maps.event.trigger(owner_arr[id], "trust_off");
+  }
+}
+
+// infoWindowで委託ライン有無を押下された時に動作します。(建物)
+function building_trust_disp(id, flg){
+  if(flg == true){
+   google.maps.event.trigger(build_arr[id], "trust_on");
+  }else{
+   google.maps.event.trigger(build_arr[id], "trust_off");
+  }
+}
+
+// 建物リンクをクリックした時の動きを定義します。
+function link_building_click(num, lat, lng)
+{
+  mapCanvas.setZoom(18);
+  google.maps.event.trigger(build_arr[num], "click");
+}
+
+// 貸主リンクをクリックした時の動きを定義します。
+function link_owner_click(num, lat, lng)
+{
+  mapCanvas.setZoom(18);
+  google.maps.event.trigger(owner_arr[num], "click");
+}
+
+// 営業所リンクをクリックした時の動きを定義します。
+function link_shop_click(num)
+{
+  mapCanvas.setZoom(18);
+  google.maps.event.trigger(shop_arr[num], "click");
+}
+
+function sel_itaku_owner(obj, id){
+  obj_value = obj.options[obj.selectedIndex].value;
+  if(obj_value == "on"){
+    owner_trust_disp(id, true);
+  }else{
+    owner_trust_disp(id, false);
+  }
+}
+
+function sel_itaku_building(obj, id){
+  obj_value = obj.options[obj.selectedIndex].value;
+  if(obj_value == "on"){
+    building_trust_disp(id, true);
+  }else{
+    building_trust_disp(id, false);
+  }
+}
+
+function sel_view(obj, lat, lng){
+  obj_value = obj.options[obj.selectedIndex].value;
+  if(obj_value == "on"){
+    view_disp(true, lat, lng);
+  }else{
+    view_disp(false, lat, lng);
+  }
+}
+
+// 管理方式のICONを返します。
+function get_manage_icon(manage_id){
+  switch(manage_id){
+    case 1:
+      break;
+    default:
+      break;
+  }
+}
+
+// 営業所のInfoBoxを登録する。
+function info_msg_shop(shop){
+  var vhtml;
+
+  vhtml = '<div><b>' + shop.name + '</b></div>' +
+    '<div> TEL1：' + shop.tel +'</div>' +
+    '<div> TEL2：' + shop.tel2 +'</div>' +
+    '<div>定休日：' + shop.holiday +'</div>'
+
+  return vhtml;
+}
 
 /**
  *  ブラウザ名を取得

@@ -136,11 +136,54 @@ class TrustManagementsController < ApplicationController
     
     # TODO:リンク時にユーザーを絞り込む
     
-    # ランクが高い物件を表示
     #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
     
-    tmp_building = Building.joins(:trusts).where("buildings.code is null")
-    buildings_to_gon(tmp_building)
+    # ランクが高い物件を表示
+    buildings = []
+    Building.joins(:trusts => :attack_state).where("buildings.code is null").each do |biru|
+      
+      case biru.trusts[0].attack_state.code
+      when 'S'
+        biru.tmp_manage_type_icon = "S"
+        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000"
+        buildings << biru
+      when 'A'
+        
+        biru.tmp_manage_type_icon = "A"
+        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000"
+        buildings << biru
+        
+      when 'B'
+        biru.tmp_manage_type_icon = "B"
+        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000"
+        buildings << biru
+        
+      when 'C'
+        biru.tmp_manage_type_icon = "C"
+        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000"
+        buildings << biru
+      else
+        biru.tmp_manage_type_icon = "不明"
+        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=F|00FF00|000000"
+        buildings << biru
+      end
+    end
+    
+    @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(buildings)
+    @manage_line_color = make_manage_line_list
+    
+    # ランクが設定されている物件を表示
+    gon.rank_buildings = buildings
+    gon.rank_owners = @owners # 関連する貸主
+    gon.rank_trusts = @trusts # 関連する委託契約
+    gon.rank_shops = @shops    # 関連する営業所
+    gon.rank_owner_to_buildings = @owner_to_buildings # 建物と貸主をひもづける情報
+    gon.rank_building_to_owners = @building_to_owners
+    gon.rank_manage_line_color = @manage_line_color
+    
+    gon.all_shops = Shop.find(:all)
+    
+    
     
     @search_type = 1
     
