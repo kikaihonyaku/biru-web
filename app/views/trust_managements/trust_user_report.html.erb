@@ -4,7 +4,6 @@
 <script type="text/javascript">
 
 
-
 //-------------------
 // グローバル変数定義
 //-------------------
@@ -19,37 +18,75 @@ function initialize(){
     // 表示用のmapCanvasを作成
     var mapDiv = document.getElementById("map_canvas");
     mapCanvas = new google.maps.Map(mapDiv, {
-		mapTypeControlOptions: {
-			mapTypeIds: [google.maps.MapTypeId.ROADMAP,'noText', 'map_style']
-		}
-		,scaleControl: true
+		 scaleControl: true
 		,zoom: 19
 		,minZoom: 2
     });
 	
-	// スタイル定義
-	var lopanType = new google.maps.StyledMapType(
-		[
-			{
-				featureType: 'all'
-			   ,elementType: 'labels'
-			   ,stylers: [{ visibility: 'off' }]
-			}
-		]
-		,{ name: '文字を消す' }
-	);
-	
-	mapCanvas.mapTypes.set('noText', lopanType);
+    // 初期表示位置を調整
+    var bounds = new google.maps.LatLngBounds();
 	
 	
-    // 営業所IDを添字、営業所CODEを値に変換用配列を作成します。
+	/**********************************/
+	// 訪問リレキ・DMリレキ・TELリレキを表示
+	/**********************************/
+	// 訪問リレキ
+    visit_owner_arr = {}; // varを外してグローバル化
+    for(var i in gon.visit_owner){
+      pos = new google.maps.LatLng(gon.visit_owner[i].latitude, gon.visit_owner[i].longitude);
+      bounds.extend(pos);
+
+      visit_owner_arr[gon.visit_owner[i].id] = createMarker_trust_report({
+        position : pos
+        ,map : mapCanvas
+        ,icon : "/assets/marker_blue.png"
+        ,html : '<div style="font-size:5px;"><a href="javascript:win_owner(' + gon.visit_owner[i].id + ');">' + gon.visit_owner[i].name + '</a></div>'
+        ,visible : true
+	  　,draggable: true
+      }, false);
+    }
+
+	// DMリレキ
+    dm_owner_arr = {}; // varを外してグローバル化
+    for(var i in gon.dm_owner){
+      pos = new google.maps.LatLng(gon.dm_owner[i].latitude, gon.dm_owner[i].longitude);
+      bounds.extend(pos);
+
+      dm_owner_arr[gon.dm_owner[i].id] = createMarker_trust_report({
+        position : pos
+        ,map : mapCanvas
+        ,icon : "/assets/marker_green.png"
+        ,html : '<div style="font-size:5px;"><a href="javascript:win_owner(' + gon.dm_owner[i].id + ');">' + gon.dm_owner[i].name + '</a></div>'
+        ,visible : true
+	  　,draggable: true
+      }, false);
+    }
+
+	// TELリレキ
+    tel_owner_arr = {}; // varを外してグローバル化
+    for(var i in gon.tel_owner){
+      pos = new google.maps.LatLng(gon.tel_owner[i].latitude, gon.tel_owner[i].longitude);
+      bounds.extend(pos);
+
+      tel_owner_arr[gon.tel_owner[i].id] = createMarker_trust_report({
+        position : pos
+        ,map : mapCanvas
+        ,icon : "/assets/marker_orange.png"
+        ,html : '<div style="font-size:5px;"><a href="javascript:win_owner(' + gon.tel_owner[i].id + ');">' + gon.tel_owner[i].name + '</a></div>'
+        ,visible : true
+	  　,draggable: true
+      }, false);
+    }
+
+	/******************************/
+	// 見込みランクの高いものを表示
+	/******************************/
+
+    /* 営業所IDを添字、営業所CODEを値に変換用配列を作成します。 */
     for(var i in gon.all_shops){
       convert_shop[gon.all_shops[i].id] = parseInt(gon.all_shops[i].code);
     }
-		
-    // 初期表示位置を調整
-    var bounds = new google.maps.LatLngBounds();
-
+	
     /* 建物オブジェクトを作成 */
     build_arr = {}; // グローバル
     kyori_text = ""
@@ -227,6 +264,7 @@ function info_msg_biru_trust_report(biru, owners){
 
 }
 
+
 function createMarker_trust_report(opts, open_flg){
   var marker = new google.maps.Marker(opts);
 
@@ -256,8 +294,65 @@ function createMarker_trust_report(opts, open_flg){
 </script>
 <% end %>
 <div style="padding:20px;">
-<%= @start_date %>
-<%= @end_date %>
-<div id="map_canvas" style="width: 800px;height:500px;border-color:blue"></div>
-test
+	<div style="border-width:3px; border-style:solid; border-color:silver;width:800px;float:left;">
+		<div id="map_canvas" style="width:100%;height:600px;border-color:blue"></div>
+	</div>
+	
+	<div style="float:left;margin-left:20px;">
+		<div>２０１４年８月</div>
+		<table class="table table-bordered" style="width:500px;">
+			<thead>
+				<tr class="active">
+					<td style="font-weight:bold"></td>
+					<td style="font-weight:bold">計画</td>
+					<td style="font-weight:bold">実績</td>
+					<td style="font-weight:bold">達成率</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td style="text-align:right;">訪問</td>
+					<td>500</td>
+					<td>100</td>
+					<td>5.1%</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;">ＤＭ</td>
+					<td>500</td>
+					<td>100</td>
+					<td>5.1%</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;">ＴＥＬ</td>
+					<td>500</td>
+					<td>100</td>
+					<td>5.1%</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div style="clear:both;padding-top:20px;">
+		
+		<table class="table table-bordered" style="width:800px;">
+			<thead>
+				<tr class="active">
+					<td style="font-weight:bold">見込ランク</td>
+					<td style="font-weight:bold">建物</td>
+					<td style="font-weight:bold">貸主</td>
+					<td style="font-weight:bold">メモ</td>
+				</tr>
+			</thead>
+			<tbody>
+				<% @buildings.each do |biru| %>
+				<tr>
+					<td><%= biru.trusts[0].attack_state.code %></td>
+					<td><%= biru.name %></td>
+					<td><%= biru.trusts[0].owner.name %></td>
+					<td><%= biru.memo %></td>
+				</tr>
+				<% end %>
+			</tbody>
+		</table>
+	</div>
 </div>
+

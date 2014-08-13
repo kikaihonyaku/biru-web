@@ -482,7 +482,7 @@ def init_approach_kind
   arr.push({:name=>'訪問(留守)', :code=>'0020'} )
   arr.push({:name=>'ＤＭ', :code=>'0030'} )
   arr.push({:name=>'電話', :code=>'0040'} )
-  arr.push({:name=>'その他', :code=>'0050'} )
+  arr.push({:name=>'メモ', :code=>'0050'} )
   
   arr.each do |obj|
     app =  ApproachKind.find_or_create_by_code(obj[:code])

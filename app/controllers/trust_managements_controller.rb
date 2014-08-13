@@ -56,7 +56,6 @@ class TrustManagementsController < ApplicationController
       owner_id_arr.push(trust.owner_id)
     end
     
-    
     # 出力対象が１つもないときはエラー
     if owner_id_arr.length == 0
       flash[:notice] = '印刷対象のチェックボックスをチェックしてください。'
@@ -134,46 +133,73 @@ class TrustManagementsController < ApplicationController
     @start_date = Date.parse(Date.parse(month + "01").prev_month.strftime("%Y%m")+"21")
     @end_date = Date.parse(month + "20")
     
-    # TODO:リンク時にユーザーを絞り込む
     
-    #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
+    #####################################
+    # 当月にアプローチした貸主を表示    # TODO:リンク時にユーザーを絞り込む
+    #####################################
+    # 訪問オーナー
+    visit_owner = []
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
+      tmp = Owner.find(rec.owner_id)
+      visit_owner << tmp if tmp
+    end
+    gon.visit_owner = visit_owner
+
+    # DMアプローチオーナー
+    dm_owner = []
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
+      tmp = Owner.find(rec.owner_id)
+      dm_owner << tmp if tmp
+    end
+    gon.dm_owner = dm_owner
+
+    # TELアプローチオーナー
+    tel_owner = []
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
+      tmp = Owner.find(rec.owner_id)
+      tel_owner << tmp if tmp
+    end
+    gon.tel_owner = tel_owner
+
     
-    # ランクが高い物件を表示
-    buildings = []
-    Building.joins(:trusts => :attack_state).where("buildings.code is null").each do |biru|
+    #####################################
+    # 見込みランクが高い物件を表示    # TODO:リンク時にユーザーを絞り込む
+    #####################################
+    @buildings = []
+    Building.joins(:trusts => :attack_state).where("buildings.code is null").where("trusts.biru_user_id = ?", @biru_user.id).order("attack_states.disp_order").each do |biru|
       
       case biru.trusts[0].attack_state.code
       when 'S'
         biru.tmp_manage_type_icon = "S"
         biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000"
-        buildings << biru
+        @buildings << biru
       when 'A'
         
         biru.tmp_manage_type_icon = "A"
         biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000"
-        buildings << biru
+        @buildings << biru
         
       when 'B'
         biru.tmp_manage_type_icon = "B"
         biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000"
-        buildings << biru
+        @buildings << biru
         
       when 'C'
         biru.tmp_manage_type_icon = "C"
         biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000"
-        buildings << biru
+        @buildings << biru
       else
         biru.tmp_manage_type_icon = "不明"
         biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=F|00FF00|000000"
-        buildings << biru
+        @buildings << biru
       end
     end
     
-    @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(buildings)
+    @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(@buildings)
     @manage_line_color = make_manage_line_list
     
     # ランクが設定されている物件を表示
-    gon.rank_buildings = buildings
+    gon.rank_buildings = @buildings
     gon.rank_owners = @owners # 関連する貸主
     gon.rank_trusts = @trusts # 関連する委託契約
     gon.rank_shops = @shops    # 関連する営業所
@@ -182,9 +208,6 @@ class TrustManagementsController < ApplicationController
     gon.rank_manage_line_color = @manage_line_color
     
     gon.all_shops = Shop.find(:all)
-    
-    
-    
     @search_type = 1
     
   end  
@@ -317,7 +340,7 @@ def get_trust_data()
   # DMリレキのチェック
   unless @history_dm[:all]
     
-    # 訪問リレキで「すべて」以外が選択されているとき
+    # DMリレキで「すべて」以外が選択されているとき
     approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", Date.parse(@history_dm_from), Date.parse(@history_dm_to))
     
     if @history_dm[:exist]
