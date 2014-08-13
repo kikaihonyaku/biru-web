@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140813043749) do
+ActiveRecord::Schema.define(:version => 20140813093256) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -24,6 +24,16 @@ ActiveRecord::Schema.define(:version => 20140813043749) do
     t.integer  "disp_order"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "biru_user_monthlies", :force => true do |t|
+    t.integer  "biru_user_id"
+    t.string   "month"
+    t.integer  "trust_plan_visit"
+    t.integer  "trust_plan_dm"
+    t.integer  "trust_plan_tel"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
   end
 
   create_table "biru_users", :force => true do |t|

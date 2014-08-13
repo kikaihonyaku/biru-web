@@ -206,7 +206,7 @@ function tack_out_go(){
 		g.action_column 
 
 
-		g.column name: '主担当者' , attribute: 'name', model: 'BiruUser' , :html =>{ :style => 'width:300x;'}, custom_filter: @trust_data.uniq.pluck("biru_users.name").map{|pr| [pr, pr]} do |obj| link_to(obj.biru_user.name, trust_user_report_path) if obj.biru_user end
+		g.column name: '主担当者' , attribute: 'name', model: 'BiruUser' , :html =>{ :style => 'width:300x;'}, custom_filter: @trust_data.uniq.pluck("biru_users.name").map{|pr| [pr, pr]} do |obj| link_to(obj.biru_user.name, trust_user_report_path + '?sid=' + obj.biru_user.id.to_s ) if obj.biru_user end
 		g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
 		# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
 		g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj|

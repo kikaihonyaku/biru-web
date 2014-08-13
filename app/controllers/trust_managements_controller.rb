@@ -113,10 +113,10 @@ class TrustManagementsController < ApplicationController
     # 訪問をしたもの
     # TELアプローチしたもの
     
-    month = ""
+    @month = ""
     
     if params[:monthly]
-      month = params[:monthly]
+      @month = params[:monthly]
     else
       # 当月の月を出す。
       if Date.today.day > 20
@@ -127,19 +127,31 @@ class TrustManagementsController < ApplicationController
         cur_date = Date.today
       end 
       
-      month = "%04d%02d"%[cur_date.year.to_s, cur_date.month.to_s]
+      @month = "%04d%02d"%[cur_date.year.to_s, cur_date.month.to_s]
     end
     
-    @start_date = Date.parse(Date.parse(month + "01").prev_month.strftime("%Y%m")+"21")
-    @end_date = Date.parse(month + "20")
+    # ユーザー取得
+    biru_trust_user = BiruUser.find(params[:sid])
+    
+    @biru_user_monthly = BiruUserMonthly.find_by_biru_user_id_and_month(biru_trust_user.id, @month)
+    unless @biru_user_monthly
+      @biru_user_monthly = BiruUserMonthly.new
+    end
+    
+    @biru_user_monthly.biru_user_id = biru_trust_user.id
+    @biru_user_monthly.month = @month
+    
+    
+    @start_date = Date.parse(Date.parse(@month + "01").prev_month.strftime("%Y%m")+"21")
+    @end_date = Date.parse(@month + "20")
     
     
     #####################################
-    # 当月にアプローチした貸主を表示    # TODO:リンク時にユーザーを絞り込む
+    # 当月にアプローチした貸主を表示    
     #####################################
     # 訪問オーナー
     visit_owner = []
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
       tmp = Owner.find(rec.owner_id)
       visit_owner << tmp if tmp
     end
@@ -147,7 +159,7 @@ class TrustManagementsController < ApplicationController
 
     # DMアプローチオーナー
     dm_owner = []
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
       tmp = Owner.find(rec.owner_id)
       dm_owner << tmp if tmp
     end
@@ -155,7 +167,7 @@ class TrustManagementsController < ApplicationController
 
     # TELアプローチオーナー
     tel_owner = []
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
       tmp = Owner.find(rec.owner_id)
       tel_owner << tmp if tmp
     end
@@ -163,10 +175,10 @@ class TrustManagementsController < ApplicationController
 
     
     #####################################
-    # 見込みランクが高い物件を表示    # TODO:リンク時にユーザーを絞り込む
+    # 見込みランクが高い物件を表示   
     #####################################
     @buildings = []
-    Building.joins(:trusts => :attack_state).where("buildings.code is null").where("trusts.biru_user_id = ?", @biru_user.id).order("attack_states.disp_order").each do |biru|
+    Building.joins(:trusts => :attack_state).where("buildings.code is null").where("trusts.biru_user_id = ?", biru_trust_user.id).order("attack_states.disp_order").each do |biru|
       
       case biru.trusts[0].attack_state.code
       when 'S'
@@ -211,6 +223,19 @@ class TrustManagementsController < ApplicationController
     @search_type = 1
     
   end  
+  
+  def biru_user_trust_update
+    
+    if params[:biru_user_monthly][:id] == ""
+      @biru_user_monthly = BiruUserMonthly.new
+    else
+      @biru_user_monthly = BiruUserMonthly.find(params[:biru_user_monthly][:id])
+    end
+    
+    @biru_user_monthly.update_attributes(params[:biru_user_monthly])
+    redirect_to :action=>'trust_user_report', :sid => @biru_user_monthly.biru_user_id, :month=> @biru_user_monthly.month
+      
+  end
     
   def owner_show
     get_owner_show(params[:id].to_i)

@@ -299,7 +299,7 @@ function createMarker_trust_report(opts, open_flg){
 	</div>
 	
 	<div style="float:left;margin-left:20px;">
-		<div>２０１４年８月</div>
+		<div>２０１４年８月（<a data-toggle="modal" href="#myModal"  >編集</a>）</div>
 		<table class="table table-bordered" style="width:500px;">
 			<thead>
 				<tr class="active">
@@ -312,19 +312,19 @@ function createMarker_trust_report(opts, open_flg){
 			<tbody>
 				<tr>
 					<td style="text-align:right;">訪問</td>
-					<td>500</td>
+					<td><%= if @biru_user_monthly.trust_plan_visit then @biru_user_monthly.trust_plan_visit else '-' end %></td>
 					<td>100</td>
 					<td>5.1%</td>
 				</tr>
 				<tr>
 					<td style="text-align:right;">ＤＭ</td>
-					<td>500</td>
+					<td><%= if @biru_user_monthly.trust_plan_dm then @biru_user_monthly.trust_plan_dm else '-' end %></td>
 					<td>100</td>
 					<td>5.1%</td>
 				</tr>
 				<tr>
 					<td style="text-align:right;">ＴＥＬ</td>
-					<td>500</td>
+					<td><%= if @biru_user_monthly.trust_plan_tel then @biru_user_monthly.trust_plan_tel else '-' end %></td>
 					<td>100</td>
 					<td>5.1%</td>
 				</tr>
@@ -355,4 +355,38 @@ function createMarker_trust_report(opts, open_flg){
 		</table>
 	</div>
 </div>
+
+<!-- モーダルダイアログ -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+	<%= simple_form_for :biru_user_monthly, :url=>{:action => :biru_user_trust_update } do |f| %>
+		
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel"><%= @month[0,4] + "年" + @month[4,2] + "月の計画編集" %></h4>
+      </div>
+	  
+      <div class="modal-body">
+		  	
+			<%= f.input :id, :as => :hidden, :input_html => {:value => @biru_user_monthly.id } %>
+			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user_monthly.biru_user_id } %>
+			<%= f.input :month, :as => :hidden, :input_html => {:value => @month} %>
+			
+		  	<%= f.input :trust_plan_visit %>
+
+			<%#= f.input :id, :as => :hidden, :input_html => {:value => @trust.id } %>
+			<%#= f.input :attack_state_id, collection: AttackState.all %>
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+        <%= f.submit '登録', :class => 'btn btn-primary' %>
+      </div>
+	<% end %>
+	  
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 

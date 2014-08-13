@@ -1,4 +1,7 @@
 BiruWeb::Application.routes.draw do
+  resources :biru_user_monthlies
+
+
   get "building_rooms/index"
 
   resources :biru_users

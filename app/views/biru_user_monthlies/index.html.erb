@@ -1,0 +1,21 @@
+<h1>Listing biru_user_monthlies</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @biru_user_monthlies.each do |biru_user_monthly| %>
+  <tr>
+    <td><%= link_to 'Show', biru_user_monthly %></td>
+    <td><%= link_to 'Edit', edit_biru_user_monthly_path(biru_user_monthly) %></td>
+    <td><%= link_to 'Destroy', biru_user_monthly, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Biru user monthly', new_biru_user_monthly_path %>

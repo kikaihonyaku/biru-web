@@ -1,0 +1,2 @@
+module BiruUserMonthliesHelper
+end
