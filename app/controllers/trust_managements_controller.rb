@@ -113,8 +113,8 @@ class TrustManagementsController < ApplicationController
     # 訪問をしたもの
     # TELアプローチしたもの
     
+    # 対象の期間を取得
     @month = ""
-    
     if params[:monthly]
       @month = params[:monthly]
     else
@@ -132,6 +132,12 @@ class TrustManagementsController < ApplicationController
     
     # ユーザー取得
     biru_trust_user = BiruUser.find(params[:sid])
+    
+    # この個人レポート画面へのアクセスはログインユーザーと同じか、全員参照権限を持ったユーザーのみ。それ以外はエラーページへリダイレクトする
+    unless check_report_auth(@biru_user, biru_trust_user)
+      flash[:notice] = biru_trust_user.name + 'さんの受託月報ページへアクセスできるのは、ログインユーザー当人か権限をもったユーザーのみです'
+      redirect_to :controller=>'pages', :action=>'error_page'
+    end
     
     @biru_user_monthly = BiruUserMonthly.find_by_biru_user_id_and_month(biru_trust_user.id, @month)
     unless @biru_user_monthly
@@ -418,6 +424,7 @@ def get_trust_data()
   trust_data
 end
 
+
 # 検索条件を初期化します。
 def search_init
   
@@ -582,6 +589,16 @@ def search_init
     
   end
   
+end
+
+# trust_user_report画面を開くにあたって、アクセス者がログインユーザー当人もしくは権限ユーザーかチェックする
+def check_report_auth(login_user, access_user)
+  
+  return true if login_user.id == access_user.id
+  
+  return true if login_user.attack_all_search == true
+  
+  return false
 end
 
 end
