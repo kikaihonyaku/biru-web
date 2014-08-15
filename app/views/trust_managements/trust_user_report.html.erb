@@ -1,5 +1,12 @@
 <% content_for :header do %>
-
+  <style type="text/css">
+	
+	a{
+	  text-decoration:underline;	
+	}
+	
+  </style>
+  
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
 <script type="text/javascript">
 
@@ -293,49 +300,96 @@ function createMarker_trust_report(opts, open_flg){
 
 </script>
 <% end %>
-<div style="padding:20px;">
-	<div style="border-width:3px; border-style:solid; border-color:silver;width:800px;float:left;">
-		<div id="map_canvas" style="width:100%;height:600px;border-color:blue"></div>
+<div style="padding-left:20px;">
+	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:180px;"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %></span></h3>
+	<div style="border-width:3px; border-style:solid; border-color:silver;width:800px;float:left;margin-right:20px;">
+		<div id="map_canvas" style="width:100%;height:500px;border-color:blue"></div>
 	</div>
 	
-	<div style="float:left;margin-left:20px;">
-		<div>２０１４年８月（<a data-toggle="modal" href="#myModal"  >編集</a>）</div>
+	<div style="float:left;margin-bottom:20px;margin-right:20px;">
+		<h4>今月度の行動</h4>
 		<table class="table table-bordered" style="width:500px;">
 			<thead>
 				<tr class="active">
 					<td style="font-weight:bold"></td>
-					<td style="font-weight:bold">計画</td>
-					<td style="font-weight:bold">実績</td>
-					<td style="font-weight:bold">達成率</td>
+					<td style="font-weight:bold;text-align:center">種別</td>
+					<td style="font-weight:bold;text-align:center">計画</td>
+					<td style="font-weight:bold;text-align:center">実績</td>
+					<td style="font-weight:bold;text-align:center">達成率</td>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td style="text-align:right;">訪問</td>
-					<td><%= if @biru_user_monthly.trust_plan_visit then @biru_user_monthly.trust_plan_visit else '-' end %></td>
-					<td>100</td>
-					<td>5.1%</td>
+					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:center;">訪問</td>
+					<td style="text-align:center;"><%= if @biru_user_monthly.trust_plan_visit then @biru_user_monthly.trust_plan_visit else '-' end %></td>
+					<td style="text-align:center;"><%= @visit_num %></td>
+					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_visit, @visit_num) %></td>
 				</tr>
 				<tr>
-					<td style="text-align:right;">ＤＭ</td>
-					<td><%= if @biru_user_monthly.trust_plan_dm then @biru_user_monthly.trust_plan_dm else '-' end %></td>
-					<td>100</td>
-					<td>5.1%</td>
+					<td style="text-align:center;"><%= image_tag('marker_green.png') %></td>
+					<td style="text-align:center;">ＤＭ</td>
+					<td style="text-align:center;"><%= if @biru_user_monthly.trust_plan_dm then @biru_user_monthly.trust_plan_dm else '-' end %></td>
+					<td style="text-align:center;"><%= @dm_num %></td>
+					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_dm, @dm_num) %></td>
 				</tr>
 				<tr>
-					<td style="text-align:right;">ＴＥＬ</td>
-					<td><%= if @biru_user_monthly.trust_plan_tel then @biru_user_monthly.trust_plan_tel else '-' end %></td>
-					<td>100</td>
-					<td>5.1%</td>
+					<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
+					<td style="text-align:center;">ＴＥＬ</td>
+					<td style="text-align:center;"><%= if @biru_user_monthly.trust_plan_tel then @biru_user_monthly.trust_plan_tel else '-' end %></td>
+					<td style="text-align:center;"><%= @tel_num %></td>
+					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_tel, @tel_num) %></td>
+				</tr>
+				<tr>
+					<td style="text-align:center;">ー</td>
+					<td style="text-align:center;">受託（他社）</td>
+					<td style="text-align:center;">-</td>
+					<td style="text-align:center;">-</td>
+					<td style="text-align:center;">-</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
+	
+
+	<div style="float:left;">
+		<h4>翌月度の計画（<a data-toggle="modal" href="#myModal"  >編集</a>）</h4>
+		<table class="table table-bordered" style="width:270px;">
+			<thead>
+				<tr class="active">
+					<td style="font-weight:bold;text-align:center">種別</td>
+					<td style="font-weight:bold;text-align:center">計画</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td style="text-align:center;">訪問</td>
+					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_visit then @biru_user_monthly_next.trust_plan_visit else '-' end %></td>
+				</tr>
+				<tr>
+					<td style="text-align:center;">ＤＭ</td>
+					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_dm then @biru_user_monthly_next.trust_plan_dm else '-' end %></td>
+				</tr>
+				<tr>
+					<td style="text-align:center;">ＴＥＬ</td>
+					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_tel then @biru_user_monthly_next.trust_plan_tel else '-' end %></td>
+				</tr>
+				<tr>
+					<td style="text-align:center;">受託（他社）</td>
+					<td style="text-align:center;">-</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	
+	
 	<div style="clear:both;padding-top:20px;">
 		
 		<table class="table table-bordered" style="width:800px;">
 			<thead>
 				<tr class="active">
+					<td style="font-weight:bold"></td>
 					<td style="font-weight:bold">見込ランク</td>
 					<td style="font-weight:bold">建物</td>
 					<td style="font-weight:bold">貸主</td>
@@ -345,9 +399,10 @@ function createMarker_trust_report(opts, open_flg){
 			<tbody>
 				<% @buildings.each do |biru| %>
 				<tr>
-					<td><%= biru.trusts[0].attack_state.code %></td>
-					<td><%= biru.name %></td>
-					<td><%= biru.trusts[0].owner.name %></td>
+					<td style="text-align:center"><%= image_tag(biru.trusts[0].attack_state.icon, :size=>"18x25") %></td>
+					<td><%= biru.trusts[0].attack_state.name %></td>
+					<td><%= raw("<a href=""javascript:win_building(" + biru.id.to_s + ");"">" + biru.name + "</a>") %></td>
+					<td><%= raw("<a href=""javascript:win_owner(" + biru.trusts[0].owner.id.to_s + ");"">" + biru.trusts[0].owner.name + "</a>") %></td>
 					<td><%= biru.memo %></td>
 				</tr>
 				<% end %>
@@ -360,20 +415,22 @@ function createMarker_trust_report(opts, open_flg){
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-	<%= simple_form_for :biru_user_monthly, :url=>{:action => :biru_user_trust_update } do |f| %>
+	<%= simple_form_for @biru_user_monthly_next, :url=>{:action => :biru_user_trust_update } do |f| %>
 		
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title" id="myModalLabel"><%= @month[0,4] + "年" + @month[4,2] + "月の計画編集" %></h4>
+        <h4 class="modal-title" id="myModalLabel"><%= @month_next[0,4] + "年" + @month_next[4,2] + "月の計画編集" %></h4>
       </div>
 	  
       <div class="modal-body">
 		  	
-			<%= f.input :id, :as => :hidden, :input_html => {:value => @biru_user_monthly.id } %>
+			<%= f.input :id, :as => :hidden, :input_html => {:value => @biru_user_monthly_next.id } %>
 			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user_monthly.biru_user_id } %>
-			<%= f.input :month, :as => :hidden, :input_html => {:value => @month} %>
+			<%= f.input :month, :as => :hidden, :input_html => {:value => @month_next} %>
 			
-		  	<%= f.input :trust_plan_visit %>
+		  	<%= f.input :trust_plan_visit, :label=>'訪問件数' %>
+		  	<%= f.input :trust_plan_dm, :label=>'ＤＭ発送件数' %>
+		  	<%= f.input :trust_plan_tel, :label=>'電話アプローチ件数' %>
 
 			<%#= f.input :id, :as => :hidden, :input_html => {:value => @trust.id } %>
 			<%#= f.input :attack_state_id, collection: AttackState.all %>

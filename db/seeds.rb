@@ -497,20 +497,21 @@ end
 # アタックステータス
 def init_attack_state
   arr = []
-  arr.push({:code=>'S', :name=>'S:見込みあり',:order=>'1'})
-  arr.push({:code=>'A', :name=>'A:見込みあり',:order=>'2'})
-  arr.push({:code=>'B', :name=>'B:見込みあり',:order=>'3'})
-  arr.push({:code=>'C', :name=>'C:見込みあり',:order=>'4'})
-  arr.push({:code=>'D', :name=>'D:見込みあり',:order=>'5'})
-  arr.push({:code=>'X', :name=>'X:不明',:order=>'6'})
-  arr.push({:code=>'Y', :name=>'Y:不成立',:order=>'7'})
-  arr.push({:code=>'Z', :name=>'Z:成約済',:order=>'8'})
+  arr.push({:code=>'S', :name=>'S:見込みあり',:disp_order=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
+  arr.push({:code=>'A', :name=>'A:見込みあり',:disp_order=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
+  arr.push({:code=>'B', :name=>'B:見込みあり',:disp_order=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
+  arr.push({:code=>'C', :name=>'C:見込みあり',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
+  arr.push({:code=>'D', :name=>'D:見込みあり',:disp_order=>'5', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
+  arr.push({:code=>'X', :name=>'X:不明',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
+  arr.push({:code=>'Y', :name=>'Y:不成立',:disp_order=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
+  arr.push({:code=>'Z', :name=>'Z:成約済',:disp_order=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
 
   arr.each do |obj|
     attack_state = AttackState.find_or_create_by_code(obj[:code])
     attack_state.code = obj[:code]
     attack_state.name = obj[:name]
-    attack_state.order = obj[:order]
+    attack_state.disp_order = obj[:disp_order]
+    attack_state.icon = obj[:icon]
     attack_state.save!
     p attack_state
   end
@@ -2429,10 +2430,10 @@ end
 #init_room_layout
 
 # アプローチ種別登録
-#init_approach_kind
+init_approach_kind
 
 # アタックステータス登録
-#init_attack_state
+init_attack_state
 
 # システムアップデート管理
 init_data_update

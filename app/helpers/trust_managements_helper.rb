@@ -19,4 +19,22 @@ private
    # 変換対象
    REPLACE_KEYS = /[#{CONVERSIONS.keys.join}]/
    
+
+
+   # 達成率を表示します
+   def disp_growth_rate(plan, result)
+     
+     # planがnullの時、「-」
+     return '-' unless plan
+
+     # planが0の時、「-」
+     return '-' if plan == 0
+     
+     # resultが0の時
+     return '0%' if result == 0
+     
+     # それ以外
+     return "%10.2f"%(result.to_f / plan.to_f * 100.to_f ) + "%"
+     
+   end
 end

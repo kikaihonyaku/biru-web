@@ -115,8 +115,8 @@ class TrustManagementsController < ApplicationController
     
     # 対象の期間を取得
     @month = ""
-    if params[:monthly]
-      @month = params[:monthly]
+    if params[:month]
+      @month = params[:month]
     else
       # 当月の月を出す。
       if Date.today.day > 20
@@ -130,26 +130,42 @@ class TrustManagementsController < ApplicationController
       @month = "%04d%02d"%[cur_date.year.to_s, cur_date.month.to_s]
     end
     
-    # ユーザー取得
-    biru_trust_user = BiruUser.find(params[:sid])
+    # 来月度を取得
+    tmp_month =Date.parse(@month + "01", "YYYYMMDD").next_month
+    @month_next = "%04d%02d"%[tmp_month.year, tmp_month.month]
+    
+    # 前月度を取得
+    tmp_month =Date.parse(@month + "01", "YYYYMMDD").prev_month
+    @month_prev = "%04d%02d"%[tmp_month.year, tmp_month.month]
+    
+    # 今月の集計期間を取得
+    @start_date = Date.parse(Date.parse(@month + "01").prev_month.strftime("%Y%m")+"21")
+    @end_date = Date.parse(@month + "20")
+    
+    # ユーザー情報取得
+    @biru_trust_user = BiruUser.find(params[:sid])
     
     # この個人レポート画面へのアクセスはログインユーザーと同じか、全員参照権限を持ったユーザーのみ。それ以外はエラーページへリダイレクトする
-    unless check_report_auth(@biru_user, biru_trust_user)
-      flash[:notice] = biru_trust_user.name + 'さんの受託月報ページへアクセスできるのは、ログインユーザー当人か権限をもったユーザーのみです'
+    unless check_report_auth(@biru_user, @biru_trust_user)
+      flash[:notice] = @biru_trust_user.name + 'さんの受託月報ページへアクセスできるのは、ログインユーザー当人か権限をもったユーザーのみです'
       redirect_to :controller=>'pages', :action=>'error_page'
     end
     
-    @biru_user_monthly = BiruUserMonthly.find_by_biru_user_id_and_month(biru_trust_user.id, @month)
+    # 当月の計画・実績データを取得
+    @biru_user_monthly = BiruUserMonthly.find_by_biru_user_id_and_month(@biru_trust_user.id, @month)
     unless @biru_user_monthly
       @biru_user_monthly = BiruUserMonthly.new
     end
-    
-    @biru_user_monthly.biru_user_id = biru_trust_user.id
+    @biru_user_monthly.biru_user_id = @biru_trust_user.id
     @biru_user_monthly.month = @month
     
-    
-    @start_date = Date.parse(Date.parse(@month + "01").prev_month.strftime("%Y%m")+"21")
-    @end_date = Date.parse(@month + "20")
+    # 来月の計画・実績データを取得
+    @biru_user_monthly_next = BiruUserMonthly.find_by_biru_user_id_and_month(@biru_trust_user.id, @month_next)
+    unless @biru_user_monthly_next
+      @biru_user_monthly_next = BiruUserMonthly.new
+    end
+    @biru_user_monthly_next.biru_user_id = @biru_trust_user.id
+    @biru_user_monthly_next.month = @month_next
     
     
     #####################################
@@ -157,25 +173,31 @@ class TrustManagementsController < ApplicationController
     #####################################
     # 訪問オーナー
     visit_owner = []
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
+    @visit_num = 0
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
       tmp = Owner.find(rec.owner_id)
       visit_owner << tmp if tmp
+      @visit_num = @visit_num + 1
     end
     gon.visit_owner = visit_owner
 
     # DMアプローチオーナー
     dm_owner = []
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
+    @dm_num = 0
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
       tmp = Owner.find(rec.owner_id)
       dm_owner << tmp if tmp
+      @dm_num = @dm_num + 1
     end
     gon.dm_owner = dm_owner
 
     # TELアプローチオーナー
     tel_owner = []
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
+    @tel_num = 0
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
       tmp = Owner.find(rec.owner_id)
       tel_owner << tmp if tmp
+      @tel_num = @tel_num + 1
     end
     gon.tel_owner = tel_owner
 
@@ -184,32 +206,16 @@ class TrustManagementsController < ApplicationController
     # 見込みランクが高い物件を表示   
     #####################################
     @buildings = []
-    Building.joins(:trusts => :attack_state).where("buildings.code is null").where("trusts.biru_user_id = ?", biru_trust_user.id).order("attack_states.disp_order").each do |biru|
+    Building.joins(:trusts => :attack_state).where("buildings.code is null").where("trusts.biru_user_id = ?", @biru_trust_user.id).order("attack_states.disp_order").each do |biru|
       
       case biru.trusts[0].attack_state.code
-      when 'S'
-        biru.tmp_manage_type_icon = "S"
-        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000"
-        @buildings << biru
-      when 'A'
-        
-        biru.tmp_manage_type_icon = "A"
-        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000"
-        @buildings << biru
-        
-      when 'B'
-        biru.tmp_manage_type_icon = "B"
-        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000"
-        @buildings << biru
-        
-      when 'C'
-        biru.tmp_manage_type_icon = "C"
-        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000"
+      when 'S', 'A', 'B'
+        biru.tmp_manage_type_icon = biru.trusts[0].attack_state.code
+        biru.tmp_build_type_icon = biru.trusts[0].attack_state.icon
+        p biru.tmp_build_type_icon
         @buildings << biru
       else
-        biru.tmp_manage_type_icon = "不明"
-        biru.tmp_build_type_icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=F|00FF00|000000"
-        @buildings << biru
+        # 表示対象の見込みランク以外は表示しない
       end
     end
     
@@ -239,7 +245,10 @@ class TrustManagementsController < ApplicationController
     end
     
     @biru_user_monthly.update_attributes(params[:biru_user_monthly])
-    redirect_to :action=>'trust_user_report', :sid => @biru_user_monthly.biru_user_id, :month=> @biru_user_monthly.month
+    
+    # 戻る月は前月なので、１ヶ月戻す
+    prev_month = Date.parse(@biru_user_monthly.month + '01', "YYYYMMDD").prev_month.strftime("%Y%m")
+    redirect_to :action=>'trust_user_report', :sid => @biru_user_monthly.biru_user_id, :month=> prev_month
       
   end
     
