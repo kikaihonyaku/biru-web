@@ -3,7 +3,7 @@
 require 'csv'
 require 'kconv'
 require 'date'
-#require "moji"
+require "moji"
 require 'digest/md5'
 
 # 文字列を日付に変換
@@ -22,10 +22,9 @@ end
 
 # コード用に変換方法を統一
 def conv_code(str)
-#  str = str.gsub(/(\s|　)+/, '')
-#  str = str.upcase
-#  str = Moji.han_to_zen(str.encode('utf-8'))
-#  return str
+  str = str.gsub(/(\s|　)+/, '')
+  str = str.upcase
+  str = Moji.han_to_zen(str.encode('utf-8'))
 
  # ハッシュ化して先頭6文字を取得
  return Digest::MD5.new.update(str).to_s[0,5]
@@ -497,14 +496,14 @@ end
 # アタックステータス
 def init_attack_state
   arr = []
-  arr.push({:code=>'S', :name=>'S:見込みあり',:disp_order=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
-  arr.push({:code=>'A', :name=>'A:見込みあり',:disp_order=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
-  arr.push({:code=>'B', :name=>'B:見込みあり',:disp_order=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
-  arr.push({:code=>'C', :name=>'C:見込みあり',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
-  arr.push({:code=>'D', :name=>'D:見込みあり',:disp_order=>'5', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
-  arr.push({:code=>'X', :name=>'X:不明',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
-  arr.push({:code=>'Y', :name=>'Y:不成立',:disp_order=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
-  arr.push({:code=>'Z', :name=>'Z:成約済',:disp_order=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
+  arr.push({:code=>'S', :name=>'契約締結前',:disp_order=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
+  arr.push({:code=>'A', :name=>'面談まち',:disp_order=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
+  arr.push({:code=>'B', :name=>'見込みあり',:disp_order=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
+  arr.push({:code=>'C', :name=>'見込みあり',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
+  arr.push({:code=>'D', :name=>'見込みあり',:disp_order=>'5', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
+  arr.push({:code=>'X', :name=>'不明',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
+  arr.push({:code=>'Y', :name=>'不成立',:disp_order=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
+  arr.push({:code=>'Z', :name=>'成約済',:disp_order=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
 
   arr.each do |obj|
     attack_state = AttackState.find_or_create_by_code(obj[:code])

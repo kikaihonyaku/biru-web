@@ -1,0 +1,14 @@
+<div style="margin:20px;">
+
+	<%= simple_form_for @attack_owner, :url => {:controller => 'trust_managements', :action=>'attack_owner_create'} do |f|%>
+		<%= f.input :name %>
+		<%= f.input :honorific_title %>
+		<%= f.input :postcode %>
+		<%= f.input :address %>
+		<div class="form-actions" style="margin-top:20px;">
+			<%= f.button :submit, :class => 'btn-primary' %>
+		</div>
+	<% end %>
+
+</div>
+

@@ -8,7 +8,10 @@ class TrustManagementsController < ApplicationController
   before_filter :search_init, :except => ['trust_user_report']
     
   def index
-        
+    
+    # 貸主新規作成用
+    @attack_owner = Owner.new
+    
     if @error_msg.size == 0
       # 検索条件にエラーが存在しないとき
       
@@ -103,6 +106,35 @@ class TrustManagementsController < ApplicationController
     
     end
 
+  end
+  
+  # アタック用の貸主情報登録
+  def attack_owner_new
+    @attack_owner = Owner.new
+  end
+  
+  # アタック貸主を登録
+  def attack_owner_create
+    @attack_owner = Owner.new(params[:owner])
+    @attack_owner.biru_user_id = @biru_user.id
+    
+    @attack_owner.attack_code = attack_conv_code(@biru_user.id.to_s,  @attack_owner.address,  @attack_owner.name)
+    
+    # 住所のGEOCODE
+    gmaps_ret = Gmaps4rails.geocode(@attack_owner.address)
+    @attack_owner.latitude = gmaps_ret[0][:lat]
+    @attack_owner.longitude = gmaps_ret[0][:lng]
+    @attack_owner.gmaps = true
+    @attack_owner.delete_flg = false
+    
+    @attack_owner.save!
+    
+    t = Trust.new
+    t.owner_id = @attack_owner.id
+    t.biru_user_id = @biru_user.id
+    t.save!
+    
+    redirect_to :action=>'index'
   end
   
   # 個人別のユーザーレポートを表示します
@@ -355,7 +387,8 @@ def get_trust_data()
   
   # trustについているdelete_flg の　default_scopeの副作用で、biru_usersのLEFT_OUTER_JOINが効かなくなっている？（空白のものは出てこない・・）なのでそうであればINNER JOINでつないでしまう（2014/07/15）
   #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").where("owners.code is null")
-  trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
+  #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
+  trust_data = Trust.joins(:owner).joins("LEFT OUTER JOIN manage_types ON trusts.manage_type_id = manage_types.id").joins("LEFT OUTER JOIN buildings on trusts.building_id = buildings.id").joins("LEFT OUTER JOIN shops on buildings.shop_id = shops.id").joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
   
   # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
   unless @biru_user.attack_all_search 

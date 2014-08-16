@@ -1,3 +1,10 @@
+# -*- coding:utf-8 -*-
+
+require 'kconv'
+require 'date'
+require "moji"
+require 'digest/md5'
+
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
@@ -90,8 +97,6 @@ class ApplicationController < ActionController::Base
     result
     
   end
-  
-  
   
   # 指定した建物情報を元に、出力用のjavascriptオブジェクトを作成します。
   def buildings_to_gon(buildings)
@@ -203,6 +208,20 @@ class ApplicationController < ActionController::Base
     end
 
   end
+  
+  
+  # アタック建物コードやアタック貸主コードの生成に使用
+  def attack_conv_code(user_id, address, name)
+    
+    str = user_id.to_s + '_' + address + '_' + name
+    
+    str = str.gsub(/(\s|　)+/, '')
+    str = str.upcase
+    str = Moji.han_to_zen(str.encode('utf-8'))
+
+   # ハッシュ化して先頭6文字を取得
+   return Digest::MD5.new.update(str).to_s[0,5]
+  end  
 
 
 end

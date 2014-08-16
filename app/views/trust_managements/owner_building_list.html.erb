@@ -150,43 +150,21 @@ function tack_out_go(){
 		
 	return true;
 }
+
+jQuery("#tack_new").trigger("click");
+
+
 </script>
+
 <%= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm', :onSubmit=>"return tack_out_go()" }) do %>
-<div class="bs-example" style="width:500px;float:left;margin-left:20px;">
-	<div class="panel-group" id="accordion">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-			  <h4 class="panel-title">
-    
-				<%= submit_tag '宛名ラベル出力' , :class=>"btn btn-primary btn-sm", :style=>"margin:0" %>
-			  </h4>
-			</div>
-
-			<div id="collapseOne" class="panel-collapse collapse in">
-			  <div class="panel-body">
-				  <div style="padding-left:10px;">
-		  
-		  			<div style="margin-bottom:10px;">
-						<%= radio_button_tag :dm_history, 1, true,  :onclick=>"dm_msg_regist_on(true);" %>
-						<%= label :dm_history, "ＤＭリレキを残す", :value => 0 %>
-						&nbsp;&nbsp;&nbsp;
-						<%= radio_button_tag :dm_history, 0, false, :onclick=>"dm_msg_regist_on(false);" %>
-						<%= label :dm_history, "ＤＭリレキを残さない", :value => 0  %>
-		  			</div>
-					<div>
-
-						<%= text_field_tag 'dm_out_date', Date.today.strftime("%Y-%m-%d"), :type=>'date' , :style=>"margin:0;padding:0" %>  
-						<%= text_field_tag 'dm_out_msg' %>
-					
-						<div style="color:red">
-							<%= flash[:notice] %>
-						</div>
-					</div>
-				  </div>
-			  </div>
-			</div>
-		</div>
+<div class="bs-example" style="width:400px;float:left;margin-left:20px;">
+	<div style="color:red">
+		<%= flash[:notice] %>
 	</div>
+    <a data-toggle="modal" href="#myModal" id="tack_new" class="btn btn-primary btn-sm" style="text-decoration:none;margin-top:0px;">宛名ラベル作成</a>
+    <a data-toggle="modal" href="#ownerModal" class="btn btn-primary btn-sm" style="text-decoration:none;margin-top:0px;">貸主新規作成</a>
+	
+	<%#= link_to '貸主情報登録', {:action => :attack_owner_new}, :class=>"btn btn-primary btn-sm", :style=>"text-decoration:none;margin-top:0px;color:white;" %>
 </div>
 <div style="clear:both"></dvi>
 <% if @error_msg.size > 0 %>
@@ -271,5 +249,79 @@ function tack_out_go(){
 <% end %>
 
 </div>
+
+
+<!-- モーダルダイアログ -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+			
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">宛名ラベル出力</h4>
+      </div>
+	  
+      <div class="modal-body">
+		  	
+			<div style="margin-bottom:10px;">
+				<%= radio_button_tag :dm_history, 1, true,  :onclick=>"dm_msg_regist_on(true);" %>
+				<%= label :dm_history, "ＤＭリレキを残す", :value => 0 %>
+				&nbsp;&nbsp;&nbsp;
+				<%= radio_button_tag :dm_history, 0, false, :onclick=>"dm_msg_regist_on(false);" %>
+				<%= label :dm_history, "ＤＭリレキを残さない", :value => 0  %>
+			</div>
+			<div>
+
+				<%= text_field_tag 'dm_out_date', Date.today.strftime("%Y-%m-%d"), :type=>'date' , :style=>"margin:0;padding:0" %>  
+				<%= text_field_tag 'dm_out_msg' %>
+
+			</div>
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+		<%= submit_tag '出力' , :class=>"btn btn-primary", :style=>"margin:0" %>
+      </div>
+		
+
+		  
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 	<% end %><!-- form_tag '/trust_managements/tack_out' -->
+	
+
+
+<!-- モーダルダイアログ -->
+<div class="modal fade" id="ownerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+			
+	<%= simple_form_for @attack_owner, :url => {:controller => 'trust_managements', :action=>'attack_owner_create'} do |f|%>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">貸主新規作成</h4>
+      </div>
+	  
+      <div class="modal-body">
+		  	
+		<%= f.input :name %>
+		<%= f.input :honorific_title %>
+		<%= f.input :postcode %>
+		<%= f.input :address %>
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+		<%= submit_tag '出力' , :class=>"btn btn-primary", :style=>"margin:0" %>
+      </div>
+	<% end %>
+		
+
+		  
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
