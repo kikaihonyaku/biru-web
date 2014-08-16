@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140814210041) do
+ActiveRecord::Schema.define(:version => 20140816004744) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -244,9 +244,9 @@ ActiveRecord::Schema.define(:version => 20140814210041) do
     t.integer  "approach_kind_id"
     t.string   "content"
     t.integer  "biru_user_id"
-    t.boolean  "delete_flg"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.boolean  "delete_flg",       :default => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
   end
 
   create_table "owner_building_logs", :force => true do |t|

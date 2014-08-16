@@ -128,7 +128,17 @@ class ManagementsController < ApplicationController
         format.json { render json: @owner_approach.errors, status: :unprocessable_entity }
       end
     end    
-  end  
+  end
+  
+  # アプローチリレキを削除する
+  def owner_approach_delete
+    p params
+    owner_approach = OwnerApproach.find(params[:id].to_i)
+    owner_approach.delete_flg = true
+    owner_approach.save!
+    
+    redirect_to :action=>'popup_owner', :id=>params[:owner_id]
+  end
   
   def get_popup_owner_info(id)
     @owner = Owner.find(id)

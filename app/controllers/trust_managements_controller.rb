@@ -234,6 +234,29 @@ class TrustManagementsController < ApplicationController
     gon.all_shops = Shop.find(:all)
     @search_type = 1
     
+    
+    
+    # 駅 
+    stations = []
+    stations << Station.find_by_line_code_and_code("2","10") # 武蔵浦和
+    stations << Station.find_by_line_code_and_code("2","11") # 南浦和
+
+    stations << Station.find_by_line_code_and_code("1","8") # 北千住
+    stations << Station.find_by_line_code_and_code("1","15") # 草加
+    stations << Station.find_by_line_code_and_code("1","17") # 新田
+    stations << Station.find_by_line_code_and_code("1","19") # 新越谷
+    stations << Station.find_by_line_code_and_code("1","20") # 越谷
+    stations << Station.find_by_line_code_and_code("1","21") # 北越谷
+    stations << Station.find_by_line_code_and_code("1","23") # せんげん台
+    stations << Station.find_by_line_code_and_code("1","26") # 春日部
+    stations << Station.find_by_line_code_and_code("2","10") # 武蔵浦和
+    stations << Station.find_by_line_code_and_code("2","12") # 東浦和
+    stations << Station.find_by_line_code_and_code("2","13") # 東川口
+    stations << Station.find_by_line_code_and_code("2","14") # 南越谷
+    stations << Station.find_by_line_code_and_code("2","18") # 南流山
+    stations << Station.find_by_line_code_and_code("3","13") # 柏
+    
+    gon.stations = stations
   end  
   
   def biru_user_trust_update

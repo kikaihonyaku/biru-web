@@ -117,6 +117,7 @@
 
 		<div style="padding-left:20px;padding-right:20px;margin-top:20px;width:850px;">
 			<%= grid(@owner_approaches) do |g|
+		 		g.column name: '' do |obj| link_to('削除',{:controller=>'managements', :action=>'owner_approach_delete', :id=>obj.id.to_s, :owner_id=>@owner.id.to_s}, :confirm => "削除します。よろしいですか？") end
 		 		g.column name: 'アプローチ日' do |obj| obj.approach_date if obj.approach_date end
 				g.column name: '種別' do |obj| obj.approach_kind.name if obj.approach_kind end
 				g.column name: '内容' do |obj| obj.content if obj.content end

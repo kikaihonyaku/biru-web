@@ -9,4 +9,6 @@ class OwnerApproach < ActiveRecord::Base
 
   validates :approach_date, :presence => {:message =>'アプローチ日を入力してください'}
   validates :content, :presence => {:message =>'内容を入力してください'}
+  
+  default_scope where(:delete_flg => false)
 end

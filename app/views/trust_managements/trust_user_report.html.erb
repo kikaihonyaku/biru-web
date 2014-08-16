@@ -207,42 +207,40 @@ function initialize(){
       create_relation_listener(trust_ev, owner_ev, build_ev)
     }
 
-    /* 営業所の情報を表示する */
-    shop_arr = {}; // varを消してグローバル化
-    shop_circle01_arr = {}; // varを消してグローバル化
-    shop_circle02_arr = {}; // varを消してグローバル化
+    /* 駅情報を表示する */
+    station_arr = {}; // varを消してグローバル化
+    station_circle01_arr = {}; // varを消してグローバル化
+    station_circle02_arr = {}; // varを消してグローバル化
     var distination = new google.maps.MVCArray();
     var distination_arr = [];
 
-    var shops = gon.rank_shops
-    for(var i in shops){
+    var stations = gon.stations
+    for(var i in stations){
 
-      pos = new google.maps.LatLng(shops[i].latitude, shops[i].longitude);
-      // bounds.extend(pos);
-      //
-      // shop_arr[shops[i].id] = createMarker_trust_report({
-      //   position : pos
-      //   ,map : mapCanvas
-      //   ,animation: google.maps.Animation.DROP
-      //   ,icon : shops[i].icon
-      //   ,info_msg : shops[i].name
-      //   ,html : info_msg_shop(shops[i])
-      // });
+      pos = new google.maps.LatLng(stations[i].latitude, stations[i].longitude);
+    //  bounds.extend(pos);
+      
+//        station_arr[stations[i].id] = createMarker_trust_report({
+//          position : pos
+//          ,map : mapCanvas
+//          ,animation: google.maps.Animation.DROP
+//         ,info_msg : stations[i].name
+//        });
 
       /* 営業所の円を作成 */
-      shop_circle01_arr[shops[i].id] = create_circle(1000, mapCanvas, pos);
-      shop_circle02_arr[shops[i].id] = create_circle(2000, mapCanvas, pos);
+      station_circle01_arr[stations[i].id] = create_circle(1000, mapCanvas, pos);
+      station_circle02_arr[stations[i].id] = create_circle(2000, mapCanvas, pos);
 
       /* 距離を測る対象を設定 */
-      distination.push({name:shops[i].name, latLng:[shops[i].latitude,shops[i].longitude]});
-      distination_arr.push(pos);
+//      distination.push({name:stations[i].name, latLng:[stations[i].latitude,stations[i].longitude]});
+//      distination_arr.push(pos);
     }
 
     mapCanvas.fitBounds(bounds);
 	
 	// 営業所の半径1KMを色づけ
-    for(var item in shop_circle01_arr){
-      shop_circle01_arr[item].set("visible", true);
+    for(var item in station_circle01_arr){
+      station_circle01_arr[item].set("visible", true);
     };	
 
 }  // end initialize
