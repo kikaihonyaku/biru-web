@@ -201,38 +201,62 @@ class TrustManagementsController < ApplicationController
     
     
     #####################################
-    # 当月にアプローチした貸主を表示    
+    # 当月に訪問した貸主を表示    
     #####################################
     # 訪問オーナー
-    visit_owner = []
+    visit_owner_id_arr = []
     @visit_num = 0
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
-      tmp = Owner.find(rec.owner_id)
-      visit_owner << tmp if tmp
+    @visit_num_jsk = 0
+    
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
+    	
+    	visit_owner_id_arr << rec.owner_id
       @visit_num = @visit_num + 1
+      
+      # 面談できていた時
+      if rec.code == '0020'
+      	@visit_num_jsk = @visit_num_jsk + 1
+      end
+      
     end
-    gon.visit_owner = visit_owner
+    gon.visit_owner = Owner.find_all_by_id(visit_owner_id_arr)
 
-    # DMアプローチオーナー
-    dm_owner = []
+		####################################
+    # DMアプローチした貸主を表示
+		####################################
+    dm_owner_id_arr = []
     @dm_num = 0
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
-      tmp = Owner.find(rec.owner_id)
-      dm_owner << tmp if tmp
+    @dm_num_jsk = 0
+
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030', '0035')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
+    	dm_owner_id_arr << rec.owner_id
       @dm_num = @dm_num + 1
+      
+      # ＤＭの「反響」だった時
+      if rec.code == '0035'
+				@dm_num_jsk = @dm_num_jsk + 1
+      end
     end
-    gon.dm_owner = dm_owner
+    
+    gon.dm_owner = Owner.find_all_by_id(dm_owner_id_arr)
 
-    # TELアプローチオーナー
-    tel_owner = []
+		####################################
+    # ＴＥＬアプローチした貸主を表示
+		####################################
+    tel_owner_id_arr = []
     @tel_num = 0
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id").select("owner_approaches.owner_id").each do |rec|
-      tmp = Owner.find(rec.owner_id)
-      tel_owner << tmp if tmp
+    @tel_num_jsk = 0
+    
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040', '0045')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
+    	tel_owner_id_arr << rec.owner_id
       @tel_num = @tel_num + 1
+    	
+    	# ＤＭの反響だった時
+      if rec.code == '0045'
+				@tel_num_jsk = @tel_num_jsk + 1
+      end
     end
-    gon.tel_owner = tel_owner
-
+    gon.tel_owner =  Owner.find_all_by_id(tel_owner_id_arr)
     
     #####################################
     # 見込みランクが高い物件を表示   
@@ -266,29 +290,66 @@ class TrustManagementsController < ApplicationController
     gon.all_shops = Shop.find(:all)
     @search_type = 1
     
-    
-    
-    # 駅 
-    stations = []
-    stations << Station.find_by_line_code_and_code("2","10") # 武蔵浦和
-    stations << Station.find_by_line_code_and_code("2","11") # 南浦和
+    # Hashの追加
+    station_arr = []
+    station_arr.push(["1","15"]) # 草加
+    station_arr.push(["1","17"]) # 新田
+    station_arr.push(["1","8" ]) # 北千住
+    station_arr.push(["1","19"]) # 新越谷
+    station_arr.push(["2","14"]) # 南越谷
+    station_arr.push(["1","20"]) # 越谷
+    station_arr.push(["1","21"]) # 北越谷
+    station_arr.push(["1","23"]) # せんげん台
+    station_arr.push(["1","26"]) # 春日部
+    station_arr.push(["6","6"])  # 戸田公園
+    station_arr.push(["7","6"])  # 戸田
+    station_arr.push(["11","5"]) # 与野
+    station_arr.push(["9","5"])  # 浦和
+    station_arr.push(["5","5"])  # 川口
+    station_arr.push(["2","12"]) # 東浦和
+    station_arr.push(["2","13"]) # 東川口
+    station_arr.push(["7","3"])  # 松戸
+    station_arr.push(["8","3"])  # 北松戸
+    station_arr.push(["2","18"]) # 南流山
+    station_arr.push(["3","13"]) # 柏
 
-    stations << Station.find_by_line_code_and_code("1","8") # 北千住
-    stations << Station.find_by_line_code_and_code("1","15") # 草加
-    stations << Station.find_by_line_code_and_code("1","17") # 新田
-    stations << Station.find_by_line_code_and_code("1","19") # 新越谷
-    stations << Station.find_by_line_code_and_code("1","20") # 越谷
-    stations << Station.find_by_line_code_and_code("1","21") # 北越谷
-    stations << Station.find_by_line_code_and_code("1","23") # せんげん台
-    stations << Station.find_by_line_code_and_code("1","26") # 春日部
-    stations << Station.find_by_line_code_and_code("2","10") # 武蔵浦和
-    stations << Station.find_by_line_code_and_code("2","12") # 東浦和
-    stations << Station.find_by_line_code_and_code("2","13") # 東川口
-    stations << Station.find_by_line_code_and_code("2","14") # 南越谷
-    stations << Station.find_by_line_code_and_code("2","18") # 南流山
-    stations << Station.find_by_line_code_and_code("3","13") # 柏
-    
-    gon.stations = stations
+    # 駅 
+#    stations = []
+#    stations << Station.find_by_line_code_and_code("1","15") # 草加
+#    stations << Station.find_by_line_code_and_code("1","17") # 新田
+#    stations << Station.find_by_line_code_and_code("1","8" ) # 北千住
+#    stations << Station.find_by_line_code_and_code("1","19") # 新越谷
+#    stations << Station.find_by_line_code_and_code("2","14") # 南越谷
+#    stations << Station.find_by_line_code_and_code("1","20") # 越谷
+#    stations << Station.find_by_line_code_and_code("1","21") # 北越谷
+#    stations << Station.find_by_line_code_and_code("1","23") # せんげん台
+#    stations << Station.find_by_line_code_and_code("1","26") # 春日部
+#    stations << Station.find_by_line_code_and_code("6","6") # 戸田公園
+#    stations << Station.find_by_line_code_and_code("7","6") # 戸田
+#    stations << Station.find_by_line_code_and_code("11","5") # 与野
+#    stations << Station.find_by_line_code_and_code("9","5") # 浦和
+#    stations << Station.find_by_line_code_and_code("5","5") # 川口
+#    stations << Station.find_by_line_code_and_code("2","12") # 東浦和
+#    stations << Station.find_by_line_code_and_code("2","13") # 東川口
+#    stations << Station.find_by_line_code_and_code("7","3") # 松戸
+#    stations << Station.find_by_line_code_and_code("8","3") # 北松戸
+#    stations << Station.find_by_line_code_and_code("2","18") # 南流山
+#    stations << Station.find_by_line_code_and_code("3","13") # 柏
+
+		stations = []
+		station_arr.each do | station_pair |
+			station = Station.find_by_line_code_and_code(station_pair[0], station_pair[1])
+			
+			if station
+			  p "駅あり"
+		  else
+			  p "駅なし"
+			end
+			
+			stations << station if station
+		end
+
+   gon.stations = stations
   end  
   
   def biru_user_trust_update
@@ -437,7 +498,7 @@ def get_trust_data()
   unless @history_dm[:all]
     
     # DMリレキで「すべて」以外が選択されているとき
-    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030')").where("approach_date between ? and ? ", Date.parse(@history_dm_from), Date.parse(@history_dm_to))
+    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030','0035')").where("approach_date between ? and ? ", Date.parse(@history_dm_from), Date.parse(@history_dm_to))
     
     if @history_dm[:exist]
       approaches.each do |approach|
@@ -458,8 +519,8 @@ def get_trust_data()
   # TELリレキのチェック
   unless @history_tel[:all]
     
-    # 訪問リレキで「すべて」以外が選択されているとき
-    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040')").where("approach_date between ? and ? ", Date.parse(@history_tel_from), Date.parse(@history_tel_to))
+    # TELリレキで「すべて」以外が選択されているとき
+    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040','0045')").where("approach_date between ? and ? ", Date.parse(@history_tel_from), Date.parse(@history_tel_to))
     
     if @history_tel[:exist]
       approaches.each do |approach|

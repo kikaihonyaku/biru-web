@@ -52,5 +52,6 @@ gem 'rspec-rails'
 gem "wice_grid" # Viewの表を整形する。2014/05/05
 gem 'simple_form'
 gem 'thinreports'
-gem 'nokogiri'
+#gem 'nokogiri'
 gem 'moji'
+gem 'ruby-hmac' # gmap4railsのgeocodeでビル管理キーを使用するにあたって、暗号化に使用 2014/08/17

@@ -3,7 +3,7 @@
 require 'csv'
 require 'kconv'
 require 'date'
-require "moji"
+#require "moji"
 require 'digest/md5'
 
 # 文字列を日付に変換
@@ -477,11 +477,14 @@ end
 # アプローチ種別を登録
 def init_approach_kind
   arr = []
-  arr.push({:name=>'訪問(在宅)', :code=>'0010'} )
-  arr.push({:name=>'訪問(留守)', :code=>'0020'} )
-  arr.push({:name=>'ＤＭ', :code=>'0030'} )
-  arr.push({:name=>'電話', :code=>'0040'} )
-  arr.push({:name=>'メモ', :code=>'0050'} )
+  arr.push({:name=>'訪問(留守)', :code=>'0010'} )
+  arr.push({:name=>'訪問(在宅)', :code=>'0020'} )
+  arr.push({:name=>'ＤＭ(発送)', :code=>'0030'} )
+  arr.push({:name=>'ＤＭ(反響)', :code=>'0035'} )
+  arr.push({:name=>'電話(留守)', :code=>'0040'} )
+  arr.push({:name=>'電話(会話)', :code=>'0045'} )
+  arr.push({:name=>'メモ(通常)', :code=>'0050'} )
+  arr.push({:name=>'メモ(移行)', :code=>'0055'} )
   
   arr.each do |obj|
     app =  ApproachKind.find_or_create_by_code(obj[:code])
@@ -496,14 +499,14 @@ end
 # アタックステータス
 def init_attack_state
   arr = []
-  arr.push({:code=>'S', :name=>'契約締結前',:disp_order=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
-  arr.push({:code=>'A', :name=>'面談まち',:disp_order=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
-  arr.push({:code=>'B', :name=>'見込みあり',:disp_order=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
-  arr.push({:code=>'C', :name=>'見込みあり',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
-  arr.push({:code=>'D', :name=>'見込みあり',:disp_order=>'5', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
-  arr.push({:code=>'X', :name=>'不明',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
-  arr.push({:code=>'Y', :name=>'不成立',:disp_order=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
-  arr.push({:code=>'Z', :name=>'成約済',:disp_order=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
+  arr.push({:code=>'S', :name=>'S:契約日決定',:disp_order=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
+  arr.push({:code=>'A', :name=>'A:契約予定で提案中',:disp_order=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
+  arr.push({:code=>'B', :name=>'B:提案書は提出可',:disp_order=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
+  arr.push({:code=>'C', :name=>'C:権者に面談し物件情報ヒアリング',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
+  arr.push({:code=>'D', :name=>'D:見込みとして追客対象',:disp_order=>'5', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
+  arr.push({:code=>'X', :name=>'X:不明',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
+  arr.push({:code=>'Y', :name=>'Y:不成立',:disp_order=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
+  arr.push({:code=>'Z', :name=>'Z:成約済',:disp_order=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
 
   arr.each do |obj|
     attack_state = AttackState.find_or_create_by_code(obj[:code])
@@ -593,11 +596,13 @@ def biru_geocode(biru, force)
 #        p format("%05d",biru.attack_code) + ':' + biru.name + ':' + biru.address
 #      end
     end
-  rescue
+  rescue => e
     if biru.name.nil? or biru.address.nil?
-      p "エラー:geocode "
+      p "エラー:geocode " + e
+      p e
     else
       p "エラー:geocode " + biru.name + ':' + biru.address
+      p e
     end
 
 	# エラー処理
@@ -781,13 +786,15 @@ def update_imp_oneself()
     biru.room_num = imp.room_type_nm
     biru.shop_id = convert_shop(imp.eigyo_cd)
 
-    biru.build_day = imp.build_day.slice(0..3) + '/' + imp.build_day.slice(4..5) + '/' + imp.build_day.slice(6..7)
+	  if imp.build_day
+	    biru.build_day = imp.build_day.slice(0..3) + '/' + imp.build_day.slice(4..5) + '/' + imp.build_day.slice(6..7)
+	  end
     building_day = custom_parse(biru.build_day)
 
     # 築年数
     biru.biru_age = nil
     if building_day
-      biru.biru_age = ( Date.today - building_day  ) / 365
+      biru.biru_age = ( Date.today - building_day ) / 365
     end
 
     biru.delete_flg = false
@@ -1330,6 +1337,18 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       imp.owner_address = row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]
       imp.owner_tel = row[27]
       imp.owner_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
+      
+      # オーナー発送区分
+      
+      
+      
+      # 見込みランク
+      
+      # アプローチメモ
+      
+      
+      
+      
       imp.save!
 
       p cnt.to_s + " " + imp.owner_nm
@@ -1369,6 +1388,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	  	######################
 	  	# 建物の登録・特定
 	  	######################
+	  	trust_space_regist = false # 委託契約を空白で登録
 	  	building = Building.find_or_create_by_attack_code(imp.building_cd)
 	  	building.attack_code = imp.building_cd
 	  	building.address = imp.building_address
@@ -1383,18 +1403,30 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	    rescue
 	      #p "エラー:save " + biru.name + ':' + biru.address
 	      p "建物登録エラー:save " + building.name
-	      throw :next_rec
+	      # throw :next_rec 2014/08/16 エラーであってもアタックリストに出す為に建物無しで委託契約登録を行う。
+	      trust_space_regist = true
 	    end
 	  	
 	  	######################
 	  	# 委託契約の登録
 	  	######################
-	  	trust = Trust.find_or_create_by_owner_id_and_building_id(owner.id, building.id)
-	  	trust.owner_id = owner.id
-	  	trust.building_id = building.id
-      trust.biru_user_id = biru_user.id
-	  	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外
-	  	trust.delete_flg = false
+	  	if trust_space_regist 
+	  		# 建物登録に失敗したので、建物は空白で委託登録（ただしすでに空白の委託が１つ存在していたらそれを再利用）
+	  		trust = Trust.find_or_create_by_owner_id_and_building_id(owner.id, nil)
+		  	trust.owner_id = owner.id
+		  	trust.building_id = nil
+	      trust.biru_user_id = biru_user.id
+		  	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外
+		  	trust.delete_flg = false
+	      p "空白オーナー登録: " + owner.name
+		  else
+		  	trust = Trust.find_or_create_by_owner_id_and_building_id(owner.id, building.id)
+		  	trust.owner_id = owner.id
+		  	trust.building_id = building.id
+	      trust.biru_user_id = biru_user.id
+		  	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外
+		  	trust.delete_flg = false
+	  	end
 	  	
 	    begin
 	      trust.save!
@@ -2411,10 +2443,10 @@ end
 ########################
 
 # 駅マスタ登録
-init_station
+#init_station
 
 # 営業所登録
-# init_shop
+init_shop
 
 # 物件種別登録
 #init_biru_type('/biruweb')
@@ -2429,13 +2461,13 @@ init_station
 #init_room_layout
 
 # アプローチ種別登録
-init_approach_kind
+#init_approach_kind
 
 # アタックステータス登録
-init_attack_state
+#init_attack_state
 
 # システムアップデート管理
-init_data_update
+#init_data_update
 
 ########################
 # 地図管理物件登録
@@ -2445,9 +2477,10 @@ init_data_update
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140208.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140529.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20140628.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20140707.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
-
-
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20140820.csv"))
 
 # データの登録(他社)
 #import_data_yourself_owner(Rails.root.join( "tmp", "attack_02_sinden.csv"))
@@ -2456,11 +2489,19 @@ init_data_update
 # データの登録(他社貸主）
 # bulk_owner_regist(1, Rails.root.join( "tmp", "attack_kasi_20140623.csv"))
 
-
 ###########################
 # アタックリストの登録
 ###########################
 #reg_attack_owner_building('05928', '松戸営業所', Rails.root.join( "tmp", "list_attack_matudo.csv"))
+
+
+#reg_attack_owner_building('7844', '戸田営業所', Rails.root.join( "tmp", "02_01_toda.csv"))
+#reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_02_todakoen.csv"))
+
+
+reg_attack_owner_building('5928', '戸田公園営業所', Rails.root.join( "tmp", "02_02_todakoen.csv"))
+
+
 
 
 ###########################
@@ -2475,21 +2516,29 @@ init_data_update
 #monthly_regist(Rails.root.join( "tmp", "monthley_getuji_201403.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_201402_201403.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_201404_201405.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_getuji_201406.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_getuji_201407.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_getuji_201408.csv"))
 
 
 # 来店客数／契約件数
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201405.csv"))
-
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201406.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201407.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201408.csv"))
 
 ###########################
 # 業績分析(空室)
 ###########################
-# regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
+#regist_vacant_room("201401", Rails.root.join( "tmp", "vacant_201401.csv"))
 #regist_vacant_room("201402", Rails.root.join( "tmp", "vacant_201402.csv"))
 #regist_vacant_room("201403", Rails.root.join( "tmp", "vacant_201403.csv"))
 #regist_vacant_room("201404", Rails.root.join( "tmp", "vacant_201404.csv"))
 #regist_vacant_room("201405", Rails.root.join( "tmp", "vacant_201405.csv"))
+#regist_vacant_room("201406", Rails.root.join( "tmp", "vacant_201406.csv"))
+#regist_vacant_room("201407", Rails.root.join( "tmp", "vacant_201407.csv"))
+#regist_vacant_room("201408", Rails.root.join( "tmp", "vacant_201408.csv"))
 
 ###########################
 # 賃貸借契約登録

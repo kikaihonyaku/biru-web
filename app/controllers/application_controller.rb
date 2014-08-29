@@ -45,6 +45,16 @@ class ApplicationController < ActionController::Base
     elsif params[:sid]
       user_id = BiruUser.find_by_syain_id(params[:sid])
       url_param_delete = true
+
+      if user_id
+    	  # ログの保存
+    	  log = LoginHistory.new
+    	  log.biru_user_id = user_id.id
+    	  log.code = user_id.code
+    	  log.name = user_id.name
+    	  log.save!      	
+      end
+
     else
 			user_id = nil
     end
