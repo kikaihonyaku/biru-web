@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140816004744) do
+ActiveRecord::Schema.define(:version => 20140902221948) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -86,6 +86,7 @@ ActiveRecord::Schema.define(:version => 20140816004744) do
     t.integer  "biru_age",             :default => 0
     t.string   "build_day"
     t.integer  "biru_user_id"
+    t.string   "hash_key"
   end
 
   add_index "buildings", ["attack_code"], :name => "index_buildings_on_attack_code"
@@ -180,6 +181,16 @@ ActiveRecord::Schema.define(:version => 20140816004744) do
     t.integer "execute_status",        :default => 0
     t.string  "execute_msg"
     t.integer "biru_user_id"
+    t.string  "batch_code"
+    t.string  "list_no"
+    t.string  "owner_hash"
+    t.string  "building_hash"
+    t.string  "biru_rank"
+    t.string  "approach_01"
+    t.string  "approach_02"
+    t.string  "approach_03"
+    t.string  "approach_04"
+    t.string  "approach_05"
   end
 
   create_table "items", :force => true do |t|
@@ -278,6 +289,7 @@ ActiveRecord::Schema.define(:version => 20140816004744) do
     t.string   "tel"
     t.boolean  "dm_delivery",     :default => true
     t.integer  "biru_user_id"
+    t.string   "hash_key"
   end
 
   create_table "renters_room_pictures", :force => true do |t|
@@ -382,6 +394,15 @@ ActiveRecord::Schema.define(:version => 20140816004744) do
     t.boolean  "gmaps"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "trust_attack_state_histories", :force => true do |t|
+    t.integer  "trust_id"
+    t.integer  "month"
+    t.integer  "attack_state_from_id"
+    t.integer  "attack_state_to_id"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
   end
 
   create_table "trusts", :force => true do |t|

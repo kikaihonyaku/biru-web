@@ -24,8 +24,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        
-		<%= submit_tag '以下で指定した条件で検索する' , :class=>"btn btn-primary btn-sm", :style=>"margin:0" %>
+        履歴による絞込み
       </h4>
     </div>
 	
@@ -83,6 +82,9 @@
 								</tr>
 							</table>
 						</td>
+					</tr>
+					<tr>
+						<td colspan="2"><%= submit_tag '指定した条件で絞込み' , :class=>"btn btn-primary btn-sm", :style=>"margin:0" %></td>
 					</tr>
 				</table>
 
@@ -157,11 +159,11 @@ jQuery("#tack_new").trigger("click");
 </script>
 
 <%= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm', :onSubmit=>"return tack_out_go()" }) do %>
-<div class="bs-example" style="width:400px;float:left;margin-left:20px;">
+<div class="bs-example" style="width:100px;float:left;margin-left:30px;">
 	<div style="color:red">
 		<%= flash[:notice] %>
 	</div>
-    <a data-toggle="modal" href="#myModal" id="tack_new" class="btn btn-primary btn-sm" style="text-decoration:none;margin-top:0px;">宛名ラベル作成</a>
+    <a data-toggle="modal" href="#myModal" id="tack_new" class="btn btn-primary btn-sm" style="text-decoration:none;margin-top:0px;margin-bottom:10px">宛名ラベル作成</a>
     <a data-toggle="modal" href="#ownerModal" class="btn btn-primary btn-sm" style="text-decoration:none;margin-top:0px;">貸主新規作成</a>
 	
 	<%#= link_to '貸主情報登録', {:action => :attack_owner_new}, :class=>"btn btn-primary btn-sm", :style=>"text-decoration:none;margin-top:0px;color:white;" %>
@@ -183,44 +185,33 @@ jQuery("#tack_new").trigger("click");
 
 		g.action_column 
 
-		g.column name: '主担当者' , attribute: 'name', model: 'BiruUser' , :html =>{ :style => 'width:300x;'}, custom_filter: @trust_data.uniq.pluck("biru_users.name").map{|pr| [pr, pr]} do |obj| link_to(obj.biru_user.name, trust_user_report_path + '?sid=' + obj.biru_user.id.to_s ) if obj.biru_user end
+		g.column name: '主担当者' , attribute: 'name', model: 'BiruUser' , :html =>{ :style => 'width:300x;'}, custom_filter: @trust_data.uniq.pluck("biru_users.name").map{|pr| [pr, pr]} do |obj|
+			 
+			 raw("<a href=""javascript:win_user(" + obj.biru_user.id.to_s + ");"">" + obj.biru_user.name + "</a>") if obj.biru_user
+			 
+		 end
 		g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end
 		# g.column name: '貸主CD' , attribute: 'book', model: 'Owner', :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.owner.attack_code if obj.owner end	
 		g.column name: '貸主名' , attribute: 'name', model: 'Owner' do |obj|
 		  if obj.owner
-	  
-			  if obj.owner.attack_code
-		  	    str = obj.owner.name + ' ／ ' + obj.owner.attack_code.to_s
-			  else
-	  	  	    str = obj.owner.name  + ' ／ ' + obj.owner.code.to_s
-			  end
-	  
-			  #link_to(str, owner_show_path(obj.owner_id)) 
-			  raw("<a href=""javascript:win_owner(" + obj.owner_id.to_s + ");"">" + str + "</a>")
-	
+			  raw("<a href=""javascript:win_owner(" + obj.owner_id.to_s + ");"">" + obj.owner.name + "</a>")
 		  end
 		end
 
 		g.column name: '貸主住所' , attribute: 'address', model: 'Owner' , :html =>{ :style => 'width:300px;'} do |obj| obj.owner.address if obj.owner end
+		g.column name: '貸主備考' , attribute: 'memo', model: 'Owner' , :html =>{ :style => 'width:100px;'} do |obj| obj.owner.memo if obj.owner end
 		g.column name: 'ＤＭ発送可' , attribute: 'dm_delivery', model: 'Owner' , :html =>{ :style => 'width:100px;text-align:center'} do |obj| if obj.owner.dm_delivery == true then 'ＯＫ' else '不可' end if obj.owner end
 		
 		
 		#g.column name: '建物CD' , attribute: 'attack_code', model: 'Building' , :html =>{ :style => 'width:50px;text-align:center;'}  do |obj| obj.building.attack_code if obj.building end
 		g.column name: '建物名' , attribute: 'name', model: 'Building'  do |obj|
 	  	  if obj.building
-	  
-	  		  if obj.building.attack_code
-	  	  	    str = obj.building.name + ' ／ ' + obj.building.attack_code.to_s
-	  		  else
-	    	  	str = obj.building.name  + ' ／ ' + obj.building.code.to_s
-	  		  end
-	  
-	  		  #link_to(str, building_show_path(obj.building_id)) 
-			  raw("<a href=""javascript:win_building(" + obj.building_id.to_s + ");"">" + str + "</a>")
+			  raw("<a href=""javascript:win_building(" + obj.building_id.to_s + ");"">" + obj.building.name + "</a>")
 	  	  end
 		end
 
 		g.column name: '建物住所' , attribute: 'address', model: 'Building', :html =>{ :style => 'width:300px;'}   do |obj| obj.building.address if obj.building end
+		g.column name: '建物備考' , attribute: 'memo', model: 'Building', :html =>{ :style => 'width:100px;'}   do |obj| obj.building.memo if obj.building end
 		g.column name: '見込ランク' , attribute: 'code', model: 'AttackState' , :html =>{ :style => 'width:100px;'}, custom_filter: AttackState.find(:all).map{|pr| [pr.code, pr.code]} do |obj| obj.attack_state.code if obj.attack_state end
 
 

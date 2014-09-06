@@ -99,11 +99,40 @@ class ManagementsController < ApplicationController
   # オーナー情報確認用のwindowを表示します。
   def popup_owner
     get_popup_owner_info(params[:id])
+    @cur_month = get_month(Date.today)
+    
+    # 建物とアタックの状況を取得
+    @biru_and_state = []
+    @owner.trusts.each do |trust|
+      if trust.building
+        # 先月以前のアタック状況を取得
+        before_max_month =  TrustAttackStateHistory.where("month < ?", @cur_month).where("trust_id = ?", trust.id ).maximum("month")
+        if before_max_month
+          # アタック状況が登録されている時、その最新の日付から先月以前の最新の見込み状況を取得する
+          before_attack_state = TrustAttackStateHistory.where("month = ?", before_max_month).where("trust_id = ?", trust.id).first.attack_state_to
+        else
+          # アタック状況が登録されていない時
+          before_attack_state = AttackState.find_by_code("X")
+        end
+        
+        # 現在時点のアタック状況を取得
+        if trust.attack_state
+          current_attack_state = trust.attack_state
+        else
+          current_attack_state = AttackState.find_by_code("X")
+        end
+        
+        # 建物、先月以前のアタック状況、最新のアタック状況を設定
+        @biru_and_state.push([trust, trust.building, before_attack_state, current_attack_state])
+      end
+    end
+      
     render :layout => 'popup'
   end
 
   # オーナー情報の登録をポップアップから行います。
   def popup_owner_update
+      
     @owner = Owner.find(params[:id])
     if @owner.update_attributes(params[:owner])
     end
@@ -190,10 +219,31 @@ class ManagementsController < ApplicationController
   
   # 建物情報画面から委託契約の更新
   def popup_building_trust_update
-    @trust = Trust.find(params[:trust][:id])
     
-    @trust.update_attributes(params[:trust])
+    pri_trust_attack_update
     redirect_to :action=>'popup_building', :id=>@trust.building_id
+  end
+  
+  # 貸主情報画面から委託契約の更新
+  def popup_owner_trust_update
+    
+    
+    pri_trust_attack_update
+    redirect_to :action=>'popup_owner', :id=>@trust.owner_id
+  end
+  
+  def pri_trust_attack_update
+    # 指定された年月のbefore/afterの登録を行う
+    history = TrustAttackStateHistory.find_or_create_by_trust_id_and_month(params[:trust][:id], params[:month])
+    history.trust_id = params[:trust][:id]
+    history.month = params[:month]
+    history.attack_state_from_id = params[:before_attack_state_id]
+    history.attack_state_to_id = params[:trust][:attack_state_id]
+    history.save!
+    
+    
+    @trust = Trust.find(params[:trust][:id])
+    @trust.update_attributes(params[:trust])
   end
 
   def index

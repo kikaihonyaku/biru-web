@@ -1,4 +1,3 @@
-<%= form_for(@owner, :url=>{:action=>'popup_owner_update', :controller=>'managements', :id=>@owner}, :html=>{:class=>"form-horizontal"}) do |f|%>
   <legend style="padding:20px;padding-botom:10px;"><%= @owner.name %></legend>
   
 <table>
@@ -52,31 +51,73 @@
 			        </tr>
 			      </thead>
 			      <tbody>
-			        <% @owner.trusts.each do |trust| %>
-						<% if trust.building %>
+					  <% @biru_and_state.each do | biru_and_state| %>
+					  	  <% trust = biru_and_state[0] %>
+						  <% building = biru_and_state[1] %>
+						  <% attack_state_before = biru_and_state[2] %>
+						  <% attack_state_current = biru_and_state[3] %>
+						  
 					        <tr>
-					          <td><a href="javascript:win_building(<%= trust.building.id %>);"><%= trust.building.name %></a></td>
-					          <td><%= trust.building.address %></td>
+					          <td><a href="javascript:win_building(<%= building.id %>);"><%= building.name %></a></td>
+					          <td><%= building.address %></td>
 							  
-							  <% if trust.building.shop %>
-							  	<td><%= trust.building.shop.name %></td>
+							  <% if building.shop %>
+							  	<td><%= building.shop.name %></td>
 							  <% else %>
 							  	<td></td>
 							  <% end %>
 							  
-							  <% if trust.attack_state %>
-							  	<td><%= trust.attack_state.name %></td>
+							  <!--  ここでは現時点で最新の見込み状態を表示する -->
+							  <% if attack_state_current %>
+							  	<td><a data-toggle="modal" href="#myModal_<%= building.id.to_s %>"  ><%= attack_state_current.name %></a></td>
 							  <% else %>
-							  	<td></td>
+							  	<td><a data-toggle="modal" href="#myModal_<%= building.id.to_s %>"  >未設定</a></td>
 							  <% end %>
 							  
 					        </tr>
-						
-						<% end %>
-			        <% end %>
+							
+							<!-- ランクアップ編集画面（モーダルダイアログ ） -->
+							<div class="modal fade" id="myModal_<%=  building.id.to_s %>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_<%=  building.id.to_s %>" aria-hidden="true">
+							  <div class="modal-dialog">
+							    <div class="modal-content">
+								<%= simple_form_for :trust, :url=>{:controller => :managements, :action => :popup_owner_trust_update } do |f| %>
+					
+							      <div class="modal-header">
+							        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							        <h4 class="modal-title" id="myModalLabel">見込みランク変更</h4>
+							      </div>
+				  
+							      <div class="modal-body">
+									  
+										<%= f.input :id, :as => :hidden, :input_html => {:value => trust.id.to_s } %>
+										<%= hidden_field_tag 'before_attack_state_id', attack_state_before.id %>
+										<div style="margin-bottom:20px;">
+											<label>先月までのランク:<%= attack_state_before.name %></label>
+										</div>
+										
+										<label>変更後ランク</label>
+										<div>
+											<%= text_field_tag 'month', @cur_month, :size=>"10px" %>
+											<%= f.input :attack_state_id, collection: AttackState.all, :label=>false %>
+										</div>
+			       
+							      </div>
+							      <div class="modal-footer">
+							        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+							        <%= f.submit '登録', :class => 'btn btn-primary' %>
+							      </div>
+								<% end %>
+				  
+							    </div><!-- /.modal-content -->
+							  </div><!-- /.modal-dialog -->
+							</div><!-- /.modal -->
+						  
+					  <% end %>
+					  
 			      </tbody>
 			    </table>
 			</div>
+			<%= form_for(@owner, :url=>{:action=>'popup_owner_update', :controller=>'managements', :id=>@owner}, :html=>{:class=>"form-horizontal"}) do |f|%>
 			
 			<div>
 				DM発送&nbsp;&nbsp;あり&nbsp;<%= f.radio_button 'dm_delivery', true %>
@@ -91,11 +132,11 @@
 				<%= f.submit 'メモ欄 更新', :class=>"btn btn-primary" %>
 			</div>
 			
+			<% end %>
 			
 		</td>
 	</tr>
 </table>
-  <% end %>
 
 	<div style="clear:both;margin-top:50px;">
 

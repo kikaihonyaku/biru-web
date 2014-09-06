@@ -26,8 +26,8 @@ def conv_code(str)
   str = str.upcase
   str = Moji.han_to_zen(str.encode('utf-8'))
 
- # ハッシュ化して先頭6文字を取得
- return Digest::MD5.new.update(str).to_s[0,5]
+ # ハッシュ化
+ return Digest::MD5.new.update(str).to_s
 end
 
 #------------------------------
@@ -502,9 +502,9 @@ def init_attack_state
   arr.push({:code=>'S', :name=>'S:契約日決定',:disp_order=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
   arr.push({:code=>'A', :name=>'A:契約予定で提案中',:disp_order=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
   arr.push({:code=>'B', :name=>'B:提案書は提出可',:disp_order=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
-  arr.push({:code=>'C', :name=>'C:権者に面談し物件情報ヒアリング',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
+  arr.push({:code=>'C', :name=>'C:権者に物件ヒアリング',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
   arr.push({:code=>'D', :name=>'D:見込みとして追客対象',:disp_order=>'5', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
-  arr.push({:code=>'X', :name=>'X:不明',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
+  arr.push({:code=>'X', :name=>'X:未設定',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
   arr.push({:code=>'Y', :name=>'Y:不成立',:disp_order=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
   arr.push({:code=>'Z', :name=>'Z:成約済',:disp_order=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
 
@@ -568,16 +568,12 @@ end
 # geocoding
 # force:強制的にgeocodingを行う。
 def biru_geocode(biru, force)
+	msg = ""
   begin
-
+  	
     # 住所が空白のみだったらそもそもgeocodeを行わない
     if biru.address.gsub(" ", "").gsub("　", "").length == 0
-      if biru.name.nil?
-        p "住所が空白のみなのでスキップ "
-      else
-        p "住所が空白のみなのでスキップ " + biru.name
-      end
-      
+      msg = "住所が空白のみなのでスキップ "
       raise # 例外発生させrescueへ飛ばす
     end
 
@@ -598,18 +594,18 @@ def biru_geocode(biru, force)
     end
   rescue => e
     if biru.name.nil? or biru.address.nil?
-      p "エラー:geocode " + e
       p e
     else
-      p "エラー:geocode " + biru.name + ':' + biru.address
       p e
     end
 
 	# エラー処理
     biru.gmaps = false
     biru.delete_flg = true
-
+    
   end
+  
+  return msg
 end
 
 # type: 1=自社 2=他社 を初期化します
@@ -654,16 +650,21 @@ end
 ##########################
 def regist_oneself(filename)
 
+  # バッチコード
+  batch_code = "JS" + Time.now.strftime("%Y%m%d%H%M%S")
+  
 	# 自社データのインポート
-  import_data_oneself(filename)
+  import_data_oneself(filename, batch_code)
 
 	# インポートしたデータのシステム反映
-	update_imp_oneself()
+	update_imp_oneself(batch_code)
+  
+  p "バッチコード：" + batch_code
 
 end
 
 # importデータの読み込み（自社）
-def import_data_oneself(filename)
+def import_data_oneself(filename, batch_code)
 
   # ファイル存在チェック
   unless File.exist?(filename)
@@ -672,7 +673,7 @@ def import_data_oneself(filename)
   end
 
   # imp_tablesを初期化
-  ImpTable.delete_all
+  #ImpTable.delete_all
 
   # データを登録
   cnt = 0
@@ -693,6 +694,7 @@ def import_data_oneself(filename)
       end
 
       imp = ImpTable.new
+      imp.batch_code = batch_code
       imp.siten_cd = row[0]
       imp.eigyo_order = row[1]
       imp.eigyo_cd = row[2]
@@ -737,17 +739,18 @@ def import_data_oneself(filename)
 end
 
 # データの更新(自社)
-def update_imp_oneself()
+def update_imp_oneself(batch_code)
 
   # 自社物の初期化(削除フラグをON)
   p "■自社情報の初期化（" + Time.now.to_s(:db) + "）"
   before_imp_init(1)
+  msg = ""
 
   ####################
   # 貸主の登録
   ####################
   p "■自社貸主登録（" + Time.now.to_s(:db) + "）"
-  ImpTable.group(:owner_cd, :owner_nm, :owner_address ).select(:owner_cd).select(:owner_nm).select(:owner_address).each do |imp|
+  ImpTable.where("batch_code = ?", batch_code).group(:owner_cd, :owner_nm, :owner_address ).select(:owner_cd).select(:owner_nm).select(:owner_address).each do |imp|
 
     owner = Owner.unscoped.find_or_create_by_code(imp.owner_cd)
     owner.code = imp.owner_cd.chomp
@@ -775,7 +778,7 @@ def update_imp_oneself()
   # 建物・部屋の登録
   ####################
   p "■自社物件登録（" + Time.now.to_s(:db) + "）"
-  ImpTable.group(:eigyo_cd, :eigyo_nm, :trust_cd,  :building_cd, :building_nm, :building_address, :owner_cd, :building_type_cd, :room_type_nm, :biru_age, :build_day, :line_cd ,:station_cd ,:moyori_id ,:bus_exists,:minuite ).select(:eigyo_cd).select(:eigyo_nm).select(:trust_cd).select(:building_cd).select(:building_nm).select(:building_address).select(:owner_cd).select(:building_type_cd).select(:room_type_nm).select(:biru_age).select(:build_day).select(:line_cd).select(:station_cd).select(:moyori_id).select(:bus_exists).select(:minuite).each do |imp|
+  ImpTable.where("batch_code = ?", batch_code).group(:eigyo_cd, :eigyo_nm, :trust_cd,  :building_cd, :building_nm, :building_address, :owner_cd, :building_type_cd, :room_type_nm, :biru_age, :build_day, :line_cd ,:station_cd ,:moyori_id ,:bus_exists,:minuite ).select(:eigyo_cd).select(:eigyo_nm).select(:trust_cd).select(:building_cd).select(:building_nm).select(:building_address).select(:owner_cd).select(:building_type_cd).select(:room_type_nm).select(:biru_age).select(:build_day).select(:line_cd).select(:station_cd).select(:moyori_id).select(:bus_exists).select(:minuite).each do |imp|
 
     # 建物の登録
     biru = Building.unscoped.find_or_create_by_code(imp.building_cd)
@@ -816,7 +819,7 @@ def update_imp_oneself()
     ################
     # 最寄り駅の登録
     ################
-    ImpTable.where("building_cd = ?", biru.code ).group(:building_cd, :line_cd, :station_cd, :moyori_id, :bus_exists, :minuite ).select(:building_cd).select(:line_cd).select(:station_cd).select(:moyori_id).select(:bus_exists).select(:minuite).each  do |imp_route|
+    ImpTable.where("batch_code = ?", batch_code).where("building_cd = ?", biru.code ).group(:building_cd, :line_cd, :station_cd, :moyori_id, :bus_exists, :minuite ).select(:building_cd).select(:line_cd).select(:station_cd).select(:moyori_id).select(:bus_exists).select(:minuite).each  do |imp_route|
       # 駅から建物までの位置を登録
       station = Station.find_by_line_code_and_code(imp_route.line_cd, imp_route.station_cd)
       if station
@@ -845,7 +848,7 @@ def update_imp_oneself()
     owner_stop_num = 0
 
 #    ImpTable.find_all_by_building_cd(biru.code).each do |imp_room|
-    ImpTable.where("building_cd = ?", biru.code ).group(:building_cd, :room_cd, :room_nm, :room_layout_cd, :room_type_cd, :room_aki, :manage_type_cd ).select(:building_cd).select(:room_cd).select(:room_nm).select(:room_layout_cd).select(:room_type_cd).select(:room_aki).select(:manage_type_cd).each  do |imp_room|
+    ImpTable.where("batch_code = ?", batch_code).where("building_cd = ?", biru.code ).group(:building_cd, :room_cd, :room_nm, :room_layout_cd, :room_type_cd, :room_aki, :manage_type_cd ).select(:building_cd).select(:room_cd).select(:room_nm).select(:room_layout_cd).select(:room_type_cd).select(:room_aki).select(:manage_type_cd).each  do |imp_room|
 
       room = Room.unscoped.find_or_create_by_building_cd_and_code(biru.code, imp_room.room_cd)
       room.building = biru
@@ -890,7 +893,7 @@ def update_imp_oneself()
   # 管理委託契約の登録
   ####################
   p "■委託登録（" + Time.now.to_s(:db) + "）"
-  ImpTable.group( :trust_cd, :owner_cd, :building_cd, :manage_type_cd ).select(:trust_cd).select(:owner_cd).select(:building_cd).select(:manage_type_cd).each do |imp|
+  ImpTable.where("batch_code = ?", batch_code).group( :trust_cd, :owner_cd, :building_cd, :manage_type_cd ).select(:trust_cd).select(:owner_cd).select(:building_cd).select(:manage_type_cd).each do |imp|
 
     trust = Trust.unscoped.find_or_create_by_code(imp.trust_cd)
     biru = Building.where("code=?",imp.building_cd).first
@@ -918,6 +921,10 @@ end
 # アタック対象の貸主・物件・委託（ダミー）を登録します。
 def import_data_yourself_owner(filename)
 
+  # バッチコード
+  batch_code = "TS" + Time.now.strftime("%Y%m%d%H%M%S")
+  msg = ""
+
   # ファイル存在チェック
   unless File.exist?(filename)
     puts 'file not exist'
@@ -925,7 +932,7 @@ def import_data_yourself_owner(filename)
   end
 
   # imp_tablesを初期化
-  ImpTable.delete_all
+  # ImpTable.delete_all
 
   # 他社元データを一時表に登録
   cnt = 0
@@ -946,6 +953,7 @@ def import_data_yourself_owner(filename)
       end
 
       imp = ImpTable.new
+      imp.batch_code = batch_code
       imp.eigyo_cd = row[0]
       imp.eigyo_nm = row[1]
       imp.building_cd = row[2]
@@ -993,7 +1001,7 @@ def import_data_yourself_owner(filename)
   ####################
   # 貸主の登録
   ####################
-  ImpTable.group(:owner_cd, :owner_nm, :owner_address, :owner_honorific_title, :owner_postcode, :owner_tel ).select("owner_cd, owner_nm, owner_address, owner_honorific_title, owner_postcode, owner_tel").each do |imp|
+  ImpTable.where("batch_code = ?", batch_code).group(:owner_cd, :owner_nm, :owner_address, :owner_honorific_title, :owner_postcode, :owner_tel ).select("owner_cd, owner_nm, owner_address, owner_honorific_title, owner_postcode, owner_tel").each do |imp|
   catch :next_owner do
 
     owner = Owner.unscoped.find_or_create_by_attack_code(imp.owner_cd)
@@ -1017,7 +1025,7 @@ def import_data_yourself_owner(filename)
     ##############
     # 建物
     ##############
-    ImpTable.where(:owner_cd=>imp.owner_cd).group(:eigyo_cd, :eigyo_nm, :building_cd, :building_nm, :building_address, :building_type_cd, :building_memo ).select("eigyo_cd, eigyo_nm, building_cd, building_nm, building_address, building_type_cd, building_memo").each do |imp_biru|
+    ImpTable.where("batch_code = ?", batch_code).where(:owner_cd=>imp.owner_cd).group(:eigyo_cd, :eigyo_nm, :building_cd, :building_nm, :building_address, :building_type_cd, :building_memo ).select("eigyo_cd, eigyo_nm, building_cd, building_nm, building_address, building_type_cd, building_memo").each do |imp_biru|
     catch :next_building do
 
       # 建物の登録
@@ -1280,8 +1288,8 @@ end
 # 30：サブリース会社
 # 31：現管理会社
 # 32：連絡先
-# 33：備考1
-# 34：備考2
+# 33：備考1（貸主へ飛ばす）
+# 34：備考2（建物へ飛ばす）
 # 35：DM送付区分（DMをお送りする方に○を記載してください。）
 # 36：アプローチ状況①
 # 37：アプローチ状況②
@@ -1290,6 +1298,10 @@ end
 # 40：アプローチ状況①
 def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	
+  # バッチコード
+  batch_code = "AT" + Time.now.strftime("%Y%m%d%H%M%S")
+  msg = ""
+  
 	# 指定された担当者が存在するかチェック
 	biru_user = BiruUser.find_by_code(biru_user_code)
 	unless biru_user	
@@ -1310,7 +1322,8 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
   end
 	
 	# imp_tableへ書き込み
-	ImpTable.delete_all("imp_tables.biru_user_id = " + biru_user.id.to_s)
+	#ImpTable.delete_all("imp_tables.biru_user_id = " + biru_user.id.to_s)
+  owner_dm_ng = []
   open(filename).each_with_index do |line, cnt|
     catch :not_header do
 
@@ -1325,84 +1338,161 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 #      end
 
       imp = ImpTable.new
+      imp.batch_code = batch_code
       imp.biru_user_id = biru_user.id
-      imp.building_address = row[3] + ' ' + row[4] + ' ' + row[5]
+      imp.list_no = row[0]
+      imp.biru_rank = row[2]
+      
+      if row[4].strip.length > 0
+      	# 住所２が入っている時
+	      imp.building_address = (row[3] + ' ' + row[4]).strip
+      	
+   		elsif row[5].strip.length
+   			# 地番が入っている時
+	      imp.building_address = (row[3] + ' ' + row[5]).strip
+  		else
+  			# 住所２も地番も入っていない時
+	      imp.building_address = (row[3]).strip
+			end
+
       imp.building_nm = row[9]
-      imp.building_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.building_address + '_' + imp.building_nm)
+      
+      # building_cdは、building.idを使うのでコメントアウト。ただしimport時に特定する必要があるので、代わりにbuilding_hash列を設ける
+      # imp.building_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.building_address + '_' + imp.building_nm)
+      imp.building_hash = conv_code(imp.biru_user_id.to_s + '_' + imp.building_address + '_' + imp.building_nm)
 
       imp.owner_nm = row[19]
       imp.owner_honorific_title = row[20]
       imp.owner_kana = row[21]
       imp.owner_postcode = row[22]
-      imp.owner_address = row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]
+      imp.owner_address = (row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]).strip
       imp.owner_tel = row[27]
-      imp.owner_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
       
-      # オーナー発送区分
+      imp.owner_memo = row[33]
+      imp.building_memo = row[34]
       
+      # owner_cdは、owner.idを使うのでコメントアウト。ただしimport時に特定する必要があるので、代わりにowner_hash列を設ける
+      #imp.owner_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
+      imp.owner_hash = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
       
+      # オーナー発送区分 発送区分が対象外のOWNER_HASHを保存
+      if row[35].strip == "×" || row[35].strip == "対象外"
+        owner_dm_ng.push(imp.owner_hash)
+      end
       
-      # 見込みランク
+      # アプローチ履歴を登録する。
+      imp.approach_01 = row[36]
+      imp.approach_02 = row[37]
+      imp.approach_03 = row[38]
+      imp.approach_04 = row[39]
+      imp.approach_05 = row[40]
       
       # アプローチメモ
-      
-      
-      
-      
       imp.save!
-
       p cnt.to_s + " " + imp.owner_nm
     end
   end
   
-	
 	# 指定された担当者、建物ユニークキーを元に該当のオーナーを取得(なければ新規作成)
 		#空白の項目があったらupdateしてあげよう(確定はまた今度で)
 		# エラーだったら以下を読み飛ばす。
-	ImpTable.find_all_by_biru_user_id(biru_user.id).each do |imp|
+	#ImpTable.find_all_by_biru_user_id(biru_user.id).each do |imp|
+	ImpTable.where("batch_code = ?", batch_code).each do |imp|
+    
 	  catch :next_rec do
-	  	
 	  	######################
 	  	# 貸主の登録・特定
 	  	######################
-			owner = Owner.find_or_create_by_attack_code(imp.owner_cd)
-			owner.attack_code = imp.owner_cd
+			owner = Owner.find_or_create_by_hash_key(imp.owner_hash)
+      owner.hash_key = imp.owner_hash
 			owner.name = imp.owner_nm
 			owner.address = imp.owner_address
 			owner.postcode = imp.owner_postcode
 			owner.honorific_title = imp.owner_honorific_title
 			owner.tel = imp.owner_tel
 			owner.biru_user_id = biru_user.id
+			
+			if owner.memo
+				owner.memo = owner.memo + imp.owner_memo
+			else
+				owner.memo = imp.owner_memo
+			end
+			
 			owner.delete_flg = false
-      		
-			biru_geocode(owner, false)
+			msg = biru_geocode(owner, false)
 			
 	    begin
 	      owner.save!
-	    rescue
-	      #p "エラー:save " + biru.name + ':' + biru.address
-	      p "貸主登録エラー:save " + owner.name
+  			owner.attack_code = "OA%06d"%owner.id # 貸主idをattack_codeとする
+        owner.save!
+	    rescue => e
+	      # p $!.to_s
+	      p "エラーメッセージ:" + msg
+        imp.execute_status = 2
+        imp.execute_msg = batch_code + "：No." + imp.list_no + "：貸主：" + owner.name + "：" + owner.address + "：" + msg
+        imp.save!
+        
 	      throw :next_rec
 	    end
+	    
+	  	######################
+	  	# アプローチ履歴の登録
+	  	######################
+	  	approach_list = []
+	  	approach_list.push(imp.approach_01) unless imp.approach_01.blank?
+	  	approach_list.push(imp.approach_02) unless imp.approach_02.blank?
+	  	approach_list.push(imp.approach_03) unless imp.approach_03.blank?
+	  	approach_list.push(imp.approach_04) unless imp.approach_04.blank?
+	  	approach_list.push(imp.approach_05) unless imp.approach_05.blank?
 	  	
+	  	approach_list.each do |approach|
+	  		owner_app = OwnerApproach.new
+	  		owner_app.owner_id = owner.id
+	  		
+	  		#owner_app = owner.approaches.build
+	  		
+	  		owner_app.biru_user_id = biru_user.id
+	  		owner_app.approach_date = "1900/01/01"
+	  		owner_app.approach_kind_id = ApproachKind.find_by_code("0055").id
+	  		owner_app.content = approach
+	  		owner_app.created_at = Time.now
+	  		owner_app.updated_at = Time.now
+	  		
+	  		p owner_app
+	  		
+	  		owner_app.save!
+	  	end
+	    
 	  	######################
 	  	# 建物の登録・特定
 	  	######################
 	  	trust_space_regist = false # 委託契約を空白で登録
-	  	building = Building.find_or_create_by_attack_code(imp.building_cd)
-	  	building.attack_code = imp.building_cd
+	  	building = Building.find_or_create_by_hash_key(imp.building_hash)
+      building.hash_key = imp.building_hash
 	  	building.address = imp.building_address
 	  	building.name = imp.building_nm
 	  	building.delete_flg = false
 			building.shop_id = shop.id
       building.biru_user_id = biru_user.id
-			biru_geocode(building, false)
+			msg = biru_geocode(building, false)
+
+			if building.memo
+				building.memo = building.memo + imp.building_memo
+			else
+				building.memo = imp.building_memo
+			end
 			
 	    begin
 	      building.save!
-	    rescue
-	      #p "エラー:save " + biru.name + ':' + biru.address
-	      p "建物登録エラー:save " + building.name
+  	  	building.attack_code = "BA%06d"%building.id # 建物idをattack_codeとする
+	      building.save!
+	    rescue      
+	      # p $!
+        imp.execute_status = 2
+        imp.execute_msg = batch_code + "：No." + imp.list_no + "：建物：" + building.name + "：" + building.address + "：" + msg
+        
+        imp.save!
+
 	      # throw :next_rec 2014/08/16 エラーであってもアタックリストに出す為に建物無しで委託契約登録を行う。
 	      trust_space_regist = true
 	    end
@@ -1426,19 +1516,42 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	      trust.biru_user_id = biru_user.id
 		  	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外
 		  	trust.delete_flg = false
+		  	
+				# 物件ランクの登録
+				if imp.biru_rank
+					rank = AttackState.find_by_code(imp.biru_rank.upcase.strip)
+					if rank
+						trust.attack_state_id = rank.id
+					end
+				end
 	  	end
 	  	
 	    begin
 	      trust.save!
+        trust.code = "TA%06d"%trust.id
+	      trust.save!
 	    rescue
 	      p "委託契約登録失敗:save "
+        imp.execute_status = 2
+        imp.execute_msg = "委託契約登録失敗:save "
+        imp.save!
+        
 	      throw :next_rec
 	    end
-	  	
+	    
 	  end
-	
+    
+    imp.execute_status = 1
+    imp.save!
+  
   end
 	
+  # DM出力対象外の人を更新
+  Owner.find_all_by_hash_key(owner_dm_ng).each do |owner|
+    owner.dm_delivery = false
+    owner.save!
+  end
+  
 end
 
 # geocode されていないものをアップデート
@@ -1446,7 +1559,8 @@ def update_geocode
 
   # 貸主
   Owner.unscoped.where(:latitude => nil).each do |owner|
-    unless biru_geocode(owner, true)
+    #unless biru_geocode(owner, true)
+    if biru_geocode(owner, true) != ""
       owner.delete_flg = true
     end
     owner.save!
@@ -1454,7 +1568,7 @@ def update_geocode
 
   # 建物
   Building.unscoped.where(:latitude => nil).each do |biru|
-    unless biru_geocode(biru, true)
+    if biru_geocode(biru, true) != ""
       biru.delete_flg = true
     end
     biru.save!
@@ -2446,7 +2560,7 @@ end
 #init_station
 
 # 営業所登録
-init_shop
+#init_shop
 
 # 物件種別登録
 #init_biru_type('/biruweb')
@@ -2464,7 +2578,7 @@ init_shop
 #init_approach_kind
 
 # アタックステータス登録
-#init_attack_state
+init_attack_state
 
 # システムアップデート管理
 #init_data_update
@@ -2499,9 +2613,7 @@ init_shop
 #reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_02_todakoen.csv"))
 
 
-reg_attack_owner_building('5928', '戸田公園営業所', Rails.root.join( "tmp", "02_02_todakoen.csv"))
-
-
+reg_attack_owner_building('05928', '戸田公園営業所', Rails.root.join( "tmp", "02_02_test.csv"))
 
 
 ###########################

@@ -1,7 +1,7 @@
 #-*- encoding:utf-8 -*-
 
 class OwnerApproach < ActiveRecord::Base
-  attr_accessible :owner_id, :approach_date, :approach_kind_id, :content, :biru_user_id, :delete_flg
+  attr_accessible :owner_id, :approach_date, :approach_kind_id, :content, :biru_user_id, :delete_flg, :created_at, :updated_at
 
   belongs_to :owner
   belongs_to :approach_kind

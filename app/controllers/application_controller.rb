@@ -231,7 +231,17 @@ class ApplicationController < ActionController::Base
 
    # ハッシュ化して先頭6文字を取得
    return Digest::MD5.new.update(str).to_s[0,5]
-  end  
-
+  end
+  
+  # 指定された日のポラスの月度を取得する
+  def get_month(cur_date)
+    if cur_date.day > 20
+      # 日付が21日以降だったら翌月
+      cur_date.next_month.strftime("%Y%m")
+    else
+      # それ以外だったら当月
+      cur_date.strftime("%Y%m")
+    end
+  end
 
 end

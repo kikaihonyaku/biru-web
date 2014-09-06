@@ -19,7 +19,7 @@ class TrustManagementsController < ApplicationController
       @trust_data = get_trust_data
       @trust_grid = initialize_grid(
         @trust_data,
-        :order => 'shops.code',
+        :order => 'attack_states.code',
         :order_direction => 'desc',
         :per_page => 40,
         :name => 'g1',
@@ -56,7 +56,8 @@ class TrustManagementsController < ApplicationController
     
     owner_id_arr = []
     Trust.where("id in (?)", @selected).each do |trust|
-      owner_id_arr.push(trust.owner_id)
+      owner = Owner.find(trust.owner_id)
+      owner_id_arr.push(owner.id) if owner.dm_delivery 
     end
     
     # 出力対象が１つもないときはエラー
@@ -74,13 +75,13 @@ class TrustManagementsController < ApplicationController
      
          @owners.each_with_index do |owner, idx|
        
-           lbl_num = (idx).modulo(8) # 剰余を求める
+           lbl_num = (idx).modulo(21) # 剰余を求める
        
            if lbl_num == 0
              r.start_new_page
            end
        
-           r.page.values "post_%02d"%(lbl_num + 1) => owner.postcode
+           r.page.values "post_%02d"%(lbl_num + 1) => "〒" + owner.postcode
            r.page.values "address_%02d"%(lbl_num + 1) => owner.address 
            r.page.values "name_%02d"%(lbl_num + 1) => owner.name + ' ' + if owner.honorific_title then owner.honorific_title  else '様' end 
            r.page.values "biru_%02d"%(lbl_num + 1) => '(株)中央ビル管理 ' + @biru_user.name
@@ -545,7 +546,6 @@ def get_trust_data()
   if filter_not_exist_flg
     trust_data = trust_data.where("owners.id not in (?)", arr_not_exist) 
   end
-
 
   trust_data
 end
