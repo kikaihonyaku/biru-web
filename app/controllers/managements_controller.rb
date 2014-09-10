@@ -114,11 +114,15 @@ class ManagementsController < ApplicationController
           # アタック状況が登録されていない時
           before_attack_state = AttackState.find_by_code("X")
         end
-        
-        # 現在時点のアタック状況を取得
-        if trust.attack_state
-          current_attack_state = trust.attack_state
+
+
+        # 現時点で最新のアタック状況を取得
+        current_max_month =  TrustAttackStateHistory.where("trust_id = ?", trust.id ).maximum("month")
+        if current_max_month
+          # アタック状況が登録されている時、その最新の日付から先月以前の最新の見込み状況を取得する
+          current_attack_state = TrustAttackStateHistory.where("month = ?", current_max_month).where("trust_id = ?", trust.id).first.attack_state_to
         else
+          # アタック状況が登録されていない時
           current_attack_state = AttackState.find_by_code("X")
         end
         
@@ -227,7 +231,6 @@ class ManagementsController < ApplicationController
   # 貸主情報画面から委託契約の更新
   def popup_owner_trust_update
     
-    
     pri_trust_attack_update
     redirect_to :action=>'popup_owner', :id=>@trust.owner_id
   end
@@ -239,6 +242,20 @@ class ManagementsController < ApplicationController
     history.month = params[:month]
     history.attack_state_from_id = params[:before_attack_state_id]
     history.attack_state_to_id = params[:trust][:attack_state_id]
+    
+    history.room_num = params[:room_num]
+    history.manage_type_id = params[:history][:manage_type]
+    
+    # 自他区分を設定
+    if params[:history][:oneself]
+      history.trust_oneself = true
+    elsif params[:history][:yourself]
+      history.trust_oneself = false
+    else
+      history.trust_oneself = nil
+    end
+    
+    
     history.save!
     
     

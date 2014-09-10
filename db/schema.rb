@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140902221948) do
+ActiveRecord::Schema.define(:version => 20140910014855) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -33,8 +33,9 @@ ActiveRecord::Schema.define(:version => 20140902221948) do
     t.integer  "trust_plan_visit"
     t.integer  "trust_plan_dm"
     t.integer  "trust_plan_tel"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+    t.integer  "trust_plan_contract"
   end
 
   create_table "biru_users", :force => true do |t|
@@ -401,8 +402,11 @@ ActiveRecord::Schema.define(:version => 20140902221948) do
     t.integer  "month"
     t.integer  "attack_state_from_id"
     t.integer  "attack_state_to_id"
-    t.datetime "created_at",           :null => false
-    t.datetime "updated_at",           :null => false
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
+    t.integer  "room_num"
+    t.boolean  "trust_oneself",        :default => false
+    t.integer  "manage_type_id"
   end
 
   create_table "trusts", :force => true do |t|

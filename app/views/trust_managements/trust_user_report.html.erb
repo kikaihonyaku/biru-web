@@ -338,11 +338,11 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_tel, @tel_num) %></td>
 				</tr>
 				<tr>
-					<td style="text-align:center;">-</td>
+					<td style="text-align:center;"><%= image_tag('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000', :size=>"18x25")%></td>
 					<td style="text-align:center;">受託（他社）</td>
-					<td style="text-align:center;">-</td>
-					<td style="text-align:center;">-</td>
-					<td style="text-align:center;">-</td>
+					<td style="text-align:center;"><%= if @biru_user_monthly.trust_plan_contract then @biru_user_monthly.trust_plan_contract else '-' end %></td>
+					<td style="text-align:center;"><%= @contract_num %>&nbsp;&nbsp;(<%= @contract_num_jisya %>)</td>
+					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_contract, @contract_num) %></td>
 				</tr>
 			</tbody>
 		</table>
@@ -373,7 +373,7 @@ function createMarker_trust_report(opts, open_flg){
 				</tr>
 				<tr>
 					<td style="text-align:center;">受託（他社）</td>
-					<td style="text-align:center;">-</td>
+					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_contract then @biru_user_monthly_next.trust_plan_contract else '-' end %></td>
 				</tr>
 			</tbody>
 		</table>
@@ -396,8 +396,9 @@ function createMarker_trust_report(opts, open_flg){
 			<tbody>
 				<% @buildings.each do |biru| %>
 				<tr>
-					<td style="text-align:center"><%= image_tag(biru.trusts[0].attack_state.icon, :size=>"18x25") %></td>
-					<td><%= biru.trusts[0].attack_state.name %></td>
+				    <% ats = AttackState.find_by_code(biru.tmp_manage_type_icon) %>
+					<td style="text-align:center"><%= image_tag(ats.icon, :size=>"18x25") %></td>
+					<td><%= ats.name %></td>
 					<td><%= raw("<a href=""javascript:win_building(" + biru.id.to_s + ");"">" + biru.name + "</a>") %></td>
 					<td><%= raw("<a href=""javascript:win_owner(" + biru.trusts[0].owner.id.to_s + ");"">" + biru.trusts[0].owner.name + "</a>") %></td>
 					<td><%= biru.memo %></td>
@@ -428,6 +429,7 @@ function createMarker_trust_report(opts, open_flg){
 		  	<%= f.input :trust_plan_visit, :label=>'訪問件数' %>
 		  	<%= f.input :trust_plan_dm, :label=>'ＤＭ発送件数' %>
 		  	<%= f.input :trust_plan_tel, :label=>'電話アプローチ件数' %>
+		  	<%= f.input :trust_plan_contract, :label=>'受託戸数' %>
 
 			<%#= f.input :id, :as => :hidden, :input_html => {:value => @trust.id } %>
 			<%#= f.input :attack_state_id, collection: AttackState.all %>

@@ -80,7 +80,7 @@
 							<div class="modal fade" id="myModal_<%=  building.id.to_s %>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_<%=  building.id.to_s %>" aria-hidden="true">
 							  <div class="modal-dialog">
 							    <div class="modal-content">
-								<%= simple_form_for :trust, :url=>{:controller => :managements, :action => :popup_owner_trust_update } do |f| %>
+								<%= simple_form_for :trust, :url=>{:controller => :managements, :action => :popup_owner_trust_update }, :html=>{class: 'form-horizontal'} do |f| %>
 					
 							      <div class="modal-header">
 							        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -91,14 +91,33 @@
 									  
 										<%= f.input :id, :as => :hidden, :input_html => {:value => trust.id.to_s } %>
 										<%= hidden_field_tag 'before_attack_state_id', attack_state_before.id %>
+										<%= hidden_field_tag 'month', @cur_month %>
+										
+										<% histories = TrustAttackStateHistory.where("trust_id = ?", trust.id ).order("month asc") %>
 										<div style="margin-bottom:20px;">
-											<label>先月までのランク:<%= attack_state_before.name %></label>
+											<label>変更履歴</label>
+											<% if histories.length  == 0 %>
+												未設定
+											<% else %>
+												<% histories.each do | history | %>
+													<div>
+														<%= history.month.to_s + ' ' + history.attack_state_to.name %>
+														<% if history.attack_state_to.code == 'Z' %>
+															＜ <%= history.room_num.to_s + '戸 ' %>　＞
+														<% end %>
+													</div>
+												<% end %>
+											<% end %>
 										</div>
 										
-										<label>変更後ランク</label>
+										
+										<label>変更後ランク＜<%= @cur_month %>＞</label>
 										<div>
-											<%= text_field_tag 'month', @cur_month, :size=>"10px" %>
 											<%= f.input :attack_state_id, collection: AttackState.all, :label=>false %>
+											<div style="margin-bottom:5px;">&nbsp;</div>
+											<div>契約戸数：<%= text_field_tag :room_num, 0 , :size=>"2" %>&nbsp;戸</div>
+											<div>管理方式：<%= collection_select :history, :manage_type, ManageType.all, :id, :name, :include_blank => true %></div>
+											<div>受託自他：<%= radio_button :history, :oneself, 'yourself' %>&nbsp;他社&nbsp;&nbsp;<%= radio_button :history, :oneself, 'oneself' %>&nbsp;自社</div>
 										</div>
 			       
 							      </div>

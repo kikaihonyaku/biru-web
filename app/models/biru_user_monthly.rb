@@ -1,4 +1,4 @@
 class BiruUserMonthly < ActiveRecord::Base
-  attr_accessible :biru_user_id, :month, :trust_plan_visit, :trust_plan_dm, :trust_plan_tel
+  attr_accessible :biru_user_id, :month, :trust_plan_visit, :trust_plan_dm, :trust_plan_tel, :trust_plan_contract
   belongs_to :biru_user
 end

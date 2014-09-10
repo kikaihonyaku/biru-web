@@ -259,22 +259,72 @@ class TrustManagementsController < ApplicationController
     end
     gon.tel_owner =  Owner.find_all_by_id(tel_owner_id_arr)
     
+    
+    #####################################
+    # 成約した物件、見込みが高い物件を表示
+    #####################################
+    @contract_num = 0
+    @contract_num_jisya = 0
+    
+    @buildings = []
+    order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", @month).where("trusts.biru_user_id = ?", @biru_trust_user.id).group("trusts.id").maximum("month")
+    
+    order_hash.keys.each do |trust_id|
+      
+      # trust_idにはidが、order_hash[trust_id]にはその月の最大月数が入っている
+      
+      trust_attack_history = TrustAttackStateHistory.find_by_trust_id_and_month(trust_id, order_hash[trust_id])
+      
+      # ↓見込みランクの絞り込みはクエリのwhere句の中でなく、集計結果に対して行う。
+      # where句でやるとそのランクがある中での最大をとってしまうので、仮にその後に別のランクが登録されていたら本来は必要ないのにそのレコードがとれてしまうから
+      case trust_attack_history.attack_state_to.code
+      when 'S', 'A', 'B'
+        
+        biru = trust_attack_history.trust.building
+        biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
+        biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
+        @buildings << biru
+      
+      when 'Z'
+        # 成約になった物件は、当月のみ表示対象
+        if trust_attack_history.month.to_s == @month.to_s
+
+          biru = trust_attack_history.trust.building
+          biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
+          biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
+          @buildings << biru
+          
+          # 受託実績戸数を入力
+          @contract_num = @contract_num + trust_attack_history.room_num
+          
+          if trust_attack_history.trust_oneself
+            @contract_num_jisya = @contract_num_jisya + trust_attack_history.room_num
+          end
+
+          
+        end
+          
+      else
+      end
+      
+    end
+    
+
+
     #####################################
     # 見込みランクが高い物件を表示   
     #####################################
-    @buildings = []
-    Building.joins(:trusts => :attack_state).where("buildings.code is null").where("trusts.biru_user_id = ?", @biru_trust_user.id).order("attack_states.disp_order").each do |biru|
-      
-      case biru.trusts[0].attack_state.code
-      when 'S', 'A', 'B'
-        biru.tmp_manage_type_icon = biru.trusts[0].attack_state.code
-        biru.tmp_build_type_icon = biru.trusts[0].attack_state.icon
-        p biru.tmp_build_type_icon
-        @buildings << biru
-      else
-        # 表示対象の見込みランク以外は表示しない
-      end
-    end
+    # Building.joins(:trusts => :attack_state).where("buildings.code is null").where("trusts.biru_user_id = ?", @biru_trust_user.id).order("attack_states.disp_order").each do |biru|
+    #
+    #   case biru.trusts[0].attack_state.code
+    #   when 'S', 'A', 'B'
+    #     biru.tmp_manage_type_icon = biru.trusts[0].attack_state.code
+    #     biru.tmp_build_type_icon = biru.trusts[0].attack_state.icon
+    #     @buildings << biru
+    #   else
+    #     # 表示対象の見込みランク以外は表示しない
+    #   end
+    # end
     
     @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(@buildings)
     @manage_line_color = make_manage_line_list
