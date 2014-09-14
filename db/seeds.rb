@@ -1286,16 +1286,15 @@ end
 # 28：現管理会社
 # 29：募集会社
 # 30：サブリース会社
-# 31：現管理会社
-# 32：連絡先
-# 33：備考1（貸主へ飛ばす）
-# 34：備考2（建物へ飛ばす）
-# 35：DM送付区分（DMをお送りする方に○を記載してください。）
-# 36：アプローチ状況①
-# 37：アプローチ状況②
-# 38：アプローチ状況①
-# 39：アプローチ状況②
-# 40：アプローチ状況①
+# 31：連絡先
+# 32：備考1（貸主へ飛ばす）
+# 33：備考2（建物へ飛ばす）
+# 34：DM送付区分（DMをお送りする方に○を記載してください。）
+# 35：アプローチ状況①
+# 36：アプローチ状況②
+# 37：アプローチ状況①
+# 38：アプローチ状況②
+# 39：アプローチ状況①
 def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	
   # バッチコード
@@ -1368,24 +1367,24 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       imp.owner_address = (row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]).strip
       imp.owner_tel = row[27]
       
-      imp.owner_memo = row[33]
-      imp.building_memo = row[34]
+      imp.owner_memo = row[32]
+      imp.building_memo = row[33]
       
       # owner_cdは、owner.idを使うのでコメントアウト。ただしimport時に特定する必要があるので、代わりにowner_hash列を設ける
       #imp.owner_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
       imp.owner_hash = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
       
       # オーナー発送区分 発送区分が対象外のOWNER_HASHを保存
-      if row[35].strip == "×" || row[35].strip == "対象外"
+      if row[34].strip == "×" || row[34].strip == "対象外"
         owner_dm_ng.push(imp.owner_hash)
       end
       
       # アプローチ履歴を登録する。
-      imp.approach_01 = row[36]
-      imp.approach_02 = row[37]
-      imp.approach_03 = row[38]
-      imp.approach_04 = row[39]
-      imp.approach_05 = row[40]
+      imp.approach_01 = row[35]
+      imp.approach_02 = row[36]
+      imp.approach_03 = row[37]
+      imp.approach_04 = row[38]
+      imp.approach_05 = row[39]
       
       # アプローチメモ
       imp.save!
@@ -2611,7 +2610,6 @@ init_attack_state
 
 #reg_attack_owner_building('7844', '戸田営業所', Rails.root.join( "tmp", "02_01_toda.csv"))
 #reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_02_todakoen.csv"))
-
 
 reg_attack_owner_building('05928', '戸田公園営業所', Rails.root.join( "tmp", "02_02_test.csv"))
 

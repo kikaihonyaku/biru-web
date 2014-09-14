@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140910014855) do
+ActiveRecord::Schema.define(:version => 20140912201735) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -293,6 +293,25 @@ ActiveRecord::Schema.define(:version => 20140910014855) do
     t.string   "hash_key"
   end
 
+  create_table "renters_buildings", :force => true do |t|
+    t.string   "building_cd"
+    t.string   "building_name"
+    t.string   "real_building_name"
+    t.string   "clientcorp_building_cd"
+    t.string   "building_type"
+    t.string   "structure"
+    t.string   "construction"
+    t.string   "room_num"
+    t.string   "address"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.boolean  "gmaps"
+    t.string   "completion_ym"
+    t.string   "delete_flg"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
   create_table "renters_room_pictures", :force => true do |t|
     t.integer  "renters_room_id"
     t.integer  "idx"
@@ -436,6 +455,87 @@ ActiveRecord::Schema.define(:version => 20140910014855) do
     t.integer  "vacant_cnt"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
+  end
+
+  create_table "work_renters_rooms", :force => true do |t|
+    t.string   "batch_cd"
+    t.integer  "batch_cd_idx"
+    t.string   "room_cd"
+    t.string   "building_cd"
+    t.string   "clientcorp_room_cd"
+    t.string   "clientcorp_building_cd"
+    t.string   "store_code"
+    t.string   "store_name"
+    t.string   "building_name"
+    t.string   "gaikugoutou"
+    t.string   "room_no"
+    t.string   "real_building_name"
+    t.string   "real_gaikugoutou"
+    t.string   "real_room_no"
+    t.string   "floor"
+    t.string   "building_type"
+    t.string   "structure"
+    t.string   "construction"
+    t.string   "room_num"
+    t.string   "address"
+    t.string   "detail_address"
+    t.string   "pref_code"
+    t.string   "pref_name"
+    t.string   "city_code"
+    t.string   "city_name"
+    t.string   "choume_code"
+    t.string   "choume_name"
+    t.string   "latitude"
+    t.string   "longitude"
+    t.string   "vacant_div"
+    t.string   "enter_ym"
+    t.string   "new_status"
+    t.string   "completion_ym"
+    t.string   "square"
+    t.string   "room_layout_type"
+    t.integer  "work_renters_room_layout_id"
+    t.integer  "work_renters_access_id"
+    t.string   "cond"
+    t.string   "contract_div"
+    t.string   "contract_comment"
+    t.string   "rent_amount"
+    t.string   "managing_fee"
+    t.string   "reikin"
+    t.string   "shikihiki"
+    t.string   "shikikin"
+    t.string   "shoukyakukin"
+    t.string   "hoshoukin"
+    t.string   "renewal_fee"
+    t.string   "insurance"
+    t.string   "agent_fee"
+    t.string   "other_fee"
+    t.string   "airconditioner"
+    t.string   "washer_space"
+    t.string   "burner"
+    t.string   "equipment"
+    t.string   "carpark_status"
+    t.string   "carpark_fee"
+    t.string   "carpark_reikin"
+    t.string   "carpark_shikikin"
+    t.string   "carpark_distance_to_nearby"
+    t.string   "carpark_car_num"
+    t.string   "carpark_indoor"
+    t.string   "carpark_shape"
+    t.string   "carpark_underground"
+    t.string   "carpark_roof"
+    t.string   "carpark_shutter"
+    t.string   "notice"
+    t.string   "building_main_catch"
+    t.string   "room_main_catch"
+    t.string   "recruit_catch"
+    t.string   "room_updated_at"
+    t.integer  "work_renters_picture_id"
+    t.string   "zumen_url"
+    t.string   "location"
+    t.string   "net_use_freecomment"
+    t.string   "athome_pro_comment"
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
   end
 
 end
