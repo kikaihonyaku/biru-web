@@ -50,9 +50,19 @@
 
     # 表示する建物が存在しない時
     @shops =  Shop.find(:all)
-
+    
+    get_all_building
+    
     gon.buildings = @buildings
     gon.shops = @shops    # 関連する営業所
+    
+  end
+  
+  
+  def get_all_building
+    RentersBuilding.where("delete_flg = ?", false).each do |biru|
+      @buildings << biru
+    end
     
   end
 

@@ -101,7 +101,7 @@ class RentersController < ApplicationController
       building.longitude = gmaps_ret[0][:lng]
       building.gmaps = true
 
-      building.delete_flg = true
+      building.delete_flg = false
       building.save!
     end
     

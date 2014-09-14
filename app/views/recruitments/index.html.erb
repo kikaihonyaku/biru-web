@@ -451,25 +451,25 @@ function initialize(){
         // infoWndに表示するHTMLを作成する。
         var inner_text;
 
-        var rooms = gon.room_of_building[buildings[i].id];
-
-        inner_text = ""
-       for(var j in rooms){
-          inner_text = inner_text + '<li>' + rooms[j].name + '</li>'
-        }
-
-        var vhtml = '<div><b>' + buildings[i].name + '（<a href="javascript:win_building(' + buildings[i].id + ');">詳細</a>）</b><br>' +
-          '<div>住所：' + buildings[i].address +'</div>' +
-          '<div><a href="javascript:search_around(' + buildings[i].id + ');">この物件の周辺情報を検索：</a></div>' +
-          '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
-          '<hr/>' +
-          '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
-          '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="fGetPlaceInfo( this.checked, ' + buildings[i].latitude + ',' + buildings[i].longitude  + ');" />&nbsp;周辺施設</label>' +
-          '</div>' +
-          '<div style="padding-left:80px;">' +
-          '  <a href="javascript:void(0)" onClick="view_disp( true, ' + buildings[i].latitude + ',' + buildings[i].longitude  + '); return false;"> ストリートビュー</a>' +
-          '</div>' +
-          '</div>';
+       //  var rooms = gon.room_of_building[buildings[i].id];
+       //
+       //  inner_text = ""
+       // for(var j in rooms){
+       //    inner_text = inner_text + '<li>' + rooms[j].name + '</li>'
+       //  }
+       //
+       //  var vhtml = '<div><b>' + buildings[i].name + '（<a href="javascript:win_building(' + buildings[i].id + ');">詳細</a>）</b><br>' +
+       //    '<div>住所：' + buildings[i].address +'</div>' +
+       //    '<div><a href="javascript:search_around(' + buildings[i].id + ');">この物件の周辺情報を検索：</a></div>' +
+       //    '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
+       //    '<hr/>' +
+       //    '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
+       //    '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="fGetPlaceInfo( this.checked, ' + buildings[i].latitude + ',' + buildings[i].longitude  + ');" />&nbsp;周辺施設</label>' +
+       //    '</div>' +
+       //    '<div style="padding-left:80px;">' +
+       //    '  <a href="javascript:void(0)" onClick="view_disp( true, ' + buildings[i].latitude + ',' + buildings[i].longitude  + '); return false;"> ストリートビュー</a>' +
+       //    '</div>' +
+       //    '</div>';
 
 
         build_arr[buildings[i].id] = createMarker({
@@ -478,22 +478,23 @@ function initialize(){
           ,icon : '/assets/msmarker_red.png'
           ,shadow : 'assets/msmarker_shadow.png'
           ,info_msg : buildings[i].name
-          ,html : vhtml
+         // ,html : vhtml
+          ,html : buildings[i].real_building_name
         });
 
-        // 周辺の検索
-        if(gon.around_flg == true){
-
-          var request = {
-            location: pos,
-            radius: '500',
-            types: ['store']
-          };
-
-          service = new google.maps.places.PlacesService(mapCanvas);
-          service.search(request, callback);
-
-        }
+        // // 周辺の検索
+        // if(gon.around_flg == true){
+        //
+        //   var request = {
+        //     location: pos,
+        //     radius: '500',
+        //     types: ['store']
+        //   };
+        //
+        //   service = new google.maps.places.PlacesService(mapCanvas);
+        //   service.search(request, callback);
+        //
+        // }
 
     }
 
