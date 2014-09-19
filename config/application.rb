@@ -61,5 +61,8 @@ module BiruWeb
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+    
+    # moduleを読み込む様に指定 2014/09/15
+    config.autoload_paths += %W(#{config.root}/lib)
   end
 end

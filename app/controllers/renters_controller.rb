@@ -4,8 +4,30 @@ require 'rexml/document'
 
 class RentersController < ApplicationController
   
+  respond_to :html, :json
+  
   def index
     @data_update = DataUpdateTime.find_by_code("310")
+    
+    index_columns ||= [:id]
+
+    current_page  = params[:page] ? params[:page].to_i : 1
+    rows_per_page = params[:rows] ? params[:rows].to_i : 10
+
+    conditions={:page => current_page, :per_page => rows_per_page}
+    #conditions[:order] = params["sidx"] + " " + params["sord"] unless (params[:sidx].blank? || params[:sord].blank?)
+
+    #if params[:_search] == "true"
+    #  conditions[:conditions]=filter_by_conditions(index_columns)
+    #end
+
+   # @renters_buildings = RentersBuilding.paginate(conditions)
+    @renters_buildings = RentersBuilding.all
+    total_entries=@renters_buildings.count
+
+    respond_with(@renters_buildings) do |format|
+     format.json { render :json => @renters_buildings.to_jqgrid_json(index_columns, current_page, rows_per_page, total_entries)}
+    end
     
   end
   
@@ -51,7 +73,7 @@ class RentersController < ApplicationController
     # renters_roomへの反映
     WorkRentersRoom.where("batch_cd = ?", batch_cd).each do |work_room|
       
-      room = RentersRoom.find_or_create_by_room_code(work_room)
+      room = RentersRoom.find_or_create_by_room_code(work_room.room_cd)
       room.room_code = work_room.room_cd
       room.building_code = work_room.building_cd
       room.clientcorp_room_cd = work_room.clientcorp_room_cd

@@ -39,6 +39,7 @@
     
     @buildings = []
     @shops = []
+    @rooms = []
 
     # タブ表示
     @tab_search = "active in"
@@ -54,6 +55,7 @@
     get_all_building
     
     gon.buildings = @buildings
+    gon.rooms = @rooms
     gon.shops = @shops    # 関連する営業所
     
   end
@@ -62,8 +64,13 @@
   def get_all_building
     RentersBuilding.where("delete_flg = ?", false).each do |biru|
       @buildings << biru
+      
+      RentersRoom.where("delete_flg = ?", false).where("building_code = ?", biru.building_cd ).each do |room|
+        @rooms[biru.id] = [] unless @rooms[biru.id]
+        @rooms[biru.id] << room
+        
+      end
     end
-    
   end
 
   # 検索
@@ -99,10 +106,10 @@
     room_of_building = []
     tmp_room.each do |room|
 
-
       biru = room.building
 
       room_of_building[biru.id] = [] unless room_of_building[biru.id]
+      
       room_of_building[biru.id] << room
       
       buildings << biru

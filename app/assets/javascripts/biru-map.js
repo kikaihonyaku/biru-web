@@ -1008,3 +1008,64 @@ var isSupported = function(browsers){
     }
     return false;
 };
+
+
+
+
+// jqgridのテーブルを作成します。
+// 1:tableのid名
+// 2:fotterのid
+// 3:表示するテーブルの所属するdiv名
+// 4:列名リスト
+// 5:列モデル
+// 6:キャプション
+// 7:イベント種別 1:shop, 2:building, 3:owner
+function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, data_list, caption, event_type){
+	
+	var table_div = $('#' + table_name);
+	
+	table_div.jqGrid({
+	  	data : data_list,  //表示したいデータ
+	  	datatype : "local",            //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
+	  	colNames : col_names,           //列の表示名
+	  	colModel : col_model,   //列ごとの設定
+	  	rowNum : 100,                   //一ページに表示する行数
+	  	rowList : [100, 200, 300],         //変更可能な1ページ当たりの行数
+	  	caption : caption,    //ヘッダーのキャプション
+		loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
+			table_div.jqGrid('setGridWidth', $(div_dummy).width(), true);
+		    table_div.jqGrid('setGridHeight', $(div_dummy).height(), true);
+		},
+        onSelectRow: function(id) {
+           // idにはリストの選択した行番号が入ってくる
+		   
+		   if(event_type == 1 ){
+			   link_shop_click(table_div.getRowData(id).id);
+		   }else if(event_type == 2){
+			   link_building_click(table_div.getRowData(id).id);
+		   }
+        },
+	  	pager : fotter_name,              //footerのページャー要素のid
+	  	shrinkToFit : true,　　        //画面サイズに依存せず固定の大きさを表示する設定
+	  	viewrecords: true              //footerの右下に表示する。
+	});
+  
+	//   //検索追加
+	// table_div.jqGrid('navGrid',('#' + fotter_name),{
+	// 	add:false,   //おまじない
+	// 	edit:false,  //おまじない
+	// 	del:false,   //おまじない
+	// 	search:{     //検索オプション
+	// 	odata : ['equal', 'not equal', 'less', 'less or equal',
+	// 	       'greater','greater or equal', 'begins with',
+	// 	       'does not begin with','is in','is not in','ends with',
+	// 	       'does not end with','contains','does not contain']
+	// 	}   //検索の一致条件を入れられる
+	// });
+  
+	//filterバー追加
+	table_div.filterToolbar({
+		defaultSearch:'cn'     //一致条件を入れる。選択肢['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc'] 
+	});		
+}
+

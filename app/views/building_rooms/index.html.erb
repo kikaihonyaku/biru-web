@@ -8,12 +8,59 @@
 	
   </style>
   
+  <script type="text/javascript">
+  
+	  // データの作成
+	  var date = [
+	  	{no:1,name:"nakagawa",age:20,local:"Japan",hobby:"Tennis"},
+	  	{no:2,name:"nakayama",age:20,local:"Japan",hobby:"Soccer"}
+	  ];
+	  
+	  //列の設定
+	  var colModelSettings= [	
+		{name:"radio",index:"radio",width:50,align:"center",classes:"radio_class"},
+	  	{name:"no",index:"no",width:70,align:"center",classes:"no_class"},
+	  	{name:"name",index:"name",width:200,align:"center",classes:"name_class"},
+	  	{name:"age",index:"age",width:200,align:"center",classes:"age_class"},
+	  	{name:"local",index:"local",width:200,align:"center",classes:"local_class"},
+	  	{name:"hobby",index:"hobby",width:200,align:"center",classes:"hobby_class"}
+	  ]
+	  //列の表示名
+	  var colNames = ["","No.","name","age","local","hobby"];
+	  
+	  // テーブルの作成
+	  $(function() {
+
+		  $("#sample1").jqGrid({
+		  	data:date,  //表示したいデータ
+		  	datatype : "local",            //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
+		  	colNames : colNames,           //列の表示名
+		  	colModel : colModelSettings,   //列ごとの設定
+		  	rowNum : 10,                   //一ページに表示する行数
+		  	rowList : [1, 10, 20],         //変更可能な1ページ当たりの行数
+		  	caption : "Sample Display",    //ヘッダーのキャプション
+		  	height : 200,                  //高さ
+		  	width : 500,                   //幅
+		  	pager : 'pager1',              //footerのページャー要素のid
+		  	shrinkToFit : true,　　        //画面サイズに依存せず固定の大きさを表示する設定
+		  	viewrecords: true              //footerの右下に表示する。
+		  });
+		  
+	  });
+  
+  </script>
+  
 <div style="margin-left:100px;margin-right:100px;">
 
 <h1>物件一覧</h1>
 <p style="text-align:right;">レンターズデータ取得：<%= @data_update.update_datetime %></p>
 
-<%= grid(@building_rooms,  upper_pagination_panel: true ) do |g| 
+
+<table id="sample1"></table>
+<div id = "pager1"></div>
+
+
+<%#= grid(@building_rooms,  upper_pagination_panel: true ) do |g| 
 
 	#g.action_column 
 	g.column name: '管理営業所' , attribute: 'name', model: 'Shop', :html =>{ :style => 'width:200px;text-align:center;'}, custom_filter: Shop.find(:all).map{|pr| [pr.name, pr.name]}  do |obj| obj.building.shop.name if obj.building && obj.building.shop end

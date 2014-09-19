@@ -428,7 +428,7 @@ function initialize(){
       pos = new google.maps.LatLng(shops[i].latitude, shops[i].longitude);
       bounds.extend(pos);
 
-      shop_arr[shops[i].id] = new google.maps.Marker({
+      shop_arr[shops[i].id] = createMarker({
         position : pos
         ,map : mapCanvas
         ,animation: google.maps.Animation.DROP
@@ -436,6 +436,7 @@ function initialize(){
         ,info_msg : shops[i].name
         ,html : shops[i].name
       });
+	    
     }
 
     /* 検索に一致した物件を表示する */
@@ -444,6 +445,7 @@ function initialize(){
     var pos;
 
     var buildings = gon.buildings
+	//var rooms = gon.rooms
     for(var i in buildings){
         pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
         bounds.extend(pos);
@@ -470,6 +472,12 @@ function initialize(){
        //    '  <a href="javascript:void(0)" onClick="view_disp( true, ' + buildings[i].latitude + ',' + buildings[i].longitude  + '); return false;"> ストリートビュー</a>' +
        //    '</div>' +
        //    '</div>';
+	   
+	   inner_text = "";
+	   var rooms = gon.rooms[buildings[i].id]
+       for(var j in rooms){
+          inner_text = inner_text + '<br/>'  + rooms[j].room_code + ' ' + rooms[j].room_no
+        }
 
 
         build_arr[buildings[i].id] = createMarker({
@@ -479,7 +487,7 @@ function initialize(){
           ,shadow : 'assets/msmarker_shadow.png'
           ,info_msg : buildings[i].name
          // ,html : vhtml
-          ,html : buildings[i].real_building_name
+          ,html : buildings[i].building_cd + ' ' + buildings[i].real_building_name + ' </br>' + inner_text
         });
 
         // // 周辺の検索
@@ -508,8 +516,6 @@ function initialize(){
 
 google.maps.event.addDomListener(window, "load", initialize);
 
-
-
 </script>
 
   <style type="text/css">
@@ -536,7 +542,97 @@ google.maps.event.addDomListener(window, "load", initialize);
 
 <% end %>
 
-<a id="simple-menu" href="#sidr"></a>
-<div id="map_canvas" style="width: 100%;height:100%;"></div>
+<script type="text/javascript">
+
+	// 営業所テーブルを作成します。
+	init_jqgrid_shop();
+	
+	// 建物テーブルを作成します。
+	init_jqgrid_building();
+
+
+
+	// 営業所テーブルを作成
+	function init_jqgrid_shop(){
+		
+		// 列名の定義
+		var grid_name = ["id", "No.", "営業所名", "住所"];
+
+		// 列属性の定義
+		var grid_model = [
+		  {name:"id", index:"id", width:70, align:"right", classes:"no_class", hidden:true}
+		 ,{name:"no", index:"no", width:70, align:"center", classes:"no_class"}
+		 ,{name:"shop_name", index:"shop_name", width:200, align:"left", classes:"no_class"}
+		 ,{name:"shop_address", index:"shop_address", width:200, align:"left", classes:"no_class"}
+		 // ここに「rbtnFmatter」のように関数を書くと、初期表示のロード時に毎回定義した関数がコールされると思われる。
+	   	//,{name:"shop_address",index:"building_address",width:200,align:"center",classes:"name_class", 'label':'URL', 'formatter':rbtnFmatter}
+		];
+
+	   // function rbtnFmatter(cellvalue, options, rowObject){
+	   //	  //alert(options['shop_name']);
+	   //	  // alert('bbbb');
+	   //  }
+
+		// データの作成
+	
+		var grid_data = [];
+		for(i in gon.shops){
+			var rec = {};
+			rec['id'] = gon.shops[i].id;
+			rec['no'] = gon.shops[i].code;
+			rec['shop_name'] = gon.shops[i].name;
+			rec['shop_address'] = gon.shops[i].address;
+		
+			grid_data.push(rec);
+		};
+	
+		$(function(){
+			jqgrid_create('shop_table', 'shop_pager', 'div_dummy', grid_name, grid_model, grid_data, '営業所一覧', 1);
+		});
+	}
+	
+	// 建物テーブルを作成
+	function init_jqgrid_building(){
+		// 列名の定義
+		var grid_name = ["id", "No.", "建物名", "住所"];
+
+		// 列属性の定義
+		var grid_model = [
+		  {name:"id", index:"id", width:70, align:"right", classes:"no_class", hidden:true}
+		 ,{name:"no", index:"no", width:70, align:"center", classes:"no_class"}
+		 ,{name:"building_name", index:"building_name", width:200, align:"left", classes:"no_class"}
+		 ,{name:"building_address", index:"building_address", width:200, align:"left", classes:"no_class"}
+		];
+
+		// データの作成
+		var grid_data = [];
+		for(i in gon.buildings){
+			var rec = {};
+			rec['id'] = gon.buildings[i].id;
+			rec['no'] = gon.buildings[i].building_cd;
+			rec['building_name'] = gon.buildings[i].real_building_name;
+			rec['building_address'] = gon.buildings[i].address;
+		
+			grid_data.push(rec);
+		};
+	
+		$(function(){
+			jqgrid_create('building_table', 'building_pager', 'div_dummy', grid_name, grid_model, grid_data, '建物一覧', 2);
+		});
+	}
+
+</script>
+
 <div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;"></div>
+
+<a id="simple-menu" href="#sidr"></a>
+<div id="map_canvas" style="width: 70%;height:100%;float:right"></div>
+<div id="div_dummy" style="float:left;width:30%;height:50%;">
+	<table id="shop_table"></table>
+	<div id = "shop_pager"></div>
+	
+	<table id="building_table"></table>
+	<div id = "building_pager"></div>
+</div>
+
 
