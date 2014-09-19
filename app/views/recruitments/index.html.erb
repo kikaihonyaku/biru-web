@@ -556,7 +556,7 @@ google.maps.event.addDomListener(window, "load", initialize);
 	function init_jqgrid_shop(){
 		
 		// 列名の定義
-		var grid_name = ["id", "No.", "営業所名", "住所"];
+		var grid_name = ["id", "コード", "営業所名", "住所"];
 
 		// 列属性の定義
 		var grid_model = [
@@ -587,14 +587,14 @@ google.maps.event.addDomListener(window, "load", initialize);
 		};
 	
 		$(function(){
-			jqgrid_create('shop_table', 'shop_pager', 'div_dummy', grid_name, grid_model, grid_data, '営業所一覧', 1);
+			jqgrid_create('shop_table', 'shop_pager', 'div_dummy', grid_name, grid_model, grid_data, '営業所一覧', 1, true);
 		});
 	}
 	
 	// 建物テーブルを作成
 	function init_jqgrid_building(){
 		// 列名の定義
-		var grid_name = ["id", "No.", "建物名", "住所"];
+		var grid_name = ["id", "コード", "建物名", "住所", "建物種別"];
 
 		// 列属性の定義
 		var grid_model = [
@@ -602,7 +602,9 @@ google.maps.event.addDomListener(window, "load", initialize);
 		 ,{name:"no", index:"no", width:70, align:"center", classes:"no_class"}
 		 ,{name:"building_name", index:"building_name", width:200, align:"left", classes:"no_class"}
 		 ,{name:"building_address", index:"building_address", width:200, align:"left", classes:"no_class"}
+		 ,{name:"building_type", index:"building_type", width:200, align:"left", classes:"no_class"}
 		];
+		
 
 		// データの作成
 		var grid_data = [];
@@ -612,12 +614,13 @@ google.maps.event.addDomListener(window, "load", initialize);
 			rec['no'] = gon.buildings[i].building_cd;
 			rec['building_name'] = gon.buildings[i].real_building_name;
 			rec['building_address'] = gon.buildings[i].address;
+			rec['building_type'] = gon.buildings[i].building_type;
 		
 			grid_data.push(rec);
 		};
 	
 		$(function(){
-			jqgrid_create('building_table', 'building_pager', 'div_dummy', grid_name, grid_model, grid_data, '建物一覧', 2);
+			jqgrid_create('building_table', 'building_pager', 'div_dummy', grid_name, grid_model, grid_data, '建物一覧', 2, false);
 		});
 	}
 

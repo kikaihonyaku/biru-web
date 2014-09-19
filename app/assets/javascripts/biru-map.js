@@ -1020,7 +1020,8 @@ var isSupported = function(browsers){
 // 5:列モデル
 // 6:キャプション
 // 7:イベント種別 1:shop, 2:building, 3:owner
-function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, data_list, caption, event_type){
+// 8:画面サイズを自動的にフィットさせるか
+function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, data_list, caption, event_type, shrinkFit){
 	
 	var table_div = $('#' + table_name);
 	
@@ -1033,8 +1034,8 @@ function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, 
 	  	rowList : [100, 200, 300],         //変更可能な1ページ当たりの行数
 	  	caption : caption,    //ヘッダーのキャプション
 		loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
-			table_div.jqGrid('setGridWidth', $(div_dummy).width(), true);
-		    table_div.jqGrid('setGridHeight', $(div_dummy).height(), true);
+			table_div.jqGrid('setGridWidth', $(div_dummy).width(), shrinkFit);
+		    table_div.jqGrid('setGridHeight', $(div_dummy).height(), shrinkFit);
 		},
         onSelectRow: function(id) {
            // idにはリストの選択した行番号が入ってくる
@@ -1046,7 +1047,7 @@ function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, 
 		   }
         },
 	  	pager : fotter_name,              //footerのページャー要素のid
-	  	shrinkToFit : true,　　        //画面サイズに依存せず固定の大きさを表示する設定
+	  	//shrinkToFit : false,　　        //画面サイズに依存せず固定の大きさを表示する設定
 	  	viewrecords: true              //footerの右下に表示する。
 	});
   
