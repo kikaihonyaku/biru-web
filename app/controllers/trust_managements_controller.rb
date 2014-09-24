@@ -16,32 +16,27 @@ class TrustManagementsController < ApplicationController
       # 検索条件にエラーが存在しないとき
       
       # Owner Building Trust を連結した他社データを取得する
+      buildings = []
       @trust_data = get_trust_data
-      @trust_grid = initialize_grid(
-        @trust_data,
-        :order => 'attack_states.code',
-        :order_direction => 'desc',
-        :per_page => 40,
-        :name => 'g1',
-        :enable_export_to_csv => false, # データは別ボタンで出力する
-        :csv_file_name => 'owner_buildings'      
-      )
-    
-      export_grid_if_requested('g1' => 'owner_building_list', 'g2' => 'projects_grid') do
-        # usual render or redirect code executed if the request is not a CSV export request
-        render 'owner_building_list'   
+      @trust_data.each do |trust|
+        begin
+          # 本来存在しないことはないはずだが、１件でもあると例外が発生してしまうのでここでrescueする
+          biru = Building.find(trust.building_id)
+          buildings << biru if biru
+        rescue
+          p trust.building_id
+        end
       end
-    
-      if params[:g1] && params[:g1][:selected]
-        @selected = params[:g1][:selected]
-      end    
+      
+      # 絞りこまれた建物を元に、貸主・委託・営業所を取得する
+      buildings_to_gon(buildings)
+      render 'owner_building_list'   
       
     else
       # 不正な検索条件が指定されたとき
       render 'owner_building_list'   
     end
   end
-  
   
   # タックシールを出力する
   def tack_out

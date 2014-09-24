@@ -422,32 +422,30 @@ function initialize(){
 
     /* 営業所の情報を表示する */
     shop_arr = {}; // varを消してグローバル化
-    var shops = gon.shops
-    for(var i in shops){
+	gon.shops.forEach(function(shop){
 
-      pos = new google.maps.LatLng(shops[i].latitude, shops[i].longitude);
+      pos = new google.maps.LatLng(shop.latitude, shop.longitude);
       bounds.extend(pos);
 
-      shop_arr[shops[i].id] = createMarker({
+      shop_arr[shop.id] = createMarker({
         position : pos
         ,map : mapCanvas
         ,animation: google.maps.Animation.DROP
-        ,icon : shops[i].icon
-        ,info_msg : shops[i].name
-        ,html : shops[i].name
+        ,icon : shop.icon
+        ,info_msg : shop.name
+        ,html : shop.name
       });
 	    
-    }
+	});
 
     /* 検索に一致した物件を表示する */
     build_arr = {}; // グローバル
     kyori_text = ""
     var pos;
 
-    var buildings = gon.buildings
-	//var rooms = gon.rooms
-    for(var i in buildings){
-        pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
+		
+	gon.buildings.forEach(function(building){
+        pos = new google.maps.LatLng(building.latitude, building.longitude);
         bounds.extend(pos);
 
         // infoWndに表示するHTMLを作成する。
@@ -474,20 +472,19 @@ function initialize(){
        //    '</div>';
 	   
 	   inner_text = "";
-	   var rooms = gon.rooms[buildings[i].id]
-       for(var j in rooms){
-          inner_text = inner_text + '<br/>'  + rooms[j].room_code + ' ' + rooms[j].room_no
-        }
+	   var rooms = gon.rooms[building.id]
+	   rooms.forEach(function(room){
+           inner_text = inner_text + '<br/>'  + room.room_code + ' ' + room.room_no
+	   });
 
-
-        build_arr[buildings[i].id] = createMarker({
+        build_arr[building.id] = createMarker({
           position : pos
           ,map : mapCanvas
           ,icon : '/assets/msmarker_red.png'
           ,shadow : 'assets/msmarker_shadow.png'
-          ,info_msg : buildings[i].name
+          ,info_msg : building.name
          // ,html : vhtml
-          ,html : buildings[i].building_cd + ' ' + buildings[i].real_building_name + ' </br>' + inner_text
+          ,html : building.building_cd + ' ' + building.real_building_name + ' </br>' + inner_text
         });
 
         // // 周辺の検索
@@ -504,7 +501,7 @@ function initialize(){
         //
         // }
 
-    }
+	});
 
     // google places用のサービスを指定
     service=new google.maps.places.PlacesService(mapCanvas);
@@ -538,6 +535,7 @@ google.maps.event.addDomListener(window, "load", initialize);
       padding:0;
       margin:0;
     }
+	
   </style>
 
 <% end %>
@@ -549,7 +547,6 @@ google.maps.event.addDomListener(window, "load", initialize);
 	
 	// 建物テーブルを作成します。
 	init_jqgrid_building();
-
 
 
 	// 営業所テーブルを作成
@@ -608,34 +605,60 @@ google.maps.event.addDomListener(window, "load", initialize);
 
 		// データの作成
 		var grid_data = [];
-		for(i in gon.buildings){
+			
+		gon.buildings.forEach(function(building){
 			var rec = {};
-			rec['id'] = gon.buildings[i].id;
-			rec['no'] = gon.buildings[i].building_cd;
-			rec['building_name'] = gon.buildings[i].real_building_name;
-			rec['building_address'] = gon.buildings[i].address;
-			rec['building_type'] = gon.buildings[i].building_type;
+			rec['id'] = building.id;
+			rec['no'] = building.building_cd;
+			rec['building_name'] = building.real_building_name;
+			rec['building_address'] = building.address;
+			rec['building_type'] = building.building_type;
 		
 			grid_data.push(rec);
-		};
+		});
 	
 		$(function(){
 			jqgrid_create('building_table', 'building_pager', 'div_dummy', grid_name, grid_model, grid_data, '建物一覧', 2, false);
+			
+			
+			// 反映ボタン押下
+			jQuery("#building_table").navGrid('#building_pager',{
+			        edit:false,add:false,del:false,search:false
+			      }).navButtonAdd('#building_pager',{
+			        caption:"反映", position:"last", onClickButton: function(){
+						 
+						// 建物を表示
+						 for(var item in build_arr){
+						    build_arr[item].set("visible", false);
+						 };
+						 
+						 var table_div = $('#building_table');
+						 var row_data = table_div.getRowData();
+						 for(var j in  row_data){
+							 var obj_id = row_data[j].id;
+							 build_arr[obj_id].set("visible", true);
+						 }
+						 
+						 
+					 }
+			      });			
+			
 		});
 	}
 
 </script>
 
-<div id="panowide" style="width: 100%; height: 0px;margin-top: 5px;"></div>
 
-<a id="simple-menu" href="#sidr"></a>
-<div id="map_canvas" style="width: 70%;height:100%;float:right"></div>
-<div id="div_dummy" style="float:left;width:30%;height:50%;">
-	<table id="shop_table"></table>
-	<div id = "shop_pager"></div>
+	<div id="panowide" style="width: 70%; height: 0px;margin-top: 5px;"></div>
+	<a id="simple-menu" href="#sidr"></a>
+	<div id="map_canvas" style="width: 70%;height:100%;float:right;"></div>
+	<div id="div_dummy" style="float:left;width:30%;height:40%;padding-right:2px;">
 	
-	<table id="building_table"></table>
-	<div id = "building_pager"></div>
-</div>
-
+		<table id="building_table"></table>
+		<div id = "building_pager"></div>
+	
+		<table id="shop_table"></table>
+		<div id = "shop_pager"></div>
+	
+	</div>
 

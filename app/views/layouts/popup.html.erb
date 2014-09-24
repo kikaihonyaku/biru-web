@@ -165,19 +165,20 @@
 		  ,draggable: true
         });
 		
-		for( var i in buildings ){
 			
-	        pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
+		buildings.forEach(function(building){
+			
+	        pos = new google.maps.LatLng(building.latitude, building.longitude);
 	        bounds.extend(pos);
 			
 	        var building_marker = createMarker_pop({
 	          position : pos
 	          ,map : mapCanvas
-			  ,html : buildings[i].name 
+			  ,html : building.name 
 			  ,icon : '/assets/building.gif'
 			  ,draggable: true
 	        });
-		}
+		});
 		
 	    mapCanvas.fitBounds(bounds);
 		// mapCanvas.setCenter(pos);

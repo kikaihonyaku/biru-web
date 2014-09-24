@@ -1,3 +1,65 @@
+
+// forEachを未実装のブラウザで使えるようにする設定
+// Production steps of ECMA-262, Edition 5, 15.4.4.18
+// Reference: http://es5.github.com/#x15.4.4.18
+if ( !Array.prototype.forEach ) {
+  Array.prototype.forEach = function( callback, thisArg ) {
+
+    var T, k;
+
+    if ( this == null ) {
+      throw new TypeError( " this is null or not defined" );
+    }
+
+    // 1. Let O be the result of calling ToObject passing the |this| value as the argument.
+    var O = Object(this);
+
+    // 2. Let lenValue be the result of calling the Get internal method of O with the argument "length".
+    // 3. Let len be ToUint32(lenValue).
+    var len = O.length >>> 0; // Hack to convert O.length to a UInt32
+
+    // 4. If IsCallable(callback) is false, throw a TypeError exception.
+    // See: http://es5.github.com/#x9.11
+    if ( {}.toString.call(callback) != "[object Function]" ) {
+      throw new TypeError( callback + " is not a function" );
+    }
+
+    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.
+    if ( thisArg ) {
+      T = thisArg;
+    }
+
+    // 6. Let k be 0
+    k = 0;
+
+    // 7. Repeat, while k < len
+    while( k < len ) {
+
+      var kValue;
+
+      // a. Let Pk be ToString(k).
+      //   This is implicit for LHS operands of the in operator
+      // b. Let kPresent be the result of calling the HasProperty internal method of O with argument Pk.
+      //   This step can be combined with c
+      // c. If kPresent is true, then
+
+      if ( k in O ) {
+
+        // i. Let kValue be the result of calling the Get internal method of O with argument Pk.
+        kValue = O[ k ];
+
+        // ii. Call the Call internal method of callback with T as the this value and
+        // argument list containing kValue, k, and O.
+        callback.call( T, kValue, k, O );
+      }
+      // d. Increase k by 1.
+      k++;
+    }
+    // 8. return undefined
+  };
+}
+
+
 /* 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -217,7 +279,6 @@ function BarControll(map, user_id) {
     divRadio.innerHTML = strRadio
     controlDiv.appendChild(divRadio);
 
-
     var divA = document.createElement('div');
     divA.style.position = 'absolute';
     divA.style.top = '75px';
@@ -291,7 +352,6 @@ function DispControll(map) {
     controlDiv.style.padding = '5px';
     controlDiv.style.marginRight = '10px';
 
-
     // Set CSS for the control border.
     var controlUI = document.createElement('div');
     controlUI.style.backgroundColor = 'white';
@@ -305,7 +365,6 @@ function DispControll(map) {
     controlUI.style.width = '200px';
     controlUI.style.top = '10px';
     controlDiv.appendChild(controlUI);
-
 
     var divA = document.createElement('div');
     divA.style.position = 'absolute';
@@ -336,7 +395,6 @@ function ResultControll(map) {
     controlDiv.style.padding = '5px';
     controlDiv.style.marginRight = '10px';
 
-
     // Set CSS for the control border.
     var controlUI = document.createElement('div');
     controlUI.style.backgroundColor = 'white';
@@ -350,7 +408,6 @@ function ResultControll(map) {
     controlUI.style.width = '200px';
     controlUI.style.top = '10px';
     controlDiv.appendChild(controlUI);
-
 
     var divA = document.createElement('div');
     divA.style.position = 'absolute';
@@ -459,9 +516,9 @@ function GoogleMessageControll(map) {
 function init_process(){
 
   // 営業所IDを添字、営業所CODEを値に変換用配列を作成します。。
-  for(var i in gon.all_shops){
-    convert_shop[gon.all_shops[i].id] = parseInt(gon.all_shops[i].code);
-  }
+  gon.all_shops.forEach(function(shop){
+      convert_shop[shop.id] = parseInt(shop.code);
+  });
 }
 
 // ストリートビューを非表示にして map_canvasの高さを設定
@@ -792,12 +849,13 @@ function info_msg_biru(biru, owners){
     code_msg = "他社建物CD：" + biru.attack_code;
   }
 
-  for(var j in owners){
+  	
+  owners.forEach(function(owner){
     inner_text = inner_text +
       '<li>' +
-      '  <a href="javascript:link_owner_click(' + owners[j].id + ',' + owners[j].latitude + ',' + owners[j].longitude + ')">' + owners[j].name + '</a></td>' +
+      '  <a href="javascript:link_owner_click(' + owner.id + ',' + owner.latitude + ',' + owner.longitude + ')">' + owner.name + '</a></td>' +
       '</li>'
-  }
+  });
 
   vhtml = '<div><b>' + biru.name + '（<a href="javascript:win_building(' + biru.id + ');">詳細</a>）</b><br>' +
     '<div>住所：' + biru.address +'</div>' +
@@ -824,12 +882,13 @@ function info_msg_biru(biru, owners){
 function info_msg_owner(owner, buildings){
 
   var inner_text = "";
-  for(var j in buildings){
+  	
+  buildings.forEach(function(building){
     inner_text = inner_text +
       '<li>' +
-      '  <a href="javascript:link_building_click(' + buildings[j].id + ',' + buildings[j].latitude + ',' + buildings[j].longitude + ')">' + buildings[j].name + '</a></td>' +
+      '  <a href="javascript:link_building_click(' + building.id + ',' + building.latitude + ',' + building.longitude + ')">' + building.name + '</a></td>' +
       '</li>'
-  }
+  });
 
   var code_msg;
   if(owner.code != null){
@@ -1024,6 +1083,7 @@ var isSupported = function(browsers){
 function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, data_list, caption, event_type, shrinkFit){
 	
 	var table_div = $('#' + table_name);
+	var div_box = $('#' + div_name);
 	
 	table_div.jqGrid({
 	  	data : data_list,  //表示したいデータ
@@ -1034,8 +1094,8 @@ function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, 
 	  	rowList : [100, 200, 300],         //変更可能な1ページ当たりの行数
 	  	caption : caption,    //ヘッダーのキャプション
 		loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
-			table_div.jqGrid('setGridWidth', $(div_dummy).width(), shrinkFit);
-		    table_div.jqGrid('setGridHeight', $(div_dummy).height(), shrinkFit);
+			table_div.jqGrid('setGridWidth', div_box.width(), shrinkFit);
+		    table_div.jqGrid('setGridHeight', div_box.height(), shrinkFit);
 		},
         onSelectRow: function(id) {
            // idにはリストの選択した行番号が入ってくる

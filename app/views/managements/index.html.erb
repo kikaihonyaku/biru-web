@@ -379,7 +379,6 @@ function getCoords(position) {
     // 地図・ストリートビューを作成します。
     init_map(<%= @biru_user.id %>, <%= @search_bar_disp_flg %>);
 
-
     // 初期表示位置を調整
     var bounds = new google.maps.LatLngBounds();
 
@@ -392,9 +391,9 @@ function getCoords(position) {
     var populations = [];
 
     var building_to_owners = gon.building_to_owners
-    var buildings = gon.buildings
-    for(var i in buildings){
-        pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
+	
+    gon.buildings.forEach(function(building){
+        pos = new google.maps.LatLng(building.latitude, building.longitude);
 
         <% if @search_type == 2 # 貸主の時、初期状態で非表示%>
           var build_disp = false
@@ -403,22 +402,22 @@ function getCoords(position) {
           bounds.extend(pos);
         <% end %>
 
-        var shop_code = convert_shop[buildings[i].shop_id];
+        var shop_code = convert_shop[building.shop_id];
 
-        build_arr[buildings[i].id] = createMarker({
+        build_arr[building.id] = createMarker({
           position : pos
           ,map : mapCanvas
-          ,icon : buildings[i].tmp_build_type_icon
+          ,icon : building.tmp_build_type_icon
           ,siten_icon : get_icon_siten(shop_code)
           ,area_icon : get_icon_area(shop_code)
           ,shop_icon : get_icon_shop(shop_code)
-          ,manage_icon : buildings[i].tmp_manage_type_icon
-          ,build_type_icon : buildings[i].tmp_build_type_icon
-          ,kanri_room_num  : get_icon_kanri_room_num(buildings[i].kanri_room_num)
-          ,free_room : get_icon_free_room(buildings[i].kanri_room_num, buildings[i].free_num)
-          ,biru_age : get_icon_biru_age(buildings[i].biru_age)
+          ,manage_icon : building.tmp_manage_type_icon
+          ,build_type_icon : building.tmp_build_type_icon
+          ,kanri_room_num  : get_icon_kanri_room_num(building.kanri_room_num)
+          ,free_room : get_icon_free_room(building.kanri_room_num, building.free_num)
+          ,biru_age : get_icon_biru_age(building.biru_age)
           ,shadow : '/assets/marker_shadow.png'
-          ,html : info_msg_biru(buildings[i], building_to_owners[buildings[i].id])
+          ,html : info_msg_biru(building, building_to_owners[building.id])
           ,visible : build_disp
         });
 
@@ -454,7 +453,7 @@ function getCoords(position) {
 
         biru_latlngs[idx] = pos;
         idx = idx + 1;
-    }
+    });
 
     var heatmap_biru = new google.maps.visualization.HeatmapLayer();
     heatmap_biru.setData(biru_latlngs);
@@ -483,13 +482,12 @@ function getCoords(position) {
 
     /* 貸主オブジェクトを作成 */
     owner_arr = {}; // varを外してグローバル化
-    var owners = gon.owners
     var owner_to_buildings = gon.owner_to_buildings
     var owner_icon;
     var owner_disp;
-
-    for(var i in owners){
-      pos = new google.maps.LatLng(owners[i].latitude, owners[i].longitude);
+	
+    gon.owners.forEach(function(owner){
+      pos = new google.maps.LatLng(owner.latitude, owner.longitude);
 
       <% if @search_type == 1 # 建物検索の時、初期状態で非表示%>
         owner_disp = false
@@ -499,55 +497,56 @@ function getCoords(position) {
       <% end %>
 
       // 貸主かどうかでアタックを決める。
-      if( owners[i].code == null){
+      if( owner.code == null){
         owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
       } else {
         owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
       }
 
-      owner_arr[owners[i].id] = createMarker({
+      owner_arr[owner.id] = createMarker({
         position : pos
         ,map : mapCanvas
         ,icon : owner_icon
-        ,html : info_msg_owner(owners[i], owner_to_buildings[owners[i].id])
+        ,html : info_msg_owner(owner, owner_to_buildings[owner.id])
         ,visible : owner_disp
       });
-    }
+	});
 
     /* 委託契約CDのラインを引く */
     trust_arr = {}; // varを外してグローバル化
-    var trusts = gon.trusts
-    for(var i in trusts){
+	gon.trusts.forEach(function(trust){
 
       // 貸主マスタ・建物マスタに委託で指定した貸主CD・建物CDが存在することを確認
-      if ( !owner_arr[trusts[i].owner_id] ){
-          continue;
+      if ( !owner_arr[trust.owner_id] ){
+          //continue;
+		  return;
       }
 
-      if ( !build_arr[trusts[i].building_id]){
-          continue;
+      if ( !build_arr[trust.building_id]){
+          //continue;
+		  return;
       }
 
-      trust_arr[trusts[i].id] = new google.maps.Polyline({
+      trust_arr[trust.id] = new google.maps.Polyline({
          map : mapCanvas
-        ,path : [owner_arr[trusts[i].owner_id].position, build_arr[trusts[i].building_id].position]
-        ,strokeColor: gon.manage_line_color[trusts[i].manage_type_id]
+        ,path : [owner_arr[trust.owner_id].position, build_arr[trust.building_id].position]
+        ,strokeColor: gon.manage_line_color[trust.manage_type_id]
         ,strokeOpacity:0.5
         ,strokeWeight:3
         ,zIndex:1
       });
 
       // 初期状態は非表示
-      trust_arr[trusts[i].id].set("visible", false);
+      trust_arr[trust.id].set("visible", false);
 
       // ダブルクリック時のイベント登録
-      trust_ev = trust_arr[trusts[i].id]
-      owner_ev = owner_arr[trusts[i].owner_id]
-      build_ev = build_arr[trusts[i].building_id]
+      trust_ev = trust_arr[trust.id]
+      owner_ev = owner_arr[trust.owner_id]
+      build_ev = build_arr[trust.building_id]
 
       // クリックした時のオブジェクトを保存するために、イベントは関数呼び出しで登録する。
       create_relation_listener(trust_ev, owner_ev, build_ev)
-    }
+	});
 
     /* 営業所の情報を表示する */
     shop_arr = {}; // varを消してグローバル化
@@ -556,29 +555,28 @@ function getCoords(position) {
     var distination = new google.maps.MVCArray();
     var distination_arr = [];
 
-    var shops = gon.shops
-    for(var i in shops){
+    gon.shops.forEach(function(shop){
 
-      pos = new google.maps.LatLng(shops[i].latitude, shops[i].longitude);
+      pos = new google.maps.LatLng(shop.latitude, shop.longitude);
       bounds.extend(pos);
 
-      shop_arr[shops[i].id] = createMarker({
+      shop_arr[shop.id] = createMarker({
         position : pos
         ,map : mapCanvas
         ,animation: google.maps.Animation.DROP
-        ,icon : shops[i].icon
-        ,info_msg : shops[i].name
-        ,html : info_msg_shop(shops[i])
+        ,icon : shop.icon
+        ,info_msg : shop.name
+        ,html : info_msg_shop(shop)
       });
 
       /* 営業所の円を作成 */
-      shop_circle01_arr[shops[i].id] = create_circle(1000, mapCanvas, pos);
-      shop_circle02_arr[shops[i].id] = create_circle(2000, mapCanvas, pos);
+      shop_circle01_arr[shop.id] = create_circle(1000, mapCanvas, pos);
+      shop_circle02_arr[shop.id] = create_circle(2000, mapCanvas, pos);
 
       /* 距離を測る対象を設定 */
-      distination.push({name:shops[i].name, latLng:[shops[i].latitude,shops[i].longitude]});
+      distination.push({name:shop.name, latLng:[shop.latitude, shop.longitude]});
       distination_arr.push(pos);
-    }
+	});
 
     mapCanvas.fitBounds(bounds);
 

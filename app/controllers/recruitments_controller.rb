@@ -62,15 +62,30 @@
   
   
   def get_all_building
-    RentersBuilding.where("delete_flg = ?", false).each do |biru|
-      @buildings << biru
-      
-      RentersRoom.where("delete_flg = ?", false).where("building_code = ?", biru.building_cd ).each do |room|
-        @rooms[biru.id] = [] unless @rooms[biru.id]
-        @rooms[biru.id] << room
+    biru = nil
+    RentersRoom.order("building_code").each do |room|
+    	
+    	unless biru
+        # biruが登録されていない時は建物を登録する
+        biru = room.renters_building
+        @buildings << biru
         
-      end
+      else
+      	# biruが登録されているが、建物コードが異なる時
+      	unless biru.building_cd == room.renters_building.building_cd
+      		
+	        biru = room.renters_building
+	        @buildings << biru
+      		
+      	else
+      		# すでに登録済みの建物の時はなにもしない
+      	end
+    	end
+    	
+      @rooms[biru.id] = [] unless @rooms[biru.id]
+      @rooms[biru.id] << room
     end
+
   end
 
   # 検索
@@ -162,7 +177,6 @@
     gon.buildings = @buildings
     gon.room_of_building = room_of_building
     gon.around_flg = true
-
 
     render 'index'
   end

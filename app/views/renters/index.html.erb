@@ -5,20 +5,10 @@
 	
 	<h3>レンターズ連動</h3> 
 	<%= form_tag({:action=>'update_all'}) do %>
-		<%= submit_tag '同期' %>&nbsp;&nbsp;最新更新開始：<%= @data_update.start_datetime %>&nbsp;最新更新日時：<%= @data_update.update_datetime %>  更新者：<%= @data_update.biru_user.name if @data_update.biru_user %>
+	
+		
+		<%= submit_tag '同期' %>&nbsp;&nbsp;<%= collection_select :batch, :value, @batch_list, :batch_cd, :batch_cd %>&nbsp;&nbsp;最新更新開始：<%= @data_update.start_datetime %>&nbsp;最新更新日時：<%= @data_update.update_datetime %>  更新者：<%= @data_update.biru_user.name if @data_update.biru_user %>
 	<% end %>
 	
 	
-  <%= raw jqgrid("一覧表示", "renters_buildings", "/renters",
-    [ { :field => "id", :label => "ID"},
-    ],
-    {
-      :autowidth     => true,
-      :add           => false,
-      :edit          => false,
-      :view          => true,
-      :edit_url      => '',
-      :sortable_rows => true
-    }
-  ) %>	
 </div>

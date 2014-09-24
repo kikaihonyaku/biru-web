@@ -145,7 +145,6 @@ class ManagementsController < ApplicationController
     redirect_to :action=>'popup_owner', :id=>@owner.id
   end
   
-  
   # アプローチ履歴を登録する
   def owner_approach_regist 
     @owner_approach = OwnerApproach.new(params[:owner_approach])
@@ -268,7 +267,10 @@ class ManagementsController < ApplicationController
     # 営業所のみ表示 (検索結果一覧リストに出すために、インスタンス変数にも入れる)
     @shops = Shop.find(:all)
     gon.shops = @shops
-    
+    gon.buildings = @buildings
+    gon.trusts = @trusts
+    gon.owners = @owners
+    gon.all_shops = Shop.find(:all)
     
     # 検索バー非表示
     @search_bar_disp_flg = true

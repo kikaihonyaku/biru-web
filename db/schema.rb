@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140912201735) do
+ActiveRecord::Schema.define(:version => 20140921075241) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -353,7 +353,11 @@ ActiveRecord::Schema.define(:version => 20140912201735) do
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
     t.integer  "picture_num",            :default => 0
+    t.integer  "renters_building_id"
   end
+
+  add_index "renters_rooms", ["building_code"], :name => "index_renters_rooms_on_building_code"
+  add_index "renters_rooms", ["renters_building_id"], :name => "index_renters_rooms_on_renters_building_id"
 
   create_table "room_layouts", :force => true do |t|
     t.string "code"
