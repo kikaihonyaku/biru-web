@@ -849,7 +849,6 @@ function info_msg_biru(biru, owners){
     code_msg = "他社建物CD：" + biru.attack_code;
   }
 
-  	
   owners.forEach(function(owner){
     inner_text = inner_text +
       '<li>' +
@@ -917,9 +916,6 @@ function info_msg_owner(owner, buildings){
 
   return vhtml;
 }
-
-
-
 
 
 // infoWindowで委託ライン有無を押下された時に動作します。(貸主)
@@ -1078,7 +1074,7 @@ var isSupported = function(browsers){
 // 4:列名リスト
 // 5:列モデル
 // 6:キャプション
-// 7:イベント種別 1:shop, 2:building, 3:owner
+// 7:イベント種別 1:shop, 2:building, 3:owner 30:trust_manage用のowner
 // 8:画面サイズを自動的にフィットさせるか
 function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, data_list, caption, event_type, shrinkFit){
 	
@@ -1104,6 +1100,8 @@ function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, 
 			   link_shop_click(table_div.getRowData(id).id);
 		   }else if(event_type == 2){
 			   link_building_click(table_div.getRowData(id).id);
+		   }else if(event_type == 30){
+			   link_owner_click(table_div.getRowData(id).owner_id);
 		   }
         },
 	  	pager : fotter_name,              //footerのページャー要素のid

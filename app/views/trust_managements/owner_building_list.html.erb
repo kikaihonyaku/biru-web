@@ -499,11 +499,12 @@ function getCoords(position) {
       <% end %>
 
       // 貸主かどうかでアタックを決める。
-      if( owner.code == null){
-        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
-      } else {
-        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
-      }
+      // if( owner.code == null){
+      //   owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
+      // } else {
+      //   owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
+      // }
+      owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
 
       owner_arr[owner.id] = createMarker({
         position : pos
@@ -737,15 +738,18 @@ $(document).ready(function() {
 		// データの作成
 	
 		var grid_data = [];
-		for(i in gon.shops){
+		gon.shops.forEach(function(shop){
+			if(shop == null){
+				return;
+			}
 			var rec = {};
-			rec['id'] = gon.shops[i].id;
-			rec['no'] = gon.shops[i].code;
-			rec['shop_name'] = gon.shops[i].name;
-			rec['shop_address'] = gon.shops[i].address;
+			rec['id'] = shop.id;
+			rec['no'] = shop.code;
+			rec['shop_name'] = shop.name;
+			rec['shop_address'] = shop.address;
 		
 			grid_data.push(rec);
-		};
+		});
 	
 		$(function(){
 			jqgrid_create('shop_table', 'shop_pager', 'div_dummy', grid_name, grid_model, grid_data, '営業所一覧', 1, true);
@@ -756,7 +760,7 @@ $(document).ready(function() {
 	function init_jqgrid_trust(){
 		// 列名の定義
 		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
-		var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考"];
+		var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -771,40 +775,36 @@ $(document).ready(function() {
 		 ,{name:"building_name", index:"building_name", width:200, align:"left", classes:"no_class"}
 		 ,{name:"building_address", index:"building_address", width:200, align:"left", classes:"no_class"}
 		 ,{name:"building_memo", index:"building_memo", width:200, align:"left", classes:"no_class"}
+		 ,{name:"shop_name", index:"shop_memo", width:200, align:"left", classes:"no_class"}
+		 ,{name:"user_name", index:"user_memo", width:200, align:"left", classes:"no_class"}
 		];
 		
 		// データの作成
 		var grid_data = [];
-		for(i in gon.trusts){
+		gon.trust_manages.forEach(function(trust_manage){
 			var rec = {};
 			
-			trust_id = gon.trusts[i].id
-			owner_id = gon.trusts[i].owner_id
-			building_id =gon.trusts[i].building_id
-			owner = building_to_owners[building_id][0]
-			building = owner_to_buildings
+			rec['trust_id'] = trust_manage.trust_id
+			rec['owner_id'] = trust_manage.owner_id
+			rec['owner_code'] = trust_manage.owner_attack_code
+			rec['owner_name'] = trust_manage.owner_name
+			rec['owner_address'] = trust_manage.owner_address
+			rec['owner_memo'] = trust_manage.owner_memo
+			rec['building_id'] = trust_manage.building_id
+			rec['building_code'] = trust_manage.building_attack_code
+			rec['building_name'] = trust_manage.building_name
+			rec['building_address'] = trust_manage.building_address
+			rec['building_memo'] = trust_manage.building_memo
 			
-			if (gon.owners[owner_id]){
+			rec['shop_name'] = trust_manage.shop_name
+			rec['user_name'] = trust_manage.biru_user_name
+		
+			grid_data.push(rec);
 			
-				rec['trust_id'] = trust_id
-				rec['owner_id'] = owner_id
-				rec['owner_code'] = gon.owners[owner_id].attack_code
-				rec['owner_name'] = gon.owners[owner_id].name
-				rec['owner_address'] = gon.owners[owner_id].address
-				rec['owner_memo'] = gon.owners[owner_id].memo
-				rec['building_id'] = building_id
-				rec['building_code'] = gon.buildings[building_id].attack_code
-				rec['building_name'] = gon.buildings[building_id].name
-				rec['building_address'] = gon.buildings[building_id].address
-				rec['building_memo'] = gon.buildings[building_id].memo
-			
-				grid_data.push(rec);
-			}
-			
-		};
+		});
 		
 		$(function(){
-			jqgrid_create('building_table', 'building_pager', 'div_dummy_02', grid_name, grid_model, grid_data, 'アタックリスト', 2, true);
+			jqgrid_create('building_table', 'building_pager', 'div_dummy_02', grid_name, grid_model, grid_data, 'アタックリスト', 30, true);
 		});
 		
 	}

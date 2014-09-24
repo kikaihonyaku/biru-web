@@ -132,7 +132,7 @@ class ApplicationController < ActionController::Base
 
       end
 
-      gon.buildings = @buildings
+      gon.buildings = buildings
       gon.owners = @owners # 関連する貸主
       gon.trusts = @trusts # 関連する委託契約
       gon.shops = @shops    # 関連する営業所

@@ -16,20 +16,45 @@ class TrustManagementsController < ApplicationController
       # 検索条件にエラーが存在しないとき
       
       # Owner Building Trust を連結した他社データを取得する
+      # buildings = []
+      # @trust_data = get_trust_data
+      # @trust_data.each do |trust|
+      #   begin
+      #     # 本来存在しないことはないはずだが、１件でもあると例外が発生してしまうのでここでrescueする
+      #     biru = Building.find(trust.building_id)
+      #     buildings << biru if biru
+      #   rescue
+      #     p trust.building_id
+      #   end
+      # end
+      #
+      
+      tmp_building_id = 0
       buildings = []
-      @trust_data = get_trust_data
-      @trust_data.each do |trust|
-        begin
-          # 本来存在しないことはないはずだが、１件でもあると例外が発生してしまうのでここでrescueする
-          biru = Building.find(trust.building_id)
-          buildings << biru if biru
-        rescue
-          p trust.building_id
+      trust_manages = []
+      ActiveRecord::Base.connection.select_all(get_trust_sql).each do |rec|
+        trust_manages.push(rec)
+        
+        unless tmp_building_id == rec['building_id']
+          
+          tmp_building_id = rec['building_id']
+          
+          begin
+            # 本来存在しないことはないはずだが、１件でもあると例外が発生してしまうのでここでrescueする
+            biru = Building.find(tmp_building_id)
+            buildings << biru if biru
+          rescue
+            p '■■■■■■■■■■■■ trust_managements_controller index ' + tmp_building_id.to_s
+          end
         end
+        
       end
       
       # 絞りこまれた建物を元に、貸主・委託・営業所を取得する
       buildings_to_gon(buildings)
+      gon.trust_manages = trust_manages
+      
+      
       render 'owner_building_list'   
       
     else
@@ -490,16 +515,44 @@ def get_owner_show(owner_id)
   
 end  
 
-def get_trust_data()
+#def get_trust_data()
+def get_trust_sql()
   
   # trustについているdelete_flg の　default_scopeの副作用で、biru_usersのLEFT_OUTER_JOINが効かなくなっている？（空白のものは出てこない・・）なのでそうであればINNER JOINでつないでしまう（2014/07/15）
   #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").where("owners.code is null")
   #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
-  trust_data = Trust.joins(:owner).joins("LEFT OUTER JOIN manage_types ON trusts.manage_type_id = manage_types.id").joins("LEFT OUTER JOIN buildings on trusts.building_id = buildings.id").joins("LEFT OUTER JOIN shops on buildings.shop_id = shops.id").joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
+  
+  #trust_data = Trust.joins(:owner).joins("LEFT OUTER JOIN manage_types ON trusts.manage_type_id = manage_types.id").joins("LEFT OUTER JOIN buildings on trusts.building_id = buildings.id").joins("LEFT OUTER JOIN shops on buildings.shop_id = shops.id").joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
+  
+  # 指定した列のハッシュだけで返す為に直接SQLを実行する
+  sql = ""
+  sql = sql + " SELECT trusts.id as trust_id "
+  sql = sql + " , owners.id as owner_id "
+  sql = sql + " , owners.attack_code as owner_attack_code "
+  sql = sql + " , owners.name as owner_name "
+  sql = sql + " , owners.address as owner_address "
+  sql = sql + " , owners.memo as owner_memo "
+  sql = sql + " , buildings.id as building_id "
+  sql = sql + " , buildings.attack_code as building_attack_code "
+  sql = sql + " , buildings.name as building_name "
+  sql = sql + " , buildings.address as building_address"
+  sql = sql + " , buildings.memo as building_memo "
+  sql = sql + " , shops.id as shop_id "
+  sql = sql + " , shops.name as shops_name "
+  sql = sql + " , biru_users.name as biru_user_name "
+  sql = sql + " , attack_states.name as attack_states_name "
+  sql = sql + " FROM trusts inner join owners on trusts.owner_id = owners.id "
+  sql = sql + " LEFT OUTER JOIN manage_types on trusts.manage_type_id = manage_types.id "
+  sql = sql + " LEFT OUTER JOIN buildings on trusts.building_id = buildings.id "
+  sql = sql + " LEFT OUTER JOIN shops on buildings.shop_id = shops.id "
+  sql = sql + " LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id "
+  sql = sql + " LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id "
+  sql = sql + " WHERE owners.code is null "
   
   # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
   unless @biru_user.attack_all_search 
-    trust_data = trust_data.where('trusts.biru_user_id = ?', @biru_user.id)
+    #trust_data = trust_data.where('trusts.biru_user_id = ?', @biru_user.id)
+    sql = sql + " AND trusts.biru_user_id = " + @biru_user.id.to_s
   end
   
   #----------------------------------#
@@ -519,10 +572,6 @@ def get_trust_data()
       
     # 訪問リレキで「すべて」以外が選択されているとき
     approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", Date.parse(@history_visit_from), Date.parse(@history_visit_to))
-    
-    p Date.parse(@history_visit_from)
-    p Date.parse(@history_visit_to)
-    p approaches.to_sql
     
     if @history_visit[:exist]
       approaches.each do |approach|
@@ -585,14 +634,18 @@ def get_trust_data()
   
   # 絞り込み条件が指定されていた時
   if filter_exist_flg 
-      trust_data = trust_data.where("owners.id in (?)", arr_exist) 
+      # trust_data = trust_data.where("owners.id in (?)", arr_exist) 
+      sql = sql + " AND owners.id in (" + arr_exist.join(',') + ") "
   end
   
   if filter_not_exist_flg
-    trust_data = trust_data.where("owners.id not in (?)", arr_not_exist) 
+    # trust_data = trust_data.where("owners.id not in (?)", arr_not_exist) 
+    sql = sql + "AND owners.id not in (" + arr_not_exist.join(',') + ") "
   end
 
-  trust_data
+  sql = sql + " ORDER BY buildings.id asc"
+  #trust_data
+  sql
 end
 
 
