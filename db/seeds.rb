@@ -1358,13 +1358,14 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	      imp.building_address = (row[3]).strip
 			end
 
-      imp.building_nm = row[9]
+      # imp.building_nm = row[9]
+      imp.building_nm = Moji.han_to_zen(row[9].strip)
       
       # building_cdは、building.idを使うのでコメントアウト。ただしimport時に特定する必要があるので、代わりにbuilding_hash列を設ける
       # imp.building_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.building_address + '_' + imp.building_nm)
       imp.building_hash = conv_code(imp.biru_user_id.to_s + '_' + imp.building_address + '_' + imp.building_nm)
 
-      imp.owner_nm = row[19]
+      imp.owner_nm = Moji.han_to_zen(row[19].strip)
       imp.owner_honorific_title = row[20]
       imp.owner_kana = row[21]
       imp.owner_postcode = row[22]
@@ -1379,8 +1380,10 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       imp.owner_hash = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
       
       # オーナー発送区分 発送区分が対象外のOWNER_HASHを保存
-      if row[34].strip == "×" || row[34].strip == "対象外"
-        owner_dm_ng.push(imp.owner_hash)
+      if row[34]
+	      if row[34].strip == "×" || row[34].strip == "対象外"
+	        owner_dm_ng.push(imp.owner_hash)
+	      end
       end
       
       # アプローチ履歴を登録する。
@@ -1416,7 +1419,8 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 			owner.biru_user_id = biru_user.id
 			
 			if owner.memo
-				owner.memo = owner.memo + imp.owner_memo
+				# メモ内容で同一のものが存在しない時、書込み
+				owner.memo = owner.memo + ' ' + imp.owner_memo unless owner.memo.index(imp.owner_memo)
 			else
 				owner.memo = imp.owner_memo
 			end
@@ -1449,7 +1453,8 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	  	approach_list.push(imp.approach_05) unless imp.approach_05.blank?
 	  	
 	  	approach_list.each do |approach|
-	  		owner_app = OwnerApproach.new
+	  		#owner_app = OwnerApproach.new
+	  		owner_app = OwnerApproach.find_or_create_by_owner_id_and_biru_user_id_and_content_and_approach_date(owner.id, biru_user.id, approach, "1900/01/01")
 	  		owner_app.owner_id = owner.id
 	  		
 	  		#owner_app = owner.approaches.build
@@ -1458,10 +1463,6 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	  		owner_app.approach_date = "1900/01/01"
 	  		owner_app.approach_kind_id = ApproachKind.find_by_code("0055").id
 	  		owner_app.content = approach
-	  		owner_app.created_at = Time.now
-	  		owner_app.updated_at = Time.now
-	  		
-	  		p owner_app
 	  		
 	  		owner_app.save!
 	  	end
@@ -1480,7 +1481,8 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 			msg = biru_geocode(building, false)
 
 			if building.memo
-				building.memo = building.memo + imp.building_memo
+				# メモ内容で同一のものが存在しない時、書込み
+				building.memo = building.memo + ' ' + imp.building_memo unless building.memo.index(imp.building_memo)
 			else
 				building.memo = imp.building_memo
 			end
@@ -1522,7 +1524,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 		  	
 				# 物件ランクの登録
 				if imp.biru_rank
-					rank = AttackState.find_by_code(imp.biru_rank.upcase.strip)
+					rank = AttackState.find_by_code( Moji.han_to_zen(imp.biru_rank.upcase.encode('utf-8')).strip )
 					if rank
 						trust.attack_state_id = rank.id
 					end
@@ -2724,7 +2726,7 @@ end
 #init_approach_kind
 
 # アタックステータス登録
-# init_attack_state
+#init_attack_state
 
 # システムアップデート管理
 #init_data_update
@@ -2752,13 +2754,26 @@ end
 ###########################
 # アタックリストの登録
 ###########################
-#reg_attack_owner_building('05928', '松戸営業所', Rails.root.join( "tmp", "list_attack_matudo.csv"))
+
+#reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "01_01_souka.csv")) # 草加 松本
+#reg_attack_owner_building('6464', '南越谷営業所', Rails.root.join( "tmp", "01_04_minami_kosigaya.csv")) # 南越谷　猪原
+#reg_attack_owner_building('6406', '越谷営業所', Rails.root.join( "tmp", "01_05_koshigaya.csv")) # 越谷　末吉
+#reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "01_07_kitakoshigaya.csv")) # 北越谷　赤坂
 
 
-#reg_attack_owner_building('7844', '戸田営業所', Rails.root.join( "tmp", "02_01_toda.csv"))
-#reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_02_todakoen.csv"))
+reg_attack_owner_building('5952', 'せんげん台営業所', Rails.root.join( "tmp", "01_08_sengendai.csv")) # せんげん台　山口主任
+reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_01_todakoenn.csv")) # 戸田公園 中野主任
+reg_attack_owner_building('7844', '戸田営業所', Rails.root.join( "tmp", "02_02_toda.csv")) # 戸田　辻社員’
+reg_attack_owner_building('5473', '東浦和営業所', Rails.root.join( "tmp", "02_07_higashi_urawa.csv")) # 東浦和 小泉主任
+reg_attack_owner_building('5841', '戸塚安行営業所', Rails.root.join( "tmp", "02_09_totukaangyo.csv")) # 戸塚安行 下地社員
 
-#reg_attack_owner_building('05928', '戸田公園営業所', Rails.root.join( "tmp", "02_02_test.csv"))
+
+
+# 千葉支店 市橋主任
+#reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "03_01_matudo.csv"))
+#reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "03_02_kitamatudo.csv"))
+#reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "03_03_minaminagareyama.csv"))
+#reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "03_04_kasiwa.csv"))
 
 
 ###########################
@@ -2784,6 +2799,7 @@ end
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201406.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201407.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201408.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201409.csv"))
 
 ###########################
 # 業績分析(空室)
@@ -2796,6 +2812,8 @@ end
 #regist_vacant_room("201406", Rails.root.join( "tmp", "vacant_201406.csv"))
 #regist_vacant_room("201407", Rails.root.join( "tmp", "vacant_201407.csv"))
 #regist_vacant_room("201408", Rails.root.join( "tmp", "vacant_201408.csv"))
+#regist_vacant_room("201409", Rails.root.join( "tmp", "vacant_201409.csv"))
+
 
 ###########################
 # 賃貸借契約登録
@@ -2806,4 +2824,4 @@ end
 ###########################
 # レンターズデータ取得
 ###########################
-create_work_renters_rooms
+#create_work_renters_rooms

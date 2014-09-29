@@ -307,7 +307,7 @@ ActiveRecord::Schema.define(:version => 20140921075241) do
     t.float    "longitude"
     t.boolean  "gmaps"
     t.string   "completion_ym"
-    t.string   "delete_flg"
+    t.boolean  "delete_flg"
     t.datetime "created_at",             :null => false
     t.datetime "updated_at",             :null => false
   end

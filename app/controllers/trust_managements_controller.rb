@@ -30,7 +30,7 @@ class TrustManagementsController < ApplicationController
       #
       
       tmp_building_id = 0
-      buildings = []
+      building_id_arr = []
       trust_manages = []
       ActiveRecord::Base.connection.select_all(get_trust_sql).each do |rec|
         trust_manages.push(rec)
@@ -38,22 +38,18 @@ class TrustManagementsController < ApplicationController
         unless tmp_building_id == rec['building_id']
           
           tmp_building_id = rec['building_id']
+          building_id_arr.push(rec['building_id'])
           
-          begin
-            # 本来存在しないことはないはずだが、１件でもあると例外が発生してしまうのでここでrescueする
-            biru = Building.find(tmp_building_id)
-            buildings << biru if biru
-          rescue
-            p '■■■■■■■■■■■■ trust_managements_controller index ' + tmp_building_id.to_s
-          end
         end
         
       end
       
+      buildings = Building.find_all_by_id(building_id_arr)
+      buildings = [] unless buildings
+      
       # 絞りこまれた建物を元に、貸主・委託・営業所を取得する
       buildings_to_gon(buildings)
       gon.trust_manages = trust_manages
-      
       
       render 'owner_building_list'   
       
@@ -411,12 +407,12 @@ class TrustManagementsController < ApplicationController
 		station_arr.each do | station_pair |
 			station = Station.find_by_line_code_and_code(station_pair[0], station_pair[1])
 			
-			if station
-			  p "駅あり"
-		  else
-			  p "駅なし"
-			end
-			
+      # if station
+      #   p "駅あり"
+      #       else
+      #   p "駅なし"
+      # end
+      #
 			stations << station if station
 		end
 
