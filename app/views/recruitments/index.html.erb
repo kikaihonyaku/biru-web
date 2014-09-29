@@ -542,7 +542,7 @@ google.maps.event.addDomListener(window, "load", initialize);
 <script type="text/javascript">
 
 	// 営業所テーブルを作成します。
-	init_jqgrid_shop();
+//	init_jqgrid_shop();
 	
 	// 建物テーブルを作成します。
 	init_jqgrid_building();
@@ -581,9 +581,19 @@ google.maps.event.addDomListener(window, "load", initialize);
 		
 			grid_data.push(rec);
 		};
+		
+		jqgrid_opt = {
+			 table_name:'shop_table'
+			,fotter_name:'shop_pager'
+			,div_name:'div_dummy'
+			,caption:'営業所一覧'
+			,event_type:1
+			,shrinkFit:true
+			,multiselect:false
+		};				
 	
 		$(function(){
-			jqgrid_create('shop_table', 'shop_pager', 'div_dummy', grid_name, grid_model, grid_data, '営業所一覧', 1, true);
+			jqgrid_create(grid_name, grid_model, grid_data, jqgrid_opt);
 		});
 	}
 	
@@ -615,9 +625,19 @@ google.maps.event.addDomListener(window, "load", initialize);
 		
 			grid_data.push(rec);
 		});
+		
+		jqgrid_opt = {
+			 table_name:'building_table'
+			,fotter_name:'building_pager'
+			,div_name:'div_dummy'
+			,caption:'建物一覧'
+			,event_type:2
+			,shrinkFit:true
+			,multiselect:false
+		};		
 	
 		$(function(){
-			jqgrid_create('building_table', 'building_pager', 'div_dummy', grid_name, grid_model, grid_data, '建物一覧', 2, false);
+			jqgrid_create(grid_name, grid_model, grid_data, jqgrid_opt);
 			
 			
 			// 反映ボタン押下
@@ -651,13 +671,14 @@ google.maps.event.addDomListener(window, "load", initialize);
 	<div id="panowide" style="width: 70%; height: 0px;margin-top: 5px;"></div>
 	<a id="simple-menu" href="#sidr"></a>
 	<div id="map_canvas" style="width: 70%;height:100%;float:right;"></div>
-	<div id="div_dummy" style="float:left;width:30%;height:40%;padding-right:2px;">
+	<div id="div_dummy" style="float:left;width:30%;height:90%;padding-right:2px;">
 	
 		<table id="building_table"></table>
-		<div id = "building_pager"></div>
+		<div id="building_pager"></div>
+		
 	
 		<table id="shop_table"></table>
-		<div id = "shop_pager"></div>
+		<div id="shop_pager"></div>
 	
 	</div>
 

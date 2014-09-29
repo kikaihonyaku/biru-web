@@ -15,7 +15,7 @@ class CreateRentersBuildings < ActiveRecord::Migration
       t.float  :longitude
       t.boolean :gmaps
       t.string :completion_ym
-      t.string :delete_flg
+      t.boolean :delete_flg
       t.timestamps
     end
   end

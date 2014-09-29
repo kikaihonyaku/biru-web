@@ -6,6 +6,37 @@
 	  text-decoration:underline;	
 	}
 	
+	dl{
+		width:200px;
+		margin:50px auto;
+	}
+	dt{
+		line-height:35px;
+		font-size:large;
+		text-indent:3em;
+		font-weight:bold;
+		color:white;
+		height:35px;
+		background:url("images/background.jpg")
+	}
+	dt.over{
+		background:url("images/background-over.jpg");
+		cursor:pointer;
+	}
+	dt.selected{
+		background:url("images/background_selected.jpg");
+		cursor:default;
+		color:black;
+	}
+	dd{
+		height:300px;
+		background:#D4D0C8;
+	}
+	dd p{
+		text-indent:1em;
+		padding:20px;
+	}
+		
   </style>
   
   <script type="text/javascript">
@@ -47,6 +78,15 @@
 		  });
 		  
 	  });
+	  
+  	  $(function () {
+  	  	$(".accordion .toggle").click(function () {
+  	  		$(this).next("ul").slideToggle(200);
+  	  		$(this).next("div").slideToggle(200);
+			
+  	  		$(this).toggleClass("open");
+  	  	});
+  	  });
   
   </script>
   
@@ -55,7 +95,37 @@
 <h1>物件一覧</h1>
 <p style="text-align:right;">レンターズデータ取得：<%= @data_update.update_datetime %></p>
 
+<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:500px;" >
+    <ul>
+        <li>
+            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">子項目ありメニュー1</span>
+			<div>
+				bbbb
+			</div>
+            <ul>
+                <li><a href="#">子項目</a></li>
+                <li><a href="#">子項目</a></li>
+                <li><a href="#">子項目</a></li>
+            </ul>
+        </li>
+        <li>
+            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top">子項目ありメニュー</span>
+            <ul>
+                <li><a href="#">子項目</a></li>
+                <li><a href="#">子項目</a></li>
+                <li><a href="#">子項目</a></li>
+            </ul>
+        </li>
+        <li>
+			<div class="ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" style="height:25px;padding:0;margin:0;" ><a href="#">子項目なし</a></div>
+		</li>
+        <li><a href="#">子項目なし</a></li>
+    </ul>
+</div>
 
+
+
+		
 <table id="sample1"></table>
 <div id = "pager1"></div>
 

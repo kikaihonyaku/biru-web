@@ -1076,10 +1076,10 @@ var isSupported = function(browsers){
 // 6:キャプション
 // 7:イベント種別 1:shop, 2:building, 3:owner 30:trust_manage用のowner
 // 8:画面サイズを自動的にフィットさせるか
-function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, data_list, caption, event_type, shrinkFit){
+function jqgrid_create(col_names, col_model, data_list, jqgrid_opt){
 	
-	var table_div = $('#' + table_name);
-	var div_box = $('#' + div_name);
+	var table_div = $('#' + jqgrid_opt.table_name);
+	var div_box = $('#' + jqgrid_opt.div_name);
 	
 	table_div.jqGrid({
 	  	data : data_list,  //表示したいデータ
@@ -1088,24 +1088,25 @@ function jqgrid_create(table_name, fotter_name, div_name, col_names, col_model, 
 	  	colModel : col_model,   //列ごとの設定
 	  	rowNum : 100,                   //一ページに表示する行数
 	  	rowList : [100, 200, 300],         //変更可能な1ページ当たりの行数
-	  	caption : caption,    //ヘッダーのキャプション
+	  	caption : jqgrid_opt.caption,    //ヘッダーのキャプション
 		loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
-			table_div.jqGrid('setGridWidth', div_box.width(), shrinkFit);
-		    table_div.jqGrid('setGridHeight', div_box.height(), shrinkFit);
+			table_div.jqGrid('setGridWidth', div_box.width(), jqgrid_opt.shrinkFit);
+		    table_div.jqGrid('setGridHeight', div_box.height(), jqgrid_opt.shrinkFit);
 		},
         onSelectRow: function(id) {
            // idにはリストの選択した行番号が入ってくる
 		   
-		   if(event_type == 1 ){
+		   if(jqgrid_opt.event_type == 1 ){
 			   link_shop_click(table_div.getRowData(id).id);
-		   }else if(event_type == 2){
+		   }else if(jqgrid_opt.event_type == 2){
 			   link_building_click(table_div.getRowData(id).id);
-		   }else if(event_type == 30){
+		   }else if(jqgrid_opt.event_type == 30){
 			   link_owner_click(table_div.getRowData(id).owner_id);
 		   }
         },
-	  	pager : fotter_name,              //footerのページャー要素のid
+	  	pager : jqgrid_opt.fotter_name,              //footerのページャー要素のid
 	  	//shrinkToFit : false,　　        //画面サイズに依存せず固定の大きさを表示する設定
+		multiselect: jqgrid_opt.multiselect,
 	  	viewrecords: true              //footerの右下に表示する。
 	});
   
