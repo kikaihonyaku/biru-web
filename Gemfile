@@ -55,3 +55,4 @@ gem 'thinreports'
 #gem 'nokogiri'
 gem 'moji'
 gem 'ruby-hmac' # gmap4railsのgeocodeでビル管理キーを使用するにあたって、暗号化に使用 2014/08/17
+gem 'goldiloader'

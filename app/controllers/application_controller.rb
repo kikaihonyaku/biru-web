@@ -74,10 +74,10 @@ class ApplicationController < ActionController::Base
     end
     
     # URLパラメータを消すためにリダイレクトする
-    if url_param_delete
-      endpos = request.fullpath.index("?") - 1
-      redirect_to request.fullpath[0..endpos]
-    end
+#    if url_param_delete
+#      endpos = request.fullpath.index("?") - 1
+#      redirect_to request.fullpath[0..endpos]
+#    end
     
   end
 

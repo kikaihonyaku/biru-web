@@ -9,30 +9,63 @@ class TrustManagementsController < ApplicationController
     
   def index
     
-    # 貸主新規作成用
-    @attack_owner = Owner.new
+    user_list = []
     
+    # 受託担当者のリスト
+    BiruUser.where("code in ('06365','6464','6406','6425','5952','6461','7844','5473','5841','4917','05928')").each do |user|
+    	rec = {}
+			rec['biru_user_id'] = user.id
+			rec['biru_usr_name'] = user.name
+			rec['trust_report'] = "trust_user_report?sid=" + user.id.to_s
+			rec['attack_list'] = "owner_building_list?sid=" + user.id.to_s
+			rec['visit_plan'] = 50
+			rec['visit_result'] = 30
+			rec['visit_value'] = 20
+			rec['dm_plan'] = 500
+			rec['dm_result'] = 500
+			rec['dm_value'] = 4
+			rec['tel_plan'] = 100
+			rec['tel_result'] = 100
+			rec['tel_value'] = 20
+			rec['trust_num'] = 5
+			rec['rank_s'] = 3
+			rec['rank_a'] = 8
+			rec['rank_b'] = 25
+			user_list.push(rec)
+    end
+    gon.data_list = user_list
+
+  end
+  
+  def owner_building_list
+  	
+  	# 権限チェック。権限がない人は自分の物件しか見れない
+  	unless params[:sid]
+  		@error_msg = "パラメータが不正です。"
+    else
+    	
+    	object_user = BiruUser.find(params[:sid].to_i)
+    	unless object_user
+	  		@error_msg = "指定されたユーザーが存在しません。"
+      else
+      	if @biru_user.attack_all_search == false && @biru_user.id != object_user.id
+		  		@error_msg = "自分以外のアタックリストにアクセスすることはできません。"
+      	end
+      	
+    	end
+    	
+  	end
+    
+    # 検索条件にエラーが存在しないとき
     if @error_msg.size == 0
-      # 検索条件にエラーが存在しないとき
       
-      # Owner Building Trust を連結した他社データを取得する
-      # buildings = []
-      # @trust_data = get_trust_data
-      # @trust_data.each do |trust|
-      #   begin
-      #     # 本来存在しないことはないはずだが、１件でもあると例外が発生してしまうのでここでrescueする
-      #     biru = Building.find(trust.building_id)
-      #     buildings << biru if biru
-      #   rescue
-      #     p trust.building_id
-      #   end
-      # end
-      #
-      
+	    # 貸主新規作成用
+  	  @attack_owner = Owner.new
+    
       tmp_building_id = 0
       building_id_arr = []
       trust_manages = []
-      ActiveRecord::Base.connection.select_all(get_trust_sql).each do |rec|
+      ActiveRecord::Base.connection.select_all(get_trust_sql(object_user)).each do |rec|
         trust_manages.push(rec)
         
         unless tmp_building_id == rec['building_id']
@@ -56,13 +89,14 @@ class TrustManagementsController < ApplicationController
     else
       # 不正な検索条件が指定されたとき
       render 'owner_building_list'   
-    end
+    end    
   end
   
   # タックシールを出力する
   def tack_out
 
-    @selected = params[:g1][:selected]
+    #@selected = params[:g1][:selected]
+    @selected = params[:dm_owner_list]
     
     if params[:dm_history] == "1"
       reg_flg = true
@@ -71,11 +105,15 @@ class TrustManagementsController < ApplicationController
     end
     
     owner_id_arr = []
-    Trust.where("id in (?)", @selected).each do |trust|
-      owner = Owner.find(trust.owner_id)
+#    Trust.where("id in (?)", @selected).each do |trust|
+#      owner = Owner.find(trust.owner_id)
+#      owner_id_arr.push(owner.id) if owner.dm_delivery 
+#    end
+    
+    Owner.where("id in (" + @selected + ")" ).each do |owner|
       owner_id_arr.push(owner.id) if owner.dm_delivery 
     end
-    
+
     # 出力対象が１つもないときはエラー
     if owner_id_arr.length == 0
       flash[:notice] = '印刷対象のチェックボックスをチェックしてください。'
@@ -512,7 +550,7 @@ def get_owner_show(owner_id)
 end  
 
 #def get_trust_data()
-def get_trust_sql()
+def get_trust_sql(object_user)
   
   # trustについているdelete_flg の　default_scopeの副作用で、biru_usersのLEFT_OUTER_JOINが効かなくなっている？（空白のものは出てこない・・）なのでそうであればINNER JOINでつないでしまう（2014/07/15）
   #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").where("owners.code is null")
@@ -545,12 +583,14 @@ def get_trust_sql()
   sql = sql + " LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id "
   sql = sql + " WHERE owners.code is null "
   
-  # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
-  unless @biru_user.attack_all_search 
-    #trust_data = trust_data.where('trusts.biru_user_id = ?', @biru_user.id)
-    sql = sql + " AND trusts.biru_user_id = " + @biru_user.id.to_s
-  end
-  
+#  # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
+#  unless @biru_user.attack_all_search 
+#    #trust_data = trust_data.where('trusts.biru_user_id = ?', @biru_user.id)
+#    sql = sql + " AND trusts.biru_user_id = " + @biru_user.id.to_s
+#  end
+
+	sql = sql + " AND trusts.biru_user_id = " + object_user.id.to_s
+
   #----------------------------------#
   # 検索条件が指定されている時の絞り込み
   #----------------------------------#

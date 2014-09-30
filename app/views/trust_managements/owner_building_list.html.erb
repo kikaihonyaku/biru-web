@@ -895,6 +895,11 @@ $(document).ready(function() {
 
   <!-- ここは span9で呼び出されているので合計も9に合わせる -->
 
+<% if @error_msg.size > 0 %>
+
+<%= @error_msg %>
+
+<% else %>
 
 
 	<a id="simple-menu" href="#sidr"></a>
@@ -917,6 +922,7 @@ $(document).ready(function() {
 
 	                               <%= text_field_tag 'dm_out_date', Date.today.strftime("%Y-%m-%d"), :type=>'date' , :style=>"margin:0;padding:0" %>
 								   <%= text_field_tag 'dm_out_msg' %>
+								   <%= hidden_field_tag 'dm_owner_list', ''  %>
 
 								   <%= submit_tag '出力' ,:class=>"btn", :style=>"margin:0" %>
 							<% end %>
@@ -958,201 +964,226 @@ $(document).ready(function() {
 		<div id = "building_pager"></div>
 	</div>
 	
-	
 
 
 
-<!-- For index -->
+	<!-- For index -->
 
-  <style type="text/css">
-	
-	a{
-	  text-decoration:underline;	
-	}
-	
-  </style>
-  
-<div style="margin-left:100px;margin-right:100px;display:none;">
-<h1>受託活動報告</h1>
-
-
-<%# TODO:検索フィルタをかけられるのは、DBのカラムだけみたい。だから「貸主名／貸主CD」みたいなのを１列で検索することはできない。
-　　だけど、貸主CD列やアタック貸主CD列を別で増やすのは冗長になるので、とりあえず貸主名だけを検索対象とする。
-　　もし、貸主CDやアタック貸主CDの検索が必要になったら、その列を追加しかつ初期表示では非表示にする。そして貸主名の一部にリンクを置き、それを
-　　クリックすると貸主CD列がでるようにしよう。※建物についても同様。2014/05/25
- %>
-
-<div class="bs-example" style="width:700px;float:left">
-<%= form_tag '/trust_managements/index' do %>
-    <div class="panel-group" id="accordion">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        履歴による絞込み
-      </h4>
-    </div>
-	
-    <div id="collapseOne" class="panel-collapse collapse in">
-      <div class="panel-body">
-		  <div style="padding-left:10px;">
-				<table class="attack-search">
-					
-					<tr>
-						<td style="text-align:right"><b>訪問リレキ：</b></td>
-						<td>
-							<table>
-								<tr>
-									<td>
-										<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-										<label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-										<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-							（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-									</td>
-					
-								</tr>
-							</table>
-						</td>
-					</tr>
-					
-					<tr>
-						<td style="text-align:right"><b>ＤＭリレキ：</b></td>
-						<td>
-							<table>
-								<tr>
-									<td>
-										<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-										<label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-										<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-							（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-									</td>
-					
-								</tr>
-							</table>
-						</td>
-			
-					</tr>
-					<tr>
-						<td style="text-align:right"><b>ＴＥLリレキ：</b></td>
-						<td>
-							<table>
-								<tr>
-									<td>
-										<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-										<label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-										<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-							（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-									</td>
-					
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2"><%= submit_tag '指定した条件で絞込み' , :class=>"btn btn-primary btn-sm", :style=>"margin:0" %></td>
-					</tr>
-				</table>
-
-	  	
-		  </div>
-		  
-      </div>
-    </div>
-  </div>
-</div>
-<% end %>
-</div>
-
-<script type="text/javascript">
-function dm_msg_regist_on(msg_flg){
-	var curfrm = document.tack_frm;
-	
-	if(msg_flg == true){
-		curfrm.dm_out_date.disabled = false;
-		curfrm.dm_out_date.style.backgroundColor="";
-		curfrm.dm_out_msg.disabled = false;
-		curfrm.dm_out_msg.style.backgroundColor="";
-	}else{
-		curfrm.dm_out_date.disabled = true;
-		curfrm.dm_out_date.style.backgroundColor="gray";
-		curfrm.dm_out_msg.disabled = true;
-		curfrm.dm_out_msg.style.backgroundColor="gray";
-	}
-	
-}
-
-// タックシール用のpdfを出力します
-function tack_out_go(){
-	
-	// 出力対象がチェックボックスが１件以上チェックされていることを確認
-	// ※これはうまくいかなかったから、サーバー側でエラーを返す
-	
-	// DM発行リレキがONの時、日付とメッセージが正しく登録されているか確認
-	if(document.tack_frm.dm_history.value == 1){
-		if(document.tack_frm.dm_out_date.value.length == 0){
-			alert('リレキに残す日付を設定してください。');
-			return false;
+	  <style type="text/css">
+		
+		a{
+		  text-decoration:underline;	
 		}
 		
-		if(document.tack_frm.dm_out_msg.value.length == 0){
-			alert('リレキに残すメッセージを設定してください。');
-			return false;
-		}
-	}
-	
-	// DM発行リレキに応じて出力
-	if(document.tack_frm.dm_history.value == 1){
-		if(window.confirm('ＤＭ発行リレキに登録します。よろしいですか？')){
-		}else{
-			return false;
-		}
-		
-	}else{
-		if(window.confirm('リレキに保存されません。よろしいですか？')){
-		}else{
-			return false;
-		}
-		
-	}
-		
-	return true;
-}
-
-jQuery("#tack_new").trigger("click");
-
-
-</script>
-
-
-
-
-<!-- モーダルダイアログ -->
-<div class="modal fade" id="ownerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-			
-	<%= simple_form_for @attack_owner, :url => {:controller => 'trust_managements', :action=>'attack_owner_create'} do |f|%>
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title" id="myModalLabel">貸主新規作成</h4>
-      </div>
+	  </style>
 	  
-      <div class="modal-body">
-		  	
-		<%= f.input :name %>
-		<%= f.input :honorific_title %>
-		<%= f.input :postcode %>
-		<%= f.input :address %>
-       
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-		<%= submit_tag '出力' , :class=>"btn btn-primary", :style=>"margin:0" %>
-      </div>
-	<% end %>
-		
+	<div style="margin-left:100px;margin-right:100px;display:none;">
+	<h1>受託活動報告</h1>
 
+
+	<%# TODO:検索フィルタをかけられるのは、DBのカラムだけみたい。だから「貸主名／貸主CD」みたいなのを１列で検索することはできない。
+	　　だけど、貸主CD列やアタック貸主CD列を別で増やすのは冗長になるので、とりあえず貸主名だけを検索対象とする。
+	　　もし、貸主CDやアタック貸主CDの検索が必要になったら、その列を追加しかつ初期表示では非表示にする。そして貸主名の一部にリンクを置き、それを
+	　　クリックすると貸主CD列がでるようにしよう。※建物についても同様。2014/05/25
+	 %>
+
+	<div class="bs-example" style="width:700px;float:left">
+	<%= form_tag '/biruweb/trust_managements/index' do %>
+	    <div class="panel-group" id="accordion">
+	  <div class="panel panel-default">
+	    <div class="panel-heading">
+	      <h4 class="panel-title">
+	        履歴による絞込み
+	      </h4>
+	    </div>
+		
+	    <div id="collapseOne" class="panel-collapse collapse in">
+	      <div class="panel-body">
+			  <div style="padding-left:10px;">
+					<table class="attack-search">
+						
+						<tr>
+							<td style="text-align:right"><b>訪問リレキ：</b></td>
+							<td>
+								<table>
+									<tr>
+										<td>
+											<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+								（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+										</td>
+						
+									</tr>
+								</table>
+							</td>
+						</tr>
+						
+						<tr>
+							<td style="text-align:right"><b>ＤＭリレキ：</b></td>
+							<td>
+								<table>
+									<tr>
+										<td>
+											<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+								（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+										</td>
+						
+									</tr>
+								</table>
+							</td>
+				
+						</tr>
+						<tr>
+							<td style="text-align:right"><b>ＴＥLリレキ：</b></td>
+							<td>
+								<table>
+									<tr>
+										<td>
+											<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+								（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+										</td>
+						
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2"><%= submit_tag '指定した条件で絞込み' , :class=>"btn btn-primary btn-sm", :style=>"margin:0" %></td>
+						</tr>
+					</table>
+
+		  	
+			  </div>
+			  
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<% end %>
+	</div>
+
+	<script type="text/javascript">
+	function dm_msg_regist_on(msg_flg){
+		var curfrm = document.tack_frm;
+		
+		if(msg_flg == true){
+			curfrm.dm_out_date.disabled = false;
+			curfrm.dm_out_date.style.backgroundColor="";
+			curfrm.dm_out_msg.disabled = false;
+			curfrm.dm_out_msg.style.backgroundColor="";
+		}else{
+			curfrm.dm_out_date.disabled = true;
+			curfrm.dm_out_date.style.backgroundColor="gray";
+			curfrm.dm_out_msg.disabled = true;
+			curfrm.dm_out_msg.style.backgroundColor="gray";
+		}
+		
+	}
+
+	// タックシール用のpdfを出力します
+	function tack_out_go(){
+		
+		// 出力対象がチェックボックスが１件以上チェックされていることを確認
+		// ※これはうまくいかなかったから、サーバー側でエラーを返す
+		
+		var dm_owner_list = "";
+		
+		var row_data = $('#building_table').getRowData()
+		var arr = jQuery("#building_table").getGridParam('selarrrow');
+		if(arr.length == 0 ){
+			alert('出力対象を選択してください');
+			return false;
+		}
+		
+		for(var i = 0 in arr){
+			
+			if(dm_owner_list == ""){
+				dm_owner_list = row_data[arr[i]-1].owner_id;
+			}
+			else{
+				dm_owner_list = dm_owner_list + ',' + row_data[arr[i]-1].owner_id;
+			}
+		}
+		
+		document.tack_frm.dm_owner_list.value = dm_owner_list;
+		
+		
+		// DM発行リレキがONの時、日付とメッセージが正しく登録されているか確認
+		if(document.tack_frm.dm_history.value == 1){
+			if(document.tack_frm.dm_out_date.value.length == 0){
+				alert('リレキに残す日付を設定してください。');
+				return false;
+			}
+			
+			if(document.tack_frm.dm_out_msg.value.length == 0){
+				alert('リレキに残すメッセージを設定してください。');
+				return false;
+			}
+		}
+		
+		// DM発行リレキに応じて出力
+		if(document.tack_frm.dm_history.value == 1){
+			if(window.confirm('ＤＭ発行リレキに登録します。よろしいですか？')){
+			}else{
+				return false;
+			}
+			
+		}else{
+			if(window.confirm('リレキに保存されません。よろしいですか？')){
+			}else{
+				return false;
+			}
+			
+		}
+			
+		return true;
+	}
+
+	jQuery("#tack_new").trigger("click");
+
+
+	</script>
+
+
+
+
+	<!-- モーダルダイアログ -->
+	<div class="modal fade" id="ownerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+				
+		<%= simple_form_for @attack_owner, :url => {:controller => 'trust_managements', :action=>'attack_owner_create'} do |f|%>
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	        <h4 class="modal-title" id="myModalLabel">貸主新規作成</h4>
+	      </div>
 		  
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+	      <div class="modal-body">
+			  	
+			<%= f.input :name %>
+			<%= f.input :honorific_title %>
+			<%= f.input :postcode %>
+			<%= f.input :address %>
+	       
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+			<%= submit_tag '出力' , :class=>"btn btn-primary", :style=>"margin:0" %>
+	      </div>
+		<% end %>
+			
+
+			  
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+
+<% end %>
+
 

@@ -1,0 +1,160 @@
+<script type="text/javascript">
+	
+	init_jqgrid_trust_manager();
+
+	// 委託契約リストを作成
+	function init_jqgrid_trust_manager(){
+		// 列名の定義
+		var col_names = ["biru_user_id", "担当者", "レポート", "アタックリスト","訪問(計画）", "訪問(実績）", "訪問(面談）", "ＤＭ（計画）", "ＤＭ（実績）", "ＤＭ（反響）", "ＴＥＬ(計画）", "ＴＥＬ(実績）", "ＴＥＬ(会話）", "受託", "見込Ｓ","見込Ａ","見込Ｂ"];
+	
+		// 列属性の定義
+		var col_model = [
+		  {name:"biru_user_id", index:"biru_user_id", align:"left", classes:"no_class", hidden:true}
+  		 ,{name:"biru_usr_name", index:"biru_usr_name", align:"left", classes:"no_class"}
+ 		 ,{name:"trust_report", index:"trust_report", align:"left", classes:"no_class", formatter: 'link'}
+ 		 ,{name:"attack_list", index:"attack_list", align:"left", classes:"no_class", formatter: 'link'}
+ 		 ,{name:"visit_plan", index:"visit_plan", align:"right", classes:"no_class"}
+ 		 ,{name:"visit_result", index:"visit_result", align:"right", classes:"no_class"}
+ 		 ,{name:"visit_value", index:"visit_value", align:"right", classes:"no_class"}
+
+ 		 ,{name:"dm_plan", index:"dm_plan", align:"right", classes:"no_class"}
+ 		 ,{name:"dm_result", index:"dm_result", align:"right", classes:"no_class"}
+ 		 ,{name:"dm_value", index:"dm_value", align:"right", classes:"no_class"}
+
+ 		 ,{name:"tel_plan", index:"tel_plan", align:"right", classes:"no_class"}
+ 		 ,{name:"tel_result", index:"tel_result", align:"right", classes:"no_class"}
+ 		 ,{name:"tel_value", index:"tel_value", align:"right", classes:"no_class"}
+		 
+ 		 ,{name:"trust_num", index:"trust_num", align:"right", classes:"no_class"}
+ 		 ,{name:"rank_s", index:"rank_s", align:"right", classes:"no_class"}
+ 		 ,{name:"rank_a", index:"rank_a", align:"right", classes:"no_class"}
+ 		 ,{name:"rank_b", index:"rank_b", align:"right", classes:"no_class"}
+		];
+	
+//		// データの作成
+//		var data_list = [];
+//		
+//		var rec = {};
+//		
+//		rec['biru_user_id'] = 1
+//		rec['biru_usr_name'] = "柴田 貴史"
+//		rec['trust_report'] = "trust_managements/trust_user_report"
+//		rec['attack_list'] = "owner_building_list"
+//		
+//		rec['visit_plan'] = 50
+//		rec['visit_result'] = 30
+//		rec['visit_value'] = 20
+//		rec['dm_plan'] = 500
+//		rec['dm_result'] = 500
+//		rec['dm_value'] = 4
+//		rec['tel_plan'] = 100
+//		rec['tel_result'] = 100
+//		rec['tel_value'] = 20
+//		rec['trust_num'] = 5
+//		rec['rank_s'] = 3
+//		rec['rank_a'] = 8
+//		rec['rank_b'] = 25
+//
+//		data_list.push(rec);
+//
+//		var rec = {};
+//
+//		rec['biru_user_id'] = 1
+//		rec['biru_usr_name'] = "山田　太郎"
+//		rec['trust_report'] = "trust_user_report"
+//		rec['attack_list'] = "trust_managements/owner_building_list"
+//		rec['visit_plan'] = 50
+//		rec['visit_result'] = 30
+//		rec['visit_value'] = 20
+//		rec['dm_plan'] = 500
+//		rec['dm_result'] = 500
+//		rec['dm_value'] = 4
+//		rec['tel_plan'] = 100
+//		rec['tel_result'] = 100
+//		rec['tel_value'] = 20
+//		rec['trust_num'] = 5
+//		rec['rank_s'] = 3
+//		rec['rank_a'] = 8
+//		rec['rank_b'] = 25
+//		
+//	
+//
+//		data_list.push(rec);
+//		
+	
+		// その他の設定
+		jqgrid_opt = {
+			 table_name:'building_table'
+			,fotter_name:'building_pager'
+			,div_name:'div_dummy_02'
+			,caption:'１０月度　受託活動報告'
+			,event_type:30
+			,shrinkFit:true
+			,multiselect:true
+		};
+		
+		// jqgrid作成
+		$(function(){
+			
+			var table_div = $('#' + jqgrid_opt.table_name);
+			var div_box = $('#' + jqgrid_opt.div_name);
+	
+			table_div.jqGrid({
+			  	data : gon.data_list,  //表示したいデータ
+			  	datatype : "local",            //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
+			  	colNames : col_names,           //列の表示名
+			  	colModel : col_model,   //列ごとの設定
+			  	caption : jqgrid_opt.caption,    //ヘッダーのキャプション
+				
+				loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
+					table_div.jqGrid('setGridWidth', div_box.width(), jqgrid_opt.shrinkFit);
+				    table_div.jqGrid('setGridHeight', div_box.height(), jqgrid_opt.shrinkFit);
+				},
+		        onSelectRow: function(id) {
+		           // idにはリストの選択した行番号が入ってくる
+		   
+				   // if(jqgrid_opt.event_type == 1 ){
+				   // 					   link_shop_click(table_div.getRowData(id).id);
+				   // }else if(jqgrid_opt.event_type == 2){
+				   // 					   link_building_click(table_div.getRowData(id).id);
+				   // }else if(jqgrid_opt.event_type == 30){
+				   // 					   link_owner_click(table_div.getRowData(id).owner_id);
+				   // }
+		        },
+			  	//shrinkToFit : false,　　        //画面サイズに依存せず固定の大きさを表示する設定
+			});
+  
+			//   //検索追加
+			// table_div.jqGrid('navGrid',('#' + fotter_name),{
+			// 	add:false,   //おまじない
+			// 	edit:false,  //おまじない
+			// 	del:false,   //おまじない
+			// 	search:{     //検索オプション
+			// 	odata : ['equal', 'not equal', 'less', 'less or equal',
+			// 	       'greater','greater or equal', 'begins with',
+			// 	       'does not begin with','is in','is not in','ends with',
+			// 	       'does not end with','contains','does not contain']
+			// 	}   //検索の一致条件を入れられる
+			// });
+  
+			//filterバー追加
+			
+			
+
+	        // table_div.jqGrid('setGroupHeaders', {
+	        //   useColSpanStyle: true,
+	        //   groupHeaders:[
+	        //     {startColumnName: 'biru_usr_name', numberOfColumns: 2, titleText: 'aaa'},
+	        //   ]
+	        // });
+			
+		});
+	}
+</script>
+
+<div style="padding:50px 80px 10px 80px;">
+	<div id="div_dummy_02" style="width:100%;height:90%;">
+		<table id="building_table"></table>
+		<div id = "building_pager"></div>
+	</div>
+</div>
