@@ -65,24 +65,92 @@ class TrustManagementsController < ApplicationController
       tmp_building_id = 0
       building_id_arr = []
       trust_manages = []
+      
+      shops = []
+      buildings = []
+      trusts = []
+      owners = []
+      owner_to_buildings = []
+      building_to_owners = []
+      
       ActiveRecord::Base.connection.select_all(get_trust_sql(object_user)).each do |rec|
-        trust_manages.push(rec)
         
-        unless tmp_building_id == rec['building_id']
-          
-          tmp_building_id = rec['building_id']
-          building_id_arr.push(rec['building_id'])
+        #jqgrid用データ
+        trust_manages.push(rec)
+
+        # 貸主情報
+        owner = {}
+        owner[:id] = rec['owner_id']
+        owner[:name] = rec['owner_name']
+        owner[:address] = rec['owner_address']
+        owner[:latitude] = rec['owner_latitude']
+        owner[:longitude] = rec['owner_longitude']
+        owners.push(owner) unless owners.index(owner)
+        
+        # 委託情報
+        trust = {}
+        trust[:owner_id] = rec['owner_id']
+        trust[:building_id] = rec['building_id']
+        trust[:manage_type_id] = rec[:trust_manage_type_id]
+        trusts.push(trust) unless trusts.index(trust)
+
+
+        # 建物が定義されていた時
+        if rec['building_id']
+
+          # 建物情報
+          building = {}
+          building[:id] = rec['building_id']
+          building[:name] = rec['building_name']
+          building[:address] = rec['building_address']
+          building[:latitude] = rec['building_latitude']
+          building[:longitude] = rec['building_longitude']
+          buildings.push(building) unless buildings.index(building)
+        
+          # 営業所情報
+          shop = {}
+          shop[:id] = rec['shop_id']
+          shop[:name] = rec['shop_name']
+          shop[:icon] = rec['shop_icon']
+          shop[:latitude] = rec['shop_latitude']
+          shop[:longitude] = rec['shop_longitude']
+          shops.push(shop) unless shops.index(shop)
+
+          # 貸主に紐づく建物一覧を作成する。
+          owner_to_buildings[owner[:id]] = [] unless owner_to_buildings[owner[:id]]
+          owner_to_buildings[owner[:id]] << building
+
+          # 建物に紐づく貸主一覧を作成する。※本来建物に対するオーナーは１人だが、念のため複数オーナーも対応する。
+          building_to_owners[building[:id]] = [] unless building_to_owners[building[:id]]
+          building_to_owners[building[:id]] << owner
           
         end
+
+        
+          # unless tmp_building_id == rec['building_id']
+          #
+          #   tmp_building_id = rec['building_id']
+          #   building_id_arr.push(rec['building_id'])
+          #
+          # end
         
       end
       
-      buildings = Building.find_all_by_id(building_id_arr)
-      buildings = [] unless buildings
+      # buildings = Building.find_all_by_id(building_id_arr)
+      # buildings = [] unless buildings
+      #
+      # # 絞りこまれた建物を元に、貸主・委託・営業所を取得する
+      # buildings_to_gon(buildings)
       
-      # 絞りこまれた建物を元に、貸主・委託・営業所を取得する
-      buildings_to_gon(buildings)
       gon.trust_manages = trust_manages
+      gon.buildings = buildings
+      gon.owners = owners 
+      gon.trusts = trusts
+      gon.shops = shops
+      gon.owner_to_buildings = owner_to_buildings
+      gon.building_to_owners = building_to_owners
+      gon.manage_line_color  make_manage_line_list
+      gon.all_shops = Shop.find(:all)
       
       render 'owner_building_list'   
       
@@ -561,18 +629,26 @@ def get_trust_sql(object_user)
   # 指定した列のハッシュだけで返す為に直接SQLを実行する
   sql = ""
   sql = sql + " SELECT trusts.id as trust_id "
+  sql = sql + " , trusts.manage_type_id as trust_manage_type_id "
   sql = sql + " , owners.id as owner_id "
   sql = sql + " , owners.attack_code as owner_attack_code "
   sql = sql + " , owners.name as owner_name "
   sql = sql + " , owners.address as owner_address "
   sql = sql + " , owners.memo as owner_memo "
+  sql = sql + " , owners.latitude as owner_latitude "
+  sql = sql + " , owners.longitude as owner_longitude "
   sql = sql + " , buildings.id as building_id "
   sql = sql + " , buildings.attack_code as building_attack_code "
   sql = sql + " , buildings.name as building_name "
   sql = sql + " , buildings.address as building_address"
   sql = sql + " , buildings.memo as building_memo "
+  sql = sql + " , buildings.latitude as building_latitude "
+  sql = sql + " , buildings.longitude as building_longitude "
   sql = sql + " , shops.id as shop_id "
-  sql = sql + " , shops.name as shops_name "
+  sql = sql + " , shops.name as shop_name "
+  sql = sql + " , shops.name as shop_icon "
+  sql = sql + " , shops.latitude as shop_latitude "
+  sql = sql + " , shops.longitude as shop_longitude "
   sql = sql + " , biru_users.name as biru_user_name "
   sql = sql + " , attack_states.name as attack_states_name "
   sql = sql + " FROM trusts inner join owners on trusts.owner_id = owners.id "
@@ -582,6 +658,7 @@ def get_trust_sql(object_user)
   sql = sql + " LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id "
   sql = sql + " LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id "
   sql = sql + " WHERE owners.code is null "
+  
   
 #  # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
 #  unless @biru_user.attack_all_search 
