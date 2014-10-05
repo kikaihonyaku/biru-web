@@ -409,7 +409,7 @@ function getCoords(position) {
         build_arr[building.id] = createMarker({
           position : pos
           ,map : mapCanvas
-          ,icon : building.tmp_build_type_icon
+          ,icon : '/assets/marker_blue.png'
           ,siten_icon : get_icon_siten(shop_code)
           ,area_icon : get_icon_area(shop_code)
           ,shop_icon : get_icon_shop(shop_code)
@@ -498,13 +498,8 @@ function getCoords(position) {
         bounds.extend(pos);
       <% end %>
 
-      // 貸主かどうかでアタックを決める。
-      // if( owner.code == null){
-      //   owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
-      // } else {
-      //   owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
-      // }
-      owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
+      //owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
+	  owner_icon = '/assets/marker_yellow.png'
 
       owner_arr[owner.id] = createMarker({
         position : pos
@@ -770,12 +765,13 @@ $(document).ready(function() {
 	function init_jqgrid_trust(){
 		// 列名の定義
 		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
-		var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
+		var grid_name = ["trust_id", "owner_id", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "営業所", "担当者"];
 		
 		// 列属性の定義
 		var grid_model = [
 		  {name:"trust_id", index:"trust_id", align:"right", classes:"no_class", hidden:true}
 		 ,{name:"owner_id", index:"owner_id", align:"right", classes:"no_class", hidden:true}
+		 ,{name:"owner_dm_delivery", index:"owner_dm_delivery", width:50, align:"center", classes:"no_class"}
 		 ,{name:"owner_code", index:"owner_code", width:70, align:"center", classes:"no_class"}
 		 ,{name:"owner_name", index:"owner_name", width:200, align:"left", classes:"no_class"}
 		 ,{name:"owner_address", index:"owner_address", width:200, align:"left", classes:"no_class"}
@@ -785,18 +781,27 @@ $(document).ready(function() {
 		 ,{name:"building_name", index:"building_name", width:200, align:"left", classes:"no_class"}
 		 ,{name:"building_address", index:"building_address", width:200, align:"left", classes:"no_class"}
 		 ,{name:"building_memo", index:"building_memo", width:200, align:"left", classes:"no_class"}
+		 ,{name:"proprietary_company", index:"proprietary_company", width:200, align:"left", classes:"no_class"}
 		 ,{name:"shop_name", index:"shop_memo", width:200, align:"left", classes:"no_class"}
 		 ,{name:"user_name", index:"user_memo", width:200, align:"left", classes:"no_class"}
 		];
 		
 		// データの作成
 		var grid_data = [];
+		cnt = 1;
 		gon.trust_manages.forEach(function(trust_manage){
 			var rec = {};
 			
 			rec['trust_id'] = trust_manage.trust_id
 			rec['owner_id'] = trust_manage.owner_id
 			rec['owner_code'] = trust_manage.owner_attack_code
+					
+			if(trust_manage.owner_dm_delivery == 't'){
+				rec['owner_dm_delivery'] = '○'
+			}else{
+				rec['owner_dm_delivery'] = '×'
+			}
+			
 			rec['owner_name'] = trust_manage.owner_name
 			rec['owner_address'] = trust_manage.owner_address
 			rec['owner_memo'] = trust_manage.owner_memo
@@ -805,6 +810,7 @@ $(document).ready(function() {
 			rec['building_name'] = trust_manage.building_name
 			rec['building_address'] = trust_manage.building_address
 			rec['building_memo'] = trust_manage.building_memo
+			rec['proprietary_company'] = trust_manage.building_proprietary_company
 			
 			rec['shop_name'] = trust_manage.shop_name
 			rec['user_name'] = trust_manage.biru_user_name

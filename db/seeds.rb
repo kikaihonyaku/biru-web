@@ -1371,7 +1371,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       imp.owner_postcode = row[22]
       imp.owner_address = (row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]).strip
       imp.owner_tel = row[27]
-      
+      imp.proprietary_company = row[28]
       imp.owner_memo = row[32]
       imp.building_memo = row[33]
       
@@ -1480,12 +1480,8 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       building.biru_user_id = biru_user.id
 			msg = biru_geocode(building, false)
 
-			if building.memo
-				# メモ内容で同一のものが存在しない時、書込み
-				building.memo = building.memo + ' ' + imp.building_memo unless building.memo.index(imp.building_memo)
-			else
-				building.memo = imp.building_memo
-			end
+      building.memo = imp.building_memo
+      building.proprietary_company = imp.proprietary_company
 			
 	    begin
 	      building.save!

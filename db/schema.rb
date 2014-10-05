@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140921075241) do
+ActiveRecord::Schema.define(:version => 20141005204234) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -88,6 +88,7 @@ ActiveRecord::Schema.define(:version => 20140921075241) do
     t.string   "build_day"
     t.integer  "biru_user_id"
     t.string   "hash_key"
+    t.string   "proprietary_company"
   end
 
   add_index "buildings", ["attack_code"], :name => "index_buildings_on_attack_code"
@@ -192,6 +193,7 @@ ActiveRecord::Schema.define(:version => 20140921075241) do
     t.string  "approach_03"
     t.string  "approach_04"
     t.string  "approach_05"
+    t.string  "proprietary_company"
   end
 
   create_table "items", :force => true do |t|
@@ -444,6 +446,7 @@ ActiveRecord::Schema.define(:version => 20140921075241) do
     t.integer  "attack_state_id"
   end
 
+  add_index "trusts", ["biru_user_id"], :name => "index_trusts_on_biru_user_id"
   add_index "trusts", ["building_id"], :name => "index_trusts_on_building_id"
   add_index "trusts", ["manage_type_id"], :name => "index_trusts_on_manage_type_id"
   add_index "trusts", ["owner_id"], :name => "index_trusts_on_owner_id"
