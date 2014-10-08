@@ -117,8 +117,8 @@ class ApplicationController < ActionController::Base
         # 表示する建物が存在しない時
         @owners = []
         @trusts = []
-        @owner_to_buildings = []
-        @building_to_owners = []
+        @owner_to_buildings = {}
+        @building_to_owners = {}
         @shops =  Shop.find(:all)
       
       else
