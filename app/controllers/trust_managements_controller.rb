@@ -125,7 +125,6 @@ class TrustManagementsController < ApplicationController
           building_to_owners[building[:id]] << owner
           
         end
-
         
           # unless tmp_building_id == rec['building_id']
           #
@@ -657,11 +656,11 @@ def get_trust_sql(object_user)
   sql = sql + " , biru_users.name as biru_user_name "
   sql = sql + " , attack_states.name as attack_states_name "
   sql = sql + " FROM trusts inner join owners on trusts.owner_id = owners.id "
-  sql = sql + " LEFT OUTER JOIN manage_types on trusts.manage_type_id = manage_types.id "
-  sql = sql + " LEFT OUTER JOIN buildings on trusts.building_id = buildings.id "
-  sql = sql + " LEFT OUTER JOIN shops on buildings.shop_id = shops.id "
-  sql = sql + " LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id "
-  sql = sql + " LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id "
+  sql = sql + " inner JOIN manage_types on trusts.manage_type_id = manage_types.id "
+  sql = sql + " inner JOIN buildings on trusts.building_id = buildings.id "
+  sql = sql + " inner JOIN shops on buildings.shop_id = shops.id "
+  sql = sql + " inner JOIN biru_users on trusts.biru_user_id = biru_users.id "
+  sql = sql + " left outer JOIN attack_states on trusts.attack_state_id = attack_states.id "
   sql = sql + " WHERE owners.code is null "
   
   
