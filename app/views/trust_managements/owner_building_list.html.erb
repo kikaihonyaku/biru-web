@@ -867,7 +867,6 @@ function getCoords(position) {
 
 <% else %>
 
-
 	<a id="simple-menu" href="#sidr"></a>
 	<div style="height:50%;padding:10px 20px 0px 20px;">
 		
@@ -877,11 +876,12 @@ function getCoords(position) {
 			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
 			    <ul>
 			        <li>
-			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top">その他メニュー</span>
+			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top">基本メニュー</span>
+						
 					</li>
 			        </li>
-			        <li><a href="#">タックシール作成</a></li>
-			        <li><a href="#">貸主登録</a></li>
+			        <li><a data-toggle="modal" href="#modal-tack">タックシール出力</a></li>
+			        <li><a href="#">履歴検索</a></li>
 			    </ul>
 			</div>
 			
@@ -903,24 +903,14 @@ function getCoords(position) {
 			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;" >
 			    <ul>
 			        <li>
-			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">宛名ラベル出力</span>
-						<div style="display:block;padding:5px;margin-left:10px;padding-top:10px;padding-bottom:10px;">
-							<!--  宛名ラベルの出力 -->
-							<%= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm', :onSubmit=>"return tack_out_go()" }) do %>
-	                               <%= radio_button_tag :dm_history, 1, true,  :onclick=>"dm_msg_regist_on(true);" %>&nbsp;DM履歴を残す
-	                               &nbsp;&nbsp;&nbsp;
-	                               <%= radio_button_tag :dm_history, 0, false, :onclick=>"dm_msg_regist_on(false);" %>&nbsp;DM履歴を残さない
-								<div>
-	                               <%= text_field_tag 'dm_out_date', Date.today.strftime("%Y-%m-%d"), :type=>'date' , :class=>'ui-widget-content' %>
-								   <%= text_field_tag 'dm_out_msg', '', :class=>'ui-widget-content'  %>
-								   <%= hidden_field_tag 'dm_owner_list', ''  %>
-								</div>
-
-
-								   <%= submit_tag '出力' ,:class=>"btn", :style=>"margin:0" %>
-							<% end %>
-							
-						</div>
+			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">アタックリストメンテナンス</span>
+			            <ul>
+					        <li><a href="#">見込み貸主登録</a></li>
+					        <li><a href="#">見込み建物登録</a></li>
+					        <li><a href="#">アタックリスト追加</a></li>
+					        <li><a href="#">アタックリスト削除</a></li>
+			            </ul>
+						
 			        </li>
 					<!--
 			        <li>
@@ -973,13 +963,6 @@ function getCoords(position) {
 	  
 	<div style="margin-left:100px;margin-right:100px;display:none;">
 	<h1>受託活動報告</h1>
-
-
-	<%# TODO:検索フィルタをかけられるのは、DBのカラムだけみたい。だから「貸主名／貸主CD」みたいなのを１列で検索することはできない。
-	　　だけど、貸主CD列やアタック貸主CD列を別で増やすのは冗長になるので、とりあえず貸主名だけを検索対象とする。
-	　　もし、貸主CDやアタック貸主CDの検索が必要になったら、その列を追加しかつ初期表示では非表示にする。そして貸主名の一部にリンクを置き、それを
-	　　クリックすると貸主CD列がでるようにしよう。※建物についても同様。2014/05/25
-	 %>
 
 	<div class="bs-example" style="width:700px;float:left">
 	<%= form_tag '/biruweb/trust_managements/index' do %>
@@ -1060,6 +1043,7 @@ function getCoords(position) {
 	</div>
 	<% end %>
 	</div>
+	</div>
 
 	<script type="text/javascript">
 	function dm_msg_regist_on(msg_flg){
@@ -1139,14 +1123,62 @@ function getCoords(position) {
 	}
 
 	jQuery("#tack_new").trigger("click");
-
+	
+	
+	$('#dp2').datepicker({
+		format: 'dd/mm/yyyy',
+		language: 'ja',
+		autoclose: true,
+		clearBtn: true,
+	});
 
 	</script>
 
 
 
-
 	<!-- モーダルダイアログ -->
+	<div class="modal fade" id="modal-tack" tabindex="-1" role="dialog" aria-labelledby="modal-tack-label" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+		<%#= simple_form_for :trust, :url=>{:controller => :managements, :action => :popup_owner_trust_update }, :html=>{class: 'form-horizontal'} do |f| %>
+
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	        <h4 class="modal-title" id="myModalLabel">タックシール出力</h4>
+	      </div>
+
+		<%= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm', :onSubmit=>"return tack_out_go()" }) do %>
+		   <%= hidden_field_tag 'dm_owner_list', ''  %>
+			<div class="modal-body">
+				<div style="padding-bottom:20px;">
+			       <%= radio_button_tag :dm_history, 1, true,  :onclick=>"dm_msg_regist_on(true);" %>&nbsp;DM履歴を残す
+			       &nbsp;&nbsp;&nbsp;
+			       <%= radio_button_tag :dm_history, 0, false, :onclick=>"dm_msg_regist_on(false);" %>&nbsp;DM履歴を残さない
+			   </div>
+				<div>
+			       <label class="string optional control-label" for="tack_out_date">発行日</label>
+				   <%= text_field_tag 'dm_out_date', Date.today.strftime("%Y-%m-%d"), :type=>'date' , :class=>'form-control', :style=>'width:180px;' %>
+
+
+			       <label class="string optional control-label" for="dm_discription" style="margin-top:20px;">ＤＭ履歴の内容（送付するＤＭの概要など）</label>
+				   <%= text_field_tag 'dm_out_msg', '', :class=>'form-control', :style=>'width:300px;'  %>
+				   
+			       <label class="string optional control-label" for="dm_discription" style="margin-top:20px;">宛名ラベル用紙種類</label>
+				   <%= select_tag 'dm_tack_kind', options_for_select([["A-ONE 21面用", "pdf_layout_a_one_21.tlf"], ["B-ONE", "b-one"]]), :class=>'form-control', :style=>'width:150px;' %>
+				   
+				</div>
+			</div>
+			<div class="modal-footer">
+			<%= submit_tag 'タックシールを出力' ,:class=>"btn btn-default", :style=>"margin:0" %>
+			</div>
+		<% end %>
+
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+	
+	
 	<div class="modal fade" id="ownerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">

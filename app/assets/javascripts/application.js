@@ -18,6 +18,7 @@
 //= require jquery.Jcrop
 //= require tree.jquery
 //= require bootstrap.min
+//= require bootstrap-datepicker
 
 //= require biru-map
 //= require wice_grid

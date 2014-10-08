@@ -192,7 +192,7 @@ class TrustManagementsController < ApplicationController
   
       # pdfファイルを作成
       #report = ThinReports::Report.create :layout => File.join(Rails.root, 'app/reports', 'pdf_layout.tlf') do |r|
-      report = ThinReports::Report.create :layout => File.join(Rails.root, 'app/reports', 'pdf_layout.tlf') do |r|
+      report = ThinReports::Report.create :layout => File.join(Rails.root, 'app/reports', params[:dm_tack_kind]) do |r|
      
          @owners.each_with_index do |owner, idx|
        

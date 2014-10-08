@@ -18,7 +18,7 @@
 
     <%= stylesheet_link_tag "application", :media => "all" %>
     <%= stylesheet_link_tag "jquery.sidr.light", :media => "all" %>
-    <%= stylesheet_link_tag "jquery-ui", :media => "all" %>
+    <%#= stylesheet_link_tag "jquery-ui", :media => "all" %>
     <%= stylesheet_link_tag "jqtree", :media => "all" %>
 	
 	<!-- bootstrapで印刷時にULRリンクがでる処理の取り消し -->
@@ -60,11 +60,11 @@
     <%= javascript_include_tag "biru-map" %>
 	
 	<%= stylesheet_link_tag("jqgrid/themes/default/jquery-ui-1.8.custom") %>
-	<%= stylesheet_link_tag('jqgrid/ui.jqgrid') %>
 	
-	<%= javascript_include_tag('jqgrid/jquery-ui-1.8.custom.min') %>
-	<%= javascript_include_tag('jqgrid/i18n/grid.locale-ja') %>
-	<%= javascript_include_tag('jqgrid/jquery.jqGrid.min') %>
+	<%= stylesheet_link_tag('jqgrid/ui.jqgrid') %>
+	<%#= javascript_include_tag('jqgrid/jquery-ui-1.8.custom.min') %>
+	<%#= javascript_include_tag('jqgrid/i18n/grid.locale-ja') %>
+	<%#= javascript_include_tag('jqgrid/jquery.jqGrid.min') %>
 	
     <% if content_for?(:header) %>
       <%= yield :header %>
