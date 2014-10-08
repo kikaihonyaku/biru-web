@@ -1,4 +1,7 @@
 
+// グローバル変数 ストリートビューの縦分割を指定する。2014/10/10
+var street_vew_vertical = false;
+
 // forEachを未実装のブラウザで使えるようにする設定
 // Production steps of ECMA-262, Edition 5, 15.4.4.18
 // Reference: http://es5.github.com/#x15.4.4.18
@@ -523,16 +526,40 @@ function init_process(){
 
 // ストリートビューを非表示にして map_canvasの高さを設定
 function init_display(){
-  document.getElementById("map_canvas").style.height = "100%";
-  document.getElementById("panowide").style.height = "0px";
-  document.getElementById("panowide").style.display = "none";
+	
+	if (street_vew_vertical == true){
+  	  document.getElementById("map_canvas").style.height = "100%";
+  	  document.getElementById("map_canvas").style.width = "80%";
+	  
+  	  document.getElementById("panowide").style.height = "0px";
+  	  document.getElementById("panowide").style.width = "0px";
+  	  document.getElementById("panowide").style.display = "none";
+		
+	} else{
+	  document.getElementById("map_canvas").style.height = "100%";
+	  document.getElementById("panowide").style.height = "0px";
+	  document.getElementById("panowide").style.display = "none";
+		
+	}
+	
 }
 
 // ストリートビューの表示を設定します。
 function street_veiw_window(){
-    document.getElementById("map_canvas").style.height = "50%";
-    document.getElementById("panowide").style.height = "50%";
-    document.getElementById("panowide").style.display = "block";
+	
+	if (street_vew_vertical == true){
+	    document.getElementById("map_canvas").style.width = "40%";
+	    document.getElementById("map_canvas").style.height = "100%";
+		
+	    document.getElementById("panowide").style.width = "40%";
+	    document.getElementById("panowide").style.height = "100%";
+	    document.getElementById("panowide").style.display = "block";
+		
+	}else{
+	    document.getElementById("map_canvas").style.height = "50%";
+	    document.getElementById("panowide").style.height = "50%";
+	    document.getElementById("panowide").style.display = "block";
+	}
 }
 
 
@@ -780,7 +807,11 @@ function init_map(user_id, search_bar_disp_flg){
     /*----------------------------------------------------------------------*/
     panoramaOptions = {
       position:mapCanvas.getCenter(),
-      pov:{heading: 180,pitch:0,zoom:0}
+      pov:{heading: 180,pitch:0,zoom:0},
+	  //enableCloseButton: true,
+	  addressControlOptions: {
+	      position: google.maps.ControlPosition.BOTTOM
+	  }
     };
     panorama = new  google.maps.StreetViewPanorama(document.getElementById("panowide"), panoramaOptions);
 
@@ -864,11 +895,8 @@ function info_msg_biru(biru, owners){
     '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
     '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="building_trust_disp(' + biru.id  + ', this.checked);" />&nbsp;委託</label>' +
     '</div>' +
-    '<div style="padding-left:10px;float:left;">' +
-    '  <a href="javascript:void(0)" onClick="changeZoom(' + biru.id + ', 1); return false;">ズーム</a>' +
-    '</div>' +
-    '<div style="padding-left:120px;">' +
-    '  <a href="javascript:void(0)" onClick="view_disp( true, ' + biru.latitude + ',' + biru.longitude  + '); return false;">View</a>' +
+    '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
+    '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="view_disp( this.checked, ' + biru.latitude + ',' + biru.longitude  + '); return false;" />&nbsp;ストリートビュー</label>' +
     '</div>' +
     '</div>';
 
@@ -906,11 +934,8 @@ function info_msg_owner(owner, buildings){
     '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
     '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="owner_trust_disp(' + owner.id  + ', this.checked);" />&nbsp;委託</label>' +
     '</div>' +
-    '<div style="padding-left:10px;float:left;">' +
-    '  <a href="javascript:void(0)" onClick="changeZoom(' + owner.id  + ', 2); return false;">ズーム</a>' +
-    '</div>' +
-    '<div style="padding-left:120px;">' +
-    '  <a href="javascript:void(0)" onClick="view_disp( true, ' + owner.latitude + ',' + owner.longitude  + '); return false;">View</a>' +
+    '<div style="padding-top:0px;margin-top:0px;padding-left:10px;float:left;">' +
+    '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="view_disp( this.checked, ' + owner.latitude + ',' + owner.longitude  + '); return false;" />&nbsp;ストリートビュー</label>' +
     '</div>' +
     '</div>';
 

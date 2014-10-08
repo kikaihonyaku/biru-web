@@ -547,6 +547,22 @@ def init_data_update
   
 end
 
+def init_biru_user
+	arr = []
+  arr.push({:uid=>'2179', :code=>'5952', :name=>'山口 テスト', :pass=>'5952'})
+
+  arr.each do |obj|
+    biru_user = BiruUser.find_or_create_by_code(obj[:code])
+    biru_user.code = obj[:code]
+    biru_user.name = obj[:name]
+    biru_user.password = obj[:pass]
+    biru_user.syain_id = obj[:uid]
+    biru_user.save!
+    p biru_user.name
+  end
+
+end
+
 
 # 物件種別
 def convert_biru_type(num)
@@ -1371,7 +1387,27 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       imp.owner_postcode = row[22]
       imp.owner_address = (row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]).strip
       imp.owner_tel = row[27]
+      
+      # 現管理会社、募集会社、サブリース
       imp.proprietary_company = row[28]
+      unless row[29].blank?
+        
+        if imp.proprietary_company.blank?
+          imp.proprietary_company = row[29]
+        else
+          imp.proprietary_company = imp.proprietary_company + '／' + row[29]
+        end
+        
+      end
+      
+      unless row[30].blank?
+        if imp.proprietary_company.blank?
+          imp.proprietary_company = row[30]
+        else
+          imp.proprietary_company = imp.proprietary_company + '／' + row[30]
+        end
+      end
+      
       imp.owner_memo = row[32]
       imp.building_memo = row[33]
       
@@ -2727,6 +2763,9 @@ end
 # システムアップデート管理
 #init_data_update
 
+# 社員マスタ登録
+init_biru_user
+
 ########################
 # 地図管理物件登録
 ########################
@@ -2757,7 +2796,7 @@ end
 #reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "01_07_kitakoshigaya.csv")) # 北越谷　赤坂
 
 
-#reg_attack_owner_building('5952', 'せんげん台営業所', Rails.root.join( "tmp", "01_08_sengendai.csv")) # せんげん台　山口主任
+reg_attack_owner_building('5952', 'せんげん台営業所', Rails.root.join( "tmp", "01_08_sengendai.csv")) # せんげん台　山口主任
 #reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_01_todakoenn.csv")) # 戸田公園 中野主任
 #reg_attack_owner_building('7844', '戸田営業所', Rails.root.join( "tmp", "02_02_toda.csv")) # 戸田　辻社員’
 #reg_attack_owner_building('5473', '東浦和営業所', Rails.root.join( "tmp", "02_07_higashi_urawa.csv")) # 東浦和 小泉主任

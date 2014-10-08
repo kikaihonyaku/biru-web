@@ -203,10 +203,13 @@ class TrustManagementsController < ApplicationController
              r.start_new_page
            end
        
-           r.page.values "post_%02d"%(lbl_num + 1) => "〒" + owner.postcode
+           unless owner.postcode.blank?
+             r.page.values "post_%02d"%(lbl_num + 1) => "〒" + owner.postcode
+           end
+           
            r.page.values "address_%02d"%(lbl_num + 1) => owner.address 
-           r.page.values "name_%02d"%(lbl_num + 1) => owner.name + ' ' + if owner.honorific_title then owner.honorific_title  else '様' end 
-           r.page.values "biru_%02d"%(lbl_num + 1) => '(株)中央ビル管理 ' + @biru_user.name
+           r.page.values "name_%02d"%(lbl_num + 1) => owner.name + ' ' + if owner.honorific_title.blank? then '様'  else owner.honorific_title end 
+#           r.page.values "biru_%02d"%(lbl_num + 1) => '(株)中央ビル管理 ' + @biru_user.name
            
            # アプローチデータ登録
            if reg_flg

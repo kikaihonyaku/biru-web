@@ -320,9 +320,15 @@ ActiveRecord::Schema.define(:version => 20141005204234) do
     t.string   "true_url"
     t.string   "large_url"
     t.string   "mini_url"
-    t.boolean  "delete_flg",      :default => false
-    t.datetime "created_at",                         :null => false
-    t.datetime "updated_at",                         :null => false
+    t.boolean  "delete_flg",         :default => false
+    t.datetime "created_at",                            :null => false
+    t.datetime "updated_at",                            :null => false
+    t.string   "main_category_code"
+    t.string   "sub_category_code"
+    t.string   "sub_category_name"
+    t.string   "caption"
+    t.string   "priority"
+    t.string   "entry_datetime"
   end
 
   create_table "renters_rooms", :force => true do |t|
@@ -462,6 +468,24 @@ ActiveRecord::Schema.define(:version => 20141005204234) do
     t.integer  "vacant_cnt"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
+  end
+
+  create_table "work_renters_room_pictures", :force => true do |t|
+    t.string   "batch_cd"
+    t.integer  "batch_cd_idx"
+    t.string   "room_cd"
+    t.integer  "batch_picture_idx"
+    t.string   "true_url"
+    t.string   "large_url"
+    t.string   "mini_url"
+    t.string   "main_category_code"
+    t.string   "sub_category_code"
+    t.string   "sub_category_name"
+    t.string   "caption"
+    t.string   "priority"
+    t.string   "entry_datetime"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
   end
 
   create_table "work_renters_rooms", :force => true do |t|
