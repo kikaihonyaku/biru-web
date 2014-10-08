@@ -605,6 +605,7 @@ function view_disp(disp_flg, lat, lng){
       // ストリートビューを非表示に設定
       init_display();
     }
+	
 }
 
 /* ストリートビューのリフレッシュ */

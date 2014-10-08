@@ -882,6 +882,7 @@ function getCoords(position) {
 			        </li>
 			        <li><a data-toggle="modal" href="#modal-tack">タックシール出力</a></li>
 			        <li><a href="#">履歴検索</a></li>
+			        <li><a href="#">アタックリスト追加・削除（小ウィンドウを開く）</a></li>
 			    </ul>
 			</div>
 			
@@ -948,8 +949,6 @@ function getCoords(position) {
 		<div id = "building_pager"></div>
 	</div>
 	
-
-
 
 	<!-- For index -->
 
@@ -1164,7 +1163,7 @@ function getCoords(position) {
 				   <%= text_field_tag 'dm_out_msg', '', :class=>'form-control', :style=>'width:300px;'  %>
 				   
 			       <label class="string optional control-label" for="dm_discription" style="margin-top:20px;">宛名ラベル用紙種類</label>
-				   <%= select_tag 'dm_tack_kind', options_for_select([["A-ONE 21面用", "pdf_layout_a_one_21.tlf"], ["B-ONE", "b-one"]]), :class=>'form-control', :style=>'width:150px;' %>
+				   <%= select_tag 'dm_tack_kind', options_for_select([["A-ONE 21面用", "pdf_layout_a_one_21.tlf"], ["PLUS ME-505T", "pdf_layout_plus_me505t.tlf"]]), :class=>'form-control', :style=>'width:150px;' %>
 				   
 				</div>
 			</div>
