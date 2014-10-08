@@ -70,8 +70,8 @@ class TrustManagementsController < ApplicationController
       buildings = []
       trusts = []
       owners = []
-      owner_to_buildings = []
-      building_to_owners = []
+      owner_to_buildings = {}
+      building_to_owners = {}
       
       ActiveRecord::Base.connection.select_all(get_trust_sql(object_user)).each do |rec|
         
