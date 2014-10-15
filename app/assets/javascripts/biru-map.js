@@ -849,6 +849,9 @@ function win_user(id){
   window.open('/trust_managements/trust_user_report?sid=' + id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes");
 }
 
+function win_attack_list_maintenance(user_id){
+    window.open('/trust_managements/trust_user_report?sid=' + user_id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes");
+}
 
 function screen_block(){
   //$.blockUI({ message: '検索中…しばらくお待ちください'});
