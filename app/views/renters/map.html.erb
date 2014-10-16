@@ -1,0 +1,319 @@
+<% content_for :header do %>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
+<script type="text/javascript">
+
+
+  //-------------------
+  // グローバル変数定義
+  //-------------------
+  var convert_shop = [];
+  
+  function initialize(){
+    
+	// ストリートビューの分割を縦に
+	street_vew_vertical = true;
+	
+    // 初期化処理
+    // init_process();
+
+    // 初期表示は非表示
+    init_display();
+	
+    // 地図・ストリートビューを作成します。
+   init_map(<%= @biru_user.id %>, false);
+
+
+    // 初期表示位置を調整
+    var bounds = new google.maps.LatLngBounds();
+
+
+    build_arr = {}; // グローバル
+    kyori_text = ""
+    var pos;
+		
+	gon.buildings.forEach(function(building){
+        pos = new google.maps.LatLng(building.latitude, building.longitude);
+        bounds.extend(pos);
+
+        // infoWndに表示するHTMLを作成する。
+        var inner_text;
+
+		inner_text = "";
+		var rooms = gon.rooms[building.id]
+		rooms.forEach(function(room){
+		          inner_text = inner_text + '<br/>'  + room.room_code + ' ' + room.room_no
+		});
+
+        build_arr[building.id] = createMarker({
+          position : pos
+          ,map : mapCanvas
+          ,icon : '/assets/marker_blue.png'
+          ,shadow : 'assets/msmarker_shadow.png'
+          ,info_msg : building.name
+         // ,html : vhtml
+          ,html : building.name + ' </br>' + inner_text
+        });
+
+	});
+
+    // ここで格納していたPosition情報を展開
+    mapCanvas.fitBounds(bounds);
+
+  } // end initialize
+
+  google.maps.event.addDomListener(window, "load", initialize);
+
+
+</script>
+
+  <style type="text/css">
+    html, body{
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #map_canvas{
+      position: fixed;
+      width:100%;
+      height:100%;
+      top:0px;
+      left:0;
+    }
+
+    #top-menu{
+      padding:0;
+      margin:0;
+    }
+	
+	a{
+	  text-decoration:underline;	
+	}
+	
+  </style>
+
+<% end %>
+
+<script type="text/javascript">
+
+	$(function () {
+		$(".accordion .toggle").click(function () {
+			$(this).next("ul").slideToggle(200);
+			$(this).next("div").slideToggle(200);
+	
+			$(this).toggleClass("open");
+		});
+	});
+
+	// アタックリストを作成します。
+	init_jqgrid();
+	
+	
+	// 委託契約リストを作成
+	function init_jqgrid(){
+		// 列名の定義
+		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
+		var grid_name = ["renters_room_id", "building_id", "営業所", "建物名", "部屋", "住所", "room_code", "SUMO合計残数", "間取り", "外観", "内観", "外観その他", "周辺"];
+		
+		// 列属性の定義
+		var grid_model = [
+		  {name:"renters_room_id", index:"renters_room_id", align:"right", classes:"no_class", hidden:true}
+		 ,{name:"building_id", index:"building_id", align:"right", classes:"no_class", hidden:true}
+		 ,{name:"store_name", index:"store_name", width:80, align:"center", classes:"no_class"}
+		 ,{name:"real_building_name", index:"real_building_name", width:80, align:"center", classes:"no_class"}
+		 ,{name:"real_room_name", index:"real_room_name", width:80, align:"center", classes:"no_class"}
+		 ,{name:"address", index:"address", width:80, align:"center", classes:"no_class"}
+		 ,{name:"room_code", index:"room_code", width:80, align:"center", classes:"no_class"}
+		 ,{name:"suumo_sum", index:"suumo_sum", width:80, align:"center", classes:"no_class"}
+		 ,{name:"madori", index:"madori", width:80, align:"center", classes:"no_class"}
+		 ,{name:"gaikan", index:"gaikan", width:80, align:"center", classes:"no_class"}
+		 ,{name:"naikan", index:"naikan", width:80, align:"center", classes:"no_class"}
+		 ,{name:"gaikan_etc", index:"gaikan_etc", width:80, align:"center", classes:"no_class"}
+		 ,{name:"syuuhen", index:"syuuhen", width:80, align:"center", classes:"no_class"}
+		 
+		];
+		
+		// データの作成
+		var grid_data = [];
+		cnt = 1;
+		gon.grid_renters_data.forEach(function(renters_data){
+			var rec = {};
+			rec['renters_room_id'] = renters_data.renters_room_id
+			rec['building_id'] = renters_data.building_id
+			rec['store_name'] = renters_data.store_name
+			rec['real_building_name'] = renters_data.real_building_name
+			rec['real_room_name'] = renters_data.real_room_no
+			rec['address'] = renters_data.address
+			rec['room_code'] = renters_data.room_code
+			rec['suumo_sum'] = 0
+			rec['madori'] = 0
+			rec['gaikan'] = 0
+			rec['naikan'] = 0
+			rec['gaikan_etc'] = 0
+			rec['syuuhen'] = 0
+		
+			grid_data.push(rec);
+			
+		});
+		
+		// その他の設定
+		jqgrid_opt = {
+			 table_name:'building_table'
+			,fotter_name:'building_pager'
+			,div_name:'div_dummy_02'
+			,caption:'募集中物件'
+			,event_type:30
+			,shrinkFit:true
+			,multiselect:true
+		};
+			
+		
+		$(function(){
+			jqgrid_create(grid_name, grid_model, grid_data, jqgrid_opt);
+			
+			// 反映ボタン押下
+			jQuery("#building_table").navGrid('#building_pager',{
+			        edit:false,add:false,del:false,search:false
+			      }).navButtonAdd('#building_pager',{
+			        caption:"地図に反映", position:"last", onClickButton: function(){
+						 
+						// 建物非表示
+						 for(var item in build_arr){
+						    build_arr[item].set("visible", false);
+						 };
+						 
+						 for(var item in owner_arr){
+						    owner_arr[item].set("visible", false);
+						 };
+						 
+						 for(var item in trust_arr){
+						    trust_arr[item].set("visible", false);
+						 };
+						 
+						 
+						 //var bounds = new google.maps.LatLngBounds();
+						 var table_div = $('#building_table');
+						 var row_data = table_div.getRowData();
+						 
+						 for(var j in  row_data){
+							
+							 trust = trust_arr[row_data[j].trust_id];
+							 if(trust != null){
+	 							 trust.set("visible", true);
+								 
+							 }
+							 
+							 owner = owner_arr[row_data[j].owner_id];
+							 if(owner != null){
+	 							 owner.set("visible", true);
+								 
+						         //pos = new google.maps.LatLng(owner.latitude, owner.longitude);
+						         //bounds.extend(pos);
+								 
+							 }
+							 
+							 building = build_arr[row_data[j].building_id];
+							 if(building != null){
+	 							 building.set("visible", true);
+								 
+						         //pos = new google.maps.LatLng(building.latitude, building.longitude);
+						         //bounds.extend(pos);
+								 
+							 }
+							 
+						 }
+						 
+						 // マーカーが収まるように地図を調整
+						 //mapCanvas.fitBounds(bounds);
+						 
+					 }
+			      });			
+		});
+		
+	}
+	
+	
+
+</script>
+
+
+  <!-- ここは span9で呼び出されているので合計も9に合わせる -->
+
+
+	<a id="simple-menu" href="#sidr"></a>
+	<div style="height:50%;padding:10px 20px 0px 20px;">
+		
+		<div id="div_dummy" style="float:left;width:20%;height:80%;padding:0;margin:0;padding-right:10px;">
+			
+			
+			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
+			    <ul>
+			        <li>
+			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top">基本メニュー</span>
+						
+					</li>
+			        </li>
+			        <li><a data-toggle="modal" href="#modal-tack">タックシール出力</a></li>
+			        <li><a href="#">履歴検索</a></li>
+			        <li><a href="javascript:win_attack_list_maintenance(1);">アタックリスト追加・削除</a></li>
+			    </ul>
+			</div>
+			
+			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
+			    <ul>
+			        <li>
+			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">地図操作</span>
+						<div style="display:block;padding:5px;margin-left:10px;padding-top:10px;padding-bottom:10px;">
+							貸主マーク<br/>
+							建物マーク<br/>
+							委託マーク<br/>
+						</div>
+			        </li>
+			    </ul>
+			</div>
+			
+
+			
+			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;" >
+			    <ul>
+			        <li>
+			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">アタックリストメンテナンス</span>
+			            <ul>
+					        <li><a href="#">見込み貸主登録</a></li>
+					        <li><a href="#">見込み建物登録</a></li>
+					        <li><a href="#">アタックリスト追加</a></li>
+					        <li><a href="#">アタックリスト削除</a></li>
+			            </ul>
+						
+			        </li>
+
+			    </ul>
+			</div>
+			
+			<table id="shop_table"></table>
+			<div id = "shop_pager"></div>
+		</div>
+		<div id="panowide" style="width: 40%; height: 0px;float:right;"></div>
+		<div id="map_canvas" style="width: 80%;float:right;"></div>
+		
+	</div>
+	<div id="div_dummy_02" style="clear:both;width:100%;height:42%;padding:10px 20px 10px 20px;margin-bottom:50px;">
+		<table id="building_table"></table>
+		<div id = "building_pager"></div>
+	</div>
+	
+
+	<!-- For index -->
+
+	  <style type="text/css">
+		
+		a{
+		  text-decoration:underline;	
+		}
+		
+	  </style>
+	  
+
+
+

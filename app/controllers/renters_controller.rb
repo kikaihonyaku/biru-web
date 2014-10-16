@@ -9,7 +9,175 @@ class RentersController < ApplicationController
   def index
     @data_update = DataUpdateTime.find_by_code("310")
     @batch_list = WorkRentersRoom.group(:batch_cd).select(:batch_cd).order("batch_cd desc")
+    
+    # 営業所ごとの募集条件一覧を表示します。
+    
+    # 営業所
+    # レンターズ掲載戸数
+    # SUMOハイライト数
+    # リンク
+    
+    grid_data = {}
+    ActiveRecord::Base.connection.select_all(get_renters_sql(false)).each do |rec|
+      
+      # 初めての営業所の時、初期化
+      
+      unless grid_data[rec['store_code']]
+        grid_data[rec['store_code']] = {:store_name => rec['store_name'], :summary => 0 ,:sumo_highlite => 0, :url => 'map' }
+      end
+
+      rec_data = grid_data[rec['store_code']]
+      rec_data[:summary] = rec_data[:summary] + 1
+      
+      #grid_data.push(rec_data)
+    end
+    
+    # ハッシュを配列に変換
+    data_list = []
+    grid_data.keys.each do |store_code|
+      
+      arr = grid_data[store_code]
+      arr['store_code'] = store_code
+      data_list.push(arr)      
+    end
+    
+    gon.data_list = data_list
+    
   end
+  
+  
+  def map
+    
+    # 営業所
+    # 物件名
+    # 住所
+    # 間取り
+    # 外装
+    # 内装
+    # SUMOハイライト数
+    # リンク
+    
+    # building_code順でレンターズデータを取得
+    buildings = []
+    rooms = {}
+    grid_renters_data = []
+    tmp_building_code = ""
+    ActiveRecord::Base.connection.select_all(get_renters_sql(true)).each do |rec|
+      
+      # gridに表示するデータを取得
+      grid_renters_data.push(rec)
+      
+      unless tmp_building_code == rec['building_id']
+        
+        # 地図にマッピングする物件を取得
+        building = {}
+        building[:id] = rec['building_id']
+        building[:name] = rec['real_building_name']
+        building[:address] = rec['address']
+        building[:latitude] = rec['latitude']
+        building[:longitude] = rec['longitude']
+        buildings.push(building)
+        
+        rooms[rec['building_id']] = []
+        tmp_building_code = rec['building_id']
+        
+      end
+      
+      room = {}
+      room['room_code'] = rec['room_code']
+      room['room_no'] = rec['real_room_no']
+      rooms[rec['building_id']].push(room)
+      
+    end
+    
+    gon.buildings = buildings
+    gon.grid_renters_data = grid_renters_data
+    gon.rooms = rooms
+    
+  end
+  
+  # order : 並べ替えの指定
+  def get_renters_sql(order)
+    strSql = "
+    select 
+    a.id as renters_room_id
+    ,a.store_code
+    ,a.store_name
+    ,b.sub_category_code 
+    ,b.sub_category_name 
+    ,a.room_code 
+    ,a.real_building_name
+    ,a.real_room_no
+    ,a.building_code
+    ,c.id as building_id
+    ,c.address
+    ,c.latitude
+    ,c.longitude
+    ,COUNT(CASE WHEN b.sub_category_code = 'J00' THEN 1 ELSE NULL END ) AS J00
+    ,COUNT(CASE WHEN b.sub_category_code = 'J01' THEN 1 ELSE NULL END ) AS J01
+    ,COUNT(CASE WHEN b.sub_category_code = 'J02' THEN 1 ELSE NULL END ) AS J02
+    ,COUNT(CASE WHEN b.sub_category_code = 'J03' THEN 1 ELSE NULL END ) AS J03
+    ,COUNT(CASE WHEN b.sub_category_code = 'J04' THEN 1 ELSE NULL END ) AS J04
+    ,COUNT(CASE WHEN b.sub_category_code = 'J05' THEN 1 ELSE NULL END ) AS J05
+    ,COUNT(CASE WHEN b.sub_category_code = 'J06' THEN 1 ELSE NULL END ) AS J06
+    ,COUNT(CASE WHEN b.sub_category_code = 'J07' THEN 1 ELSE NULL END ) AS J07
+    ,COUNT(CASE WHEN b.sub_category_code = 'J08' THEN 1 ELSE NULL END ) AS J08
+    ,COUNT(CASE WHEN b.sub_category_code = 'J09' THEN 1 ELSE NULL END ) AS J09
+    ,COUNT(CASE WHEN b.sub_category_code = 'T00' THEN 1 ELSE NULL END ) AS T00
+    ,COUNT(CASE WHEN b.sub_category_code = 'T01' THEN 1 ELSE NULL END ) AS T01
+    ,COUNT(CASE WHEN b.sub_category_code = 'T02' THEN 1 ELSE NULL END ) AS T02
+    ,COUNT(CASE WHEN b.sub_category_code = 'T03' THEN 1 ELSE NULL END ) AS T03
+    ,COUNT(CASE WHEN b.sub_category_code = 'T04' THEN 1 ELSE NULL END ) AS T04
+    ,COUNT(CASE WHEN b.sub_category_code = 'T05' THEN 1 ELSE NULL END ) AS T05
+    ,COUNT(CASE WHEN b.sub_category_code = 'T06' THEN 1 ELSE NULL END ) AS T06
+    ,COUNT(CASE WHEN b.sub_category_code = 'T07' THEN 1 ELSE NULL END ) AS T07
+    ,COUNT(CASE WHEN b.sub_category_code = 'T08' THEN 1 ELSE NULL END ) AS T08
+    ,COUNT(CASE WHEN b.sub_category_code = 'T09' THEN 1 ELSE NULL END ) AS T09
+    ,COUNT(CASE WHEN b.sub_category_code = 'T10' THEN 1 ELSE NULL END ) AS T10
+    ,COUNT(CASE WHEN b.sub_category_code = 'T11' THEN 1 ELSE NULL END ) AS T11
+    from renters_rooms a 
+    inner join renters_room_pictures b on a.id = b.renters_room_id 
+    inner join renters_buildings c on a.renters_building_id = c.id
+    group by a.id, a.room_code, a.store_name, b.sub_category_code, b.sub_category_name 
+    "
+    
+    if order
+      strSql = strSql + " order by a.building_code"
+    end
+    
+    strSql
+    
+  end
+  
+  
+  def get_all_building
+    biru = nil
+    RentersRoom.order("building_code").each do |room|
+    	
+    	unless biru
+        # biruが登録されていない時は建物を登録する
+        biru = room.renters_building
+        @buildings << biru
+        
+      else
+      	# biruが登録されているが、建物コードが異なる時
+      	unless biru.building_cd == room.renters_building.building_cd
+      		
+	        biru = room.renters_building
+	        @buildings << biru
+      		
+      	else
+      		# すでに登録済みの建物の時はなにもしない
+      	end
+    	end
+    	
+      @rooms[biru.id] = [] unless @rooms[biru.id]
+      @rooms[biru.id] << room
+    end
+
+  end
+  
+  
   
   # 画像一覧を表示します
   def pictures
@@ -42,6 +210,122 @@ class RentersController < ApplicationController
     
     # 紐づく写真を取得
   end
+  
+  
+  
+  # 管理物件からレンターズの登録内容を更新取得します。
+   def update_all
+
+     @data_update = DataUpdateTime.find_by_code("310")
+     @data_update.start_datetime = Time.now
+     @data_update.update_datetime = nil
+     @data_update.biru_user_id = @biru_user.id
+     @data_update.save!
+
+ 		# レンターズのデータを本番に反映する
+     renters_reflect(params[:batch][:value])
+  
+     @data_update.update_datetime = Time.now
+     @data_update.save!
+    
+     redirect_to :action=>'index'
+    
+   end
+  
+   # レンターズデータを本番に反映する
+   # レンターズデータを本番に反映する
+   def renters_reflect(batch_cd)
+    
+     RentersBuilding.update_all("delete_flg = 1") # SQLServerは1
+     RentersRoom.update_all("delete_flg = 1") # SQLServerは1
+     RentersRoomPicture.update_all("delete_flg = 1") # SQLServerは1
+    
+     chk_building_code = ""
+    
+     building = nil
+     # renters_roomへの反映
+     WorkRentersRoom.where("batch_cd = ?", batch_cd).order("building_cd").each do |work_room|
+      
+       # もし建物コードが変わったら最新の建物コードを取得
+       unless chk_building_code == work_room.building_cd
+      	
+ 	      building = RentersBuilding.find_or_create_by_building_cd(work_room.building_cd)
+ 	      building.building_cd = work_room.building_cd
+ 	      building.clientcorp_building_cd = work_room.clientcorp_building_cd
+
+ 	      #building.store_code = work_room.store_code
+ 	      #building.store_name = work_room.store_name
+ 	      building.building_name = work_room.building_name
+ 	      building.real_building_name = work_room.real_building_name
+ 	      building.building_type = work_room.building_type
+ 	      building.structure = work_room.structure
+ 	      building.address = work_room.detail_address
+
+         unless building.gmaps
+   	      # geocode
+   	      gmaps_ret = Gmaps4rails.geocode(building.address)
+   	      building.latitude = gmaps_ret[0][:lat]
+   	      building.longitude = gmaps_ret[0][:lng]
+   	      building.gmaps = true
+         end
+
+ 	      building.delete_flg = false
+ 	      building.save!
+	      
+       	# 建物コードの保存
+       	chk_building_code =  work_room.building_cd
+      	
+       end
+      
+       room = RentersRoom.find_or_create_by_room_code(work_room.room_cd)
+       room.room_code = work_room.room_cd
+       room.building_code = work_room.building_cd
+       room.clientcorp_room_cd = work_room.clientcorp_room_cd
+       room.clientcorp_building_cd = work_room.clientcorp_building_cd
+       room.store_code = work_room.store_code
+       room.store_name = work_room.store_name
+       room.building_name = work_room.building_name
+       room.room_no = work_room.room_no
+       room.real_building_name = work_room.real_building_name
+       room.real_room_no = work_room.real_room_no
+       room.floor = work_room.floor
+       room.building_type = work_room.building_type
+       room.structure = work_room.structure
+       room.construction = work_room.construction
+       room.room_num = work_room.room_num
+       room.address = work_room.address
+       room.detail_address = work_room.detail_address
+       room.vacant_div = work_room.vacant_div
+       room.enter_ym = work_room.enter_ym
+       room.new_status = work_room.new_status
+       room.completion_ym = work_room.completion_ym
+       room.square = work_room.square
+       room.room_layout_type = work_room.room_layout_type
+       room.delete_flg = false
+       room.renters_building_id = building.id
+       room.save!
+      
+       # 部屋の物件情報を反映
+       WorkRentersRoomPicture.where("batch_cd = ?", batch_cd).where("batch_cd_idx = ?", work_room.batch_cd_idx).order("batch_picture_idx").each_with_index do |work_picture, j |
+       	picture = RentersRoomPicture.find_or_create_by_renters_room_id_and_idx(room.id, j)
+ 				picture.renters_room_id = room.id
+ 				picture.idx = j
+ 				picture.true_url = work_picture.true_url
+ 				picture.large_url = work_picture.large_url
+ 				picture.mini_url = work_picture.mini_url
+ 				picture.main_category_code = work_picture.main_category_code
+ 				picture.sub_category_code = work_picture.sub_category_code
+ 				picture.sub_category_name = work_picture.sub_category_name
+ 				picture.caption = work_picture.caption
+ 				picture.priority = work_picture.priority
+ 				picture.entry_datetime = work_picture.entry_datetime
+ 				picture.delete_flg = false
+ 				picture.save!
+       end
+     end
+    
+   end
+  
   
   
 end

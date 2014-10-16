@@ -2697,32 +2697,42 @@ def create_work_renters_rooms
         work_renters_room.save!
 
         # # 画像を登録
-        # RentersRoomPicture.where("renters_room_id = ?", renters_room.id ).update_all("delete_flg = ?", true)
-        #
-        # picture_num = 0
-        # room.elements.each_with_index('picture') do |pic, i|
-        #   room_picture = RentersRoomPicture.find_or_create_by_renters_room_id_and_idx(renters_room.id, j)
-        #   room_picture.renters_room_id = renters_room.id
-        #   room_picture.idx = j
-        #
-        #   room_picture.true_url = pic.elements['true_url'].text
-        #   room_picture.large_url = pic.elements['large_url'].text
-        #   room_picture.mini_url = pic.elements['mini_url'].text
-        #
-        #   room_picture.delete_flg = false
-        #   room_picture.save!
-        #
-        #   picture_num = picture_num + 1
-        # end
-        #
-        # # 画像の枚数を保存
+
+        picture_num = 0
+        room.elements.each_with_index('picture') do |pic, i|
+          room_picture = WorkRentersRoomPicture.create
+          room_picture.batch_cd = batch_cd
+          room_picture.batch_cd_idx = work_renters_room.batch_cd_idx
+          room_picture.room_cd = work_renters_room.room_cd
+          room_picture.batch_picture_idx = i
+          
+          room_picture.true_url = pic.elements['true_url'].text
+          room_picture.large_url = pic.elements['large_url'].text
+          room_picture.mini_url = pic.elements['mini_url'].text
+          
+          room_picture.sub_category_code = pic.elements['sub_category/code'].text
+          room_picture.sub_category_name = pic.elements['sub_category/name'].text
+          room_picture.caption = pic.elements['caption'].text
+          room_picture.priority = pic.elements['priority'].text
+
+          #room_picture.delete_flg = false
+          room_picture.save!
+
+          picture_num = picture_num + 1
+        end
+        
+        if work_renters_room.building_name
+          p work_renters_room.building_name + ' ' + picture_num.to_s + "枚登録"
+        end
+
+        # 画像の枚数を保存
         # renters_room.picture_num = picture_num
         # renters_room.save!
         #
         # if renters_room.building_name
         #   p renters_room.building_name + ' ' + picture_num.to_s + "枚登録"
         # end
-        #
+
       end
     end    
     
