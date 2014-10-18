@@ -67,6 +67,7 @@ class RentersController < ApplicationController
       # gridに表示するデータを取得
       grid_renters_data.push(rec)
       
+      # google mapに表示するデータを取得
       unless tmp_building_code == rec['building_id']
         
         # 地図にマッピングする物件を取得
@@ -86,6 +87,15 @@ class RentersController < ApplicationController
       room = {}
       room['room_code'] = rec['room_code']
       room['room_no'] = rec['real_room_no']
+      
+      # room['madori'] = rec['J00']
+      # room['gaikan'] = rec['T00']
+      #
+      # # ↓J07:景色は内観対象外
+      # room['naikan'] = rec['J01'] + rec['J02'] + rec['J03'] + rec['J04'] + rec['J05'] + rec['J06'] + rec['J08'] + rec['J09']
+      # room['gaikan_etc'] = rec['T03'] + rec['T04'] + rec['T05'] + rec['T06'] + rec['T08'] + rec['T11']
+      # room['syuuhen'] = rec['T01']
+      
       rooms[rec['building_id']].push(room)
       
     end
@@ -99,12 +109,28 @@ class RentersController < ApplicationController
   # order : 並べ替えの指定
   def get_renters_sql(order)
     strSql = "
+    select
+    renters_room_id
+    ,store_code
+    ,store_name
+    ,room_code 
+    ,real_building_name
+    ,real_room_no
+    ,building_code
+    ,building_id
+    ,address
+    ,latitude
+    ,longitude
+    ,J00 as madori
+    ,T00 as gaikan
+    ,J01 + J02 + J03 + J04 + J05 + J06 + J08 + J09 as naikan
+    ,T03 + T04 + T05 + T06 + T08 + T11 as gaikan_etc
+    ,T01 as syuuhen
+    from (
     select 
     a.id as renters_room_id
     ,a.store_code
     ,a.store_name
-    ,b.sub_category_code 
-    ,b.sub_category_name 
     ,a.room_code 
     ,a.real_building_name
     ,a.real_room_no
@@ -138,11 +164,22 @@ class RentersController < ApplicationController
     from renters_rooms a 
     inner join renters_room_pictures b on a.id = b.renters_room_id 
     inner join renters_buildings c on a.renters_building_id = c.id
-    group by a.id, a.room_code, a.store_name, b.sub_category_code, b.sub_category_name 
+    group by a.id
+    ,a.store_code
+    ,a.store_name
+    ,a.room_code 
+    ,a.real_building_name
+    ,a.real_room_no
+    ,a.building_code
+    ,c.id
+    ,c.address
+    ,c.latitude
+    ,c.longitude
+    )
     "
     
     if order
-      strSql = strSql + " order by a.building_code"
+      strSql = strSql + " order by building_code"
     end
     
     strSql
@@ -236,9 +273,9 @@ class RentersController < ApplicationController
    # レンターズデータを本番に反映する
    def renters_reflect(batch_cd)
     
-     RentersBuilding.update_all("delete_flg = 1") # SQLServerは1
-     RentersRoom.update_all("delete_flg = 1") # SQLServerは1
-     RentersRoomPicture.update_all("delete_flg = 1") # SQLServerは1
+     RentersBuilding.update_all("delete_flg = true") # SQLServerは1
+     RentersRoom.update_all("delete_flg = true") # SQLServerは1
+     RentersRoomPicture.update_all("delete_flg = true") # SQLServerは1
     
      chk_building_code = ""
     
@@ -249,7 +286,7 @@ class RentersController < ApplicationController
        # もし建物コードが変わったら最新の建物コードを取得
        unless chk_building_code == work_room.building_cd
       	
- 	      building = RentersBuilding.find_or_create_by_building_cd(work_room.building_cd)
+ 	      building = RentersBuilding.unscoped.find_or_create_by_building_cd(work_room.building_cd)
  	      building.building_cd = work_room.building_cd
  	      building.clientcorp_building_cd = work_room.clientcorp_building_cd
 
@@ -277,7 +314,7 @@ class RentersController < ApplicationController
       	
        end
       
-       room = RentersRoom.find_or_create_by_room_code(work_room.room_cd)
+       room = RentersRoom.unscoped.find_or_create_by_room_code(work_room.room_cd)
        room.room_code = work_room.room_cd
        room.building_code = work_room.building_cd
        room.clientcorp_room_cd = work_room.clientcorp_room_cd
@@ -307,7 +344,7 @@ class RentersController < ApplicationController
       
        # 部屋の物件情報を反映
        WorkRentersRoomPicture.where("batch_cd = ?", batch_cd).where("batch_cd_idx = ?", work_room.batch_cd_idx).order("batch_picture_idx").each_with_index do |work_picture, j |
-       	picture = RentersRoomPicture.find_or_create_by_renters_room_id_and_idx(room.id, j)
+       	picture = RentersRoomPicture.unscoped.find_or_create_by_renters_room_id_and_idx(room.id, j)
  				picture.renters_room_id = room.id
  				picture.idx = j
  				picture.true_url = work_picture.true_url

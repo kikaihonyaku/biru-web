@@ -41,7 +41,7 @@
 		inner_text = "";
 		var rooms = gon.rooms[building.id]
 		rooms.forEach(function(room){
-		          inner_text = inner_text + '<br/>'  + room.room_code + ' ' + room.room_no
+		          inner_text = inner_text + '<br/>'  + room.room_no + '  ' + room.room_code + '  ' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">HP</a>'
 		});
 
         build_arr[building.id] = createMarker({
@@ -114,7 +114,7 @@
 	function init_jqgrid(){
 		// 列名の定義
 		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
-		var grid_name = ["renters_room_id", "building_id", "営業所", "建物名", "部屋", "住所", "room_code", "SUMO合計残数", "間取り", "外観", "内観", "外観その他", "周辺"];
+		var grid_name = ["renters_room_id", "building_id", "営業所", "建物名", "部屋", "住所", "room_code", "SUMO合計残数", "間取り：残", "外観：残", "内観：残", "外観その他：残", "周辺：残"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -136,7 +136,6 @@
 		
 		// データの作成
 		var grid_data = [];
-		cnt = 1;
 		gon.grid_renters_data.forEach(function(renters_data){
 			var rec = {};
 			rec['renters_room_id'] = renters_data.renters_room_id
@@ -146,12 +145,16 @@
 			rec['real_room_name'] = renters_data.real_room_no
 			rec['address'] = renters_data.address
 			rec['room_code'] = renters_data.room_code
-			rec['suumo_sum'] = 0
-			rec['madori'] = 0
-			rec['gaikan'] = 0
-			rec['naikan'] = 0
-			rec['gaikan_etc'] = 0
-			rec['syuuhen'] = 0
+			
+			tmp = get_suumo_remaining(renters_data.madori, renters_data.gaikan, renters_data.naikan, renters_data.gaikan_etc, renters_data.syuuhen)
+			
+			
+			rec['suumo_sum'] = tmp.remaining_suumo
+			rec['madori'] = tmp.remaining_madori
+			rec['gaikan'] = tmp.remaining_gaikan
+			rec['naikan'] = tmp.remaining_naikan
+			rec['gaikan_etc'] = tmp.remaining_gaikan_etc
+			rec['syuuhen'] = tmp.remaining_syuuhen
 		
 			grid_data.push(rec);
 			
@@ -163,9 +166,9 @@
 			,fotter_name:'building_pager'
 			,div_name:'div_dummy_02'
 			,caption:'募集中物件'
-			,event_type:30
+			,event_type:31
 			,shrinkFit:true
-			,multiselect:true
+			,multiselect:false
 		};
 			
 		
@@ -231,6 +234,40 @@
 			      });			
 		});
 		
+	}
+	
+	// suumoのそれぞれの残数をハッシュで返します
+	function get_suumo_remaining(madori, gaikan, naikan, gaikan_etc, syuuhen){
+		
+		res = {};
+		res.remaining_madori = 1 - madori
+		if(res.remaining_madori < 0){
+			res.remaining_madori = 0;
+		}
+		
+		res.remaining_gaikan = 2 - gaikan
+		if(res.remaining_gaikan < 0){
+			res.remaining_gaikan = 0;
+		}
+		
+		res.remaining_naikan = 9 - naikan
+		if(res.remaining_naikan < 0){
+			res.remaining_naikan = 0;
+		}
+		
+		res.remaining_gaikan_etc = 2 - gaikan_etc
+		if(res.remaining_gaikan_etc < 0){
+			res.remaining_gaikan_etc = 0;
+		}
+		
+		res.remaining_syuuhen = 6 - syuuhen
+		if(res.remaining_syuuhen < 0){
+			res.remaining_syuuhen = 0;
+		}
+		
+		res.remaining_suumo = (res.remaining_madori + res.remaining_gaikan + res.remaining_naikan + res.remaining_gaikan_etc + res.remaining_syuuhen)  // SUMO算数の合計
+		
+		return res;
 	}
 	
 	
