@@ -4,14 +4,15 @@
 
 	function init_jqgrid(){
 		// 列名の定義
-		var col_names = ["営業所", "レンターズ掲載数", "SUMOハイライト","リンク"];
+		var col_names = ["支店", "営業所", "レンターズ掲載数", "SUMOハイライト","リンク"];
 	
 		// 列属性の定義
 		var col_model = [
-		  {name:"store_name", index:"store_name", align:"left",classes:"no_class"}
-		 ,{name:"summary", index:"summary", align:"left",classes:"no_class"}
-		 ,{name:"sumo_highlite", index:"sumo_highlite", align:"left",classes:"no_class"}
- 		 ,{name:"url", index:"map_link", width:200, align:"left", classes:"no_class", formatter: 'link'}
+	  	  {name:"group_name", index:"group_name", align:"center",classes:"no_class"}
+		 ,{name:"store_name", index:"store_name", align:"center",classes:"no_class"}
+		 ,{name:"summary", index:"summary", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
+		 ,{name:"sumo_highlite", index:"sumo_highlite", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
+ 		 ,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", formatter: 'link'}
 		];
 	
 
@@ -20,7 +21,7 @@
 			 table_name:'building_table'
 			,fotter_name:'building_pager'
 			,div_name:'div_dummy_02'
-			,caption:'レンターズ掲載状況'
+			,caption:'レンターズ掲載状況：<%= @data_update.update_datetime %> 時点 ' 
 			,event_type:30
 			,shrinkFit:true
 			,multiselect:true
@@ -38,12 +39,16 @@
 			  	colNames : col_names,           //列の表示名
 			  	colModel : col_model,   //列ごとの設定
 			  	caption : jqgrid_opt.caption,    //ヘッダーのキャプション
-				
-				loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
-					table_div.jqGrid('setGridWidth', div_box.width(), jqgrid_opt.shrinkFit);
-				    table_div.jqGrid('setGridHeight', div_box.height(), jqgrid_opt.shrinkFit);
-				},
-			  	//shrinkToFit : false,　　        //画面サイズに依存せず固定の大きさを表示する設定
+			  	rowNum : 100,                   //一ページに表示する行数
+				height : 800,                  //高さ
+			  	shrinkToFit : true,　　        //画面サイズに依存せず固定の大きさを表示する設定
+				pager : 'building_pager',
+				viewrecords: true,
+				grouping:true,                    //グルーピングon
+				groupingView : {                  //グルーピング設定
+					groupField : ['group_name'],     //グループする列指
+			　　　　        groupSummary : [true]
+				}				
 			});
   
 			
