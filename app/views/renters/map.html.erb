@@ -40,21 +40,47 @@
         var inner_text;
 
 		inner_text = "";
+		
+		room_cnt = 0;
+		suumo_all = 0;
+		suumo_all_summary = 0;
+		
 		var rooms = gon.rooms[building.id]
 		rooms.forEach(function(room){
 			sum = room.madori + room.gaikan + room.naikan + room.gaikan_etc + room.syuuhen
+			//sum = room.all_sum
+			
 			res = get_suumo_remaining(room.madori, room.gaikan, room.naikan, room.gaikan_etc, room.syuuhen)
-				
+			suumo_all = 20 - res.remaining_suumo
 			
-				
-			
-		          inner_text = inner_text + '<tr><td>'  + room.room_no + '</td><td>' + room.room_code + '</td><td>' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + sum + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + (20 - res.remaining_suumo ) + '枚</a></td></tr>'
+			inner_text = inner_text + '<tr><td>'  + room.room_no + '</td><td>' + room.room_code + '</td><td>' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + sum + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + suumo_all + '枚</a></td></tr>'
+				  
+			suumo_all_summary = suumo_all_summary + suumo_all
+			room_cnt = room_cnt + 1;
+				  
 		});
+		
+		
+		if( room_cnt > 0 ){
+			suumo_pic = suumo_all_summary / room_cnt;
+		}
+		else{
+			suumo_pic = 0;
+		}
+		
+		if(suumo_pic == 20){
+			icon_url = "marker_blue.png"
+		} else if(suumo_pic >= 10){
+			icon_url = "marker_yellow.png"
+			
+		} else{
+			icon_url = "marker_red.png"
+		}
 
         build_arr[building.id] = createMarker({
           position : pos
           ,map : mapCanvas
-          ,icon : '/assets/marker_blue.png'
+          ,icon : '/assets/' + icon_url
           ,shadow : 'assets/msmarker_shadow.png'
           ,info_msg : building.name
          // ,html : vhtml
@@ -310,6 +336,42 @@
 		
 		<div id="div_dummy" style="float:left;width:20%;height:80%;padding:0;margin:0;padding-right:10px;">
 			
+			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
+			    <ul>
+			        <li>
+			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">SUUMO写真枚数</span>
+						<div style="display:block;padding:5px;margin-left:10px;padding-top:10px;padding-bottom:10px;">
+							
+							<table style="margin-left:5px;">
+							   <tbody>
+							     <tr>
+							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_blue" src="/assets/marker_blue.png" /></td>
+							       <td style="text-align:left;">ハイライトセット</td>
+							     </tr>
+							     <tr>
+							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_yellow" src="/assets/marker_yellow.png" /></td>
+							       <td style="text-align:left;">10枚以上掲載</td>
+							     </tr>
+							     <tr>
+							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_red" src="/assets/marker_red.png" /></td>
+							       <td style="text-align:left;">10枚未満</td>
+							     </tr>
+								 
+							     <tr>
+							       <td colspan="2" style="text-align:left;height:30px;padding-top:10px;">※１つの建物に複数の部屋がある場合は、<br/>&nbsp;&nbsp;その建物の平均掲載枚数を使用します。</td>
+							     </tr>
+							   </tbody>
+							 </table>
+							 
+							 
+							 
+						</div>
+						
+			        </li>
+			    </ul>
+			</div>
+			
+			
 			
 			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
 			    <ul>
@@ -318,42 +380,12 @@
 						
 					</li>
 			        </li>
-			        <li><a data-toggle="modal" href="#modal-tack">タックシール出力</a></li>
-			        <li><a href="#">履歴検索</a></li>
-			        <li><a href="javascript:win_attack_list_maintenance(1);">アタックリスト追加・削除</a></li>
+			        <li><%= link_to "一覧へ戻る", renters_path %></li>
+			        <li><a href="#">予備</a></li>
+			        <li><a href="#">予備</a></li>
 			    </ul>
 			</div>
 			
-			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
-			    <ul>
-			        <li>
-			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">地図操作</span>
-						<div style="display:block;padding:5px;margin-left:10px;padding-top:10px;padding-bottom:10px;">
-							貸主マーク<br/>
-							建物マーク<br/>
-							委託マーク<br/>
-						</div>
-			        </li>
-			    </ul>
-			</div>
-			
-
-			
-			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;" >
-			    <ul>
-			        <li>
-			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">アタックリストメンテナンス</span>
-			            <ul>
-					        <li><a href="#">見込み貸主登録</a></li>
-					        <li><a href="#">見込み建物登録</a></li>
-					        <li><a href="#">アタックリスト追加</a></li>
-					        <li><a href="#">アタックリスト削除</a></li>
-			            </ul>
-						
-			        </li>
-
-			    </ul>
-			</div>
 			
 			<table id="shop_table"></table>
 			<div id = "shop_pager"></div>
@@ -362,7 +394,7 @@
 		<div id="map_canvas" style="width: 80%;float:right;"></div>
 		
 	</div>
-	<div id="div_dummy_02" style="clear:both;width:100%;height:42%;padding:10px 20px 10px 20px;margin-bottom:50px;">
+	<div id="div_dummy_02" style="clear:both;width:100%;height:40%;padding:10px 20px 10px 20px;margin-bottom:50px;">
 		<table id="building_table"></table>
 		<div id = "building_pager"></div>
 	</div>

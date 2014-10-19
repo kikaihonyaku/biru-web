@@ -1,6 +1,8 @@
 <script type="text/javascript">
 	
 	init_jqgrid();
+	
+	// ダブルクリック時のイベント
 
 	function init_jqgrid(){
 		// 列名の定義
@@ -12,7 +14,8 @@
 		 ,{name:"store_name", index:"store_name", align:"center",classes:"no_class"}
 		 ,{name:"summary", index:"summary", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
 		 ,{name:"suumo_highlite", index:"suumo_highlite", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
- 		 ,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", formatter: 'link'}
+ 		 ,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", hidden:true}
+ 		 //,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", formatter: 'link'}
 		];
 	
 
@@ -48,11 +51,27 @@
 				groupingView : {                  //グルーピング設定
 					groupField : ['group_name'],     //グループする列指
 			　　　　        groupSummary : [true]
-				}				
+				},
+			
+			    ondblClickRow: function(id) {
+					// ダブルクリックイベント
+				    data = jQuery('#building_table').getRowData(id);
+					//alert(location.href);
+					//alert(location.host);
+					
+					location.href = location.protocol + '//' + location.host + '/renters/' + data.url
+					
+					
+				}
+				
 			});
-  
+			
 			
 		});
+
+		
+		
+		
 	}
 </script>
 
