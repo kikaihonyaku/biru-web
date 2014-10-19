@@ -1,5 +1,6 @@
 <% content_for :header do %>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
+
 <script type="text/javascript">
 
 
@@ -41,7 +42,7 @@
 		inner_text = "";
 		var rooms = gon.rooms[building.id]
 		rooms.forEach(function(room){
-		          inner_text = inner_text + '<br/>'  + room.room_no + '  ' + room.room_code + '  ' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">HP</a>'
+		          inner_text = inner_text + '<tr><td>'  + room.room_no + '</td><td>' + room.room_code + '</td><td>' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">リンク</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">リンク</a></td></tr>'
 		});
 
         build_arr[building.id] = createMarker({
@@ -51,7 +52,7 @@
           ,shadow : 'assets/msmarker_shadow.png'
           ,info_msg : building.name
          // ,html : vhtml
-          ,html : building.name + ' </br>' + inner_text
+          ,html : building.name + ' <table class="sample_01" style="margin-top:5px;"><tr><th>号室</th><th>物件CD</th><th>HP</th><th>SUUMO</th></tr>' + inner_text + '</table>'
         });
 
 	});
@@ -90,6 +91,24 @@
 	a{
 	  text-decoration:underline;	
 	}
+	
+	.sample_01{
+	width: 100%;
+	border-collapse: collapse;
+	}
+	.sample_01 th{
+	padding: 3px;
+	text-align: left;
+	vertical-align: top;
+	color: #333;
+	background-color: #eee;
+	border: 1px solid #b9b9b9;
+	}
+	.sample_01 td{
+	padding: 3px;
+	background-color: #fff;
+	border: 1px solid #b9b9b9;
+	}	
 	
   </style>
 
