@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141005204234) do
+ActiveRecord::Schema.define(:version => 20141019193740) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -366,6 +366,7 @@ ActiveRecord::Schema.define(:version => 20141005204234) do
 
   add_index "renters_rooms", ["building_code"], :name => "index_renters_rooms_on_building_code"
   add_index "renters_rooms", ["renters_building_id"], :name => "index_renters_rooms_on_renters_building_id"
+  add_index "renters_rooms", ["store_code"], :name => "index_renters_rooms_on_store_code"
 
   create_table "room_layouts", :force => true do |t|
     t.string "code"

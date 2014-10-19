@@ -159,14 +159,14 @@
 		});
 	});
 
-	// アタックリストを作成します。
-	init_jqgrid();
+	// レンターズデータを表示します。
+	init_renters_jqgrid();
 	
+	// 絞り込みテーブルを作成します。
+	init_search_jqgrid();
 	
-	// 委託契約リストを作成
-	function init_jqgrid(){
+	function init_renters_jqgrid(){
 		// 列名の定義
-		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
 		var grid_name = ["renters_room_id", "building_id", "営業所", "建物名", "部屋", "住所", "room_code", "SUMO合計残数", "間取り：残", "外観：残", "内観：残", "外観その他：残", "周辺：残"];
 		
 		// 列属性の定義
@@ -218,7 +218,7 @@
 			 table_name:'building_table'
 			,fotter_name:'building_pager'
 			,div_name:'div_dummy_02'
-			,caption:'募集中物件'
+			,caption:'募集中物件を表示しています'
 			,event_type:31
 			,shrinkFit:true
 			,multiselect:false
@@ -233,58 +233,78 @@
 			        edit:false,add:false,del:false,search:false
 			      }).navButtonAdd('#building_pager',{
 			        caption:"地図に反映", position:"last", onClickButton: function(){
-						 
-						// 建物非表示
-						 for(var item in build_arr){
-						    build_arr[item].set("visible", false);
-						 };
-						 
-						 for(var item in owner_arr){
-						    owner_arr[item].set("visible", false);
-						 };
-						 
-						 for(var item in trust_arr){
-						    trust_arr[item].set("visible", false);
-						 };
-						 
-						 
-						 //var bounds = new google.maps.LatLngBounds();
-						 var table_div = $('#building_table');
-						 var row_data = table_div.getRowData();
-						 
-						 for(var j in  row_data){
-							
-							 trust = trust_arr[row_data[j].trust_id];
-							 if(trust != null){
-	 							 trust.set("visible", true);
-								 
-							 }
-							 
-							 owner = owner_arr[row_data[j].owner_id];
-							 if(owner != null){
-	 							 owner.set("visible", true);
-								 
-						         //pos = new google.maps.LatLng(owner.latitude, owner.longitude);
-						         //bounds.extend(pos);
-								 
-							 }
-							 
-							 building = build_arr[row_data[j].building_id];
-							 if(building != null){
-	 							 building.set("visible", true);
-								 
-						         //pos = new google.maps.LatLng(building.latitude, building.longitude);
-						         //bounds.extend(pos);
-								 
-							 }
-							 
-						 }
-						 
-						 // マーカーが収まるように地図を調整
-						 //mapCanvas.fitBounds(bounds);
-						 
+						alert('これはまだ未実装です');
 					 }
 			      });			
+		});
+		
+	}
+	
+	
+	// 絞り込み条件grid
+	function init_search_jqgrid(){
+		
+		var col_names = ["部署の絞り込み", "リンク"];
+	
+		// 列属性の定義
+		var col_model = [
+		  {name:"store_name", index:"store_name", width:400, align:"left",classes:"no_class"}
+ 		 ,{name:"url", index:"url", align:"center", classes:"no_class", hidden:true}
+		];
+		
+		// データの作成
+		var grid_data = [];
+
+	    grid_data.push({ url:  'map', store_name: '全体' }) 
+	    grid_data.push({ url:  'map?stcd=335,336,339,334,340,337,338,667', store_name: '東武支店' }) 
+	    grid_data.push({ url:  'map?stcd=2763,341,342,344,348,346,349,343,345', store_name: 'さいたま支店' }) 
+	    grid_data.push({ url:  'map?stcd=352,347,351,350', store_name: '千葉支店' }) 
+	    grid_data.push({ url:  'map?stcd=335',  store_name: '草加' }) 
+	    grid_data.push({ url:  'map?stcd=336',  store_name: '草加新田' }) 
+	    grid_data.push({ url:  'map?stcd=339',  store_name: '北千住' }) 
+	    grid_data.push({ url:  'map?stcd=334',  store_name: '南越谷' }) 
+	    grid_data.push({ url:  'map?stcd=340',  store_name: '越谷' }) 
+	    grid_data.push({ url:  'map?stcd=337',  store_name: '北越谷' }) 
+	    grid_data.push({ url:  'map?stcd=338',  store_name: '春日部' }) 
+	    grid_data.push({ url:  'map?stcd=667',  store_name: 'せんげん台' }) 
+	    grid_data.push({ url:  'map?stcd=2763',store_name: '戸田公園' }) 
+	    grid_data.push({ url:  'map?stcd=341', store_name: '戸田' }) 
+	    grid_data.push({ url:  'map?stcd=342', store_name: '武蔵浦和' }) 
+	    grid_data.push({ url:  'map?stcd=344', store_name: '与野' }) 
+	    grid_data.push({ url:  'map?stcd=348', store_name: '浦和' }) 
+	    grid_data.push({ url:  'map?stcd=346', store_name: '川口' }) 
+	    grid_data.push({ url:  'map?stcd=349', store_name: '東浦和' }) 
+	    grid_data.push({ url:  'map?stcd=343', store_name: '東川口' }) 
+	    grid_data.push({ url:  'map?stcd=345', store_name: '戸塚安行' }) 
+	    grid_data.push({ url:  'map?stcd=352',  store_name: '松戸' }) 
+	    grid_data.push({ url:  'map?stcd=347',  store_name: '北松戸' }) 
+	    grid_data.push({ url:  'map?stcd=351',  store_name: '南流山' }) 
+	    grid_data.push({ url:  'map?stcd=350',  store_name: '柏' }) 
+
+		
+		$(function(){
+
+			var table_div = $('#search_table');
+			var div_box = $('#search_div');
+
+			table_div.jqGrid({
+			  	data : grid_data,  //表示したいデータ
+			  	datatype : "local",            //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
+			  	colNames : col_names,           //列の表示名
+			  	colModel : col_model,   //列ごとの設定
+			  	rowNum : 100,                   //一ページに表示する行数
+				loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
+					table_div.jqGrid('setGridWidth', div_box.width(), true);
+				    table_div.jqGrid('setGridHeight', div_box.height(), true);
+				},
+				
+			    onSelectRow: function(id) {
+				    data = table_div.getRowData(id);
+					
+					location.href = location.protocol + '//' + location.host + '/renters/' + data.url
+				}
+			});
+			
 		});
 		
 	}
@@ -362,11 +382,7 @@
 							     </tr>
 							   </tbody>
 							 </table>
-							 
-							 
-							 
 						</div>
-						
 			        </li>
 			    </ul>
 			</div>
@@ -381,16 +397,17 @@
 					</li>
 			        </li>
 			        <li><%= link_to "一覧へ戻る", renters_path %></li>
-			        <li><a href="#">予備</a></li>
-			        <li><a href="#">予備</a></li>
 			    </ul>
 			</div>
 			
+			<div id="search_div" style="width:100%;height:60%;margin-bottom:50px;">
+				<table id="search_table" ></table>
+				<div id="search_pager"></div>
+			</div>
 			
-			<table id="shop_table"></table>
-			<div id = "shop_pager"></div>
+			
 		</div>
-		<div id="panowide" style="width: 40%; height: 0px;float:right;"></div>
+		<div id="panowide" style="width: 100%; height: 0px;float:right;"></div>
 		<div id="map_canvas" style="width: 80%;float:right;"></div>
 		
 	</div>
