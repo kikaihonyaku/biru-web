@@ -55,6 +55,7 @@
 			
 			inner_text = inner_text + '<tr><td>'  + room.room_no + '</td><td><a href="javascript:win_picture(' + room.id + ');">' + room.room_code + '</a></td><td>' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + sum + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + suumo_all + '枚</a></td></tr>'
 				  
+
 			suumo_all_summary = suumo_all_summary + suumo_all
 			room_cnt = room_cnt + 1;
 				  
@@ -84,7 +85,9 @@
           ,shadow : 'assets/msmarker_shadow.png'
           ,info_msg : building.name
          // ,html : vhtml
-          ,html : building.name + ' <table class="sample_01" style="margin-top:5px;"><tr><th>号室</th><th>物件CD</th><th>HP</th><th>SUUMO</th></tr>' + inner_text + '</table>'
+          ,html : building.name + ' <table class="sample_01" style="margin-top:5px;"><tr><th>号室</th><th>物件CD</th><th>HP</th><th>SUUMO</th></tr>' + inner_text + '</table>' + '<div style="padding-top:0px;margin-top:5px;padding-left:10px;float:left;">' + '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="view_disp( this.checked, ' + building.latitude + ',' + building.longitude  + '); return false;" />&nbsp;ストリートビュー</label>' +
+		    '</div>'
+
         });
 
 	});
