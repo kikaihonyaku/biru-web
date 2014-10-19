@@ -20,16 +20,39 @@ class RentersController < ApplicationController
     ActiveRecord::Base.connection.select_all(get_renters_sql(false)).each do |rec|
       
       # 初めての営業所の時、初期化
-      
+
       unless grid_data[rec['store_code']]
-        grid_data[rec['store_code']] = {:store_name => rec['store_name'], :summary => 0 ,:sumo_highlite => 0, :url => 'map' }
+        grid_data[rec['store_code']] = {:store_name => rec['store_name'], :summary => 0 ,:suumo_highlite => 0, :url => 'map' }
       end
 
       rec_data = grid_data[rec['store_code']]
       rec_data[:summary] = rec_data[:summary] + 1
+
+      # SUMO残数を取得
+      madori = 1 - rec['madori'].to_i
+      madori = 0  if madori < 0
+
+      gaikan = 2 - rec['gaikan'].to_i
+      gaikan = 0 if gaikan < 0
+
+      naikan = 9 - rec['naikan'].to_i
+      naikan = 0 if naikan < 0
+
+      gaikan_etc = 2 - rec['gaikan_etc'].to_i
+      gaikan_etc = 0 if gaikan_etc < 0
+
+      syuuhen = 6 - rec['syuuhen'].to_i
+      syuuhen = 0 if syuuhen < 0
+          
+      # 全合計が０ならば、ハイライト対象 
+      if ( madori + gaikan + naikan + gaikan_etc + syuuhen) == 0
+        rec_data[:suumo_highlite] = rec_data[:suumo_highlite] + 1
+      end
       
-      #grid_data.push(rec_data)
     end
+    
+    
+    
     
     # ハッシュを配列に変換
     # data_list = []
@@ -41,35 +64,40 @@ class RentersController < ApplicationController
     # end
     
     data_list = []
-    data_list.push({:store_code =>'335', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'草加' }) #草加
-    data_list.push({:store_code =>'336', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'草加新田' }) #草加新田
-    data_list.push({:store_code =>'339', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'北千住' }) #北千住
-    data_list.push({:store_code =>'334', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'南越谷' }) #南越谷本店
-    data_list.push({:store_code =>'340', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'越谷' }) #越谷
-    data_list.push({:store_code =>'337', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'北越谷' }) #北越谷
-    data_list.push({:store_code =>'338', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'春日部' }) #春日部
-    data_list.push({:store_code =>'667', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'せんげん台' }) #せんげん台
-    data_list.push({:store_code =>'2763', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'戸田公園' }) #戸田公園
-    data_list.push({:store_code =>'341', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'戸田' }) #戸田
-    data_list.push({:store_code =>'342', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'武蔵浦和' }) #武蔵浦和
-    data_list.push({:store_code =>'344', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'与野' }) #与野
-    data_list.push({:store_code =>'348', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'浦和' }) #浦和
-    data_list.push({:store_code =>'346', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'川口' }) #川口
-    data_list.push({:store_code =>'349', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'東浦和' }) #東浦和
-    data_list.push({:store_code =>'343', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'東川口' }) #東川口
-    data_list.push({:store_code =>'345', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'戸塚安行' }) #戸塚安行
-    data_list.push({:store_code =>'352', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'03千葉', :store_name =>'松戸' }) #松戸
-    data_list.push({:store_code =>'347', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'03千葉', :store_name =>'北松戸' }) #北松戸
-    data_list.push({:store_code =>'351', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'03千葉', :store_name =>'南流山' }) #南流山
-    data_list.push({:store_code =>'350', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'03千葉', :store_name =>'柏' }) #柏
-    data_list.push({:store_code =>'3', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'00支店', :store_name =>'東武支店' }) #東武
-    data_list.push({:store_code =>'4', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'00支店', :store_name =>'さいたま支店' }) #さいたま
-    data_list.push({:store_code =>'5', :summary => 0 ,:sumo_highlite => 0, :url => 'map', :group_name=>'00支店', :store_name =>'千葉支店' }) #千葉
+    data_list.push({:store_code =>'335', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'草加' }) #草加
+    data_list.push({:store_code =>'336', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'草加新田' }) #草加新田
+    data_list.push({:store_code =>'339', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'北千住' }) #北千住
+    data_list.push({:store_code =>'334', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'南越谷' }) #南越谷本店
+    data_list.push({:store_code =>'340', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'越谷' }) #越谷
+    data_list.push({:store_code =>'337', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'北越谷' }) #北越谷
+    data_list.push({:store_code =>'338', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'春日部' }) #春日部
+    data_list.push({:store_code =>'667', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'01東武', :store_name =>'せんげん台' }) #せんげん台
+    data_list.push({:store_code =>'2763', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'戸田公園' }) #戸田公園
+    data_list.push({:store_code =>'341', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'戸田' }) #戸田
+    data_list.push({:store_code =>'342', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'武蔵浦和' }) #武蔵浦和
+    data_list.push({:store_code =>'344', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'与野' }) #与野
+    data_list.push({:store_code =>'348', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'浦和' }) #浦和
+    data_list.push({:store_code =>'346', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'川口' }) #川口
+    data_list.push({:store_code =>'349', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'東浦和' }) #東浦和
+    data_list.push({:store_code =>'343', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'東川口' }) #東川口
+    data_list.push({:store_code =>'345', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'02さいたま', :store_name =>'戸塚安行' }) #戸塚安行
+    data_list.push({:store_code =>'352', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'03千葉', :store_name =>'松戸' }) #松戸
+    data_list.push({:store_code =>'347', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'03千葉', :store_name =>'北松戸' }) #北松戸
+    data_list.push({:store_code =>'351', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'03千葉', :store_name =>'南流山' }) #南流山
+    data_list.push({:store_code =>'350', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'03千葉', :store_name =>'柏' }) #柏
+    data_list.push({:store_code =>'3', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'00支店', :store_name =>'東武支店' }) #東武
+    data_list.push({:store_code =>'4', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'00支店', :store_name =>'さいたま支店' }) #さいたま
+    data_list.push({:store_code =>'5', :summary => 0 ,:suumo_highlite => 0, :url => 'map', :group_name=>'00支店', :store_name =>'千葉支店' }) #千葉
 
     
     toubu_value = 0
+    toubu_suumo = 0
+    
     saitama_value = 0
+    saitama_suumo = 0
+    
     chiba_value = 0
+    chiba_suumo = 0
     
     data_list.each do |data_hash|
       
@@ -77,11 +105,15 @@ class RentersController < ApplicationController
         # 支店データを設定
         if data_hash[:store_name] == '東武支店'
            data_hash[:summary] = toubu_value
+           data_hash[:suumo_highlite] = toubu_suumo
+           
         elsif data_hash[:store_name] == 'さいたま支店'
           data_hash[:summary] = saitama_value
+          data_hash[:suumo_highlite] = saitama_suumo
           
         elsif data_hash[:store_name] == '千葉支店'
           data_hash[:summary] = chiba_value
+          data_hash[:suumo_highlite] = chiba_suumo
           
         end
         
@@ -91,16 +123,20 @@ class RentersController < ApplicationController
         grid_rec = grid_data[data_hash[:store_code]]
         if grid_rec
           data_hash[:summary] = grid_rec[:summary]
+          data_hash[:suumo_highlite] = grid_rec[:suumo_highlite]
           
           
           if data_hash[:group_name] == '01東武'
             toubu_value = toubu_value + grid_rec[:summary]
+            toubu_suumo = toubu_suumo + grid_rec[:suumo_highlite]
             
           elsif data_hash[:group_name] == '02さいたま'
             saitama_value = saitama_value + grid_rec[:summary]
+            saitama_suumo = saitama_suumo + grid_rec[:suumo_highlite]
 
           elsif data_hash[:group_name] == '03千葉'
             chiba_value = chiba_value + grid_rec[:summary]
+            chiba_suumo = chiba_suumo + grid_rec[:suumo_highlite]
 
           end
           
