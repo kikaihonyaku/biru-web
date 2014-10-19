@@ -42,7 +42,13 @@
 		inner_text = "";
 		var rooms = gon.rooms[building.id]
 		rooms.forEach(function(room){
-		          inner_text = inner_text + '<tr><td>'  + room.room_no + '</td><td>' + room.room_code + '</td><td>' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">リンク</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">リンク</a></td></tr>'
+			sum = room.madori + room.gaikan + room.naikan + room.gaikan_etc + room.syuuhen
+			res = get_suumo_remaining(room.madori, room.gaikan, room.naikan, room.gaikan_etc, room.syuuhen)
+				
+			
+				
+			
+		          inner_text = inner_text + '<tr><td>'  + room.room_no + '</td><td>' + room.room_code + '</td><td>' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + sum + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + (20 - res.remaining_suumo ) + '枚</a></td></tr>'
 		});
 
         build_arr[building.id] = createMarker({
@@ -103,11 +109,13 @@
 	color: #333;
 	background-color: #eee;
 	border: 1px solid #b9b9b9;
+	text-align: center;
 	}
 	.sample_01 td{
 	padding: 3px;
 	background-color: #fff;
 	border: 1px solid #b9b9b9;
+	text-align:center;
 	}	
 	
   </style>

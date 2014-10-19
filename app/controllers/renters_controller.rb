@@ -194,15 +194,15 @@ class RentersController < ApplicationController
       room = {}
       room['room_code'] = rec['room_code']
       room['room_no'] = rec['real_room_no']
+
+      room['madori'] = rec['madori']
+      room['gaikan'] = rec['gaikan']
+      room['naikan'] = rec['naikan']
+      room['gaikan_etc'] = rec['gaikan_etc']
+      room['syuuhen'] = rec['syuuhen']
+
       
-      # room['madori'] = rec['J00']
-      # room['gaikan'] = rec['T00']
-      #
-      # # ↓J07:景色は内観対象外
-      # room['naikan'] = rec['J01'] + rec['J02'] + rec['J03'] + rec['J04'] + rec['J05'] + rec['J06'] + rec['J08'] + rec['J09']
-      # room['gaikan_etc'] = rec['T03'] + rec['T04'] + rec['T05'] + rec['T06'] + rec['T08'] + rec['T11']
-      # room['syuuhen'] = rec['T01']
-      
+
       rooms[rec['building_id']].push(room)
       
     end
