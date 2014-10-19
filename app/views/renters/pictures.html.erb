@@ -16,37 +16,36 @@
 	  <tbody>
 		<tr>
 			<td>建物CD/部屋CD</td>
-			<td><%= @room.building.code + "／" + @room.code %></td>
 			<td><%= @room_renters.building_code + "／" + @room_renters.room_code %></td>
 		</tr>
 		<tr>
 			<td>物件名</td>
-			<td><%= @room.building.name + " " + @room.name %></td>
+			<td><%#= @room.building.name + " " + @room.name %></td>
 			<td><%= @room_renters.building_name + " " + if @room_renters.room_no then @room_renters.room_no else '' end  %></td>
 		</tr>
 		<tr>
 			<td>住所</td>
-			<td><%= @room.building.address %></td>
+			<td><%#= @room.building.address %></td>
 			<td><%= @room_renters.detail_address %></td>
 		</tr>
 		<tr>
 			<td>管理営業所</td>
-			<td><%= @room.building.shop.name %></td>
+			<td><%#= @room.building.shop.name %></td>
 			<td><%= @room_renters.store_name %></td>
 		</tr>
 		<tr>
 			<td>建物種別</td>
-			<td><%= @room.room_type.name %></td>
+			<td><%#= @room.room_type.name %></td>
 			<td><%= @room_renters.building_type %></td>
 		</tr>
 		<tr>
 			<td>間取り</td>
-			<td><%= @room.room_layout.name %></td>
+			<td><%#= @room.room_layout.name %></td>
 			<td><%= @room_renters.room_layout_type %></td>
 		</tr>
 		<tr>
 			<td>空室状況</td>
-			<td><%= if @room.free_state then '空室' else '入居中' end %></td>
+			<td><%#= if @room.free_state then '空室' else '入居中' end %></td>
 			<td><%= @room_renters.vacant_div %></td>
 		</tr>
 		<tr>

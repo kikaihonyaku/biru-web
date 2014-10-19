@@ -210,6 +210,7 @@ class RentersController < ApplicationController
       end
       
       room = {}
+      room['id'] = rec['renters_room_id']
       room['room_code'] = rec['room_code']
       room['room_no'] = rec['real_room_no']
 
@@ -353,8 +354,8 @@ class RentersController < ApplicationController
   
   # 画像一覧を表示します
   def pictures
-    @room = Room.find(params[:id])
-    @room_renters = RentersRoom.find(@room.renters_room_id)
+    #@room = Room.find(params[:id])
+    @room_renters = RentersRoom.find(params[:id])
   end
   
   

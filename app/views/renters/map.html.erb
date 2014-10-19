@@ -53,7 +53,7 @@
 			res = get_suumo_remaining(room.madori, room.gaikan, room.naikan, room.gaikan_etc, room.syuuhen)
 			suumo_all = 20 - res.remaining_suumo
 			
-			inner_text = inner_text + '<tr><td>'  + room.room_no + '</td><td>' + room.room_code + '</td><td>' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + sum + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + suumo_all + '枚</a></td></tr>'
+			inner_text = inner_text + '<tr><td>'  + room.room_no + '</td><td><a href="javascript:win_picture(' + room.id + ');">' + room.room_code + '</a></td><td>' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + sum + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + suumo_all + '枚</a></td></tr>'
 				  
 			suumo_all_summary = suumo_all_summary + suumo_all
 			room_cnt = room_cnt + 1;
@@ -237,7 +237,6 @@
 					 }
 			      });			
 		});
-		
 	}
 	
 	
