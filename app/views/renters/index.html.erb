@@ -6,13 +6,14 @@
 
 	function init_jqgrid(){
 		// 列名の定義
-		var col_names = ["支店", "営業所", "レンターズ掲載数", "SUUMOハイライト","リンク"];
+		var col_names = ["支店", "営業所", "レンターズ物件掲載数", "SUUMO 10枚以上", "SUUMO 20枚フルセット","リンク"];
 	
 		// 列属性の定義
 		var col_model = [
 	  	  {name:"group_name", index:"group_name", align:"center",classes:"no_class"}
 		 ,{name:"store_name", index:"store_name", align:"center",classes:"no_class"}
 		 ,{name:"summary", index:"summary", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
+		 ,{name:"suumo_ten", index:"suumo_ten", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
 		 ,{name:"suumo_highlite", index:"suumo_highlite", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
  		 ,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", hidden:true}
  		 //,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", formatter: 'link'}
@@ -58,9 +59,9 @@
 				    data = jQuery('#building_table').getRowData(id);
 					//alert(location.href);
 					//alert(location.host);
+			 		screen_block();
 					
 					location.href = location.protocol + '//' + location.host + '/renters/' + data.url
-					
 					
 				}
 				
