@@ -213,6 +213,7 @@ class RentersController < ApplicationController
       room['id'] = rec['renters_room_id']
       room['room_code'] = rec['room_code']
       room['room_no'] = rec['real_room_no']
+      room['vacant_div'] = rec['vacant_div']
 
       room['madori'] = rec['madori']
       room['gaikan'] = rec['gaikan']
@@ -245,6 +246,7 @@ class RentersController < ApplicationController
     ,real_room_no
     ,building_code
     ,building_id
+    ,vacant_div
     ,address
     ,latitude
     ,longitude
@@ -262,6 +264,7 @@ class RentersController < ApplicationController
     ,a.room_code 
     ,a.real_building_name
     ,a.real_room_no
+    ,a.vacant_div
     ,a.building_code
     ,c.id as building_id
     ,c.address
@@ -292,11 +295,13 @@ class RentersController < ApplicationController
     from renters_rooms a 
     inner join renters_room_pictures b on a.id = b.renters_room_id 
     inner join renters_buildings c on a.renters_building_id = c.id 
+    where not a.delete_flg 
+    and not b.delete_flg 
     "
     
     
     if store_list.length > 0
-      strSql = strSql + " where store_code IN (" + store_list + ") "
+      strSql = strSql + " and store_code IN (" + store_list + ") "
     end
     
     strSql = strSql + "
@@ -311,7 +316,7 @@ class RentersController < ApplicationController
     ,c.address
     ,c.latitude
     ,c.longitude
-    )
+    ) x
     "
     
     if order

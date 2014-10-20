@@ -53,7 +53,7 @@
 			res = get_suumo_remaining(room.madori, room.gaikan, room.naikan, room.gaikan_etc, room.syuuhen)
 			suumo_all = 20 - res.remaining_suumo
 			
-			inner_text = inner_text + '<tr><td>'  + room.room_no + '</td><td><a href="javascript:win_picture(' + room.id + ');">' + room.room_code + '</a></td><td>' + '<a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + sum + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + suumo_all + '枚</a></td></tr>'
+			inner_text = inner_text + '<tr><td><a href="javascript:win_picture(' + room.id + ');">' + room.room_no + '</a></td><td><a href="http://www.rentersnet.jp/bukken/edit?roomAdRoomCd=' + room.room_code + '" target="_blank">' + room.room_code + '</a></td><td><a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + sum + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + suumo_all + '枚</a></td></tr>'
 				  
 
 			suumo_all_summary = suumo_all_summary + suumo_all
@@ -85,7 +85,7 @@
           ,shadow : 'assets/msmarker_shadow.png'
           ,info_msg : building.name
          // ,html : vhtml
-          ,html : building.name + ' <table class="sample_01" style="margin-top:5px;"><tr><th>号室</th><th>物件CD</th><th>HP</th><th>SUUMO</th></tr>' + inner_text + '</table>' + '<div style="padding-top:0px;margin-top:5px;padding-left:10px;float:left;">' + '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="view_disp( this.checked, ' + building.latitude + ',' + building.longitude  + '); return false;" />&nbsp;ストリートビュー</label>' +
+          ,html : building.name + ' <table class="sample_01" style="margin-top:5px;"><tr><th>号室</th><th>レンターズ</th><th>RSpot</th><th>SUUMO</th></tr>' + inner_text + '</table>' + '<div style="padding-top:0px;margin-top:5px;padding-left:10px;float:left;">' + '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="view_disp( this.checked, ' + building.latitude + ',' + building.longitude  + '); return false;" />&nbsp;ストリートビュー</label>' +
 		    '</div>'
 
         });
@@ -170,7 +170,7 @@
 	
 	function init_renters_jqgrid(){
 		// 列名の定義
-		var grid_name = ["renters_room_id", "building_id", "営業所", "建物名", "部屋", "住所", "room_code", "SUMO合計残数", "間取り：残", "外観：残", "内観：残", "外観その他：残", "周辺：残"];
+		var grid_name = ["renters_room_id", "building_id", "営業所", "建物名", "部屋", "空室状況", "住所", "room_code", "SUMO合計残数", "間取り：残", "外観：残", "内観：残", "外観その他：残", "周辺：残"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -179,6 +179,7 @@
 		 ,{name:"store_name", index:"store_name", width:80, align:"center", classes:"no_class"}
 		 ,{name:"real_building_name", index:"real_building_name", width:80, align:"center", classes:"no_class"}
 		 ,{name:"real_room_name", index:"real_room_name", width:80, align:"center", classes:"no_class"}
+		 ,{name:"vacant_div", index:"vacant_div", width:80, align:"center", classes:"no_class"}
 		 ,{name:"address", index:"address", width:80, align:"center", classes:"no_class"}
 		 ,{name:"room_code", index:"room_code", width:80, align:"center", classes:"no_class"}
 		 ,{name:"suumo_sum", index:"suumo_sum", width:80, align:"center", classes:"no_class"}
@@ -201,6 +202,7 @@
 			rec['real_room_name'] = renters_data.real_room_no
 			rec['address'] = renters_data.address
 			rec['room_code'] = renters_data.room_code
+			rec['vacant_div'] = renters_data.vacant_div
 			
 			tmp = get_suumo_remaining(renters_data.madori, renters_data.gaikan, renters_data.naikan, renters_data.gaikan_etc, renters_data.syuuhen)
 			
