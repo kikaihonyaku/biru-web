@@ -731,18 +731,18 @@ function getCoords(position) {
 		  {name:"trust_id", index:"trust_id", align:"right", classes:"no_class", hidden:true}
 		 ,{name:"owner_id", index:"owner_id", align:"right", classes:"no_class", hidden:true}
 		 ,{name:"owner_dm_delivery", index:"owner_dm_delivery", width:80, align:"center", classes:"no_class"}
-		 ,{name:"owner_code", index:"owner_code", width:100, align:"center", classes:"no_class"}
-		 ,{name:"owner_name", index:"owner_name", width:200, align:"left", classes:"no_class"}
-		 ,{name:"owner_address", index:"owner_address", width:200, align:"left", classes:"no_class"}
-		 ,{name:"owner_memo", index:"owner_memo", width:200, align:"left", classes:"no_class"}
+		 ,{name:"owner_code", index:"owner_code", width:200, align:"center", classes:"no_class"}
+		 ,{name:"owner_name", index:"owner_name", width:400, align:"left", classes:"no_class"}
+		 ,{name:"owner_address", index:"owner_address", width:300, align:"left", classes:"no_class"}
+		 ,{name:"owner_memo", index:"owner_memo", width:400, align:"left", classes:"no_class"}
 		 ,{name:"building_id", index:"building_id", align:"right", classes:"no_class", hidden:true}
-		 ,{name:"building_code", index:"building_code", width:100, align:"center", classes:"no_class"}
-		 ,{name:"building_name", index:"building_name", width:200, align:"left", classes:"no_class"}
-		 ,{name:"building_address", index:"building_address", width:200, align:"left", classes:"no_class"}
-		 ,{name:"building_memo", index:"building_memo", width:200, align:"left", classes:"no_class"}
+		 ,{name:"building_code", index:"building_code", width:200, align:"center", classes:"no_class"}
+		 ,{name:"building_name", index:"building_name", width:400, align:"left", classes:"no_class"}
+		 ,{name:"building_address", index:"building_address", width:300, align:"left", classes:"no_class"}
+		 ,{name:"building_memo", index:"building_memo", width:400, align:"left", classes:"no_class"}
 		 ,{name:"proprietary_company", index:"proprietary_company", width:200, align:"left", classes:"no_class"}
-		 ,{name:"shop_name", index:"shop_memo", width:200, align:"left", classes:"no_class"}
-		 ,{name:"user_name", index:"user_memo", width:200, align:"left", classes:"no_class"}
+		 ,{name:"shop_name", index:"shop_memo", align:"left", classes:"no_class"}
+		 ,{name:"user_name", index:"user_memo", align:"left", classes:"no_class"}
 		];
 		
 		// データの作成
@@ -877,12 +877,13 @@ function getCoords(position) {
 			    <ul>
 			        <li>
 			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top">基本メニュー</span>
-						
 					</li>
 			        </li>
 			        <li><a data-toggle="modal" href="#modal-tack">タックシール出力</a></li>
-			        <li><a href="#">履歴検索</a></li>
-			        <li><a href="javascript:win_attack_list_maintenance(1);">アタックリスト追加・削除</a></li>
+			        <li><a data-toggle="modal" href="#modal-search">履歴の検索</a></li>
+			        <li><a href="javascript:win_attack_list_maintenance(<%= @object_user.id %>);">受託月報を表示</a></li>
+			        <li><a href="javascript:win_attack_list_maintenance(<%= @object_user.id %>);">アタックリスト編集</a></li>
+			        <li><%= link_to '一覧へ戻る', :action=>'index' %></li>
 			    </ul>
 			</div>
 			
@@ -944,105 +945,18 @@ function getCoords(position) {
 		<div id="map_canvas" style="width: 80%;float:right;"></div>
 		
 	</div>
-	<div id="div_dummy_02" style="clear:both;width:100%;height:42%;padding:10px 20px 10px 20px;margin-bottom:50px;">
+	<div id="div_dummy_02" style="clear:both;width:100%;height:40%;padding:10px 20px 10px 20px;margin-bottom:50px;">
 		<table id="building_table"></table>
 		<div id = "building_pager"></div>
 	</div>
 	
-
 	<!-- For index -->
 
-	  <style type="text/css">
-		
+	<style type="text/css">
 		a{
 		  text-decoration:underline;	
 		}
-		
-	  </style>
-	  
-	<div style="margin-left:100px;margin-right:100px;display:none;">
-	<h1>受託活動報告</h1>
-
-	<div class="bs-example" style="width:700px;float:left">
-	<%= form_tag '/biruweb/trust_managements/index' do %>
-	    <div class="panel-group" id="accordion">
-	  <div class="panel panel-default">
-	    <div class="panel-heading">
-	      <h4 class="panel-title">
-	        履歴による絞込み
-	      </h4>
-	    </div>
-		
-	    <div id="collapseOne" class="panel-collapse collapse in">
-	      <div class="panel-body">
-			  <div style="padding-left:10px;">
-					<table class="attack-search">
-						
-						<tr>
-							<td style="text-align:right"><b>訪問リレキ：</b></td>
-							<td>
-								<table>
-									<tr>
-										<td>
-											<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-											<label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-											<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-								（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-										</td>
-						
-									</tr>
-								</table>
-							</td>
-						</tr>
-						
-						<tr>
-							<td style="text-align:right"><b>ＤＭリレキ：</b></td>
-							<td>
-								<table>
-									<tr>
-										<td>
-											<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-											<label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-											<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-								（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-										</td>
-						
-									</tr>
-								</table>
-							</td>
-				
-						</tr>
-						<tr>
-							<td style="text-align:right"><b>ＴＥLリレキ：</b></td>
-							<td>
-								<table>
-									<tr>
-										<td>
-											<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-											<label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
-											<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-								（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-										</td>
-						
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2"><%= submit_tag '指定した条件で絞込み' , :class=>"btn btn-primary btn-sm", :style=>"margin:0" %></td>
-						</tr>
-					</table>
-
-		  	
-			  </div>
-			  
-	      </div>
-	    </div>
-	  </div>
-	</div>
-	<% end %>
-	</div>
-	</div>
+	</style>
 
 	<script type="text/javascript">
 	function dm_msg_regist_on(msg_flg){
@@ -1130,6 +1044,13 @@ function getCoords(position) {
 		autoclose: true,
 		clearBtn: true,
 	});
+	
+	
+	function search_submit() {
+		
+		screen_block();
+		document.trust_search.submit();
+	}
 
 	</script>
 
@@ -1169,6 +1090,95 @@ function getCoords(position) {
 			</div>
 			<div class="modal-footer">
 			<%= submit_tag 'タックシールを出力' ,:class=>"btn btn-default", :style=>"margin:0" %>
+			</div>
+		<% end %>
+
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+	
+	<!-- 検索ダイアログの表示 -->
+	<div class="modal fade" id="modal-search" tabindex="-1" role="dialog" aria-labelledby="modal-search-label" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+
+			<%= form_tag( {:action=>'owner_building_list'},{:name=>'trust_search'} ) do %>
+			<%= hidden_field_tag :sid,  @object_user.id %>
+			
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="myModalLabel">履歴による絞込み</h4>
+			</div>
+
+			<div class="modal-body">
+				
+			  <div style="padding-left:5px;">
+					<table class="attack-search">
+			
+						<tr>
+							<td style="text-align:right;width:150px;vertical-align:top;"><b>訪問リレキ：</b></td>
+							<td>
+								<table>
+									<tr>
+										<td>
+											<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+											<div style="padding-bottom:30px;">
+												（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+											</div>
+										</td>
+			
+									</tr>
+								</table>
+							</td>
+						</tr>
+			
+						<tr>
+							<td style="text-align:right;width:150px;vertical-align:top;"><b>ＤＭリレキ：</b></td>
+							<td>
+								<table>
+									<tr>
+										<td>
+											<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+											<div style="padding-bottom:30px;">
+								（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+											</div>
+										</td>
+			
+									</tr>
+								</table>
+							</td>
+	
+						</tr>
+						<tr>
+							<td style="text-align:right;width:150px;vertical-align:top;"><b>ＴＥLリレキ：</b></td>
+							<td>
+								<table>
+									<tr>
+										<td>
+											<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+											<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+											<div style="padding-bottom:30px;">
+											（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+											</div>
+										</td>
+			
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+			  </div>
+				
+			</div>
+
+			<div class="modal-footer">
+				<%= submit_tag '指定した条件で絞込み' , :class=>"btn btn-primary btn-sm", :style=>"margin:0", :onClick=>"javascript:search_submit();" %>
 			</div>
 		<% end %>
 

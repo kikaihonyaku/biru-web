@@ -100,11 +100,11 @@ class TrustManagementsController < ApplicationController
   		@error_msg = "パラメータが不正です。"
     else
     	
-    	object_user = BiruUser.find(params[:sid].to_i)
-    	unless object_user
+    	@object_user = BiruUser.find(params[:sid].to_i)
+    	unless @object_user
 	  		@error_msg = "指定されたユーザーが存在しません。"
       else
-      	if @biru_user.attack_all_search == false && @biru_user.id != object_user.id
+      	if @biru_user.attack_all_search == false && @biru_user.id != @object_user.id
 		  		@error_msg = "自分以外のアタックリストにアクセスすることはできません。"
       	end
       	
@@ -129,7 +129,7 @@ class TrustManagementsController < ApplicationController
       owner_to_buildings = {}
       building_to_owners = {}
       
-      ActiveRecord::Base.connection.select_all(get_trust_sql(object_user)).each do |rec|
+      ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user)).each do |rec|
         
         #jqgrid用データ
         trust_manages.push(rec)
