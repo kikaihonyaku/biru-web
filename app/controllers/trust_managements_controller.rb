@@ -57,30 +57,29 @@ class TrustManagementsController < ApplicationController
   			rec['tel_result'] = result[:tel_num]
   			rec['tel_value'] = result[:tel_num_jsk]
   			rec['trust_num'] = result[:contract_num]
-  			rec['rank_s'] = 3
-  			rec['rank_a'] = 8
-  			rec['rank_b'] = 25
+  			rec['rank_s'] = 0
+  			rec['rank_a'] = 0
+  			rec['rank_b'] = 0
 
-        
       else
         
   			rec['biru_user_id'] = 1.to_s
   			rec['biru_usr_name'] = 'xxx'
   			rec['trust_report'] = "trust_user_report?sid=" + 1.to_s
   			rec['attack_list'] = "owner_building_list?sid=" + 1.to_s
-  			rec['visit_plan'] = 0
-  			rec['visit_result'] = 0
-  			rec['visit_value'] = 0
-  			rec['dm_plan'] = 0
-  			rec['dm_result'] = 0
-  			rec['dm_value'] = 0
-  			rec['tel_plan'] = 0
-  			rec['tel_result'] = 0
-  			rec['tel_value'] = 0
-  			rec['trust_num'] = 0
-  			rec['rank_s'] = 0
-  			rec['rank_a'] = 0
-  			rec['rank_b'] = 0
+        # rec['visit_plan'] = 0
+        # rec['visit_result'] = 0
+        # rec['visit_value'] = 0
+        # rec['dm_plan'] = 0
+        # rec['dm_result'] = 0
+        # rec['dm_value'] = 0
+        # rec['tel_plan'] = 0
+        # rec['tel_result'] = 0
+        # rec['tel_value'] = 0
+        # rec['trust_num'] = 0
+        # rec['rank_s'] = 0
+        # rec['rank_a'] = 0
+        # rec['rank_b'] = 0
         
       end
 
