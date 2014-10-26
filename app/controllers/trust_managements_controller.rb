@@ -9,33 +9,89 @@ class TrustManagementsController < ApplicationController
     
   def index
     
+    @month = ""
+    if params[:month]
+      @month = params[:month]
+    else
+      @month = get_cur_month
+    end
+    
+    dt_base = Date.parse(@month + '01', "YYYYMMDD").months_ago(5)
+    
+		@calender = []
+    10.times{
+      @calender.push([dt_base.strftime("%Y/%m"), dt_base.strftime("%Y%m") ])
+      dt_base = dt_base.next_month
+    }
+
     user_list = []
     
     # 受託担当者のリスト
-    BiruUser.where("code in ('06365','6464','6406','6425','5952','6461','7844','5473','5841','4917','05928')").each do |user|
+    trust_user = {} 
+    trust_user['06365'] = {:name=>'テスト1'}
+    trust_user['6464'] = {:name=>'テスト1'}
+    trust_user['6406'] = {:name=>'テスト1'}
+    trust_user['6425'] = {:name=>'テスト1'}
+    trust_user['5952'] = {:name=>'テスト1'}
+    trust_user['05928'] = {:name=>'テスト1'}
+    trust_user['7844'] = {:name=>'テスト1'}
+    trust_user.keys.each do |key|
+      
     	rec = {}
-			rec['biru_user_id'] = user.id
-			rec['biru_usr_name'] = user.name
-			rec['trust_report'] = "trust_user_report?sid=" + user.id.to_s
-			rec['attack_list'] = "owner_building_list?sid=" + user.id.to_s
-			rec['visit_plan'] = 50
-			rec['visit_result'] = 30
-			rec['visit_value'] = 20
-			rec['dm_plan'] = 500
-			rec['dm_result'] = 500
-			rec['dm_value'] = 4
-			rec['tel_plan'] = 100
-			rec['tel_result'] = 100
-			rec['tel_value'] = 20
-			rec['trust_num'] = 5
-			rec['rank_s'] = 3
-			rec['rank_a'] = 8
-			rec['rank_b'] = 25
+      trust_user = BiruUser.find_by_code(key)
+      if trust_user
+        
+        result = get_report_info(@month, trust_user)
+
+  			rec['biru_user_id'] = trust_user.id.to_s
+  			rec['biru_usr_name'] = trust_user.name
+  			rec['trust_report'] = "trust_user_report?sid=" + trust_user.id.to_s
+  			rec['attack_list'] = "owner_building_list?sid=" + trust_user.id.to_s
+  			rec['visit_plan'] = result[:biru_user_monthly].trust_plan_visit
+  			rec['visit_result'] = result[:visit_num]
+  			rec['visit_value'] = result[:visit_num_jsk]
+  			rec['dm_plan'] = result[:biru_user_monthly].trust_plan_dm
+  			rec['dm_result'] = result[:dm_num]
+  			rec['dm_value'] = result[:dm_num_jsk]
+  			rec['tel_plan'] = result[:biru_user_monthly].trust_plan_tel
+  			rec['tel_result'] = result[:tel_num]
+  			rec['tel_value'] = result[:tel_num_jsk]
+  			rec['trust_num'] = result[:contract_num]
+  			rec['rank_s'] = 3
+  			rec['rank_a'] = 8
+  			rec['rank_b'] = 25
+
+        
+      else
+        
+  			rec['biru_user_id'] = 1.to_s
+  			rec['biru_usr_name'] = 'xxx'
+  			rec['trust_report'] = "trust_user_report?sid=" + 1.to_s
+  			rec['attack_list'] = "owner_building_list?sid=" + 1.to_s
+  			rec['visit_plan'] = 0
+  			rec['visit_result'] = 0
+  			rec['visit_value'] = 0
+  			rec['dm_plan'] = 0
+  			rec['dm_result'] = 0
+  			rec['dm_value'] = 0
+  			rec['tel_plan'] = 0
+  			rec['tel_result'] = 0
+  			rec['tel_value'] = 0
+  			rec['trust_num'] = 0
+  			rec['rank_s'] = 0
+  			rec['rank_a'] = 0
+  			rec['rank_b'] = 0
+        
+      end
+
 			user_list.push(rec)
+      
     end
+    
     gon.data_list = user_list
 
   end
+  
   
   def owner_building_list
   	
@@ -276,28 +332,8 @@ class TrustManagementsController < ApplicationController
       @month = params[:month]
     else
       # 当月の月を出す。
-      if Date.today.day > 20
-        # 翌月
-        cur_date = Date.today.next_month
-      else
-        # 当月
-        cur_date = Date.today
-      end 
-      
-      @month = "%04d%02d"%[cur_date.year.to_s, cur_date.month.to_s]
+      @month = get_cur_month
     end
-    
-    # 来月度を取得
-    tmp_month =Date.parse(@month + "01", "YYYYMMDD").next_month
-    @month_next = "%04d%02d"%[tmp_month.year, tmp_month.month]
-    
-    # 前月度を取得
-    tmp_month =Date.parse(@month + "01", "YYYYMMDD").prev_month
-    @month_prev = "%04d%02d"%[tmp_month.year, tmp_month.month]
-    
-    # 今月の集計期間を取得
-    @start_date = Date.parse(Date.parse(@month + "01").prev_month.strftime("%Y%m")+"21")
-    @end_date = Date.parse(@month + "20")
     
     # ユーザー情報取得
     @biru_trust_user = BiruUser.find(params[:sid])
@@ -308,132 +344,33 @@ class TrustManagementsController < ApplicationController
       redirect_to :controller=>'pages', :action=>'error_page'
     end
     
-    # 当月の計画・実績データを取得
-    @biru_user_monthly = BiruUserMonthly.find_by_biru_user_id_and_month(@biru_trust_user.id, @month)
-    unless @biru_user_monthly
-      @biru_user_monthly = BiruUserMonthly.new
-    end
-    @biru_user_monthly.biru_user_id = @biru_trust_user.id
-    @biru_user_monthly.month = @month
     
-    # 来月の計画・実績データを取得
-    @biru_user_monthly_next = BiruUserMonthly.find_by_biru_user_id_and_month(@biru_trust_user.id, @month_next)
-    unless @biru_user_monthly_next
-      @biru_user_monthly_next = BiruUserMonthly.new
-    end
-    @biru_user_monthly_next.biru_user_id = @biru_trust_user.id
-    @biru_user_monthly_next.month = @month_next
-    
-    
-    #####################################
-    # 当月に訪問した貸主を表示    
-    #####################################
-    # 訪問オーナー
-    visit_owner_id_arr = []
-    @visit_num = 0
-    @visit_num_jsk = 0
-    
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
-    	
-    	visit_owner_id_arr << rec.owner_id
-      @visit_num = @visit_num + 1
-      
-      # 面談できていた時
-      if rec.code == '0020'
-      	@visit_num_jsk = @visit_num_jsk + 1
-      end
-      
-    end
-    gon.visit_owner = Owner.find_all_by_id(visit_owner_id_arr)
+    # レポート情報の取得
+    result = get_report_info(@month, @biru_trust_user)
 
-		####################################
-    # DMアプローチした貸主を表示
-		####################################
-    dm_owner_id_arr = []
-    @dm_num = 0
-    @dm_num_jsk = 0
-
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030', '0035')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
-    	dm_owner_id_arr << rec.owner_id
-      @dm_num = @dm_num + 1
-      
-      # ＤＭの「反響」だった時
-      if rec.code == '0035'
-				@dm_num_jsk = @dm_num_jsk + 1
-      end
-    end
+    @month_next = result[:month_next]
+    @month_prev = result[:month_prev]
+    @start_date = result[:start_date]
+    @end_date = result[:end_date]
+    @biru_user_monthly = result[:biru_user_monthly]
+    @biru_user_monthly_next = result[:biru_user_monthly_next]
+    @visit_owner_id_arr = result[:visit_owner_id_arr]
+    @visit_num = result[:visit_num]
+    @visit_num_jsk = result[:visit_num_jsk]
+    @dm_owner_id_arr = result[:dm_owner_id_arr]
+    @dm_num = result[:dm_num]
+    @dm_num_jsk = result[:dm_num_jsk]
+    @tel_owner_id_arr = result[:tel_owner_id_arr]
+    @tel_num = result[:tel_num]
+    @tel_num_jsk = result[:tel_num_jsk]
+    @tel_num = result[:contract_num]
+    @tel_num_jsk = result[:contract_num_jsk]
+    @buildings = result[:buildings]
     
-    gon.dm_owner = Owner.find_all_by_id(dm_owner_id_arr)
-
-		####################################
-    # ＴＥＬアプローチした貸主を表示
-		####################################
-    tel_owner_id_arr = []
-    @tel_num = 0
-    @tel_num_jsk = 0
-    
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040', '0045')").where("approach_date between ? and ? ", @start_date, @end_date).where("biru_user_id = ?", @biru_trust_user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
-    	tel_owner_id_arr << rec.owner_id
-      @tel_num = @tel_num + 1
-    	
-    	# ＤＭの反響だった時
-      if rec.code == '0045'
-				@tel_num_jsk = @tel_num_jsk + 1
-      end
-    end
-    gon.tel_owner =  Owner.find_all_by_id(tel_owner_id_arr)
-    
-    
-    #####################################
-    # 成約した物件、見込みが高い物件を表示
-    #####################################
-    @contract_num = 0
-    @contract_num_jisya = 0
-    
-    @buildings = []
-    order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", @month).where("trusts.biru_user_id = ?", @biru_trust_user.id).group("trusts.id").maximum("month")
-    
-    order_hash.keys.each do |trust_id|
-      
-      # trust_idにはidが、order_hash[trust_id]にはその月の最大月数が入っている
-      
-      trust_attack_history = TrustAttackStateHistory.find_by_trust_id_and_month(trust_id, order_hash[trust_id])
-      
-      # ↓見込みランクの絞り込みはクエリのwhere句の中でなく、集計結果に対して行う。
-      # where句でやるとそのランクがある中での最大をとってしまうので、仮にその後に別のランクが登録されていたら本来は必要ないのにそのレコードがとれてしまうから
-      case trust_attack_history.attack_state_to.code
-      when 'S', 'A', 'B'
-        
-        biru = trust_attack_history.trust.building
-        biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
-        biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
-        @buildings << biru
-      
-      when 'Z'
-        # 成約になった物件は、当月のみ表示対象
-        if trust_attack_history.month.to_s == @month.to_s
-
-          biru = trust_attack_history.trust.building
-          biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
-          biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
-          @buildings << biru
-          
-          # 受託実績戸数を入力
-          @contract_num = @contract_num + trust_attack_history.room_num
-          
-          if trust_attack_history.trust_oneself
-            @contract_num_jisya = @contract_num_jisya + trust_attack_history.room_num
-          end
-
-          
-        end
-          
-      else
-      end
-      
-    end
-    
-
+    # 物件情報の取得
+    gon.visit_owner = Owner.find_all_by_id(@visit_owner_id_arr)
+    gon.dm_owner = Owner.find_all_by_id(@dm_owner_id_arr)
+    gon.tel_owner =  Owner.find_all_by_id(@tel_owner_id_arr)
 
     #####################################
     # 見込みランクが高い物件を表示   
@@ -765,6 +702,168 @@ def get_trust_sql(object_user)
   sql
 end
 
+
+# 受託行動レポート情報を取得します
+def get_report_info(month, user)
+  
+  # 来月度を取得
+  tmp_month = Date.parse(month + "01", "YYYYMMDD").next_month
+  month_next = "%04d%02d"%[tmp_month.year, tmp_month.month]
+  
+  # 前月度を取得
+  tmp_month =Date.parse(month + "01", "YYYYMMDD").prev_month
+  month_prev = "%04d%02d"%[tmp_month.year, tmp_month.month]
+  
+  # 今月の集計期間を取得
+  start_date = Date.parse(Date.parse(month + "01").prev_month.strftime("%Y%m")+"21")
+  end_date= Date.parse(month + "20")
+  
+  # 当月の計画・実績データを取得
+  biru_user_monthly = BiruUserMonthly.find_by_biru_user_id_and_month(user.id, month)
+  unless biru_user_monthly
+    biru_user_monthly = BiruUserMonthly.new
+  end
+  biru_user_monthly.biru_user_id = user.id
+  biru_user_monthly.month = month
+  
+  # 来月の計画・実績データを取得
+  biru_user_monthly_next = BiruUserMonthly.find_by_biru_user_id_and_month(user.id, month_next)
+  unless biru_user_monthly_next
+    biru_user_monthly_next = BiruUserMonthly.new
+  end
+  biru_user_monthly_next.biru_user_id = user.id
+  biru_user_monthly_next.month = month_next
+  
+  
+  #####################################
+  # 当月に訪問した貸主を表示    
+  # DMアプローチした貸主を表示
+  # ＴＥＬアプローチした貸主を表示
+  #####################################
+  visit_owner_id_arr = []
+  visit_num = 0
+  visit_num_jsk = 0
+
+  dm_owner_id_arr = []
+  dm_num = 0
+  dm_num_jsk = 0
+
+  tel_owner_id_arr = []
+  tel_num = 0
+  tel_num_jsk = 0
+  
+  OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020', '0030', '0035', '0040', '0045')").where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
+  	
+    case rec.code
+    when '0010', '0020' then
+      ########## 訪問・訪問面談 ###########
+    	visit_owner_id_arr << rec.owner_id
+      visit_num = visit_num + 1
+    
+      # 面談できていた時
+      if rec.code == '0020'
+      	visit_num_jsk = visit_num_jsk + 1
+      end
+      
+    when '0030', '0035' then
+      ########## DM・DM反響 ###########
+      dm_owner_id_arr << rec.owner_id
+      dm_num = dm_num + 1
+
+      # ＤＭの「反響」だった時
+      if rec.code == '0035'
+      	dm_num_jsk = dm_num_jsk + 1
+      end
+      
+    when '0040', '0045' then
+      ########## TEL・TEL会話 ###########
+    	tel_owner_id_arr << rec.owner_id
+      tel_num = tel_num + 1
+  	
+    	# ＤＭの反響だった時
+      if rec.code == '0045'
+  			tel_num_jsk = tel_num_jsk + 1
+      end
+    else
+      # それ以外のとき
+    end
+    
+  end
+  
+#  gon.visit_owner = Owner.find_all_by_id(visit_owner_id_arr)
+#  gon.dm_owner = Owner.find_all_by_id(dm_owner_id_arr)
+#  gon.tel_owner =  Owner.find_all_by_id(tel_owner_id_arr)
+  
+  
+  #####################################
+  # 成約した物件、見込みが高い物件を表示
+  #####################################
+  contract_num = 0
+  contract_num_jisya = 0
+  
+  buildings = []
+  order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", month).where("trusts.biru_user_id = ?", user.id).group("trusts.id").maximum("month")
+  
+  order_hash.keys.each do |trust_id|
+    
+    # trust_idにはidが、order_hash[trust_id]にはその月の最大月数が入っている
+    trust_attack_history = TrustAttackStateHistory.find_by_trust_id_and_month(trust_id, order_hash[trust_id])
+
+    # ↓見込みランクの絞り込みはクエリのwhere句の中でなく、集計結果に対して行う。
+    # where句でやるとそのランクがある中での最大をとってしまうので、仮にその後に別のランクが登録されていたら本来は必要ないのにそのレコードがとれてしまうから
+    case trust_attack_history.attack_state_to.code
+    when 'S', 'A', 'B'
+  
+      biru = trust_attack_history.trust.building
+      biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
+      biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
+      buildings << biru
+
+    when 'Z'
+      # 成約になった物件は、当月のみ表示対象
+      if trust_attack_history.month.to_s == month.to_s
+
+        biru = trust_attack_history.trust.building
+        biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
+        biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
+        buildings << biru
+    
+        # 受託実績戸数を入力
+        contract_num = contract_num + trust_attack_history.room_num
+    
+        if trust_attack_history.trust_oneself
+          contract_num_jisya = contract_num_jisya + trust_attack_history.room_num
+        end
+    
+      end
+    
+    else
+    end
+  end
+    
+  # 関数の戻り値として設定
+  result = {}
+  result[:month_next] = month_next
+  result[:month_prev] = month_prev
+  result[:start_date] = start_date
+  result[:end_date] = end_date
+  result[:biru_user_monthly] = biru_user_monthly
+  result[:biru_user_monthly_next] = biru_user_monthly_next
+  result[:visit_owner_id_arr] = visit_owner_id_arr
+  result[:visit_num] = visit_num
+  result[:visit_num_jsk] = visit_num_jsk
+  result[:dm_owner_id_arr] = dm_owner_id_arr
+  result[:dm_num] = dm_num
+  result[:dm_num_jsk] = dm_num_jsk
+  result[:tel_owner_id_arr] = tel_owner_id_arr
+  result[:tel_num] = tel_num
+  result[:tel_num_jsk] = tel_num_jsk
+  result[:contract_num] = contract_num
+  result[:contract_num_jsk] = contract_num_jisya
+  result[:buildings] = buildings
+  
+  return result
+end
 
 # 検索条件を初期化します。
 def search_init

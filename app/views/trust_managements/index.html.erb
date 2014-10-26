@@ -11,8 +11,8 @@
 		var col_model = [
 		  {name:"biru_user_id", index:"biru_user_id", align:"left",classes:"no_class", hidden:true}
   		 ,{name:"biru_usr_name", index:"biru_usr_name", width:300, align:"left", classes:"no_class"}
- 		 ,{name:"trust_report", index:"trust_report", width:200, align:"left", classes:"no_class", formatter: 'link'}
- 		 ,{name:"attack_list", index:"attack_list", width:200, align:"left", classes:"no_class", formatter: 'link'}
+ 		 ,{name:"trust_report", index:"trust_report", width:200, align:"left", classes:"no_class", formatter: 'link', hidden:true}
+ 		 ,{name:"attack_list", index:"attack_list", width:200, align:"left", classes:"no_class", hidden:true}
  		 ,{name:"visit_plan", index:"visit_plan", align:"right", classes:"no_class"}
  		 ,{name:"visit_result", index:"visit_result", align:"right", classes:"no_class"}
  		 ,{name:"visit_value", index:"visit_value", align:"right", classes:"no_class"}
@@ -37,7 +37,7 @@
 			 table_name:'building_table'
 			,fotter_name:'building_pager'
 			,div_name:'div_dummy_02'
-			,caption:'１０月度　受託活動報告'
+			,caption:'<%= @month.slice(0,4) + '年' + @month.slice(4,2) + '月度' %>　受託活動報告'
 			,event_type:30
 			,shrinkFit:true
 			,multiselect:true
@@ -71,6 +71,15 @@
 				   // 					   link_owner_click(table_div.getRowData(id).owner_id);
 				   // }
 		        },
+			    ondblClickRow: function(id) {
+					// ダブルクリックイベント
+				    data = jQuery('#building_table').getRowData(id);
+			 		screen_block();
+					
+					location.href = location.protocol + '//' + location.host + '/trust_managements/' + data.attack_list
+					
+				}
+				
 			  	//shrinkToFit : false,　　        //画面サイズに依存せず固定の大きさを表示する設定
 			});
   
@@ -103,10 +112,25 @@
 			
 		});
 	}
+	
+	
+	
+	function dropsort() {
+		document.yyyymm.submit();
+	}
+		
 </script>
 
 <div style="padding:50px 80px 10px 80px;">
 	<div id="div_dummy_02" style="width:100%;height:90%;">
+		
+		<div style="padding-bottom:10px;">
+			<%= form_tag({:action => :index}, {:name => 'yyyymm'}) do %>
+				<%= select_tag(:month, options_for_select(@calender, @month),  :onchange=>"javascript:dropsort();") %>
+				<span style="padding-left:100px;">※ダブルクリックで詳細画面へ遷移します。</span>
+			<% end %>
+		</div>
+
 		<table id="building_table"></table>
 		<div id = "building_pager"></div>
 	</div>

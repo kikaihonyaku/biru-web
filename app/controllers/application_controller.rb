@@ -243,5 +243,21 @@ class ApplicationController < ActionController::Base
       cur_date.strftime("%Y%m")
     end
   end
+  
+  # カレントの月度を返す
+  def get_cur_month
+    
+    # 当月の月を出す。
+    if Date.today.day > 20
+      # 翌月
+      cur_date = Date.today.next_month
+    else
+      # 当月
+      cur_date = Date.today
+    end 
+    
+     month = "%04d%02d"%[cur_date.year.to_s, cur_date.month.to_s]
+    
+  end
 
 end
