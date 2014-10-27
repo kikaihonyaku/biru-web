@@ -75,23 +75,25 @@
 
         <!-- Begin Navbar -->
 		
-    <div class="navbar  navbar-fixed-top" style="margin:0;height:5px;padding:0">
-      <div class="container">
-        <div class="navbar-collapse collapse" id="navbar-main" >
-          <ul class="nav navbar-nav" >
+		<% unless @header_hidden %>
+		    <div class="navbar  navbar-fixed-top" style="margin:0;height:5px;padding:0">
+		      <div class="container">
+		        <div class="navbar-collapse collapse" id="navbar-main" >
+		          <ul class="nav navbar-nav" >
 			  
-              <li><%= link_to "地図トップメニュー", root_path, :style=>'text-decoration:none;' %></li>
-              <li><%= link_to "業績分析メニュー", performances_path, :style=>'text-decoration:none;'   %></li>
-        </ul>
-		<% if @biru_user %>
-			<ul class='nav navbar-nav pull-right' >
-	              <li><%= link_to @biru_user.name + " さん", "", :style=>'text-decoration:none;' %></li>
-	              <li><%= link_to "ログアウト", logout_path, :style=>'text-decoration:none;'  %></li>
-			</ul>
+		              <li><%= link_to "地図トップメニュー", root_path, :style=>'text-decoration:none;' %></li>
+		              <li><%= link_to "業績分析メニュー", performances_path, :style=>'text-decoration:none;'   %></li>
+			        </ul>
+					<% if @biru_user %>
+						<ul class='nav navbar-nav pull-right' >
+				              <li><%= link_to @biru_user.name + " さん", "", :style=>'text-decoration:none;' %></li>
+				              <li><%= link_to "ログアウト", logout_path, :style=>'text-decoration:none;'  %></li>
+						</ul>
+					<% end %>
+			      </div>		
+			    </div>
+			</div><!-- /.navbar -->
 		<% end %>
-      </div>		
-    </div>
-</div><!-- /.navbar -->
 
     <div class="container-fluid" style="height:100%;width:100%;padding:0;margin:0;padding-top:50px;" id="body-contents">
       <%#= bootstrap_flash %>

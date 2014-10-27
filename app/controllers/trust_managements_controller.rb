@@ -461,6 +461,9 @@ class TrustManagementsController < ApplicationController
 		end
 
    gon.stations = stations
+   
+   # layoutでヘッダを非表示
+   @header_hidden = true
   end  
   
   def biru_user_trust_update
@@ -533,7 +536,11 @@ class TrustManagementsController < ApplicationController
     
   end
   
-  
+  # アタックリストメンテナンス
+  def attack_list_maintenance
+    
+  end
+    
 private
 def get_owner_show(owner_id)
   @owner = Owner.find(owner_id)
@@ -606,7 +613,7 @@ def get_trust_sql(object_user)
 #    sql = sql + " AND trusts.biru_user_id = " + @biru_user.id.to_s
 #  end
 
-	sql = sql + " AND trusts.biru_user_id = " + object_user.id.to_s
+	sql = sql + " AND trusts.biru_user_id = " + object_user.id.to_s + " "
 
   #----------------------------------#
   # 検索条件が指定されている時の絞り込み
