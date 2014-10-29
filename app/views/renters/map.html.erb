@@ -21,7 +21,7 @@
     init_display();
 	
     // 地図・ストリートビューを作成します。
-   init_map(<%= @biru_user.id %>, false);
+   init_map(<%= @biru_user.id %>,  false);
 
 
     // 初期表示位置を調整
@@ -33,7 +33,7 @@
     var pos;
 		
 	gon.buildings.forEach(function(building){
-        pos = new google.maps.LatLng(building.latitude, building.longitude);
+        pos = new google.maps.LatLng(building.latitude,  building.longitude);
         bounds.extend(pos);
 
         // infoWndに表示するHTMLを作成する。
@@ -47,16 +47,16 @@
 		
 		var rooms = gon.rooms[building.id]
 		rooms.forEach(function(room){
+			
+			res = get_rentes_picture_cnt(room.J00, room.T00, room.J01, room.J02, room.J03, room.J04, room.J05, room.J06, room.J08, room.J09, room.T03, room.T04, room.T05, room.T06, room.T08, room.T11, room.T01);
+			
 			sum = room.madori + room.gaikan + room.naikan + room.gaikan_etc + room.syuuhen
-			//sum = room.all_sum
 			
-			res = get_suumo_remaining(room.madori, room.gaikan, room.naikan, room.gaikan_etc, room.syuuhen)
-			suumo_all = 20 - res.remaining_suumo
 			
-			inner_text = inner_text + '<tr><td><a href="javascript:win_picture(' + room.id + ');">' + room.room_no + '</a></td><td><a href="http://www.rentersnet.jp/bukken/edit?roomAdRoomCd=' + room.room_code + '" target="_blank">' + room.room_code + '</a></td><td><a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + sum + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + suumo_all + '枚</a></td></tr>'
+			inner_text = inner_text + '<tr><td><a href="javascript:win_picture(' + room.id + ');">' + room.room_no + '</a></td><td><a href="http://www.rentersnet.jp/bukken/edit?roomAdRoomCd=' + room.room_code + '" target="_blank">' + room.room_code + '</a></td><td><a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + res.renters_all + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + res.suumo_all + '枚</a></td></tr>'
 				  
 
-			suumo_all_summary = suumo_all_summary + suumo_all
+			suumo_all_summary = suumo_all_summary + res.suumo_all 
 			room_cnt = room_cnt + 1;
 				  
 		});
@@ -80,12 +80,12 @@
 
         build_arr[building.id] = createMarker({
           position : pos
-          ,map : mapCanvas
-          ,icon : '/assets/' + icon_url
-          ,shadow : 'assets/msmarker_shadow.png'
-          ,info_msg : building.name
-         // ,html : vhtml
-          ,html : building.name + ' <table class="sample_01" style="margin-top:5px;"><tr><th>号室</th><th>レンターズ</th><th>RSpot</th><th>SUUMO</th></tr>' + inner_text + '</table>' + '<div style="padding-top:0px;margin-top:5px;padding-left:10px;float:left;">' + '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="view_disp( this.checked, ' + building.latitude + ',' + building.longitude  + '); return false;" />&nbsp;ストリートビュー</label>' +
+          , map : mapCanvas
+          , icon : '/assets/' + icon_url
+          , shadow : 'assets/msmarker_shadow.png'
+          , info_msg : building.name
+         // , html : vhtml
+          , html : building.name + ' <table class="sample_01" style="margin-top:5px;"><tr><th>号室</th><th>レンターズ</th><th>RSpot</th><th>SUUMO</th></tr>' + inner_text + '</table>' + '<div style="padding-top:0px;margin-top:5px;padding-left:10px;float:left;">' + '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="view_disp( this.checked,  ' + building.latitude + ', ' + building.longitude  + '); return false;" />&nbsp;ストリートビュー</label>' +
 		    '</div>'
 
         });
@@ -97,13 +97,13 @@
 
   } // end initialize
 
-  google.maps.event.addDomListener(window, "load", initialize);
+  google.maps.event.addDomListener(window,  "load",  initialize);
 
 
 </script>
 
   <style type="text/css">
-    html, body{
+    html,  body{
       margin: 0;
       padding: 0;
       width: 100%;
@@ -170,25 +170,42 @@
 	
 	function init_renters_jqgrid(){
 		// 列名の定義
-		var grid_name = ["renters_room_id", "building_id", "営業所", "建物名", "部屋", "空室状況", "住所", "room_code", "SUMO合計残数", "間取り：残", "外観：残", "内観：残", "外観その他：残", "周辺：残"];
+ 		var grid_name = ["renters_room_id",  "building_id",  "営業所",  "建物名",  "部屋",  "空室状況",  "住所",  "room_code",  "合計(20)",  "間取り(1)",  "外観(2)",  "内観(9)",  "外観その他(2)",  "周辺(6)", "間取図", "外観", "キッチン", "トイレ", "バス", "居室", "洗面所", "玄関", "設備", "その他", "エントランス", "共用設備", "植栽", "駐車場", "その他", "配置図", "周辺"];
 		
 		// 列属性の定義
 		var grid_model = [
-		  {name:"renters_room_id", index:"renters_room_id", align:"right", classes:"no_class", hidden:true}
-		 ,{name:"building_id", index:"building_id", align:"right", classes:"no_class", hidden:true}
-		 ,{name:"store_name", index:"store_name", width:80, align:"center", classes:"no_class"}
-		 ,{name:"real_building_name", index:"real_building_name", width:80, align:"center", classes:"no_class"}
-		 ,{name:"real_room_name", index:"real_room_name", width:80, align:"center", classes:"no_class"}
-		 ,{name:"vacant_div", index:"vacant_div", width:80, align:"center", classes:"no_class"}
-		 ,{name:"address", index:"address", width:80, align:"center", classes:"no_class"}
-		 ,{name:"room_code", index:"room_code", width:80, align:"center", classes:"no_class"}
-		 ,{name:"suumo_sum", index:"suumo_sum", width:80, align:"center", classes:"no_class"}
-		 ,{name:"madori", index:"madori", width:80, align:"center", classes:"no_class"}
-		 ,{name:"gaikan", index:"gaikan", width:80, align:"center", classes:"no_class"}
-		 ,{name:"naikan", index:"naikan", width:80, align:"center", classes:"no_class"}
-		 ,{name:"gaikan_etc", index:"gaikan_etc", width:80, align:"center", classes:"no_class"}
-		 ,{name:"syuuhen", index:"syuuhen", width:80, align:"center", classes:"no_class"}
+		  {name:"renters_room_id",  index:"renters_room_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+		 , {name:"building_id",  index:"building_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+		 , {name:"store_name",  index:"store_name",  width:100,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"real_building_name",  index:"real_building_name",  width:200,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"real_room_name",  index:"real_room_name",  width:80,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"vacant_div",  index:"vacant_div",  width:100,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"address",  index:"address",  width:200,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"room_code",  index:"room_code",  width:100,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"suumo_sum",  index:"suumo_sum",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"suumo_madori",  index:"suumo_madori",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"suumo_gaikan",  index:"suumo_gaikan",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"suumo_naikan",  index:"suumo_naikan",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"suumo_gaikan_etc",  index:"suumo_gaikan_etc",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"suumo_syuuhen",  index:"suumo_syuuhen",  width:70,  align:"center",  classes:"no_class"}
 		 
+		 , {name:"madori_renters_madori",  index:"madori_renters_madori",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"gaikan_renters_gaikan",  index:"gaikan_renters_gaikan",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"naikan_renters_kitchen",  index:"naikan_renters_kitchen",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"naikan_renters_toilet",  index:"naikan_renters_toilet",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"naikan_renters_bus",  index:"naikan_renters_bus",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"naikan_renters_living",  index:"naikan_renters_living",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"naikan_renters_washroom",  index:"naikan_renters_washroom",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"naikan_renters_porch",  index:"naikan_renters_porch",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"naikan_renters_equipment",  index:"naikan_renters_equipment",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"naikan_renters_etc",  index:"naikan_renters_etc",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"gaikan_etc_renters_entrance",  index:"gaikan_etc_renters_entrance",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"gaikan_etc_renters_common_utility",  index:"gaikan_etc_renters_common_utility",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"gaikan_etc_renters_raising_trees",  index:"gaikan_etc_renters_raising_trees",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"gaikan_etc_renters_parking",  index:"gaikan_etc_renters_parking",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"gaikan_etc_renters_etc",  index:"gaikan_etc_renters_etc",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"gaikan_etc_renters_layout",  index:"gaikan_etc_renters_layout",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"syuuhen_renters_syuuhen",  index:"syuuhen_renters_syuuhen",  width:70,  align:"center",  classes:"no_class"}
 		];
 		
 		// データの作成
@@ -204,43 +221,81 @@
 			rec['room_code'] = renters_data.room_code
 			rec['vacant_div'] = renters_data.vacant_div
 			
-			tmp = get_suumo_remaining(renters_data.madori, renters_data.gaikan, renters_data.naikan, renters_data.gaikan_etc, renters_data.syuuhen)
+			//tmp = get_suumo_remaining(false,  renters_data.madori,  renters_data.gaikan,  renters_data.naikan,  renters_data.gaikan_etc,  renters_data.syuuhen)
+			res = get_rentes_picture_cnt(renters_data.J00, renters_data.T00, renters_data.J01, renters_data.J02, renters_data.J03, renters_data.J04, renters_data.J05, renters_data.J06, renters_data.J08, renters_data.J09, renters_data.T03, renters_data.T04, renters_data.T05, renters_data.T06, renters_data.T08, renters_data.T11, renters_data.T01);
 			
 			
-			rec['suumo_sum'] = tmp.remaining_suumo
-			rec['madori'] = tmp.remaining_madori
-			rec['gaikan'] = tmp.remaining_gaikan
-			rec['naikan'] = tmp.remaining_naikan
-			rec['gaikan_etc'] = tmp.remaining_gaikan_etc
-			rec['syuuhen'] = tmp.remaining_syuuhen
+			rec['suumo_sum'] = res.suumo_all
+			rec['suumo_madori'] = res.madori_suumo
+			rec['suumo_gaikan'] = res.gaikan_suumo
+			rec['suumo_naikan'] = res.naikan_suumo
+			rec['suumo_gaikan_etc'] = res.gaikan_etc_suumo
+			rec['suumo_syuuhen'] = res.syuuhen_suumo
+
+			rec['madori_renters_madori'] = res.madori_renters_madori
+			rec['gaikan_renters_gaikan'] = res.gaikan_renters_gaikan
+			rec['naikan_renters_kitchen'] = res.naikan_renters_kitchen
+			rec['naikan_renters_toilet'] = res.naikan_renters_toilet
+			rec['naikan_renters_bus'] = res.naikan_renters_bus
+			rec['naikan_renters_living'] = res.naikan_renters_living
+			rec['naikan_renters_washroom'] = res.naikan_renters_washroom
+			rec['naikan_renters_porch'] = res.naikan_renters_porch
+			rec['naikan_renters_equipment'] = res.naikan_renters_equipment
+			rec['naikan_renters_etc'] = res.naikan_renters_etc
+			rec['gaikan_etc_renters_entrance'] = res.gaikan_etc_renters_entrance
+			rec['gaikan_etc_renters_common_utility'] = res.gaikan_etc_renters_common_utility
+			rec['gaikan_etc_renters_raising_trees'] = res.gaikan_etc_renters_raising_trees
+			rec['gaikan_etc_renters_parking'] = res.gaikan_etc_renters_parking
+			rec['gaikan_etc_renters_etc'] = res.gaikan_etc_renters_etc
+			rec['gaikan_etc_renters_layout'] = res.gaikan_etc_renters_layout
+			rec['syuuhen_renters_syuuhen'] = res.syuuhen_renters_syuuhen
 		
 			grid_data.push(rec);
 			
 		});
 		
 		// その他の設定
-		jqgrid_opt = {
+		var jqgrid_opt = {
 			 table_name:'building_table'
-			,fotter_name:'building_pager'
-			,div_name:'div_dummy_02'
-			,caption:'募集中物件を表示しています'
-			,event_type:31
-			,shrinkFit:true
-			,multiselect:false
+			, fotter_name:'building_pager'
+			, div_name:'div_dummy_02'
+			//, caption:'募集中物件を表示しています'
+			, event_type:31
+			, shrinkFit:false
+			, multiselect:false
 		};
 			
 		
 		$(function(){
-			jqgrid_create(grid_name, grid_model, grid_data, jqgrid_opt);
+			jqgrid_create(grid_name,  grid_model,  grid_data,  jqgrid_opt);
+			
+			table_div = $('#' + jqgrid_opt.table_name);
 			
 			// 反映ボタン押下
-			jQuery("#building_table").navGrid('#building_pager',{
-			        edit:false,add:false,del:false,search:false
-			      }).navButtonAdd('#building_pager',{
-			        caption:"地図に反映", position:"last", onClickButton: function(){
+			table_div.navGrid('#building_pager', {
+			        edit:false, add:false, del:false, search:false
+			      }).navButtonAdd('#building_pager', {
+			        caption:"地図に反映",  position:"last",  onClickButton: function(){
 						alert('これはまだ未実装です');
 					 }
-			      });			
+			 });
+			 
+			 
+ 	        table_div.jqGrid('setGroupHeaders', {
+ 	          useColSpanStyle: true,
+ 	          groupHeaders:[
+ 	            {startColumnName: 'suumo_sum', numberOfColumns: 6, titleText: '<em>SUUMO掲載枚数</em>'},
+ 	            {startColumnName: 'madori_renters_madori', numberOfColumns: 1, titleText: '<em>間取り</em>'},
+ 	            {startColumnName: 'gaikan_renters_gaikan', numberOfColumns: 1, titleText: '<em>外観</em>'},
+ 	            {startColumnName: 'naikan_renters_kitchen', numberOfColumns: 8, titleText: '<em>内観</em>'},
+ 	            {startColumnName: 'gaikan_etc_renters_entrance', numberOfColumns: 6, titleText: '<em>外観その他</em>'},
+ 	            {startColumnName: 'syuuhen_renters_syuuhen', numberOfColumns: 1, titleText: '<em>周辺</em>'},
+				
+ 	          ]
+ 	        });
+			
+			table_div.jqGrid('setFrozenColumns');
+			 
 		});
 	}
 	
@@ -248,43 +303,42 @@
 	// 絞り込み条件grid
 	function init_search_jqgrid(){
 		
-		var col_names = ["部署の絞り込み", "リンク"];
+		var col_names = ["部署の絞り込み",  "リンク"];
 	
 		// 列属性の定義
 		var col_model = [
-		  {name:"store_name", index:"store_name", width:400, align:"left",classes:"no_class"}
- 		 ,{name:"url", index:"url", align:"center", classes:"no_class", hidden:true}
+		  {name:"store_name",  index:"store_name",  width:300,  align:"left", classes:"no_class"}
+ 		 , {name:"url",  index:"url",  align:"center",  classes:"no_class",  hidden:true}
 		];
 		
 		// データの作成
 		var grid_data = [];
 
-	    grid_data.push({ url:  'map', store_name: '全体' }) 
-	    grid_data.push({ url:  'map?stcd=335,336,339,334,340,337,338,667', store_name: '東武支店' }) 
-	    grid_data.push({ url:  'map?stcd=2763,341,342,344,348,346,349,343,345', store_name: 'さいたま支店' }) 
-	    grid_data.push({ url:  'map?stcd=352,347,351,350', store_name: '千葉支店' }) 
-	    grid_data.push({ url:  'map?stcd=335',  store_name: '草加' }) 
-	    grid_data.push({ url:  'map?stcd=336',  store_name: '草加新田' }) 
-	    grid_data.push({ url:  'map?stcd=339',  store_name: '北千住' }) 
-	    grid_data.push({ url:  'map?stcd=334',  store_name: '南越谷' }) 
-	    grid_data.push({ url:  'map?stcd=340',  store_name: '越谷' }) 
-	    grid_data.push({ url:  'map?stcd=337',  store_name: '北越谷' }) 
-	    grid_data.push({ url:  'map?stcd=338',  store_name: '春日部' }) 
-	    grid_data.push({ url:  'map?stcd=667',  store_name: 'せんげん台' }) 
-	    grid_data.push({ url:  'map?stcd=2763',store_name: '戸田公園' }) 
-	    grid_data.push({ url:  'map?stcd=341', store_name: '戸田' }) 
-	    grid_data.push({ url:  'map?stcd=342', store_name: '武蔵浦和' }) 
-	    grid_data.push({ url:  'map?stcd=344', store_name: '与野' }) 
-	    grid_data.push({ url:  'map?stcd=348', store_name: '浦和' }) 
-	    grid_data.push({ url:  'map?stcd=346', store_name: '川口' }) 
-	    grid_data.push({ url:  'map?stcd=349', store_name: '東浦和' }) 
-	    grid_data.push({ url:  'map?stcd=343', store_name: '東川口' }) 
-	    grid_data.push({ url:  'map?stcd=345', store_name: '戸塚安行' }) 
-	    grid_data.push({ url:  'map?stcd=352',  store_name: '松戸' }) 
-	    grid_data.push({ url:  'map?stcd=347',  store_name: '北松戸' }) 
-	    grid_data.push({ url:  'map?stcd=351',  store_name: '南流山' }) 
-	    grid_data.push({ url:  'map?stcd=350',  store_name: '柏' }) 
-
+	    grid_data.push({ url:  'map',  store_name: '全体' }) 
+	    grid_data.push({ url:  'map?stcd=335, 336, 339, 334, 340, 337, 338, 667',  store_name: '東武支店' }) 
+	    grid_data.push({ url:  'map?stcd=2763, 341, 342, 344, 348, 346, 349, 343, 345',  store_name: 'さいたま支店' }) 
+	    grid_data.push({ url:  'map?stcd=352, 347, 351, 350',  store_name: '千葉支店' }) 
+	    grid_data.push({ url:  'map?stcd=335',   store_name: '草加' }) 
+	    grid_data.push({ url:  'map?stcd=336',   store_name: '草加新田' }) 
+	    grid_data.push({ url:  'map?stcd=339',   store_name: '北千住' }) 
+	    grid_data.push({ url:  'map?stcd=334',   store_name: '南越谷' }) 
+	    grid_data.push({ url:  'map?stcd=340',   store_name: '越谷' }) 
+	    grid_data.push({ url:  'map?stcd=337',   store_name: '北越谷' }) 
+	    grid_data.push({ url:  'map?stcd=338',   store_name: '春日部' }) 
+	    grid_data.push({ url:  'map?stcd=667',   store_name: 'せんげん台' }) 
+	    grid_data.push({ url:  'map?stcd=2763', store_name: '戸田公園' }) 
+	    grid_data.push({ url:  'map?stcd=341',  store_name: '戸田' }) 
+	    grid_data.push({ url:  'map?stcd=342',  store_name: '武蔵浦和' }) 
+	    grid_data.push({ url:  'map?stcd=344',  store_name: '与野' }) 
+	    grid_data.push({ url:  'map?stcd=348',  store_name: '浦和' }) 
+	    grid_data.push({ url:  'map?stcd=346',  store_name: '川口' }) 
+	    grid_data.push({ url:  'map?stcd=349',  store_name: '東浦和' }) 
+	    grid_data.push({ url:  'map?stcd=343',  store_name: '東川口' }) 
+	    grid_data.push({ url:  'map?stcd=345',  store_name: '戸塚安行' }) 
+	    grid_data.push({ url:  'map?stcd=352',   store_name: '松戸' }) 
+	    grid_data.push({ url:  'map?stcd=347',   store_name: '北松戸' }) 
+	    grid_data.push({ url:  'map?stcd=351',   store_name: '南流山' }) 
+	    grid_data.push({ url:  'map?stcd=350',   store_name: '柏' }) 
 		
 		$(function(){
 
@@ -292,15 +346,15 @@
 			var div_box = $('#search_div');
 
 			table_div.jqGrid({
-			  	data : grid_data,  //表示したいデータ
-			  	datatype : "local",            //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
-			  	colNames : col_names,           //列の表示名
-			  	colModel : col_model,   //列ごとの設定
-			  	rowNum : 100,                   //一ページに表示する行数
+			  	data : grid_data,   //表示したいデータ
+			  	datatype : "local",             //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
+			  	colNames : col_names,            //列の表示名
+			  	colModel : col_model,    //列ごとの設定
+			  	rowNum : 100,                    //一ページに表示する行数
 				loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
-					table_div.jqGrid('setGridWidth', div_box.width(), true);
-				    table_div.jqGrid('setGridHeight', div_box.height(), true);
-				},
+					table_div.jqGrid('setGridWidth',  div_box.width(),  true);
+				    table_div.jqGrid('setGridHeight',  div_box.height(),  true);
+				}, 
 				
 			    onSelectRow: function(id) {
 				    data = table_div.getRowData(id);
@@ -314,47 +368,134 @@
 	}
 	
 	// suumoのそれぞれの残数をハッシュで返します
-	function get_suumo_remaining(madori, gaikan, naikan, gaikan_etc, syuuhen){
+	// cnt_type ture:残数、false:総数
+	// function get_suumo_remaining(cnt_type,  madori,  gaikan,  naikan,  gaikan_etc,  syuuhen){
+	//
+	// 	res = {};
+	//
+	// 	if(cnt_type == true){
+	// 		// 残数を求めます
+	// 		res.remaining_madori = 1 - madori
+	// 		if(res.remaining_madori < 0){
+	// 			res.remaining_madori = 0;
+	// 		}
+	//
+	// 		res.remaining_gaikan = 2 - gaikan
+	// 		if(res.remaining_gaikan < 0){
+	// 			res.remaining_gaikan = 0;
+	// 		}
+	//
+	// 		res.remaining_naikan = 9 - naikan
+	// 		if(res.remaining_naikan < 0){
+	// 			res.remaining_naikan = 0;
+	// 		}
+	//
+	// 		res.remaining_gaikan_etc = 2 - gaikan_etc
+	// 		if(res.remaining_gaikan_etc < 0){
+	// 			res.remaining_gaikan_etc = 0;
+	// 		}
+	//
+	// 		res.remaining_syuuhen = 6 - syuuhen
+	// 		if(res.remaining_syuuhen < 0){
+	// 			res.remaining_syuuhen = 0;
+	// 		}
+	//
+	// 	} else {
+	//
+	// 		// 現在の枚数を求めます
+	// 		res.remaining_madori = madori
+	// 		if(res.remaining_madori > 1){
+	// 			res.remaining_madori = 1;
+	// 		}
+	//
+	// 		res.remaining_gaikan = gaikan
+	// 		if(res.remaining_gaikan > 2){
+	// 			res.remaining_gaikan = 2;
+	// 		}
+	//
+	// 		res.remaining_naikan = naikan
+	// 		if(res.remaining_naikan > 9){
+	// 			res.remaining_naikan = 9;
+	// 		}
+	//
+	// 		res.remaining_gaikan_etc = gaikan_etc
+	// 		if(res.remaining_gaikan_etc > 2){
+	// 			res.remaining_gaikan_etc = 2;
+	// 		}
+	//
+	// 		res.remaining_syuuhen = syuuhen
+	// 		if(res.remaining_syuuhen > 6){
+	// 			res.remaining_syuuhen = 6;
+	// 		}
+	// 	}
+	//
+	// 	res.remaining_suumo = (res.remaining_madori + res.remaining_gaikan + res.remaining_naikan + res.remaining_gaikan_etc + res.remaining_syuuhen)  // SUMO算数の合計
+	//
+	// 	return res;
+	// }
+	
+	// レンターズの写真枚数をハッシュに格納します。
+	function get_rentes_picture_cnt(J00, T00, J01, J02, J03, J04, J05, J06, J08, J09, T03, T04, T05, T06, T08, T11, T01){
 		
 		res = {};
-		res.remaining_madori = 1 - madori
-		if(res.remaining_madori < 0){
-			res.remaining_madori = 0;
+		
+		// レンターズ枚数設定
+		res.madori_renters_madori = J00;
+		res.gaikan_renters_gaikan = T00;
+		res.naikan_renters_kitchen = J03;
+		res.naikan_renters_toilet = J05;
+		res.naikan_renters_bus = J04;
+		res.naikan_renters_living = J01;
+		res.naikan_renters_washroom = J06;
+		res.naikan_renters_porch = J02;
+		res.naikan_renters_equipment = J08;
+		res.naikan_renters_etc = J09;
+		res.gaikan_etc_renters_entrance = T04;
+		res.gaikan_etc_renters_common_utility = T06;
+		res.gaikan_etc_renters_raising_trees = T05;
+		res.gaikan_etc_renters_parking = T11;
+		res.gaikan_etc_renters_etc = T08;
+		res.gaikan_etc_renters_layout = T03;
+		res.syuuhen_renters_syuuhen = T01;
+
+		res.renters_all = res.madori_renters_madori + res.gaikan_renters_gaikan + res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom + res.naikan_renters_porch + res.naikan_renters_equipment + res.naikan_renters_etc + res.gaikan_etc_renters_entrance + res.gaikan_etc_renters_common_utility + res.gaikan_etc_renters_raising_trees + res.gaikan_etc_renters_parking + res.gaikan_etc_renters_etc + res.gaikan_etc_renters_layout + res.syuuhen_renters_syuuhen
+		
+		// スーモ枚数カウント
+		res.madori_suumo = res.madori_renters_madori;
+		if(res.madori_suumo > 1){
+			res.madori_suumo = 1;
 		}
 		
-		res.remaining_gaikan = 2 - gaikan
-		if(res.remaining_gaikan < 0){
-			res.remaining_gaikan = 0;
+		res.gaikan_suumo = res.gaikan_renters_gaikan;
+		if(res.gaikan_suumo > 2){
+			res.gaikan_suumo = 2;
+		}
+				
+		res.naikan_suumo = (res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom +  res.naikan_renters_porch + res.naikan_renters_equipment + res.naikan_renters_etc);
+		if(res.naikan_suumo > 9){
+			res.naikan_suumo = 9;
 		}
 		
-		res.remaining_naikan = 9 - naikan
-		if(res.remaining_naikan < 0){
-			res.remaining_naikan = 0;
+		res.gaikan_etc_suumo = (res.gaikan_etc_renters_entrance + res.gaikan_etc_renters_common_utility + res.gaikan_etc_renters_raising_trees + res.gaikan_etc_renters_parking + res.gaikan_etc_renters_etc + res.gaikan_etc_renters_layout);
+		if(res.gaikan_etc_suumo > 2){
+			res.gaikan_etc_suumo = 2;
 		}
 		
-		res.remaining_gaikan_etc = 2 - gaikan_etc
-		if(res.remaining_gaikan_etc < 0){
-			res.remaining_gaikan_etc = 0;
+		res.syuuhen_suumo = res.syuuhen_renters_syuuhen;
+		if(res.syuuhen_suumo > 6){
+			res.syuuhen_suumo = 6;
 		}
 		
-		res.remaining_syuuhen = 6 - syuuhen
-		if(res.remaining_syuuhen < 0){
-			res.remaining_syuuhen = 0;
-		}
-		
-		res.remaining_suumo = (res.remaining_madori + res.remaining_gaikan + res.remaining_naikan + res.remaining_gaikan_etc + res.remaining_syuuhen)  // SUMO算数の合計
-		
+		res.suumo_all = res.madori_suumo + res.gaikan_suumo + res.naikan_suumo + res.gaikan_etc_suumo + res.syuuhen_suumo
+
 		return res;
+
 	}
-	
-	
 
 </script>
 
 
   <!-- ここは span9で呼び出されているので合計も9に合わせる -->
-
-
 	<a id="simple-menu" href="#sidr"></a>
 	<div style="height:50%;padding:10px 20px 0px 20px;">
 		
@@ -400,7 +541,7 @@
 						
 					</li>
 			        </li>
-			        <li><%= link_to "一覧へ戻る", renters_path %></li>
+			        <li><%= link_to "一覧へ戻る",  renters_path %></li>
 			    </ul>
 			</div>
 			

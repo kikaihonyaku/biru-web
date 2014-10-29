@@ -93,10 +93,13 @@
 			      </div>		
 			    </div>
 			</div><!-- /.navbar -->
+		    <div class="container-fluid" style="height:100%;width:100%;padding:0;margin:0;padding-top:50px;" id="body-contents">
+		      <%#= bootstrap_flash %>
+		<% else %>
+		    <div class="container-fluid" style="height:100%;width:100%;padding:0;margin:0;" id="body-contents">
+		      <%#= bootstrap_flash %>
 		<% end %>
 
-    <div class="container-fluid" style="height:100%;width:100%;padding:0;margin:0;padding-top:50px;" id="body-contents">
-      <%#= bootstrap_flash %>
 	  
 <div class="alert alert-warning alert-dismissible" role="alert" style="margin-bottom:0px;display:none;" id="alert-block">
   <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>

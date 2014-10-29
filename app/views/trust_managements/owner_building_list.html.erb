@@ -779,7 +779,7 @@ function getCoords(position) {
 		});
 		
 		// その他の設定
-		jqgrid_opt = {
+		var jqgrid_opt = {
 			 table_name:'building_table'
 			,fotter_name:'building_pager'
 			,div_name:'div_dummy_02'
@@ -989,12 +989,8 @@ function getCoords(position) {
 
 	// タックシール用のpdfを出力します
 	function tack_out_go(){
-		
-		// 出力対象がチェックボックスが１件以上チェックされていることを確認
-		// ※これはうまくいかなかったから、サーバー側でエラーを返す
-		
+
 		var dm_owner_list = "";
-		
 		var row_data = $('#building_table').getRowData()
 		var arr = jQuery("#building_table").getGridParam('selarrrow');
 		if(arr.length == 0 ){

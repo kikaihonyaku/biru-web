@@ -1445,7 +1445,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	  	######################
 	  	# 貸主の登録・特定
 	  	######################
-			owner = Owner.find_or_create_by_hash_key(imp.owner_hash)
+			owner = Owner.unscoped.find_or_create_by_hash_key(imp.owner_hash)
       owner.hash_key = imp.owner_hash
 			owner.name = imp.owner_nm
 			owner.address = imp.owner_address
@@ -1507,7 +1507,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	  	# 建物の登録・特定
 	  	######################
 	  	trust_space_regist = false # 委託契約を空白で登録
-	  	building = Building.find_or_create_by_hash_key(imp.building_hash)
+	  	building = Building.unscoped.find_or_create_by_hash_key(imp.building_hash)
       building.hash_key = imp.building_hash
 	  	building.address = imp.building_address
 	  	building.name = imp.building_nm
@@ -1539,7 +1539,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	  	######################
 	  	if trust_space_regist 
 	  		# 建物登録に失敗したので、建物は空白で委託登録（ただしすでに空白の委託が１つ存在していたらそれを再利用）
-	  		trust = Trust.find_or_create_by_owner_id_and_building_id(owner.id, nil)
+	  		trust = Trust.unscoped.find_or_create_by_owner_id_and_building_id(owner.id, nil)
 		  	trust.owner_id = owner.id
 		  	trust.building_id = nil
 	      trust.biru_user_id = biru_user.id
@@ -1547,7 +1547,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 		  	trust.delete_flg = false
 	      p "空白オーナー登録: " + owner.name
 		  else
-		  	trust = Trust.find_or_create_by_owner_id_and_building_id(owner.id, building.id)
+		  	trust = Trust.unscoped.find_or_create_by_owner_id_and_building_id(owner.id, building.id)
 		  	trust.owner_id = owner.id
 		  	trust.building_id = building.id
 	      trust.biru_user_id = biru_user.id
@@ -2774,7 +2774,7 @@ end
 #init_data_update
 
 # 社員マスタ登録
-init_biru_user
+#init_biru_user
 
 ########################
 # 地図管理物件登録
@@ -2809,6 +2809,7 @@ init_biru_user
 #reg_attack_owner_building('5952', 'せんげん台営業所', Rails.root.join( "tmp", "01_08_sengendai.csv")) # せんげん台　山口主任
 #reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_01_todakoenn.csv")) # 戸田公園 中野主任
 #reg_attack_owner_building('7844', '戸田営業所', Rails.root.join( "tmp", "02_02_toda.csv")) # 戸田　辻社員’
+reg_attack_owner_building('3000', '与野営業所', Rails.root.join( "tmp", "02_04_yono.csv"))
 #reg_attack_owner_building('5473', '東浦和営業所', Rails.root.join( "tmp", "02_07_higashi_urawa.csv")) # 東浦和 小泉主任
 #reg_attack_owner_building('5841', '戸塚安行営業所', Rails.root.join( "tmp", "02_09_totukaangyo.csv")) # 戸塚安行 下地社員
 
@@ -2869,4 +2870,4 @@ init_biru_user
 ###########################
 # レンターズデータ取得
 ###########################
-create_work_renters_rooms
+# create_work_renters_rooms

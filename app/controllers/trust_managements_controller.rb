@@ -29,7 +29,7 @@ class TrustManagementsController < ApplicationController
     # 受託担当者のリスト
     trust_user = {} 
     trust_user['06365'] = {:name=>'テスト1'}
-    trust_user['6464'] = {:name=>'テスト1'}
+    trust_user['3000'] = {:name=>'テスト1'}
     trust_user['6406'] = {:name=>'テスト1'}
     trust_user['6425'] = {:name=>'テスト1'}
     trust_user['5952'] = {:name=>'テスト1'}
@@ -343,7 +343,6 @@ class TrustManagementsController < ApplicationController
       redirect_to :controller=>'pages', :action=>'error_page'
     end
     
-    
     # レポート情報の取得
     result = get_report_info(@month, @biru_trust_user)
 
@@ -539,6 +538,47 @@ class TrustManagementsController < ApplicationController
   # アタックリストメンテナンス
   def attack_list_maintenance
     
+    @biru_trust_user = BiruUser.find(params[:sid])
+    
+    # 貸主の一覧を取得
+    gon.buildings = ActiveRecord::Base.connection.select_all(get_buildings_sql(@biru_trust_user))    
+    
+    # 建物の一覧を取得
+    gon.owners = ActiveRecord::Base.connection.select_all(get_owners_sql(@biru_trust_user))    
+    
+    # 委託契約の一覧を取得
+    gon.trusts = ActiveRecord::Base.connection.select_all(get_trust_sql(@biru_trust_user))
+    
+    
+    # layoutでヘッダを非表示
+    @header_hidden = true
+  end
+  
+  def attack_list_add
+    
+    # 指定された貸主CD、建物CD
+    building_id = params[:building_id]
+    owner_id = params[:owner_id]
+    biru_user_id = params[:sid]
+    
+    trust = Trust.unscoped.find_by_owner_id_and_building_id_and_biru_user_id(building_id, owner_id, biru_user_id )
+    if trust
+      trust.delete_flg = false
+      flash[:notice] = 'すでに削除済みとして登録されていたアタックリストを復活しました。'
+    else
+      trust = Trust.new
+      trust.building_id = building_id
+      trust.owner_id = owner_id
+      trust.delete_flg = false
+      
+      trust.biru_user_id = biru_user_id
+	  	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外      
+      
+      flash[:notice] = "貸主：" + Owner.find(owner_id).name + '  　建物：' + Building.find(building_id).name + '　をアタックリストに追加しました。'
+    end
+    
+    trust.save!
+    redirect_to :action => 'attack_list_maintenance', :sid=> params[:sid] 
   end
     
 private
@@ -560,7 +600,30 @@ def get_owner_show(owner_id)
   
   gon.buildings = building_arr
   
-end  
+end
+
+def get_owners_sql(object_user)
+  sql = ""
+  sql = sql + "SELECT id "
+  sql = sql + ", a.attack_code as code "
+  sql = sql + ", a.name "
+  sql = sql + ", a.address "
+  sql = sql + ", a.memo "
+  sql = sql + "FROM owners a "
+  sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
+end
+
+def get_buildings_sql(object_user)
+  sql = ""
+  sql = sql + "SELECT a.id "
+  sql = sql + ", a.attack_code as code "
+  sql = sql + ", a.name "
+  sql = sql + ", a.address "
+  sql = sql + ", a.memo "
+  sql = sql + ", b.name as shop_name "
+  sql = sql + "FROM buildings a inner join shops b on a.shop_id = b.id "
+  sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
+end
 
 #def get_trust_data()
 def get_trust_sql(object_user)
