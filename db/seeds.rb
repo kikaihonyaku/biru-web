@@ -24,15 +24,6 @@ def custom_parse(str)
 end
 
 
-# コード用に変換方法を統一
-def conv_code(str)
-  str = str.gsub(/(\s|　)+/, '')
-  str = str.upcase
-  str = Moji.han_to_zen(str.encode('utf-8'))
-
- # ハッシュ化
- return Digest::MD5.new.update(str).to_s
-end
 
 #------------------------------
 # 路線マスタ／駅マスタを登録します。
@@ -1373,19 +1364,23 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
   			# 住所２も地番も入っていない時
 	      imp.building_address = (row[3]).strip
 			end
+      
+      imp.building_address = Moji.han_to_zen(imp.building_address)
 
       # imp.building_nm = row[9]
       imp.building_nm = Moji.han_to_zen(row[9].strip)
       
       # building_cdは、building.idを使うのでコメントアウト。ただしimport時に特定する必要があるので、代わりにbuilding_hash列を設ける
       # imp.building_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.building_address + '_' + imp.building_nm)
-      imp.building_hash = conv_code(imp.biru_user_id.to_s + '_' + imp.building_address + '_' + imp.building_nm)
+      # imp.building_hash = conv_code(imp.biru_user_id.to_s + '_' + imp.building_address + '_' + imp.building_nm)
+      imp.building_hash = conv_code_building(imp.biru_user_id.to_s, imp.building_address, imp.building_nm)
+      
 
       imp.owner_nm = Moji.han_to_zen(row[19].strip)
       imp.owner_honorific_title = row[20]
       imp.owner_kana = row[21]
       imp.owner_postcode = row[22]
-      imp.owner_address = (row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]).strip
+      imp.owner_address = Moji.han_to_zen((row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]).strip)
       imp.owner_tel = row[27]
       
       # 現管理会社、募集会社、サブリース
@@ -1413,7 +1408,8 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       
       # owner_cdは、owner.idを使うのでコメントアウト。ただしimport時に特定する必要があるので、代わりにowner_hash列を設ける
       #imp.owner_cd = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
-      imp.owner_hash = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
+      #imp.owner_hash = conv_code(imp.biru_user_id.to_s + '_' + imp.owner_address + '_' + imp.owner_nm)
+      imp.owner_hash = conv_code_owner(imp.biru_user_id.to_s, imp.owner_address, imp.owner_nm)
       
       # オーナー発送区分 発送区分が対象外のOWNER_HASHを保存
       if row[34]
@@ -2683,7 +2679,16 @@ def create_work_renters_rooms
         work_renters_room.carpark_underground = room.elements['carpark/underground'].text if room.elements['carpark/underground']
         work_renters_room.carpark_roof = room.elements['carpark/roof'].text if room.elements['carpark/roof']
         work_renters_room.carpark_shutter = room.elements['carpark/shutter'].text if room.elements['carpark/shutter']
-        work_renters_room.notice = room.elements['notice'].text if room.elements['notice']
+        
+        tmo_notice = ""
+        tmo_notice = tmo_notice + ' / ' + room.elements['notice[1]'].text if room.elements['notice[1]']
+        tmo_notice = tmo_notice + ' / ' + room.elements['notice[2]'].text if room.elements['notice[2]']
+        tmo_notice = tmo_notice + ' / ' + room.elements['notice[3]'].text if room.elements['notice[3]']
+        tmo_notice = tmo_notice + ' / ' + room.elements['notice[4]'].text if room.elements['notice[4]']
+        tmo_notice = tmo_notice + ' / ' + room.elements['notice[5]'].text if room.elements['notice[5]']
+        tmo_notice = tmo_notice + ' / ' + room.elements['notice[6]'].text if room.elements['notice[6]']
+        
+        
         work_renters_room.building_main_catch = room.elements['building_main_catch'].text if room.elements['building_main_catch']
         work_renters_room.room_main_catch = room.elements['room_main_catch'].text if room.elements['room_main_catch']
         work_renters_room.recruit_catch = room.elements['recruit_catch'].text if room.elements['recruit_catch']
@@ -2809,7 +2814,7 @@ end
 #reg_attack_owner_building('5952', 'せんげん台営業所', Rails.root.join( "tmp", "01_08_sengendai.csv")) # せんげん台　山口主任
 #reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_01_todakoenn.csv")) # 戸田公園 中野主任
 #reg_attack_owner_building('7844', '戸田営業所', Rails.root.join( "tmp", "02_02_toda.csv")) # 戸田　辻社員’
-reg_attack_owner_building('3000', '与野営業所', Rails.root.join( "tmp", "02_04_yono.csv"))
+#reg_attack_owner_building('3000', '与野営業所', Rails.root.join( "tmp", "02_04_yono.csv"))
 #reg_attack_owner_building('5473', '東浦和営業所', Rails.root.join( "tmp", "02_07_higashi_urawa.csv")) # 東浦和 小泉主任
 #reg_attack_owner_building('5841', '戸塚安行営業所', Rails.root.join( "tmp", "02_09_totukaangyo.csv")) # 戸塚安行 下地社員
 
@@ -2870,4 +2875,4 @@ reg_attack_owner_building('3000', '与野営業所', Rails.root.join( "tmp", "02
 ###########################
 # レンターズデータ取得
 ###########################
-# create_work_renters_rooms
+create_work_renters_rooms

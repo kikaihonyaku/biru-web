@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141019193740) do
+ActiveRecord::Schema.define(:version => 20141101101842) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -38,6 +38,8 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.integer  "trust_plan_contract"
   end
 
+  add_index "biru_user_monthlies", ["biru_user_id"], :name => "index_biru_user_monthlies_on_biru_user_id"
+
   create_table "biru_users", :force => true do |t|
     t.string   "code"
     t.string   "name"
@@ -63,6 +65,9 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
   end
+
+  add_index "building_routes", ["building_id"], :name => "index_building_routes_on_building_id"
+  add_index "building_routes", ["station_id"], :name => "index_building_routes_on_station_id"
 
   create_table "buildings", :force => true do |t|
     t.string   "code"
@@ -92,6 +97,7 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
   end
 
   add_index "buildings", ["attack_code"], :name => "index_buildings_on_attack_code"
+  add_index "buildings", ["biru_user_id"], :name => "index_buildings_on_biru_user_id"
   add_index "buildings", ["build_type_id"], :name => "index_buildings_on_build_type_id"
   add_index "buildings", ["code"], :name => "index_buildings_on_code"
   add_index "buildings", ["name"], :name => "index_buildings_on_name"
@@ -107,12 +113,17 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "updated_at",      :null => false
   end
 
+  add_index "data_update_times", ["biru_user_id"], :name => "index_data_update_times_on_biru_user_id"
+
   create_table "dept_group_details", :force => true do |t|
     t.integer  "dept_group_id"
     t.integer  "dept_id"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
+
+  add_index "dept_group_details", ["dept_group_id"], :name => "index_dept_group_details_on_dept_group_id"
+  add_index "dept_group_details", ["dept_id"], :name => "index_dept_group_details_on_dept_id"
 
   create_table "dept_groups", :force => true do |t|
     t.string   "busyo_id"
@@ -122,6 +133,8 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "updated_at", :null => false
   end
 
+  add_index "dept_groups", ["busyo_id"], :name => "index_dept_groups_on_busyo_id"
+
   create_table "depts", :force => true do |t|
     t.string   "busyo_id"
     t.string   "code"
@@ -130,6 +143,8 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false
   end
+
+  add_index "depts", ["busyo_id"], :name => "index_depts_on_busyo_id"
 
   create_table "employes", :force => true do |t|
     t.string   "code"
@@ -215,6 +230,9 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "updated_at",  :null => false
   end
 
+  add_index "lease_contracts", ["building_id"], :name => "index_lease_contracts_on_building_id"
+  add_index "lease_contracts", ["room_id"], :name => "index_lease_contracts_on_room_id"
+
   create_table "lines", :force => true do |t|
     t.string   "code"
     t.string   "name"
@@ -229,6 +247,8 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false
   end
+
+  add_index "login_histories", ["biru_user_id"], :name => "index_login_histories_on_biru_user_id"
 
   create_table "manage_types", :force => true do |t|
     t.string "code"
@@ -263,6 +283,9 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "updated_at",                          :null => false
   end
 
+  add_index "owner_approaches", ["biru_user_id"], :name => "index_owner_approaches_on_biru_user_id"
+  add_index "owner_approaches", ["owner_id"], :name => "index_owner_approaches_on_owner_id"
+
   create_table "owner_building_logs", :force => true do |t|
     t.integer  "owner_id"
     t.integer  "building_id"
@@ -273,6 +296,11 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
   end
+
+  add_index "owner_building_logs", ["biru_user_id"], :name => "index_owner_building_logs_on_biru_user_id"
+  add_index "owner_building_logs", ["building_id"], :name => "index_owner_building_logs_on_building_id"
+  add_index "owner_building_logs", ["owner_id"], :name => "index_owner_building_logs_on_owner_id"
+  add_index "owner_building_logs", ["trust_id"], :name => "index_owner_building_logs_on_trust_id"
 
   create_table "owners", :force => true do |t|
     t.string   "code"
@@ -294,6 +322,9 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.integer  "biru_user_id"
     t.string   "hash_key"
   end
+
+  add_index "owners", ["biru_user_id"], :name => "index_owners_on_biru_user_id"
+  add_index "owners", ["owner_rank_id"], :name => "index_owners_on_owner_rank_id"
 
   create_table "renters_buildings", :force => true do |t|
     t.string   "building_cd"
@@ -330,6 +361,8 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.string   "priority"
     t.string   "entry_datetime"
   end
+
+  add_index "renters_room_pictures", ["renters_room_id"], :name => "index_renters_room_pictures_on_renters_room_id"
 
   create_table "renters_rooms", :force => true do |t|
     t.string   "room_code"
@@ -397,6 +430,13 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.integer  "renters_room_id"
   end
 
+  add_index "rooms", ["building_id"], :name => "index_rooms_on_building_id"
+  add_index "rooms", ["manage_type_id"], :name => "index_rooms_on_manage_type_id"
+  add_index "rooms", ["renters_room_id"], :name => "index_rooms_on_renters_room_id"
+  add_index "rooms", ["room_layout_id"], :name => "index_rooms_on_room_layout_id"
+  add_index "rooms", ["room_type_id"], :name => "index_rooms_on_room_type_id"
+  add_index "rooms", ["trust_id"], :name => "index_rooms_on_trust_id"
+
   create_table "shops", :force => true do |t|
     t.string  "code"
     t.string  "name"
@@ -429,6 +469,8 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "updated_at", :null => false
   end
 
+  add_index "stations", ["line_id"], :name => "index_stations_on_line_id"
+
   create_table "trust_attack_state_histories", :force => true do |t|
     t.integer  "trust_id"
     t.integer  "month"
@@ -440,6 +482,11 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.boolean  "trust_oneself",        :default => false
     t.integer  "manage_type_id"
   end
+
+  add_index "trust_attack_state_histories", ["attack_state_from_id"], :name => "index_trust_attack_state_histories_on_attack_state_from_id"
+  add_index "trust_attack_state_histories", ["attack_state_to_id"], :name => "index_trust_attack_state_histories_on_attack_state_to_id"
+  add_index "trust_attack_state_histories", ["manage_type_id"], :name => "index_trust_attack_state_histories_on_manage_type_id"
+  add_index "trust_attack_state_histories", ["trust_id"], :name => "index_trust_attack_state_histories_on_trust_id"
 
   create_table "trusts", :force => true do |t|
     t.integer  "owner_id"
@@ -470,6 +517,12 @@ ActiveRecord::Schema.define(:version => 20141019193740) do
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
   end
+
+  add_index "vacant_rooms", ["building_id"], :name => "index_vacant_rooms_on_building_id"
+  add_index "vacant_rooms", ["manage_type_id"], :name => "index_vacant_rooms_on_manage_type_id"
+  add_index "vacant_rooms", ["room_id"], :name => "index_vacant_rooms_on_room_id"
+  add_index "vacant_rooms", ["room_layout_id"], :name => "index_vacant_rooms_on_room_layout_id"
+  add_index "vacant_rooms", ["shop_id"], :name => "index_vacant_rooms_on_shop_id"
 
   create_table "work_renters_room_pictures", :force => true do |t|
     t.string   "batch_cd"

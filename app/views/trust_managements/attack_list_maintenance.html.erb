@@ -202,9 +202,16 @@
 </script>
 
 <% if flash[:notice] %>
-	<div class="alert alert-warning alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	<div class="alert alert-info alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
 	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 	  <%= flash[:notice] %>
+	</div>
+<% end %>
+
+<% if flash[:danger] %>
+	<div class="alert alert-danger alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	  <%= flash[:danger] %>
 	</div>
 <% end %>
 
@@ -236,14 +243,14 @@
 </div>
 
 <div style="padding-left:10px;padding-top:10px;">
-	<%= button_tag '貸主新規登録', {:class=>'btn', :onClick=>'javascript:create_trust();return false;'} %>
+	<a data-toggle="modal" href="#modal-owner-new" class="btn btn-info btn-large">貸主新規登録</a>
 	<%= button_tag '建物新規登録', {:class=>'btn', :onClick=>'javascript:create_trust();return false;'} %>
 	<%= button_tag '委託契約との紐付けを解除', {:class=>'btn', :onClick=>'javascript:create_trust();return false;'} %>
 </div>
 
 
 <!-- モーダルダイアログ -->
-<div class="modal fade" id="modal-tack" tabindex="-1" role="dialog" aria-labelledby="modal-tack-label" aria-hidden="true">
+<div class="modal fade" id="modal-owner-new" tabindex="-1" role="dialog" aria-labelledby="modal-owner-new-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
 	<%#= simple_form_for :trust, :url=>{:controller => :managements, :action => :popup_owner_trust_update }, :html=>{class: 'form-horizontal'} do |f| %>
@@ -253,29 +260,27 @@
         <h4 class="modal-title" id="myModalLabel">貸主新規作成</h4>
       </div>
 
-	<%= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm', :onSubmit=>"return tack_out_go()" }) do %>
-	   <%= hidden_field_tag 'dm_owner_list', ''  %>
+	<%= simple_form_for :owner, :url=>{:action => :owner_regist} do |f| %>
 		<div class="modal-body">
-			<div style="padding-bottom:20px;">
-		       <%= radio_button_tag :dm_history, 1, true,  :onclick=>"dm_msg_regist_on(true);" %>&nbsp;DM履歴を残す
-		       &nbsp;&nbsp;&nbsp;
-		       <%= radio_button_tag :dm_history, 0, false, :onclick=>"dm_msg_regist_on(false);" %>&nbsp;DM履歴を残さない
-		   </div>
-			<div>
-		       <label class="string optional control-label" for="tack_out_date">発行日</label>
-			   <%= text_field_tag 'dm_out_date', Date.today.strftime("%Y-%m-%d"), :type=>'date' , :class=>'form-control', :style=>'width:180px;' %>
+			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_trust_user.id } %>
+			<%= f.input :name, label: '貸主名',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :honorific_title, label: '敬称',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :postcode, label: '郵便番号',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :address, label: '住所',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :tel, label: '電話番号',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :memo, label: '備考',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%#= f.input :dm_delivery, label: 'DM発送', :as=>:radio_buttons, collections: [['あり', 1],['なし',0]],  :input_html => {:class=>'form-control', :style=>'width:20px;'} %>
 
 
-		       <label class="string optional control-label" for="dm_discription" style="margin-top:20px;">ＤＭ履歴の内容（送付するＤＭの概要など）</label>
-			   <%= text_field_tag 'dm_out_msg', '', :class=>'form-control', :style=>'width:300px;'  %>
-			   
-		       <label class="string optional control-label" for="dm_discription" style="margin-top:20px;">宛名ラベル用紙種類</label>
-			   <%= select_tag 'dm_tack_kind', options_for_select([["A-ONE 21面用", "pdf_layout_a_one_21.tlf"], ["PLUS ME-505T", "pdf_layout_plus_me505t.tlf"]]), :class=>'form-control', :style=>'width:150px;' %>
-			   
-			</div>
+			
+			
+			<%#= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:180px;', :class=>'form-control' } %>
+			<%#= f.input :approach_kind_id, label: '種別', collection: ApproachKind.find(:all), prompt: "--", :input_html => {:class=>'form-control' } %>
+			<%#= f.input :content, label: '内容', placeholder: 'アプローチ内容をいれてください', :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+	   
 		</div>
 		<div class="modal-footer">
-		<%= submit_tag 'タックシールを出力' ,:class=>"btn btn-default", :style=>"margin:0" %>
+			<%= f.submit '登録', :class=>"btn btn-default", :style=>"margin:0" %>
 		</div>
 	<% end %>
 

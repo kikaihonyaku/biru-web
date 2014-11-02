@@ -288,35 +288,35 @@ class TrustManagementsController < ApplicationController
 
   end
   
-  # アタック用の貸主情報登録
-  def attack_owner_new
-    @attack_owner = Owner.new
-  end
-  
-  # アタック貸主を登録
-  def attack_owner_create
-    @attack_owner = Owner.new(params[:owner])
-    @attack_owner.biru_user_id = @biru_user.id
-    
-    @attack_owner.attack_code = attack_conv_code(@biru_user.id.to_s,  @attack_owner.address,  @attack_owner.name)
-    
-    # 住所のGEOCODE
-    gmaps_ret = Gmaps4rails.geocode(@attack_owner.address)
-    @attack_owner.latitude = gmaps_ret[0][:lat]
-    @attack_owner.longitude = gmaps_ret[0][:lng]
-    @attack_owner.gmaps = true
-    @attack_owner.delete_flg = false
-    
-    @attack_owner.save!
-    
-    t = Trust.new
-    t.owner_id = @attack_owner.id
-    t.biru_user_id = @biru_user.id
-    t.save!
-    
-    redirect_to :action=>'index'
-  end
-  
+  # # アタック用の貸主情報登録
+  # def attack_owner_new
+  #   @attack_owner = Owner.new
+  # end
+  #
+  # # アタック貸主を登録
+  # def attack_owner_create
+  #   @attack_owner = Owner.new(params[:owner])
+  #   @attack_owner.biru_user_id = @biru_user.id
+  #
+  #   @attack_owner.attack_code = attack_conv_code(@biru_user.id.to_s,  @attack_owner.address,  @attack_owner.name)
+  #
+  #   # 住所のGEOCODE
+  #   gmaps_ret = Gmaps4rails.geocode(@attack_owner.address)
+  #   @attack_owner.latitude = gmaps_ret[0][:lat]
+  #   @attack_owner.longitude = gmaps_ret[0][:lng]
+  #   @attack_owner.gmaps = true
+  #   @attack_owner.delete_flg = false
+  #
+  #   @attack_owner.save!
+  #
+  #   t = Trust.new
+  #   t.owner_id = @attack_owner.id
+  #   t.biru_user_id = @biru_user.id
+  #   t.save!
+  #
+  #   redirect_to :action=>'index'
+  # end
+
   # 個人別のユーザーレポートを表示します
   def trust_user_report
     
@@ -580,6 +580,39 @@ class TrustManagementsController < ApplicationController
     trust.save!
     redirect_to :action => 'attack_list_maintenance', :sid=> params[:sid] 
   end
+  
+  # 貸主登録
+  def owner_regist
+    @owner = Owner.new(params[:owner])
+    begin
+      
+      # gmaps_ret = Gmaps4rails.geocode(@owner.address)
+      # @owner.latitude = gmaps_ret[0][:lat]
+      # @owner.longitude = gmaps_ret[0][:lng]
+      # @owner.gmaps = true
+      #
+      
+      @owner.name = Moji.han_to_zen(@owner.name)
+      @owner.address = Moji.han_to_zen(@owner.address)
+      
+      hash = conv_code_owner(params[:owner][:biru_user_id],  @owner.address, @owner.name)
+      if Owner.find_by_hash_key(hash)
+        raise "この名前・住所は貸主一覧にすでに存在します。"
+      end
+      
+      @owner.hash_key = hash
+      @owner.save!
+      @owner.attack_code = "OA%06d"%@owner.id
+      @owner.save!
+      
+      flash[:notice] = "貸主：" + params[:owner][:name] + '  を貸主一覧に追加しました。'
+    rescue => e
+      flash[:danger] = e.to_s
+      #flash[:danger] = "貸主の登録に失敗しました。存在する住所なのかを確認してください。"
+
+    end
+    redirect_to :action => 'attack_list_maintenance', :sid=> params[:owner][:biru_user_id] 
+  end
     
 private
 def get_owner_show(owner_id)
@@ -611,6 +644,9 @@ def get_owners_sql(object_user)
   sql = sql + ", a.memo "
   sql = sql + "FROM owners a "
   sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
+  sql = sql + "AND NOT a.delete_flg "
+  sql = sql + "ORDER BY updated_at DESC "
+  
 end
 
 def get_buildings_sql(object_user)
@@ -623,6 +659,8 @@ def get_buildings_sql(object_user)
   sql = sql + ", b.name as shop_name "
   sql = sql + "FROM buildings a inner join shops b on a.shop_id = b.id "
   sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
+  sql = sql + "AND NOT a.delete_flg "
+  sql = sql + "ORDER BY updated_at DESC "
 end
 
 #def get_trust_data()

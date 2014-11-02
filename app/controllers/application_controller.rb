@@ -221,17 +221,39 @@ class ApplicationController < ActionController::Base
   
   
   # アタック建物コードやアタック貸主コードの生成に使用
-  def attack_conv_code(user_id, address, name)
-    
-    str = user_id.to_s + '_' + address + '_' + name
-    
+  # def attack_conv_code(user_id, address, name)
+  #
+  #   str = user_id.to_s + '_' + address + '_' + name
+  #
+  #   str = str.gsub(/(\s|　)+/, '')
+  #   str = str.upcase
+  #   str = Moji.han_to_zen(str.encode('utf-8'))
+  #
+  #  # ハッシュ化して先頭6文字を取得
+  #  return Digest::MD5.new.update(str).to_s[0,5]
+  # end
+  
+  # コード用に変換方法を統一
+  def conv_code(str)
     str = str.gsub(/(\s|　)+/, '')
     str = str.upcase
     str = Moji.han_to_zen(str.encode('utf-8'))
 
-   # ハッシュ化して先頭6文字を取得
-   return Digest::MD5.new.update(str).to_s[0,5]
+   # ハッシュ化
+   return Digest::MD5.new.update(str).to_s
   end
+  
+  # 建物用のハッシュを取得します
+  def conv_code_building(user_id, address, name)
+    return conv_code(user_id + '_' + address + '_' + name )
+  end
+  
+  # 貸主用のハッシュを取得します
+  def conv_code_owner(user_id, address, name)
+    return conv_code(user_id + '_' + address + '_' + name )
+  end
+  
+  
   
   # 指定された日のポラスの月度を取得する
   def get_month(cur_date)

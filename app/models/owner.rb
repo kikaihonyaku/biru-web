@@ -2,7 +2,7 @@
 class Owner < ActiveRecord::Base
   acts_as_gmappable
 
-  attr_accessible :address, :code, :name, :memo, :attack_code, :dm_delivery,  :honorific_title, :postcode, :biru_user_id
+  attr_accessible :address, :code, :name, :memo, :attack_code, :dm_delivery,  :honorific_title, :postcode, :biru_user_id, :tel
 
   belongs_to :biru_user
   has_many :trusts
