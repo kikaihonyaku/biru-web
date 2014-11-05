@@ -878,6 +878,13 @@ function screen_block(){
 	
 }
 
+
+function screen_unblock(){
+  //$.blockUI({ message: '検索中…しばらくお待ちください'});
+  $('#body-contents').unblock();
+	
+}
+
 // 建物のInfoBoxを登録する。
 function info_msg_biru(biru, owners){
   var inner_text = "";

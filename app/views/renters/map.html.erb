@@ -161,6 +161,9 @@
 			$(this).toggleClass("open");
 		});
 	});
+	
+	var notice_disp;
+	notice_disp = false;
 
 	// レンターズデータを表示します。
 	init_renters_jqgrid();
@@ -168,9 +171,10 @@
 	// 絞り込みテーブルを作成します。
 	init_search_jqgrid();
 	
+	
 	function init_renters_jqgrid(){
 		// 列名の定義
- 		var grid_name = ["renters_room_id",  "building_id",  "営業所",  "建物名",  "部屋",  "空室状況",  "住所",  "room_code",  "合計(20)",  "間取り(1)",  "外観(2)",  "内観(9)",  "外観その他(2)",  "周辺(6)", "間取図", "外観", "キッチン", "トイレ", "バス", "居室", "洗面所", "玄関", "設備", "その他", "エントランス", "共用設備", "植栽", "駐車場", "その他", "配置図", "周辺"];
+ 		var grid_name = ["renters_room_id",  "building_id",  "営業所",  "建物名",  "部屋",  "空室状況",  "住所",  "room_code", "備考1","備考2","備考3","備考4","備考5","備考6", "合計(20)",  "間取り(1)",  "外観(2)",  "内観(9)",  "外観その他(2)",  "周辺(6)", "間取図", "外観", "キッチン", "トイレ", "バス", "居室", "洗面所", "玄関", "設備", "その他", "エントランス", "共用設備", "植栽", "駐車場", "その他", "配置図", "周辺"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -182,6 +186,12 @@
 		 , {name:"vacant_div",  index:"vacant_div",  width:100,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"address",  index:"address",  width:200,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"room_code",  index:"room_code",  width:100,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"notice_a",  index:"notice_a",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
+		 , {name:"notice_b",  index:"notice_b",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
+		 , {name:"notice_c",  index:"notice_c",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
+		 , {name:"notice_d",  index:"notice_d",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
+		 , {name:"notice_e",  index:"notice_e",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
+		 , {name:"notice_f",  index:"notice_f",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
 		 , {name:"suumo_sum",  index:"suumo_sum",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"suumo_madori",  index:"suumo_madori",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"suumo_gaikan",  index:"suumo_gaikan",  width:70,  align:"center",  classes:"no_class"}
@@ -220,6 +230,14 @@
 			rec['address'] = renters_data.address
 			rec['room_code'] = renters_data.room_code
 			rec['vacant_div'] = renters_data.vacant_div
+			//rec['notice'] = renters_data.notice
+
+			rec['notice_a'] = renters_data.notice_a
+			rec['notice_b'] = renters_data.notice_b
+			rec['notice_c'] = renters_data.notice_c
+			rec['notice_d'] = renters_data.notice_d
+			rec['notice_e'] = renters_data.notice_e
+			rec['notice_f'] = renters_data.notice_f
 			
 			//tmp = get_suumo_remaining(false,  renters_data.madori,  renters_data.gaikan,  renters_data.naikan,  renters_data.gaikan_etc,  renters_data.syuuhen)
 			res = get_rentes_picture_cnt(renters_data.J00, renters_data.T00, renters_data.J01, renters_data.J02, renters_data.J03, renters_data.J04, renters_data.J05, renters_data.J06, renters_data.J08, renters_data.J09, renters_data.T03, renters_data.T04, renters_data.T05, renters_data.T06, renters_data.T08, renters_data.T11, renters_data.T01);
@@ -279,6 +297,38 @@
 						alert('これはまだ未実装です');
 					 }
 			 });
+
+ 			table_div.navGrid('#building_pager', {
+ 			        edit:false, add:false, del:false, search:false
+ 			      }).navButtonAdd('#building_pager', {
+ 			        caption:"備考表示／非表示",  position:"last",  onClickButton: function(){
+						
+						if( notice_disp == false ){
+					 		 //screen_block();
+							
+	   						 table_div.jqGrid('showCol',"notice_a");
+	   						 table_div.jqGrid('showCol',"notice_b");
+	   						 table_div.jqGrid('showCol',"notice_c");
+	   						 table_div.jqGrid('showCol',"notice_d");
+	   						 table_div.jqGrid('showCol',"notice_e");
+	   						 table_div.jqGrid('showCol',"notice_f");
+							
+							 //screen_unblock();
+							 notice_disp = true;
+						}else{
+							
+	   						 table_div.jqGrid('hideCol',"notice_a");
+	   						 table_div.jqGrid('hideCol',"notice_b");
+	   						 table_div.jqGrid('hideCol',"notice_c");
+	   						 table_div.jqGrid('hideCol',"notice_d");
+	   						 table_div.jqGrid('hideCol',"notice_e");
+	   						 table_div.jqGrid('hideCol',"notice_f");
+							
+							notice_disp = false;
+						}
+						
+ 					 }
+ 			 });
 			 
 			 
  	        table_div.jqGrid('setGroupHeaders', {
@@ -290,11 +340,13 @@
  	            {startColumnName: 'naikan_renters_kitchen', numberOfColumns: 8, titleText: '<em>内観</em>'},
  	            {startColumnName: 'gaikan_etc_renters_entrance', numberOfColumns: 6, titleText: '<em>外観その他</em>'},
  	            {startColumnName: 'syuuhen_renters_syuuhen', numberOfColumns: 1, titleText: '<em>周辺</em>'},
+ 	            {startColumnName: 'notice_a', numberOfColumns: 6, titleText: '<em>備考</em>'},
 				
  	          ]
  	        });
 			
-			table_div.jqGrid('setFrozenColumns');
+			// frozenを有効化
+			//table_div.jqGrid('setFrozenColumns');
 			 
 		});
 	}

@@ -2680,14 +2680,21 @@ def create_work_renters_rooms
         work_renters_room.carpark_roof = room.elements['carpark/roof'].text if room.elements['carpark/roof']
         work_renters_room.carpark_shutter = room.elements['carpark/shutter'].text if room.elements['carpark/shutter']
         
-        tmo_notice = ""
-        tmo_notice = tmo_notice + ' / ' + room.elements['notice[1]'].text if room.elements['notice[1]']
-        tmo_notice = tmo_notice + ' / ' + room.elements['notice[2]'].text if room.elements['notice[2]']
-        tmo_notice = tmo_notice + ' / ' + room.elements['notice[3]'].text if room.elements['notice[3]']
-        tmo_notice = tmo_notice + ' / ' + room.elements['notice[4]'].text if room.elements['notice[4]']
-        tmo_notice = tmo_notice + ' / ' + room.elements['notice[5]'].text if room.elements['notice[5]']
-        tmo_notice = tmo_notice + ' / ' + room.elements['notice[6]'].text if room.elements['notice[6]']
+        # tmo_notice = ""
+        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[1]'].text if room.elements['notice[1]']
+        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[2]'].text if room.elements['notice[2]']
+        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[3]'].text if room.elements['notice[3]']
+        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[4]'].text if room.elements['notice[4]']
+        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[5]'].text if room.elements['notice[5]']
+        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[6]'].text if room.elements['notice[6]']
+        # work_renters_room.notice =  tmo_notice
         
+        work_renters_room.notice_a = room.elements['notice[1]'].text if room.elements['notice[1]']
+        work_renters_room.notice_b = room.elements['notice[2]'].text if room.elements['notice[2]']
+        work_renters_room.notice_c = room.elements['notice[3]'].text if room.elements['notice[3]']
+        work_renters_room.notice_d = room.elements['notice[4]'].text if room.elements['notice[4]']
+        work_renters_room.notice_e = room.elements['notice[5]'].text if room.elements['notice[5]']
+        work_renters_room.notice_f = room.elements['notice[6]'].text if room.elements['notice[6]']
         
         work_renters_room.building_main_catch = room.elements['building_main_catch'].text if room.elements['building_main_catch']
         work_renters_room.room_main_catch = room.elements['room_main_catch'].text if room.elements['room_main_catch']

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141101101842) do
+ActiveRecord::Schema.define(:version => 20141105110514) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -395,6 +395,13 @@ ActiveRecord::Schema.define(:version => 20141101101842) do
     t.datetime "updated_at",                                :null => false
     t.integer  "picture_num",            :default => 0
     t.integer  "renters_building_id"
+    t.string   "notice"
+    t.string   "notice_a"
+    t.string   "notice_b"
+    t.string   "notice_c"
+    t.string   "notice_d"
+    t.string   "notice_e"
+    t.string   "notice_f"
   end
 
   add_index "renters_rooms", ["building_code"], :name => "index_renters_rooms_on_building_code"
@@ -621,6 +628,12 @@ ActiveRecord::Schema.define(:version => 20141101101842) do
     t.string   "athome_pro_comment"
     t.datetime "created_at",                  :null => false
     t.datetime "updated_at",                  :null => false
+    t.string   "notice_a"
+    t.string   "notice_b"
+    t.string   "notice_c"
+    t.string   "notice_d"
+    t.string   "notice_e"
+    t.string   "notice_f"
   end
 
 end

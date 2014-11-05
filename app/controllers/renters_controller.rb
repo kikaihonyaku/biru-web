@@ -232,6 +232,14 @@ class RentersController < ApplicationController
       room['room_code'] = rec['room_code']
       room['room_no'] = rec['real_room_no']
       room['vacant_div'] = rec['vacant_div']
+      room['notice'] = rec['notice']
+
+      room['notice_a'] = rec['notice_a']
+      room['notice_b'] = rec['notice_b']
+      room['notice_c'] = rec['notice_c']
+      room['notice_d'] = rec['notice_d']
+      room['notice_e'] = rec['notice_e']
+      room['notice_f'] = rec['notice_f']
 
       # room['madori'] = rec['madori']
       # room['gaikan'] = rec['gaikan']
@@ -293,6 +301,13 @@ class RentersController < ApplicationController
     ,building_id
     ,vacant_div
     ,address
+    ,notice
+    ,notice_a
+    ,notice_b
+    ,notice_c
+    ,notice_d
+    ,notice_e
+    ,notice_f
     ,latitude
     ,longitude
     ,J00
@@ -322,6 +337,13 @@ class RentersController < ApplicationController
     ,a.real_room_no
     ,a.vacant_div
     ,a.building_code
+    ,a.notice
+    ,a.notice_a
+    ,a.notice_b
+    ,a.notice_c
+    ,a.notice_d
+    ,a.notice_e
+    ,a.notice_f
     ,c.id as building_id
     ,c.address
     ,c.latitude
@@ -457,7 +479,9 @@ class RentersController < ApplicationController
      @data_update.save!
 
  		# レンターズのデータを本番に反映する
-     renters_reflect(params[:batch][:value])
+     #renters_reflect(params[:batch][:value])
+     renters_reflect("20141105203536")
+     
   
      @data_update.update_datetime = Time.now
      @data_update.save!
@@ -537,6 +561,15 @@ class RentersController < ApplicationController
        room.room_layout_type = work_room.room_layout_type
        room.delete_flg = false
        room.renters_building_id = building.id
+       room.notice = work_room.notice # 2014/11/4 add
+       
+       room.notice_a = work_room.notice_a
+       room.notice_b = work_room.notice_b
+       room.notice_c = work_room.notice_c
+       room.notice_d = work_room.notice_d
+       room.notice_e = work_room.notice_e
+       room.notice_f = work_room.notice_f
+       
        room.save!
       
        # 部屋の物件情報を反映
