@@ -22,7 +22,7 @@
 		<tr>
 			<td>物件名</td>
 			<td><%#= @room.building.name + " " + @room.name %></td>
-			<td><%= @room_renters.building_name + " " + if @room_renters.room_no then @room_renters.room_no else '' end  %></td>
+			<td><%= @room_renters.real_building_name + " " + if @room_renters.real_room_no then @room_renters.real_room_no else '' end  %></td>
 		</tr>
 		<tr>
 			<td>住所</td>

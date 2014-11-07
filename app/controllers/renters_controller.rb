@@ -232,7 +232,7 @@ class RentersController < ApplicationController
       room['room_code'] = rec['room_code']
       room['room_no'] = rec['real_room_no']
       room['vacant_div'] = rec['vacant_div']
-      room['notice'] = rec['notice']
+      # room['notice'] = rec['notice']
 
       room['notice_a'] = rec['notice_a']
       room['notice_b'] = rec['notice_b']
@@ -301,7 +301,6 @@ class RentersController < ApplicationController
     ,building_id
     ,vacant_div
     ,address
-    ,notice
     ,notice_a
     ,notice_b
     ,notice_c
@@ -337,7 +336,6 @@ class RentersController < ApplicationController
     ,a.real_room_no
     ,a.vacant_div
     ,a.building_code
-    ,a.notice
     ,a.notice_a
     ,a.notice_b
     ,a.notice_c
@@ -389,7 +387,14 @@ class RentersController < ApplicationController
     ,a.room_code 
     ,a.real_building_name
     ,a.real_room_no
+    ,a.vacant_div
     ,a.building_code
+    ,a.notice_a
+    ,a.notice_b
+    ,a.notice_c
+    ,a.notice_d
+    ,a.notice_e
+    ,a.notice_f
     ,c.id
     ,c.address
     ,c.latitude
@@ -479,9 +484,7 @@ class RentersController < ApplicationController
      @data_update.save!
 
  		# レンターズのデータを本番に反映する
-     #renters_reflect(params[:batch][:value])
-     renters_reflect("20141105203536")
-     
+     renters_reflect(params[:batch][:value])
   
      @data_update.update_datetime = Time.now
      @data_update.save!

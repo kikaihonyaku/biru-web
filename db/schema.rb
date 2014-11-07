@@ -478,6 +478,24 @@ ActiveRecord::Schema.define(:version => 20141105110514) do
 
   add_index "stations", ["line_id"], :name => "index_stations_on_line_id"
 
+  create_table "suumo_responses", :force => true do |t|
+    t.integer  "yyyymm"
+    t.integer  "week_idx"
+    t.integer  "renters_room_id"
+    t.string   "renters_room_cd"
+    t.integer  "public_days"
+    t.integer  "view_list_summary"
+    t.integer  "view_list_daily"
+    t.integer  "view_detail_summary"
+    t.integer  "view_detail_daily"
+    t.integer  "inquery_visite_reserve"
+    t.integer  "inquery_summary"
+    t.string   "suumary_start_day"
+    t.string   "summary_end_day"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
   create_table "trust_attack_state_histories", :force => true do |t|
     t.integer  "trust_id"
     t.integer  "month"
