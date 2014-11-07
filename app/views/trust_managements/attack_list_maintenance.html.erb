@@ -217,10 +217,13 @@
 
 
 <h3 style="padding-left:20px;">アタックリスト メンテナンス</h3>
-<h5>手順①　貸主一覧から貸主を選択</h5>
-<h5>手順②　建物一覧から建物を選択</h5>
+<div style="padding-left:20px;padding-top:10px;padding-bottom:10px;">
+<h5>手順①　貸主一覧から貸主を選択&nbsp;&nbsp;※一覧に無い場合は貸主新規登録をする</h5>
+<h5>手順②　建物一覧から建物を選択&nbsp;&nbsp;※一覧に無い場合は建物新規登録をする</h5>
 <h5>手順③　「▼貸主と物件の紐付けを作成▼」をクリック</h5>
 <h5>手順④　前ページの地図一覧画面を再読み込み</h5>
+	
+</div>
 
 <div id="owner_div" style="float:left;width:50%;height:40%;padding:0px 10px 10px 10px;margin-top:0px;">
 	<table id="owner_table"></table>
@@ -249,8 +252,8 @@
 
 <div style="padding-left:10px;padding-top:10px;">
 	<a data-toggle="modal" href="#modal-owner-new" class="btn btn-info btn-large">貸主新規登録</a>
-	<%= button_tag '建物新規登録', {:class=>'btn', :onClick=>'javascript:create_trust();return false;'} %>
-	<%= button_tag '委託契約との紐付けを解除', {:class=>'btn', :onClick=>'javascript:create_trust();return false;'} %>
+	<a data-toggle="modal" href="#modal-building-new" class="btn btn-info btn-large">建物新規登録</a>
+	<%= button_tag '委託契約との紐付けを解除', {:class=>'btn', :onClick=>'javascript:alert("この機能はまだ未実装です");return false;'} %>
 </div>
 
 
@@ -282,6 +285,39 @@
 			<%#= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:180px;', :class=>'form-control' } %>
 			<%#= f.input :approach_kind_id, label: '種別', collection: ApproachKind.find(:all), prompt: "--", :input_html => {:class=>'form-control' } %>
 			<%#= f.input :content, label: '内容', placeholder: 'アプローチ内容をいれてください', :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+	   
+		</div>
+		<div class="modal-footer">
+			<%= f.submit '登録', :class=>"btn btn-default", :style=>"margin:0" %>
+		</div>
+	<% end %>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<!-- モーダルダイアログ -->
+<div class="modal fade" id="modal-building-new" tabindex="-1" role="dialog" aria-labelledby="modal-building-new-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">建物新規作成</h4>
+      </div>
+
+	<%= simple_form_for :building, :url=>{:action => :building_regist} do |f| %>
+		<div class="modal-body">
+			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_trust_user.id } %>
+			<%= f.input :name, label: '建物名',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :address, label: '住所',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :shop_id, label: '営業所', collection: Shop.find(:all), prompt: "--", :input_html => {:class=>'form-control' } %>
+			<%= f.input :room_num, label: '部屋数',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%#= f.input :build_type_id, label: '建物種別', collection: BuildType.find(:all), prompt: "--", :input_html => {:class=>'form-control' } %>
+			<%= f.input :memo, label: '備考',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+
 	   
 		</div>
 		<div class="modal-footer">

@@ -613,6 +613,33 @@ class TrustManagementsController < ApplicationController
     end
     redirect_to :action => 'attack_list_maintenance', :sid=> params[:owner][:biru_user_id] 
   end
+  
+  
+  # 建物登録
+  def building_regist
+    @building = Building.new(params[:building])
+    begin
+      
+      @building.name = Moji.han_to_zen(@building.name)
+      @building.address = Moji.han_to_zen(@building.address)
+      
+      hash = conv_code_building(params[:building][:biru_user_id],  @building.address, @building.name)
+      if Building.find_by_hash_key(hash)
+        raise "この名前・住所は建物一覧にすでに存在します。"
+      end
+      
+      @building.hash_key = hash
+      @building.save!
+      @building.attack_code = "OA%06d"%@building.id
+      @building.save!
+      
+      flash[:notice] = "建物：" + params[:building][:name] + '  を建物一覧に追加しました。'
+    rescue => e
+      flash[:danger] = e.to_s
+    end
+    redirect_to :action => 'attack_list_maintenance', :sid=> params[:building][:biru_user_id] 
+  end
+  
     
 private
 def get_owner_show(owner_id)
