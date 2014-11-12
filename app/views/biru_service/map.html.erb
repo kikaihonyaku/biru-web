@@ -1,0 +1,381 @@
+<% content_for :header do %>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
+<script type="text/javascript">
+
+// Infoウィンドウに設定します
+function setInfoWnd(marker, msg){
+    google.maps.event.addListener(marker, "click", function(){
+      infoWnd.setContent(msg);
+      infoWnd.open(marker.getMap(), marker);
+    });
+}
+
+// posからpositionオブジェクトを返します。
+function getCoords(position) {
+    return new google.maps.LatLng(position.latitude, position.longitude);
+}
+
+
+  function write_build(biru)
+  {
+    document.getElementById("m_name").innerText=biru;
+  }
+
+  // ズームを変更する maker_kind 1:建物 2:貸主
+  function changeZoom(marker_id, maker_kind) {
+
+    var marker;
+
+    if(maker_kind == 1){
+      marker = build_arr[marker_id];
+    }
+    else{
+      marker = owner_arr[marker_id];
+    }
+
+    mapCanvas.panTo(marker.position);
+    mapCanvas.setZoom(18);
+  }
+
+
+  //-------------------
+  // グローバル変数定義
+  //-------------------
+  var convert_shop = [];
+  
+  function initialize(){
+	
+  	// ストリートビューの分割を縦に
+  	street_vew_vertical = true;
+	
+    // 初期化処理
+    // init_process();
+
+    // 初期表示は非表示
+    init_display();
+	
+    // 地図・ストリートビューを作成します。
+    init_map(<%= @biru_user.id %>,  false);
+
+
+    // 初期表示位置を調整
+    var bounds = new google.maps.LatLngBounds();
+
+    /* 建物オブジェクトを作成 */
+    build_arr = {}; // グローバル
+    kyori_text = ""
+    var pos;
+    var idx = 0;
+    var biru_latlngs = [];
+    var populations = [];
+
+    var building_to_owners = gon.building_to_owners
+	
+    gon.buildings.forEach(function(building){
+        pos = new google.maps.LatLng(building.latitude, building.longitude);
+
+        bounds.extend(pos);
+
+        build_arr[building.id] = createMarker({
+          position : pos
+          ,map : mapCanvas
+          ,icon : '/assets/marker_blue.png'
+          ,shadow : '/assets/marker_shadow.png'
+          ,html : info_msg_biru(building, building_to_owners[building.id])
+          ,visible : true
+        });
+
+
+        biru_latlngs[idx] = pos;
+        idx = idx + 1;
+    });
+
+
+    /* 貸主オブジェクトを作成 */
+    owner_arr = {}; // varを外してグローバル化
+    var owner_to_buildings = gon.owner_to_buildings
+	
+    gon.owners.forEach(function(owner){
+      pos = new google.maps.LatLng(owner.latitude, owner.longitude);
+
+      owner_arr[owner.id] = createMarker({
+        position : pos
+        ,map : mapCanvas
+        ,icon : '/assets/marker_yellow.png'
+        ,html : info_msg_owner(owner, owner_to_buildings[owner.id])
+        ,visible : false
+      });
+	});
+
+    /* 委託契約CDのラインを引く */
+    trust_arr = {}; // varを外してグローバル化
+	gon.trusts.forEach(function(trust){
+
+      // 貸主マスタ・建物マスタに委託で指定した貸主CD・建物CDが存在することを確認
+      if ( !owner_arr[trust.owner_id] ){
+		  return;
+      }
+
+      if ( !build_arr[trust.building_id]){
+		  return;
+      }
+
+      trust_arr[trust.id] = new google.maps.Polyline({
+         map : mapCanvas
+        ,path : [owner_arr[trust.owner_id].position, build_arr[trust.building_id].position]
+        ,strokeColor: "blue"
+        ,strokeOpacity:0.5
+        ,strokeWeight:3
+        ,zIndex:1
+      });
+
+      // 初期状態は非表示
+      trust_arr[trust.id].set("visible", false);
+
+      // ダブルクリック時のイベント登録
+      trust_ev = trust_arr[trust.id]
+      owner_ev = owner_arr[trust.owner_id]
+      build_ev = build_arr[trust.building_id]
+
+      // クリックした時のオブジェクトを保存するために、イベントは関数呼び出しで登録する。
+      create_relation_listener(trust_ev, owner_ev, build_ev)
+	});
+
+    /* 営業所の情報を表示する */
+    shop_arr = {}; // varを消してグローバル化
+    shop_circle01_arr = {}; // varを消してグローバル化
+    shop_circle02_arr = {}; // varを消してグローバル化
+    var distination = new google.maps.MVCArray();
+    var distination_arr = [];
+
+    gon.shops.forEach(function(shop){
+
+      pos = new google.maps.LatLng(shop.latitude, shop.longitude);
+      bounds.extend(pos);
+
+      shop_arr[shop.id] = createMarker({
+        position : pos
+        ,map : mapCanvas
+        ,animation: google.maps.Animation.DROP
+        ,icon : shop.icon
+        ,info_msg : shop.name
+        ,html : info_msg_shop(shop)
+      });
+
+      /* 営業所の円を作成 */
+      shop_circle01_arr[shop.id] = create_circle(1000, mapCanvas, pos);
+      shop_circle02_arr[shop.id] = create_circle(2000, mapCanvas, pos);
+
+      /* 距離を測る対象を設定 */
+      distination.push({name:shop.name, latLng:[shop.latitude, shop.longitude]});
+      distination_arr.push(pos);
+	});
+
+    mapCanvas.fitBounds(bounds);
+
+  } // end initialize
+
+  google.maps.event.addDomListener(window, "load", initialize);
+
+</script>
+
+  <style type="text/css">
+    html,  body{
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #map_canvas{
+      position: fixed;
+      width:100%;
+      height:100%;
+      top:0px;
+      left:0;
+    }
+
+    #top-menu{
+      padding:0;
+      margin:0;
+    }
+	
+	a{
+	  text-decoration:underline;	
+	}
+	
+	.sample_01{
+	width: 100%;
+	border-collapse: collapse;
+	}
+	.sample_01 th{
+	padding: 3px;
+	text-align: left;
+	vertical-align: top;
+	color: #333;
+	background-color: #eee;
+	border: 1px solid #b9b9b9;
+	text-align: center;
+	}
+	.sample_01 td{
+	padding: 3px;
+	background-color: #fff;
+	border: 1px solid #b9b9b9;
+	text-align:center;
+	}	
+	
+  </style>
+
+<% end %>
+
+
+
+<script type="text/javascript">
+
+	$(function () {
+		$(".accordion .toggle").click(function () {
+			$(this).next("ul").slideToggle(200);
+			$(this).next("div").slideToggle(200);
+	
+			$(this).toggleClass("open");
+		});
+	});
+	
+	var notice_disp;
+	notice_disp = false;
+
+	// 一覧を表示します。
+	init_data_jqgrid();
+	
+	// 絞り込みテーブルを作成します。
+	//init_search_jqgrid();
+	
+	function init_data_jqgrid(){
+		// 列名の定義
+ 		var grid_name = ["trust_id",  "building_id",  "営業所",  "建物CD", "建物名",  "建物住所",  "部屋数",  "貸主CD",  "貸主名",  "貸主住所" ];
+		
+		// 列属性の定義
+		var grid_model = [
+		  {name:"trust_id",  index:"trust_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+		 , {name:"building_id",  index:"building_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+		 , {name:"shop_name",  index:"shop_name",  width:50,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"building_code",  index:"building_code",  width:80,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"building_name",  index:"building_name",  width:100,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"building_address",  index:"building_address",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"room_cnt",  index:"room_cnt",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"owner_code",  index:"owner_code",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"owner_name",  index:"owner_name",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"owner_address",  index:"owner_address",  width:70,  align:"center",  classes:"no_class"}
+		];
+		
+
+		// その他の設定
+		var jqgrid_opt = {
+			 table_name:'building_table'
+			, fotter_name:'building_pager'
+			, div_name:'div_dummy_02'
+			//, caption:'募集中物件を表示しています'
+			, event_type:31
+			, shrinkFit:true
+			, multiselect:false
+		};
+			
+		
+		$(function(){
+			jqgrid_create(grid_name,  grid_model,  gon.grid_data,  jqgrid_opt);
+		});
+	 }	
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- ここは span9で呼び出されているので合計も9に合わせる -->
+	<a id="simple-menu" href="#sidr"></a>
+	<div style="height:50%;padding:10px 20px 0px 20px;">
+		
+		<div id="div_dummy" style="float:left;width:20%;height:80%;padding:0;margin:0;padding-right:10px;">
+			
+			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
+			    <ul>
+			        <li>
+			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top " style="color:white;font-weight:lighter">SUUMO写真枚数</span>
+						<div style="display:block;padding:5px;margin-left:10px;padding-top:10px;padding-bottom:10px;">
+							
+							<table style="margin-left:5px;">
+							   <tbody>
+							     <tr>
+							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_blue" src="/assets/marker_blue.png" /></td>
+							       <td style="text-align:left;">20枚フルセット</td>
+							     </tr>
+							     <tr>
+							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_yellow" src="/assets/marker_yellow.png" /></td>
+							       <td style="text-align:left;">10枚以上掲載</td>
+							     </tr>
+							     <tr>
+							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_red" src="/assets/marker_red.png" /></td>
+							       <td style="text-align:left;">10枚未満</td>
+							     </tr>
+								 
+							     <tr>
+							       <td colspan="2" style="text-align:left;height:30px;padding-top:10px;font-size: x-small;">※１つの建物に複数の部屋がある場合は、<br/>&nbsp;&nbsp;その建物の平均掲載枚数を使用します。</td>
+							     </tr>
+							   </tbody>
+							 </table>
+						</div>
+			        </li>
+			    </ul>
+			</div>
+			
+			
+			
+			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
+			    <ul>
+			        <li>
+			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" style="color:white;font-weight:lighter">基本メニュー</span>
+					</li>
+			        <li><%= link_to "一覧へ戻る",  :action=>'index' %></li>
+			    </ul>
+			</div>
+			
+			<div id="search_div" style="width:100%;height:60%;margin-bottom:50px;">
+				<table id="search_table" ></table>
+				<div id="search_pager"></div>
+			</div>
+			
+			
+		</div>
+		<div id="panowide" style="width: 100%; height: 0px;float:right;"></div>
+		<div id="map_canvas" style="width: 80%;float:right;"></div>
+		
+	</div>
+	<div id="div_dummy_02" style="clear:both;width:100%;height:40%;padding:10px 20px 10px 20px;margin-bottom:50px;">
+		<table id="building_table"></table>
+		<div id = "building_pager"></div>
+	</div>
+	
+
+	<!-- For index -->
+
+	  <style type="text/css">
+		
+		a{
+		  text-decoration:underline;	
+		}
+		
+	  </style>
+	  

@@ -2801,6 +2801,10 @@ end
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140820.csv"))
 
+regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
+
+
+
 # データの登録(他社)
 #import_data_yourself_owner(Rails.root.join( "tmp", "attack_02_sinden.csv"))
 #import_data_yourself_owner(Rails.root.join( "tmp", "attack_01_soka.csv"))
@@ -2882,4 +2886,4 @@ end
 ###########################
 # レンターズデータ取得
 ###########################
-create_work_renters_rooms
+#create_work_renters_rooms
