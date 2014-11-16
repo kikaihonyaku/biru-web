@@ -66,7 +66,36 @@ function change_biru_icon(type){
       build_arr[item].setIcon(build_arr[item].biru_age );
     };
 
-  } else {
+	} else if( type == "junkai_seisou") {
+		// 巡回清掃
+		for(var item in build_arr){
+			build_arr[item].setIcon(build_arr[item].trust_mente_junkai_seisou );
+  		};
+
+	} else if( type == "kyusui_setubi") {
+		// 給水設備
+		for(var item in build_arr){
+			build_arr[item].setIcon(build_arr[item].trust_mente_kyusui_setubi );
+  		};
+
+	} else if( type == "tyosui_seisou") {
+		// 貯水槽清掃
+		for(var item in build_arr){
+			build_arr[item].setIcon(build_arr[item].trust_mente_tyosui_seisou );
+  		};
+
+	} else if( type == "elevator_hosyu") {
+		// エレベータ点検
+		for(var item in build_arr){
+			build_arr[item].setIcon(build_arr[item].trust_mente_elevator_hosyu );
+  		};
+
+	} else if( type == "bouhan_camera") {
+		// 防犯カメラ
+		for(var item in build_arr){
+			build_arr[item].setIcon(build_arr[item].trust_mente_bouhan_camera );
+  		};
+	} else {
     // 何もしない
   }
 
@@ -293,6 +322,22 @@ function get_icon_siten(num){
 
 }
 
+// 定期メンテのアイコンを作ります
+function get_icon_teiki_mente(num){
+
+	var icon;
+	
+	if(num > 0){
+	    icon = 'marker_blue.png'; // 千葉支店
+	}else{
+	    icon = 'marker_gray.png'; // 不明
+	}
+	
+    icon = '/assets/' + icon;
+    return icon;
+
+}
+
 
 // Infoウィンドウに設定します
 function setInfoWnd(marker, msg){
@@ -380,6 +425,13 @@ function getCoords(position) {
 		  ,build_type_icon : building.build_type_icon
 		  ,manage_icon : building.manage_type_icon
           ,kanri_room_num  : get_icon_kanri_room_num(building.room_cnt)
+
+		,trust_mente_junkai_seisou  : get_icon_teiki_mente(building.trust_mente_junkai_seisou)
+		,trust_mente_kyusui_setubi  : get_icon_teiki_mente(building.trust_mente_kyusui_setubi)
+		,trust_mente_tyosui_seisou  : get_icon_teiki_mente(building.trust_mente_tyosui_seisou)
+		,trust_mente_elevator_hosyu  : get_icon_teiki_mente(building.trust_mente_elevator_hosyu)
+		,trust_mente_bouhan_camera  : get_icon_teiki_mente(building.trust_mente_bouhan_camera_icon)
+			
           ,free_room : get_icon_free_room(building.room_cnt, building.free_cnt)
           ,biru_age : get_icon_biru_age(building.biru_age)
           ,shadow : '/assets/marker_shadow.png'
@@ -560,7 +612,28 @@ function getCoords(position) {
 	
 	function init_data_jqgrid(){
 		// 列名の定義
- 		var grid_name = ["trust_id",  "building_id",  "営業所",  "建物CD", "建物名",  "建物住所", "建物種別", "管理方式", "築年数", "部屋数", "空室数", "空室割合(%)", "貸主CD",  "貸主名",  "貸主住所" ];
+ 		var grid_name = [
+			  "trust_id",
+			  "building_id",
+			  "営業所",
+			  "建物CD",
+			  "建物名",
+			  "建物住所",
+			  "建物種別", 
+			  "管理方式",
+			  "築年数",
+			  "部屋数",
+			  "空室数",
+		 	  "空室割合(%)",
+			  "巡回清掃",
+			  "給水設備",
+			  "貯水槽清掃",
+			  "エレベータ点検",
+			  "防犯カメラ",
+			  "貸主CD",
+			  "貸主名",
+			  "貸主住所" 
+		];
 		
 		
 		// 列属性の定義
@@ -577,11 +650,18 @@ function getCoords(position) {
 		 , {name:"room_cnt",  index:"room_cnt",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"free_cnt",  index:"free_cnt",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"free_par",  index:"free_par",  width:70,  align:"center",  classes:"no_class"}
+		 
+		 , {name:"trust_mente_junkai_seisou",  index:"trust_mente_junkai_seisou",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"trust_mente_kyusui_setubi",  index:"trust_mente_kyusui_setubi",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"trust_mente_tyosui_seisou",  index:"trust_mente_tyosui_seisou",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"trust_mente_elevator_hosyu",  index:"trust_mente_elevator_hosyu",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"trust_mente_bouhan_camera",  index:"trust_mente_bouhan_camera",  width:70,  align:"center",  classes:"no_class"}
+		 
 		 , {name:"owner_code",  index:"owner_code",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"owner_name",  index:"owner_name",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"owner_address",  index:"owner_address",  width:70,  align:"center",  classes:"no_class"}
 		 
-		 
+
 
 		];
 
@@ -627,6 +707,11 @@ function getCoords(position) {
 						 "空室数" => "aki",
 						 "築年数" => "age",
 						 "戸数"=>"num",
+						 "巡回清掃"=>"junkai_seisou",
+						 "給水設備"=>"kyusui_setubi",
+						 "貯水槽清掃"=>"tyosui_seisou",
+						 "エレベータ点検"=>"elevator_hosyu",
+						 "防犯カメラ"=>"bouhan_camera",
 						 "支店"=>"siten",
 						 "エリア" => "area",
 						 "営業所" => "shop",

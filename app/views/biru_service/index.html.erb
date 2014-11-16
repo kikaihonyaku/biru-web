@@ -49,11 +49,12 @@
 		 ,{name:"biru_type_kdt_cnt", index:"biru_type_kdt_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
 		 ,{name:"biru_type_etc_cnt", index:"biru_type_etc_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
 		 
-		 ,{name:"biru_mente_junnkai_cnt", index:"biru_mente_junnkai_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
-		 ,{name:"biru_mente_kyuusui_cnt", index:"biru_mente_kyuusui_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
-		 ,{name:"biru_mente_tyosui_cnt", index:"biru_mente_tyosui_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
-		 ,{name:"biru_mente_elv_cnt", index:"biru_mente_elv_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
-		 ,{name:"biru_mente_bouhan_cnt", index:"biru_mente_bouhan_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+
+		 ,{name:"trust_mente_junkai_seisou_cnt", index:"trust_mente_junkai_seisou_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"trust_mente_kyusui_setubi_cnt", index:"trust_mente_kyusui_setubi_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"trust_mente_tyosui_seisou_cnt", index:"trust_mente_tyosui_seisou_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"trust_mente_elevator_hosyu_cnt", index:"trust_mente_elevator_hosyu_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"trust_mente_bouhan_camera_cnt", index:"trust_mente_bouhan_camera_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
 
 		 ,{name:"room_cnt", index:"room_cnt", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
  		 ,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", hidden:true}
@@ -146,21 +147,21 @@
 
  						if( disp_biru_mentenance == false ){
 							
- 	   						 table_div.jqGrid('showCol',"biru_mente_junnkai_cnt");
- 	   						 table_div.jqGrid('showCol',"biru_mente_kyuusui_cnt");
- 	   						 table_div.jqGrid('showCol',"biru_mente_tyosui_cnt");
- 	   						 table_div.jqGrid('showCol',"biru_mente_elv_cnt");
- 	   						 table_div.jqGrid('showCol',"biru_mente_bouhan_cnt");
+ 	   						 table_div.jqGrid('showCol',"trust_mente_junkai_seisou_cnt");
+ 	   						 table_div.jqGrid('showCol',"trust_mente_kyusui_setubi_cnt");
+ 	   						 table_div.jqGrid('showCol',"trust_mente_tyosui_seisou_cnt");
+ 	   						 table_div.jqGrid('showCol',"trust_mente_elevator_hosyu_cnt");
+ 	   						 table_div.jqGrid('showCol',"trust_mente_bouhan_camera_cnt");
  		 					 table_div.trigger("reloadGrid");
 							 
  							 disp_biru_mentenance = true;
  						}else{
 							
- 	   						 table_div.jqGrid('hideCol',"biru_mente_junnkai_cnt");
- 	   						 table_div.jqGrid('hideCol',"biru_mente_kyuusui_cnt");
- 	   						 table_div.jqGrid('hideCol',"biru_mente_tyosui_cnt");
- 	   						 table_div.jqGrid('hideCol',"biru_mente_elv_cnt");
- 	   						 table_div.jqGrid('hideCol',"biru_mente_bouhan_cnt");
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_junkai_seisou_cnt");
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_kyusui_setubi_cnt");
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_tyosui_seisou_cnt");
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_elevator_hosyu_cnt");
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_bouhan_camera_cnt");
  		 					 table_div.trigger("reloadGrid");
 							 
  							disp_biru_mentenance = false;
@@ -174,7 +175,7 @@
  	          useColSpanStyle: true,
  	          groupHeaders:[
  	            {startColumnName: 'biru_type_mn_cnt', numberOfColumns: 5, titleText: '<em>棟数内訳</em>'},
- 	            {startColumnName: 'biru_mente_junnkai_cnt', numberOfColumns: 5, titleText: '<em>建物メンテナンス</em>'},
+ 	            {startColumnName: 'trust_mente_junkai_seisou_cnt', numberOfColumns: 5, titleText: '<em>建物メンテナンス</em>'},
 				
  	          ]
  	        });			

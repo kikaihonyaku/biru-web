@@ -40,15 +40,14 @@ class BiruServiceController < ApplicationController
       end
       
       data_list.push({
-        :shop_code => shop.code, :shop_name => shop.name, :group_name => group_name ,:url => 'map?stcd=' + shop.code, :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0
+        :shop_code => shop.code, :shop_name => shop.name, :group_name => group_name ,:url => 'map?stcd=' + shop.code, :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0
       })
     end
     
-    
-    data_list.push({ :shop_code => '100', :shop_name => '東武支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_tobu.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0 })
-    data_list.push({ :shop_code => '200', :shop_name => 'さいたま支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_saitama.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0 })
-    data_list.push({ :shop_code => '300', :shop_name => '千葉支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_chiba.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0})
-    data_list.push({ :shop_code => '900', :shop_name => 'ビル全体', :group_name => '99その他' ,:url => 'map', :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0})
+    data_list.push({ :shop_code => '100', :shop_name => '東武支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_tobu.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
+    data_list.push({ :shop_code => '200', :shop_name => 'さいたま支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_saitama.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0 })
+    data_list.push({ :shop_code => '300', :shop_name => '千葉支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_chiba.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
+    data_list.push({ :shop_code => '900', :shop_name => 'ビル全体', :group_name => '99その他' ,:url => 'map', :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
 
     ##############################
     # 営業所データをハッシュに格納
@@ -66,6 +65,12 @@ class BiruServiceController < ApplicationController
            :biru_type_ap_cnt => rec['biru_type_ap_cnt'],
            :biru_type_kdt_cnt => rec['biru_type_kdt_cnt'],
            :biru_type_etc_cnt => rec['biru_type_etc_cnt'],
+           
+           :trust_mente_junkai_seisou_cnt => rec['trust_mente_junkai_seisou_cnt'],
+           :trust_mente_kyusui_setubi_cnt => rec['trust_mente_kyusui_setubi_cnt'],
+           :trust_mente_tyosui_seisou_cnt => rec['trust_mente_tyosui_seisou_cnt'],
+           :trust_mente_elevator_hosyu_cnt => rec['trust_mente_elevator_hosyu_cnt'],
+           :trust_mente_bouhan_camera_cnt => rec['trust_mente_bouhan_camera_cnt'],
          }
       end
     end
@@ -80,7 +85,14 @@ class BiruServiceController < ApplicationController
       :biru_type_bm_cnt => 0,
       :biru_type_ap_cnt => 0,
       :biru_type_kdt_cnt => 0,
-      :biru_type_etc_cnt => 0
+      :biru_type_etc_cnt => 0,
+
+      :trust_mente_junkai_seisou_cnt => 0,
+      :trust_mente_kyusui_setubi_cnt => 0,
+      :trust_mente_tyosui_seisou_cnt => 0,
+      :trust_mente_elevator_hosyu_cnt => 0,
+      :trust_mente_bouhan_camera_cnt => 0,
+
     }
     
     saitama_hash = {
@@ -90,7 +102,14 @@ class BiruServiceController < ApplicationController
       :biru_type_bm_cnt => 0,
       :biru_type_ap_cnt => 0,
       :biru_type_kdt_cnt => 0,
-      :biru_type_etc_cnt => 0
+      :biru_type_etc_cnt => 0,
+      
+      :trust_mente_junkai_seisou_cnt => 0,
+      :trust_mente_kyusui_setubi_cnt => 0,
+      :trust_mente_tyosui_seisou_cnt => 0,
+      :trust_mente_elevator_hosyu_cnt => 0,
+      :trust_mente_bouhan_camera_cnt => 0,
+      
     }
 
     chiba_hash = {
@@ -100,7 +119,14 @@ class BiruServiceController < ApplicationController
       :biru_type_bm_cnt => 0,
       :biru_type_ap_cnt => 0,
       :biru_type_kdt_cnt => 0,
-      :biru_type_etc_cnt => 0
+      :biru_type_etc_cnt => 0,
+      
+      :trust_mente_junkai_seisou_cnt => 0,
+      :trust_mente_kyusui_setubi_cnt => 0,
+      :trust_mente_tyosui_seisou_cnt => 0,
+      :trust_mente_elevator_hosyu_cnt => 0,
+      :trust_mente_bouhan_camera_cnt => 0,
+      
     }
 
     etc_hash = {
@@ -110,7 +136,14 @@ class BiruServiceController < ApplicationController
       :biru_type_bm_cnt => 0,
       :biru_type_ap_cnt => 0,
       :biru_type_kdt_cnt => 0,
-      :biru_type_etc_cnt => 0
+      :biru_type_etc_cnt => 0,
+      
+      :trust_mente_junkai_seisou_cnt => 0,
+      :trust_mente_kyusui_setubi_cnt => 0,
+      :trust_mente_tyosui_seisou_cnt => 0,
+      :trust_mente_elevator_hosyu_cnt => 0,
+      :trust_mente_bouhan_camera_cnt => 0,
+      
     }
 
     
@@ -263,7 +296,9 @@ class BiruServiceController < ApplicationController
     
     ActiveRecord::Base.connection.select_all(get_biru_list_sql(shop_where)).each do |rec|
       
-      # 物件の登録
+      ####################
+      # 地図で使う物件情報
+      ####################
       biru = {
         :id=>rec["building_id"],
         :name=>rec["building_name"],
@@ -276,6 +311,11 @@ class BiruServiceController < ApplicationController
         :manage_type_icon=>rec["manage_type_icon"],
         :shop_code=>rec["shop_code"],
         
+        :trust_mente_junkai_seisou=>rec["trust_mente_junkai_seisou"],
+        :trust_mente_kyusui_setubi=>rec["trust_mente_kyusui_setubi"],
+        :trust_mente_tyosui_seisou=>rec["trust_mente_tyosui_seisou"],
+        :trust_mente_elevator_hosyu=>rec["trust_mente_elevator_hosyu"],
+        :trust_mente_bouhan_camera=>rec["trust_mente_bouhan_camera"],
         
       }
       
@@ -314,7 +354,9 @@ class BiruServiceController < ApplicationController
         check_trust[trust[:id]] = true
       end
       
-      # 表に表示する為の登録
+      ########################
+      # 一覧表で使う情報
+      ########################
       row_data = {}
       row_data[:trsut_id] = rec["trust_id"]
       row_data[:building_id] = rec["building_id"]
@@ -334,7 +376,13 @@ class BiruServiceController < ApplicationController
 
       row_data[:free_cnt] = rec["free_cnt"]
       row_data[:biru_age] = rec["biru_age"]
-          
+      
+      row_data[:trust_mente_junkai_seisou] = rec["trust_mente_junkai_seisou"]
+      row_data[:trust_mente_kyusui_setubi] = rec["trust_mente_kyusui_setubi"]
+      row_data[:trust_mente_tyosui_seisou] = rec["trust_mente_tyosui_seisou"]
+      row_data[:trust_mente_elevator_hosyu] = rec["trust_mente_elevator_hosyu"]
+      row_data[:trust_mente_bouhan_camera] = rec["trust_mente_bouhan_camera"]
+
       grid_data.push(row_data)
     end
 
@@ -391,6 +439,11 @@ private
     strSql = strSql + ",a.free_num as free_cnt "
     strSql = strSql + ",a.biru_age as biru_age "
     
+    strSql = strSql + ",MAX(case h.code when '3' then 1 else 0 end ) trust_mente_junkai_seisou "
+    strSql = strSql + ",MAX(case h.code when '15' then 1 else 0 end ) trust_mente_kyusui_setubi "
+    strSql = strSql + ",MAX(case h.code when '25' then 1 else 0 end ) trust_mente_tyosui_seisou "
+    strSql = strSql + ",MAX(case h.code when '45' then 1 else 0 end ) trust_mente_elevator_hosyu "
+    strSql = strSql + ",MAX(case h.code when '48' then 1 else 0 end ) trust_mente_bouhan_camera "
     
     strSql = strSql + "from buildings a "
     strSql = strSql + "inner join rooms b on a.id = b.building_id "
@@ -399,6 +452,7 @@ private
     strSql = strSql + "inner join manage_types e on e.id = b.manage_type_id  "
     strSql = strSql + "inner join owners f on d.owner_id = f.id "
     strSql = strSql + "inner join build_types g on a.build_type_id = g.id "
+    strSql = strSql + "left outer join (select * from trust_maintenances where not delete_flg ) h on h.trust_id = d.id "
     strSql = strSql + "where 1 = 1  "
     strSql = strSql + "and c.code in ( " + shop_list + ") " if shop_list.length > 0
     strSql = strSql + "and not a.delete_flg "
@@ -423,6 +477,11 @@ private
     strSql = strSql + ",SUM(case when build_type_code = '01020' then 1 else 0 end ) as biru_type_ap_cnt "
     strSql = strSql + ",SUM(case when build_type_code = '01025' then 1 else 0 end ) as biru_type_kdt_cnt "
     strSql = strSql + ",SUM(case when build_type_code in ('01010', '01015', '01020', '01025' ) then 0 else 1 end ) as biru_type_etc_cnt "
+    strSql = strSql + ",SUM( trust_mente_junkai_seisou ) as trust_mente_junkai_seisou_cnt "
+    strSql = strSql + ",SUM( trust_mente_kyusui_setubi ) as trust_mente_kyusui_setubi_cnt "
+    strSql = strSql + ",SUM( trust_mente_tyosui_seisou ) as trust_mente_tyosui_seisou_cnt "
+    strSql = strSql + ",SUM( trust_mente_elevator_hosyu ) as trust_mente_elevator_hosyu_cnt "
+    strSql = strSql + ",SUM( trust_mente_bouhan_camera ) as trust_mente_bouhan_camera_cnt "
     strSql = strSql + ",sum(room_cnt) as shop_room_cnt "
     strSql = strSql + "FROM (" + get_biru_list_sql('') + ") X "
     strSql = strSql + "GROUP BY shop_id, shop_name, shop_code "

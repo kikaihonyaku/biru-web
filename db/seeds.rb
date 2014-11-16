@@ -2752,6 +2752,61 @@ def create_work_renters_rooms
 	
 end
 
+# 定期メンテナンスを登録します。
+def regist_trust_maintenance_all(filename)
+  
+  # ファイルの存在チェック
+  unless File.exist?(filename)
+    puts 'file not exist'
+    return false
+  end
+  
+  # 削除フラグをたてる
+  TrustMaintenance.unscoped.update_all(:delete_flg => true )
+  cnt = 0
+  unknown_cnt = 0
+  
+  # 委託の定期メンテナンスの登録
+  open(filename).each do |line|
+    catch :not_header do
+
+      if cnt == 0
+        cnt = cnt + 1
+        throw :not_header
+      end
+
+      row = line.split(",")
+
+      # 委託契約の取得
+      trust = Trust.find_by_code(row[0])
+      unless trust
+        p "不明な委託契約が指定されました。 コード：" + row[0] 
+        unknown_cnt = unknown_cnt + 1
+        throw :not_header
+      end
+      
+      trust_maintenance = TrustMaintenance.unscoped.find_by_trust_id_and_idx(trust.id, row[1])
+      unless trust_maintenance
+        # 最初に登録するときは新規作成
+        trust_maintenance = TrustMaintenance.create
+      end
+      
+      trust_maintenance.trust_id = trust.id
+      trust_maintenance.idx = row[1]
+      trust_maintenance.code = row[2]
+      trust_maintenance.name = row[3]
+      trust_maintenance.price = row[4]
+      trust_maintenance.delete_flg = false
+      
+      trust_maintenance.save!
+      p trust_maintenance.code + ' ' + trust_maintenance.name
+      cnt = cnt + 1
+    end
+  end  
+  
+  p "出力結果:登録：" + cnt.to_s + '　不明：' + unknown_cnt.to_s + '件'
+
+end
 
 
 ########################
@@ -2801,7 +2856,7 @@ end
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140720.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20140820.csv"))
 
-regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
+#regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 
 
 
@@ -2887,3 +2942,9 @@ regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 # レンターズデータ取得
 ###########################
 #create_work_renters_rooms
+
+
+############################
+# 定期メンテナンス登録
+############################
+regist_trust_maintenance_all(Rails.root.join( "tmp", "trust_maintenance_20141117.csv"))
