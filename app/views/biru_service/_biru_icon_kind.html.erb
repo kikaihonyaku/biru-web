@@ -1,0 +1,438 @@
+
+<% if biru_icon == "shop" %>
+  <!-- 物件種別  -->
+  <table style="float:left;margin-left:20px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:20px;"><%= image_tag('marker_blue.png') %></td>
+        <td>草加</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td>新田</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_purple.png') %></td>
+        <td>北千住</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td>南越谷</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td>越谷</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td>北越谷</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_white.png') %></td>
+        <td>せんげん台</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td>春日部</td>
+      </tr>
+      <tr>
+        <td style="text-align:left;height:20px;width:20px;"><%= image_tag('marker_blue.png') %></td>
+        <td>松戸</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td>北松戸</td>
+      </tr>
+
+      <tr>
+        <td><%= image_tag('marker_purple.png') %></td>
+        <td>法人課</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <table style="float:right;margin-left:5px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:20px;"><%= image_tag('marker_blue.png') %></td>
+        <td>戸田</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td>武蔵浦和</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_purple.png') %></td>
+        <td>川口</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td>与野</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td>浦和</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td>東浦和</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_white.png') %></td>
+        <td>東川口</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td>戸塚安行</td>
+      </tr>
+      <tr>
+        <td style="text-align:left;width:20px;"><%= image_tag('marker_purple.png') %></td>
+        <td>柏</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td>南流山</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+<% elsif biru_icon == "area" %>
+
+  <table style="margin-left:30px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_blue.png') %></td>
+        <td style="font-size:medium;">東武南</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td style="font-size:medium;">東武中央</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_purple.png') %></td>
+        <td style="font-size:medium;">東武北</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td style="font-size:medium;">さいたま南</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td style="font-size:medium;">さいたま北</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td style="font-size:medium;">さいたま東</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_white.png') %></td>
+        <td style="font-size:medium;">常磐西</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">常磐中央</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td style="font-size:medium;">法人課</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+<% elsif biru_icon == "siten" %>
+
+  <table style="margin-left:30px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_green.png') %></td>
+        <td style="font-size:medium;">東武</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_blue.png') %></td>
+        <td style="font-size:medium;">さいたま</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td style="font-size:medium;">千葉</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_purple.png') %></td>
+        <td style="font-size:medium;">アセット</td>
+      </tr>
+    </tbody>
+  </table>
+
+<% elsif biru_icon == "biru_kind" %>
+
+  <!-- 物件種別  -->
+  <table style="margin-left:30px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_blue.png') %></td>
+        <td style="font-size:medium;">アパート</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td style="font-size:medium;">マンション</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_purple.png') %></td>
+        <td style="font-size:medium;">分譲M</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td style="font-size:medium;">戸建て</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td style="font-size:medium;">テラス</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td style="font-size:medium;">メゾネット</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">店舗等</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">事務所等</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_white.png') %></td>
+        <td style="font-size:medium;">その他</td>
+      </tr>
+    </tbody>
+  </table>
+
+<% elsif biru_icon == "manage_type" %>
+  <!-- 管理方式  -->
+  <table style="margin-left:30px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_blue.png') %></td>
+        <td style="font-size:medium;">B管理</td>
+      </tr>
+
+      <tr>
+        <td><%= image_tag('marker_purple.png') %></td>
+        <td style="font-size:medium;">D管理</td>
+      </tr>
+
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td style="font-size:medium;">業務君</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td style="font-size:medium;">総務君</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">特有賃</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">定期借家</td>
+      </tr>
+	  
+	  <!--
+      <tr>
+        <td><%#= image_tag('marker_white.png') %></td>
+        <td style="font-size:medium;">管理外</td>
+      </tr>
+	  
+      <tr>
+        <td><%#= image_tag('marker_yellow.png') %></td>
+        <td style="font-size:medium;">一般</td>
+      </tr>
+      <tr>
+        <td><%#= image_tag('marker_red.png') %></td>
+        <td style="font-size:medium;">A管理</td>
+      </tr>
+	  -->
+	  	  
+    </tbody>
+  </table>
+
+<% elsif biru_icon == "aki" %>
+  <!-- 空室数  -->
+  <table style="margin-left:30px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_blue.png') %></td>
+        <td style="font-size:medium;">満室</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td style="font-size:medium;">1〜30%</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td style="font-size:medium;">31〜60%</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td style="font-size:medium;">61〜90%</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td style="font-size:medium;">91〜100%</td>
+      </tr>
+    </tbody>
+  </table>
+
+<% elsif biru_icon == "age" %>
+  <!-- 築年数  -->
+  <table style="margin-left:30px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_purple.png') %></td>
+        <td style="font-size:medium;">0〜1年</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_blue.png') %></td>
+        <td style="font-size:medium;">2〜5年</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td style="font-size:medium;">6〜10年</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td style="font-size:medium;">11〜20年</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td style="font-size:medium;">21〜30年</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td style="font-size:medium;">31〜40年</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">41年以上</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+<% elsif biru_icon == "num" %>
+  <!-- 戸数  -->
+  <table style="margin-left:30px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_purple.png') %></td>
+        <td style="font-size:medium;">1戸</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_blue.png') %></td>
+        <td style="font-size:medium;">2〜4戸</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td style="font-size:medium;">5〜6戸</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td style="font-size:medium;">6〜8戸</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td style="font-size:medium;">8〜10戸</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td style="font-size:medium;">11〜15戸</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">16〜20戸</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">21戸以上</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+<% else %>
+
+  <table style="margin-left:30px;">
+    <thead>
+      <tr>
+        <th width="50" style="text-align:center;"><label>物件<br/><input type="checkbox" id="buildChkbox" checked/></label></th>
+        <th width="100" style="text-align:center;"><label>物件種別<br/><input type="radio" name="dispcheck" id="bukkenRadio" value="2" checked /></label></th>
+        <th width="90" style="text-align:center;"><label>管理方式<br/><input type="radio" name="dispcheck" id="kanriRadio" value="1" /></label></th>
+        <th width="80" style="text-align:center;"><label>自他<br/><input type="radio" name="dispcheck" id="kanriRadio" value="3" /></label></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><%= image_tag('marker_blue.png') %></td>
+        <td>アパート</td>
+        <td>B管理</td>
+        <td>自社</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td>マンション</td>
+        <td>一般</td>
+        <td>一般</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_purple.png') %></td>
+        <td>分譲M</td>
+        <td>D管理</td>
+        <td>−</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td>戸建て</td>
+        <td>A管理</td>
+        <td>A管理</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td>テラス</td>
+        <td>業務君</td>
+        <td>−</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td>メゾネット</td>
+        <td>総務君</td>
+        <td>−</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td>店舗等</td>
+        <td>特有賃</td>
+        <td>−</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td>事務所等</td>
+        <td>定期借家</td>
+        <td>−</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_white.png') %></td>
+        <td>その他</td>
+        <td>管理外</td>
+        <td>他社</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size:x-small">
+    ※ここをコンボボックスにして徒歩分数別や、空室日数別、受託見込み別のような出し方をしても面白いかも。その場合はを選択する度に凡例をrenderすればいい。
+  </div>
+<% end %>
+
+

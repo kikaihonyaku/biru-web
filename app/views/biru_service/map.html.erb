@@ -1,6 +1,298 @@
 <% content_for :header do %>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
+<%#= stylesheet_link_tag('jquery-themes/flick/jquery.ui.theme') %>
+
+<%#= stylesheet_link_tag('jquery-themes/pepper-grinder/jquery.ui.theme') %>
+
+
+<%#= stylesheet_link_tag('jquery-themes/cupertino/jquery-ui') %>
+<%= stylesheet_link_tag('jquery-themes/humanity/jquery-ui') %>
+
+
 <script type="text/javascript">
+
+// アイコンを変更します。
+function change_icon(){
+
+  // ajaxで凡例を変更
+  document.forms['biru_icon'].s_commit.click();
+
+  // コンボボックスで選択されたものにgooglemapのアイコンを変更
+  change_biru_icon($('#biru_icon_id [name=disp_type]').val());
+
+}
+
+// 建物のアイコンを変更します。
+function change_biru_icon(type){
+  if(type == "siten"){
+    // 支店表示
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].siten_icon );
+    };
+  }else if(type == "area"){
+    // エリア表示
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].area_icon );
+    };
+  } else if(type == "shop" ){
+    // 営業所表示
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].shop_icon );
+    };
+
+  } else if(type == "biru_kind" ){
+    // 建物種別のアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].build_type_icon );
+    };
+  } else if( type == "manage_type") {
+    // 管理方式のICONを返しますのアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].manage_icon );
+    };
+  } else if( type == "num") {
+    // 管理戸数のアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].kanri_room_num );
+    };
+  } else if( type == "aki") {
+    // 空室のアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].free_room );
+    };
+  } else if( type == "age") {
+    // 築年月のアイコンにする。
+    for(var item in build_arr){
+      build_arr[item].setIcon(build_arr[item].biru_age );
+    };
+
+  } else {
+    // 何もしない
+  }
+
+}
+
+
+
+//--------------------------
+// アイコンの設定
+//--------------------------
+
+// 空室割合
+function get_icon_free_room(kosuu, aki){
+  var flt;
+  var icon;
+  flt = aki / kosuu;
+
+  if(flt == 0){
+      icon = 'marker_blue.png';
+  }else if( 0 < flt && flt <= 0.3 ){
+      icon ='marker_green.png';
+  }else if( 0.3 < flt && flt <= 0.6){
+      icon ='marker_orange.png';
+  }else if( 0.6 < flt && flt <= 0.9){
+      icon ='marker_orange.png';
+  }else if( 0.9 < flt && flt <= 1){
+      icon ='marker_red.png';
+  }else{
+      icon ='marker_white.png';
+  }
+
+  icon = '/assets/' + icon;
+
+  return icon;
+
+}
+
+
+// 戸数
+function get_icon_kanri_room_num(num){
+  var icon;
+
+  if(num == 1){
+    icon ='marker_purple.png';
+  }else if( 2 <= num && num <= 4){
+      icon = 'marker_blue.png';
+  }else if( 5 <= num && num <= 6){
+      icon ='marker_green.png';
+  }else if( 6 <= num && num <= 8){
+      icon ='marker_yellow.png';
+  }else if( 8 <= num && num <= 10){
+      icon ='marker_orange.png';
+  }else if( 11 <= num && num <= 15){
+      icon ='marker_red.png';
+  }else if( 16 <= num && num <= 20){
+      icon ='marker_gray.png';
+  }else if( 21 <= num ){
+      icon ='marker_gray.png';
+  }else{
+      icon ='marker_white.png';
+  }
+
+  icon = '/assets/' + icon;
+
+  return icon;
+}
+
+// 空室割合
+function get_icon_free_room(kosuu, aki){
+  var flt;
+  var icon;
+  flt = aki / kosuu;
+
+  if(flt == 0){
+      icon = 'marker_blue.png';
+  }else if( 0 < flt && flt <= 0.3 ){
+      icon ='marker_green.png';
+  }else if( 0.3 < flt && flt <= 0.6){
+      icon ='marker_orange.png';
+  }else if( 0.6 < flt && flt <= 0.9){
+      icon ='marker_orange.png';
+  }else if( 0.9 < flt && flt <= 1){
+      icon ='marker_red.png';
+  }else{
+      icon ='marker_white.png';
+  }
+
+  icon = '/assets/' + icon;
+  return icon;
+
+}
+
+// 築年数アイコン
+function get_icon_biru_age(age){
+  var icon;
+
+  if(0<= age && age <= 1){
+      icon ='marker_purple.png';
+  }else if( 2 <= age && age <= 5){
+      icon = 'marker_blue.png';
+  }else if( 6 <= age && age <= 10){
+      icon ='marker_green.png';
+  }else if( 11 <= age && age <= 20){
+      icon ='marker_yellow.png';
+  }else if( 21 <= age && age <= 30){
+      icon ='marker_orange.png';
+  }else if( 31 <= age && age <= 40){
+      icon ='marker_red.png';
+  }else if( 41 <= age ){
+      icon ='marker_gray.png';
+  }else{
+      icon ='marker_white.png';
+  }
+
+  icon = '/assets/' + icon;
+
+  return icon;
+}
+
+
+// 営業所
+function get_icon_shop(num){
+  var icon;
+
+  if( num == 3 ){
+    icon = 'marker_blue.png'; // 草加
+  }else if (num == 11 ){
+    icon = 'marker_yellow.png'; // 新田
+  }else if (num == 16 ){
+    icon = 'marker_purple.png'; // 北千住
+  }else if (num == 1 ){
+    icon = 'marker_red.png'; // 南越谷
+  }else if (num == 18 ){
+    icon = 'marker_orange.png'; // 越谷
+  }else if (num == 8 ){
+    icon = 'marker_green.png'; // 北越谷
+  }else if (num == 21 ){
+    icon = 'marker_white.png'; // せんげん台
+  }else if (num == 7 ){
+    icon = 'marker_gray.png'; // 春日部
+  }else if (num == 2 ){
+    icon = 'marker_blue.png'; // 戸田
+  }else if (num == 5 ){
+    icon = 'marker_yellow.png'; // 武蔵
+  }else if (num == 15 ){
+    icon = 'marker_purple.png'; // 川口
+  }else if (num == 17 ){
+    icon = 'marker_red.png'; // 与野
+  }else if (num == 13 ){
+    icon = 'marker_orange.png'; // 浦和
+  }else if (num == 10 ){
+    icon = 'marker_green.png'; // 東浦和
+  }else if (num == 6 ){
+    icon = 'marker_white.png'; // 東川口
+  }else if (num == 14 ){
+    icon = 'marker_gray.png'; // 戸塚安行
+  }else if (num == 19 ){
+    icon = 'marker_blue.png'; // 松戸
+  }else if (num == 4 ){
+    icon = 'marker_yellow.png'; // 北松戸
+  }else if (num == 9 ){
+    icon = 'marker_purple.png'; // 柏
+  }else if (num == 12 ){
+    icon = 'marker_red.png'; // 南流山
+  }else if (num == 91 ){
+    icon = 'marker_purple.png'; // 法人課
+  }else {
+    icon = 'marker_white.png'; // 不明
+  }
+
+  icon = '/assets/' + icon;
+  return icon;
+}
+
+// エリア
+function get_icon_area(num){
+  var icon;
+
+  if( num == 3 || num == 11 || num == 16 ){
+    icon = 'marker_blue.png'; // 東武南
+  }else if (num == 1 || num == 18 ){
+    icon = 'marker_yellow.png'; // 東武中央
+  }else if (num == 8 || num == 21 || num == 7){
+    icon = 'marker_purple.png'; // 東武北
+  }else if (num == 2 || num == 5 || num == 15){
+    icon = 'marker_red.png'; // さいたま南
+  }else if (num == 17 || num == 13  ){
+    icon = 'marker_orange.png'; // さいたま北
+  }else if (num == 10 || num == 6 || num == 14 ){
+    icon = 'marker_green.png'; // さいたま東
+  }else if (num == 19 || num == 4 ){
+    icon = 'marker_white.png'; // 常磐西
+  }else if (num == 9 || num == 12){
+    icon = 'marker_gray.png'; // 常磐中央
+  }else if (num == 91 ){
+    icon = 'marker_green.png'; // 法人課
+  }else {
+    icon = 'marker_white.png'; // 不明
+  }
+
+  icon = '/assets/' + icon;
+  return icon;
+
+}
+
+// 支店
+function get_icon_siten(num){
+  var icon;
+
+  if( num == 3 || num == 11 || num == 16 || num == 1 || num == 18 || num == 8 || num == 21 || num == 7 ){
+    icon = 'marker_green.png'; // 東武支店
+  }else if (num == 2 || num == 5 || num == 15 || num == 17 || num == 13 || num == 10 || num == 6 || num == 14){
+    icon = 'marker_blue.png'; // さいたま支店
+  }else if (num == 19 || num == 4 || num == 9 || num == 12){
+    icon = 'marker_yellow.png'; // 千葉支店
+  }else if (num == 91 ){
+    icon = 'marker_purple.png'; // アセットマネジメント部
+  }else {
+    icon = 'marker_white.png'; // 不明
+  }
+
+  icon = '/assets/' + icon;
+  return icon;
+
+}
+
 
 // Infoウィンドウに設定します
 function setInfoWnd(marker, msg){
@@ -75,11 +367,21 @@ function getCoords(position) {
         pos = new google.maps.LatLng(building.latitude, building.longitude);
 
         bounds.extend(pos);
-
+		
+		shop_code = parseInt(building.shop_code);
+		
         build_arr[building.id] = createMarker({
           position : pos
           ,map : mapCanvas
-          ,icon : '/assets/marker_blue.png'
+          ,icon : building.build_type_icon
+          ,siten_icon : get_icon_siten(shop_code)
+          ,area_icon : get_icon_area(shop_code)
+          ,shop_icon : get_icon_shop(shop_code)
+		  ,build_type_icon : building.build_type_icon
+		  ,manage_icon : building.manage_type_icon
+          ,kanri_room_num  : get_icon_kanri_room_num(building.room_cnt)
+          ,free_room : get_icon_free_room(building.room_cnt, building.free_cnt)
+          ,biru_age : get_icon_biru_age(building.biru_age)
           ,shadow : '/assets/marker_shadow.png'
           ,html : info_msg_biru(building, building_to_owners[building.id])
           ,visible : true
@@ -241,6 +543,12 @@ function getCoords(position) {
 		});
 	});
 	
+	$(function() {
+	  $( "#accordion" ).accordion();
+	});
+	
+
+	
 	var notice_disp;
 	notice_disp = false;
 
@@ -252,7 +560,8 @@ function getCoords(position) {
 	
 	function init_data_jqgrid(){
 		// 列名の定義
- 		var grid_name = ["trust_id",  "building_id",  "営業所",  "建物CD", "建物名",  "建物住所",  "部屋数",  "貸主CD",  "貸主名",  "貸主住所" ];
+ 		var grid_name = ["trust_id",  "building_id",  "営業所",  "建物CD", "建物名",  "建物住所", "建物種別", "管理方式", "築年数", "部屋数", "空室数", "空室割合(%)", "貸主CD",  "貸主名",  "貸主住所" ];
+		
 		
 		// 列属性の定義
 		var grid_model = [
@@ -262,12 +571,19 @@ function getCoords(position) {
 		 , {name:"building_code",  index:"building_code",  width:80,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"building_name",  index:"building_name",  width:100,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"building_address",  index:"building_address",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"build_type_name",  index:"build_type_name",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"manage_type_name",  index:"manage_type_name",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"biru_age",  index:"biru_age",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"room_cnt",  index:"room_cnt",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"free_cnt",  index:"free_cnt",  width:70,  align:"center",  classes:"no_class"}
+		 , {name:"free_par",  index:"free_par",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"owner_code",  index:"owner_code",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"owner_name",  index:"owner_name",  width:70,  align:"center",  classes:"no_class"}
 		 , {name:"owner_address",  index:"owner_address",  width:70,  align:"center",  classes:"no_class"}
+		 
+		 
+
 		];
-		
 
 		// その他の設定
 		var jqgrid_opt = {
@@ -279,7 +595,6 @@ function getCoords(position) {
 			, shrinkFit:true
 			, multiselect:false
 		};
-			
 		
 		$(function(){
 			jqgrid_create(grid_name,  grid_model,  gon.grid_data,  jqgrid_opt);
@@ -294,69 +609,192 @@ function getCoords(position) {
 
 
 
-
-
-
-
-
-
-
-
-
-
   <!-- ここは span9で呼び出されているので合計も9に合わせる -->
 	<a id="simple-menu" href="#sidr"></a>
 	<div style="height:50%;padding:10px 20px 0px 20px;">
 		
-		<div id="div_dummy" style="float:left;width:20%;height:80%;padding:0;margin:0;padding-right:10px;">
-			
-			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
+		<div id="div_dummy" style="float:left;width:20%;height:85%;padding:0;margin:0;padding-right:10px;">
+
+
+			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;height:100%;margin-bottom:15px;" >
 			    <ul>
 			        <li>
-			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top " style="color:white;font-weight:lighter">SUUMO写真枚数</span>
-						<div style="display:block;padding:5px;margin-left:10px;padding-top:10px;padding-bottom:10px;">
-							
-							<table style="margin-left:5px;">
-							   <tbody>
-							     <tr>
-							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_blue" src="/assets/marker_blue.png" /></td>
-							       <td style="text-align:left;">20枚フルセット</td>
-							     </tr>
-							     <tr>
-							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_yellow" src="/assets/marker_yellow.png" /></td>
-							       <td style="text-align:left;">10枚以上掲載</td>
-							     </tr>
-							     <tr>
-							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_red" src="/assets/marker_red.png" /></td>
-							       <td style="text-align:left;">10枚未満</td>
-							     </tr>
-								 
-							     <tr>
-							       <td colspan="2" style="text-align:left;height:30px;padding-top:10px;font-size: x-small;">※１つの建物に複数の部屋がある場合は、<br/>&nbsp;&nbsp;その建物の平均掲載枚数を使用します。</td>
-							     </tr>
-							   </tbody>
-							 </table>
-						</div>
-			        </li>
+			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" >								
+					  <%= form_tag('/biru_service/change_biru_icon', :remote => true, :format => 'js', :name=>'biru_icon', :id=>'biru_icon_id') do %>
+					    <%= select_tag 'disp_type', options_for_select({
+						"建物種別" => "biru_kind",
+						 "管理方式" => "manage_type",
+						 "空室数" => "aki",
+						 "築年数" => "age",
+						 "戸数"=>"num",
+						 "支店"=>"siten",
+						 "エリア" => "area",
+						 "営業所" => "shop",
+						 }), :onChange=>'change_icon();' %>
+					    <%= submit_tag "", :name=>'s_commit', :style=>"display:none;" %>
+					  <% end %>
+											
+						</span>
+					</li>
+			        <li>
+						<!-- この li のなかでは divは使えない模様 -->
+						<table>
+							<tr>
+								<td style="padding:10px;">
+
+									
+								</td>
+							</tr>
+							<tr>
+								<td>
+									
+									
+  <!-- 物件種別  -->
+  <table style="margin-left:30px;"  id="biru_icon">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_blue.png') %></td>
+        <td style="font-size:medium;">アパート</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td style="font-size:medium;">マンション</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_purple.png') %></td>
+        <td style="font-size:medium;">分譲M</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_red.png') %></td>
+        <td style="font-size:medium;">戸建て</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_orange.png') %></td>
+        <td style="font-size:medium;">テラス</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_green.png') %></td>
+        <td style="font-size:medium;">メゾネット</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">店舗等</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_gray.png') %></td>
+        <td style="font-size:medium;">事務所等</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_white.png') %></td>
+        <td style="font-size:medium;">その他</td>
+      </tr>
+    </tbody>
+  </table>
+					
+	
+
+								</td>
+							</tr>
+						</table>
+					</li>
 			    </ul>
 			</div>
 			
 			
-			
-			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
+			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;" >
 			    <ul>
 			        <li>
-			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" style="color:white;font-weight:lighter">基本メニュー</span>
+			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" >基本メニュー</span>
 					</li>
 			        <li><%= link_to "一覧へ戻る",  :action=>'index' %></li>
 			    </ul>
 			</div>
 			
-			<div id="search_div" style="width:100%;height:60%;margin-bottom:50px;">
-				<table id="search_table" ></table>
-				<div id="search_pager"></div>
-			</div>
-			
+
+<!-- 
+<div id="accordion">
+  <h3>アイコン表示</h3>
+  <div>
+	<table >
+	   <tbody>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_blue" src="/assets/marker_blue.png" /></td>
+	       <td style="text-align:left;">20枚フルセット</td>
+	     </tr>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_yellow" src="/assets/marker_yellow.png" /></td>
+	       <td style="text-align:left;">10枚以上掲載</td>
+	     </tr>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_red" src="/assets/marker_red.png" /></td>
+	       <td style="text-align:left;">10枚未満</td>
+	     </tr>
+		 
+	   </tbody>
+	 </table>
+  </div>
+  <h3>空室状況</h3>
+  <div>
+	<table >
+	   <tbody>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_blue" src="/assets/marker_blue.png" /></td>
+	       <td style="text-align:left;">20枚フルセット</td>
+	     </tr>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_yellow" src="/assets/marker_yellow.png" /></td>
+	       <td style="text-align:left;">10枚以上掲載</td>
+	     </tr>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_red" src="/assets/marker_red.png" /></td>
+	       <td style="text-align:left;">10枚未満</td>
+	     </tr>
+		 
+	   </tbody>
+	 </table>
+  </div>
+  <h3>Section 3</h3>
+  <div>
+	<table >
+	   <tbody>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_blue" src="/assets/marker_blue.png" /></td>
+	       <td style="text-align:left;">20枚フルセット</td>
+	     </tr>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_yellow" src="/assets/marker_yellow.png" /></td>
+	       <td style="text-align:left;">10枚以上掲載</td>
+	     </tr>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_red" src="/assets/marker_red.png" /></td>
+	       <td style="text-align:left;">10枚未満</td>
+	     </tr>
+		 
+	   </tbody>
+	 </table>
+  </div>
+  <h3>Section 4</h3>
+  <div>
+	<table >
+	   <tbody>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_blue" src="/assets/marker_blue.png" /></td>
+	       <td style="text-align:left;">20枚フルセット</td>
+	     </tr>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_yellow" src="/assets/marker_yellow.png" /></td>
+	       <td style="text-align:left;">10枚以上掲載</td>
+	     </tr>
+	     <tr>
+	       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_red" src="/assets/marker_red.png" /></td>
+	       <td style="text-align:left;">10枚未満</td>
+	     </tr>
+		 
+	   </tbody>
+	 </table>
+  </div>
+</div>
+-->			
 			
 		</div>
 		<div id="panowide" style="width: 100%; height: 0px;float:right;"></div>

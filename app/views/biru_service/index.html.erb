@@ -1,4 +1,17 @@
+<%#= stylesheet_link_tag('jquery-themes/pepper-grinder/jquery.ui.theme') %>
+<%= stylesheet_link_tag('jquery-themes/humanity/jquery.ui.theme') %>
+
+
+
 <script type="text/javascript">
+	
+	
+	var disp_biru_type;
+	disp_biru_type = false;
+
+	var disp_biru_mentenance;
+	disp_biru_mentenance = false;
+
 	
 	init_jqgrid();
 	
@@ -6,13 +19,42 @@
 
 	function init_jqgrid(){
 		// 列名の定義
-		var col_names = ["支店", "営業所", "管理棟数", "管理戸数", "リンク"];
+		var col_names = [
+			"支店",
+			 "営業所",
+			 "管理棟数",
+			 "マンション",
+			 "アパート",
+			 "分譲M",
+			 "戸建て",
+			 "その他",
+			 "巡回清掃",
+			 "給水設備点検",
+			 "貯水槽清掃",
+			 "エレベータ保守点検",
+			 "防犯カメラ",
+			 "管理戸数",
+			 "リンク",
+		];
 	
 		// 列属性の定義
 		var col_model = [
 	  	  {name:"group_name", index:"group_name", align:"center",classes:"no_class"}
 		 ,{name:"shop_name", index:"shop_name", align:"center",classes:"no_class"}
 		 ,{name:"building_cnt", index:"building_cnt", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
+
+		 ,{name:"biru_type_mn_cnt", index:"biru_type_mn_cnt", align:"center", width:100, classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_type_bm_cnt", index:"biru_type_bm_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_type_ap_cnt", index:"biru_type_ap_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_type_kdt_cnt", index:"biru_type_kdt_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_type_etc_cnt", index:"biru_type_etc_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 
+		 ,{name:"biru_mente_junnkai_cnt", index:"biru_mente_junnkai_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_mente_kyuusui_cnt", index:"biru_mente_kyuusui_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_mente_tyosui_cnt", index:"biru_mente_tyosui_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_mente_elv_cnt", index:"biru_mente_elv_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_mente_bouhan_cnt", index:"biru_mente_bouhan_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+
 		 ,{name:"room_cnt", index:"room_cnt", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
  		 ,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", hidden:true}
 		];
@@ -52,8 +94,8 @@
 			　　　　        groupSummary : [true]
 				},
 			
-			    ondblClickRow: function(id) {
-					// ダブルクリックイベント
+			    onSelectRow: function(id) {
+					// シングルクリックイベント
 				    data = jQuery('#building_table').getRowData(id);
 					//alert(location.href);
 					//alert(location.host);
@@ -66,6 +108,77 @@
 			});
 			
 			
+ 			table_div.navGrid('#building_pager', {
+ 			        edit:false, add:false, del:false, search:false
+ 			      }).navButtonAdd('#building_pager', {
+ 			        caption:"棟数内訳",  position:"last",  onClickButton: function(){
+
+						if( disp_biru_type == false ){
+							
+	   						 table_div.jqGrid('showCol',"biru_type_mn_cnt");
+	   						 table_div.jqGrid('showCol',"biru_type_bm_cnt");
+	   						 table_div.jqGrid('showCol',"biru_type_ap_cnt");
+	   						 table_div.jqGrid('showCol',"biru_type_kdt_cnt");
+	   						 table_div.jqGrid('showCol',"biru_type_etc_cnt");
+		 					 table_div.trigger("reloadGrid");
+							 
+							 disp_biru_type = true;
+						}else{
+							
+	   						 table_div.jqGrid('hideCol',"biru_type_mn_cnt");
+	   						 table_div.jqGrid('hideCol',"biru_type_bm_cnt");
+	   						 table_div.jqGrid('hideCol',"biru_type_ap_cnt");
+	   						 table_div.jqGrid('hideCol',"biru_type_kdt_cnt");
+	   						 table_div.jqGrid('hideCol',"biru_type_etc_cnt");
+		 					 table_div.trigger("reloadGrid");
+							 
+							disp_biru_type = false;
+						}
+						
+ 					 }
+ 			 });
+
+
+  			table_div.navGrid('#building_pager', {
+  			        edit:false, add:false, del:false, search:false
+  			      }).navButtonAdd('#building_pager', {
+  			        caption:"建物メンテ",  position:"last",  onClickButton: function(){
+
+ 						if( disp_biru_mentenance == false ){
+							
+ 	   						 table_div.jqGrid('showCol',"biru_mente_junnkai_cnt");
+ 	   						 table_div.jqGrid('showCol',"biru_mente_kyuusui_cnt");
+ 	   						 table_div.jqGrid('showCol',"biru_mente_tyosui_cnt");
+ 	   						 table_div.jqGrid('showCol',"biru_mente_elv_cnt");
+ 	   						 table_div.jqGrid('showCol',"biru_mente_bouhan_cnt");
+ 		 					 table_div.trigger("reloadGrid");
+							 
+ 							 disp_biru_mentenance = true;
+ 						}else{
+							
+ 	   						 table_div.jqGrid('hideCol',"biru_mente_junnkai_cnt");
+ 	   						 table_div.jqGrid('hideCol',"biru_mente_kyuusui_cnt");
+ 	   						 table_div.jqGrid('hideCol',"biru_mente_tyosui_cnt");
+ 	   						 table_div.jqGrid('hideCol',"biru_mente_elv_cnt");
+ 	   						 table_div.jqGrid('hideCol',"biru_mente_bouhan_cnt");
+ 		 					 table_div.trigger("reloadGrid");
+							 
+ 							disp_biru_mentenance = false;
+ 						}
+						
+  					 }
+  			 });
+
+			 			
+ 	        table_div.jqGrid('setGroupHeaders', {
+ 	          useColSpanStyle: true,
+ 	          groupHeaders:[
+ 	            {startColumnName: 'biru_type_mn_cnt', numberOfColumns: 5, titleText: '<em>棟数内訳</em>'},
+ 	            {startColumnName: 'biru_mente_junnkai_cnt', numberOfColumns: 5, titleText: '<em>建物メンテナンス</em>'},
+				
+ 	          ]
+ 	        });			
+			
 		});
 
 		
@@ -74,11 +187,14 @@
 	}
 </script>
 
+
 <div style="padding:50px 80px 10px 80px;">
+	※管理方式B以上を表示しています。
 	<div id="div_dummy_02" style="width:100%;height:90%;">
 		<table id="building_table"></table>
 		<div id = "building_pager"></div>
 	</div>
+	※指定の営業所をクリックすると詳細画面に飛びます。
 </div>
 
 

@@ -98,6 +98,7 @@ class RentersController < ApplicationController
     data_list.push({:store_code =>'3', :summary => 0, :suumo_ten => 0 ,:suumo_full => 0, :url => 'map?stcd=335,336,339,334,340,337,338,667', :group_name=>'00支店', :store_name =>'東武支店' }) #東武
     data_list.push({:store_code =>'4', :summary => 0, :suumo_ten => 0 ,:suumo_full => 0, :url => 'map?stcd=2763,341,342,344,348,346,349,343,345', :group_name=>'00支店', :store_name =>'さいたま支店' }) #さいたま
     data_list.push({:store_code =>'5', :summary => 0, :suumo_ten => 0 ,:suumo_full => 0, :url => 'map?stcd=352,347,351,350', :group_name=>'00支店', :store_name =>'千葉支店' }) #千葉
+    data_list.push({:store_code =>'9', :summary => 0, :suumo_ten => 0 ,:suumo_full => 0, :url => 'map', :group_name=>'99その他', :store_name =>'ビル全体' })
 
     
     toubu_value = 0
@@ -131,6 +132,11 @@ class RentersController < ApplicationController
           data_hash[:suumo_ten] = chiba_suumo_ten
           data_hash[:suumo_full] = chiba_suumo
         end
+      
+      elsif data_hash[:store_name] == 'ビル全体'
+        data_hash[:summary] = toubu_value + saitama_value + chiba_value
+        data_hash[:suumo_ten] = toubu_suumo_ten + saitama_suumo_ten + chiba_suumo_ten
+        data_hash[:suumo_full] = toubu_suumo + chiba_suumo_ten + chiba_suumo
         
       else
         
