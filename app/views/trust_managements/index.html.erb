@@ -71,8 +71,8 @@
 				   // 					   link_owner_click(table_div.getRowData(id).owner_id);
 				   // }
 		        },
-			    ondblClickRow: function(id) {
-					// ダブルクリックイベント
+			    onSelectRow: function(id) {
+					// クリックイベント
 				    data = jQuery('#building_table').getRowData(id);
 			 		screen_block();
 					
@@ -122,7 +122,7 @@
 		<div style="padding-bottom:10px;">
 			<%= form_tag({:action => :index}, {:name => 'yyyymm'}) do %>
 				<%= select_tag(:month, options_for_select(@calender, @month),  :onchange=>"javascript:dropsort();") %>
-				<span style="padding-left:100px;">※ダブルクリックで詳細画面へ遷移します。</span>
+				<span style="padding-left:100px;">※クリックで詳細画面へ遷移します。</span>
 			<% end %>
 		</div>
 

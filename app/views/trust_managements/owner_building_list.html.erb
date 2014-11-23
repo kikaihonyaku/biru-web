@@ -1130,7 +1130,7 @@ function getCoords(position) {
 									<tr>
 										<td>
 											<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-											<label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+											<!-- <label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp; -->
 											<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
 											<div style="padding-bottom:30px;">
 												（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
@@ -1149,7 +1149,7 @@ function getCoords(position) {
 									<tr>
 										<td>
 											<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-											<label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+											<!-- <label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp; -->
 											<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
 											<div style="padding-bottom:30px;">
 								（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
@@ -1168,7 +1168,7 @@ function getCoords(position) {
 									<tr>
 										<td>
 											<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-											<label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp;
+											<!-- <label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp; -->
 											<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
 											<div style="padding-bottom:30px;">
 											（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）

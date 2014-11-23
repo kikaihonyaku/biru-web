@@ -726,12 +726,24 @@ def get_trust_sql(object_user)
   sql = sql + " , shops.longitude as shop_longitude "
   sql = sql + " , biru_users.name as biru_user_name "
   sql = sql + " , attack_states.name as attack_states_name "
+  sql = sql + " , SUM(case approaches.code when '0010' then 1 else 0 end) as houmon_rusu "
   sql = sql + " FROM trusts inner join owners on trusts.owner_id = owners.id "
   sql = sql + " inner JOIN manage_types on trusts.manage_type_id = manage_types.id "
   sql = sql + " inner JOIN buildings on trusts.building_id = buildings.id "
   sql = sql + " inner JOIN shops on buildings.shop_id = shops.id "
   sql = sql + " inner JOIN biru_users on trusts.biru_user_id = biru_users.id "
   sql = sql + " left outer JOIN attack_states on trusts.attack_state_id = attack_states.id "
+  sql = sql + " left outer JOIN (  "
+  sql = sql + "  select  "
+  sql = sql + "      owner_approaches.owner_id"
+  sql = sql + "     ,owner_approaches.approach_date"
+  sql = sql + "     ,owner_approaches.content"
+  sql = sql + "     ,approach_kinds.code"
+  sql = sql + "     ,approach_kinds.name"
+  sql = sql + "  from owner_approaches inner join approach_kinds on owner_approaches.approach_kind_id = approach_kinds.id"
+  sql = sql + "  where not owner_approaches.delete_flg"
+  sql = sql + "   and owner_approaches.biru_user_id = " + object_user.id.to_s + " "
+  sql = sql + "  ) approaches on owners.id = approaches.owner_id"
   sql = sql + " WHERE owners.code is null "
   
   
@@ -759,19 +771,23 @@ def get_trust_sql(object_user)
   unless @history_visit[:all]
       
     # 訪問リレキで「すべて」以外が選択されているとき
-    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", Date.parse(@history_visit_from), Date.parse(@history_visit_to))
+    # approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", Date.parse(@history_visit_from), Date.parse(@history_visit_to))
+    
+    # if @history_visit[:exist]
+    #   approaches.each do |approach|
+    #     arr_exist.push(approach.owner_id)
+    #   end
+    #   filter_exist_flg = true
+    #
+    # elsif @history_visit[:not_exist]
+    #   approaches.each do |approach|
+    #     arr_not_exist.push(approach.owner_id)
+    #   end
+    #   filter_not_exist_flg = true
+    # end
     
     if @history_visit[:exist]
-      approaches.each do |approach|
-        arr_exist.push(approach.owner_id)
-      end
-      filter_exist_flg = true
-      
-    elsif @history_visit[:not_exist]
-      approaches.each do |approach|
-        arr_not_exist.push(approach.owner_id)
-      end
-      filter_not_exist_flg = true
+  	  sql = sql + " AND ( approaches.code In ('0010', '0020') and approaches.approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
     end
     
   end
@@ -780,56 +796,91 @@ def get_trust_sql(object_user)
   # DMリレキのチェック
   unless @history_dm[:all]
     
-    # DMリレキで「すべて」以外が選択されているとき
-    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030','0035')").where("approach_date between ? and ? ", Date.parse(@history_dm_from), Date.parse(@history_dm_to))
-    
+    # # DMリレキで「すべて」以外が選択されているとき
+    # approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030','0035')").where("approach_date between ? and ? ", Date.parse(@history_dm_from), Date.parse(@history_dm_to))
+    #
+    # if @history_dm[:exist]
+    #   approaches.each do |approach|
+    #     arr_exist.push(approach.owner_id)
+    #   end
+    #   filter_exist_flg = true
+    #
+    # elsif @history_dm[:not_exist]
+    #   approaches.each do |approach|
+    #     arr_not_exist.push(approach.owner_id)
+    #   end
+    #   filter_not_exist_flg = true
+    #
+    # end
+
     if @history_dm[:exist]
-      approaches.each do |approach|
-        arr_exist.push(approach.owner_id)
-      end
-      filter_exist_flg = true
-      
-    elsif @history_dm[:not_exist]
-      approaches.each do |approach|
-        arr_not_exist.push(approach.owner_id)
-      end
-      filter_not_exist_flg = true
-      
+  	  sql = sql + " AND ( approaches.code In ('0030','0035') and approaches.approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
     end
+
     
   end
   
   # TELリレキのチェック
   unless @history_tel[:all]
     
-    # TELリレキで「すべて」以外が選択されているとき
-    approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040','0045')").where("approach_date between ? and ? ", Date.parse(@history_tel_from), Date.parse(@history_tel_to))
+    # # TELリレキで「すべて」以外が選択されているとき
+    # approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040','0045')").where("approach_date between ? and ? ", Date.parse(@history_tel_from), Date.parse(@history_tel_to))
+    #
+    # if @history_tel[:exist]
+    #   approaches.each do |approach|
+    #     arr_exist.push(approach.owner_id)
+    #   end
+    #   filter_exist_flg = true
+    #
+    # elsif @history_tel[:not_exist]
+    #   approaches.each do |approach|
+    #     arr_not_exist.push(approach.owner_id)
+    #   end
+    #   filter_not_exist_flg = true
+    # end
     
-    if @history_tel[:exist]
-      approaches.each do |approach|
-        arr_exist.push(approach.owner_id)
-      end
-      filter_exist_flg = true
-      
-    elsif @history_tel[:not_exist]
-      approaches.each do |approach|
-        arr_not_exist.push(approach.owner_id)
-      end
-      filter_not_exist_flg = true
-      
+    if history_tel[:exist]
+  	  sql = sql + " AND ( approaches.code In ('0040','0045') and approaches.approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
     end
+    
   end
   
-  # 絞り込み条件が指定されていた時
-  if filter_exist_flg 
-      # trust_data = trust_data.where("owners.id in (?)", arr_exist) 
-      sql = sql + " AND owners.id in (" + arr_exist.join(',') + ") "
-  end
+  # # 絞り込み条件が指定されていた時
+  # if filter_exist_flg
+  #     # trust_data = trust_data.where("owners.id in (?)", arr_exist)
+  #     sql = sql + " AND owners.id in (" + arr_exist.join(',') + ") "
+  # end
+  #
+  # if filter_not_exist_flg
+  #   # trust_data = trust_data.where("owners.id not in (?)", arr_not_exist)
+  #   sql = sql + "AND owners.id not in (" + arr_not_exist.join(',') + ") "
+  # end
   
-  if filter_not_exist_flg
-    # trust_data = trust_data.where("owners.id not in (?)", arr_not_exist) 
-    sql = sql + "AND owners.id not in (" + arr_not_exist.join(',') + ") "
-  end
+  
+  sql = sql + " group by trusts.manage_type_id  "
+  sql = sql + " , owners.id  "
+  sql = sql + " , owners.attack_code  "
+  sql = sql + " , owners.name  "
+  sql = sql + " , owners.address  "
+  sql = sql + " , owners.memo  "
+  sql = sql + " , owners.latitude  "
+  sql = sql + " , owners.longitude  "
+  sql = sql + " , owners.dm_delivery  "
+  sql = sql + " , buildings.id  "
+  sql = sql + " , buildings.attack_code  "
+  sql = sql + " , buildings.name  "
+  sql = sql + " , buildings.address  "
+  sql = sql + " , buildings.memo  "
+  sql = sql + " , buildings.latitude  "
+  sql = sql + " , buildings.longitude  "
+  sql = sql + " , buildings.proprietary_company  "
+  sql = sql + " , shops.id  "
+  sql = sql + " , shops.name  "
+  sql = sql + " , shops.name  "
+  sql = sql + " , shops.latitude  "
+  sql = sql + " , shops.longitude  "
+  sql = sql + " , biru_users.name  "
+  sql = sql + " , attack_states.name  "  
 
   sql = sql + " ORDER BY buildings.id asc"
   #trust_data
