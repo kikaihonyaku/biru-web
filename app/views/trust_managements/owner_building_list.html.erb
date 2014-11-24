@@ -724,7 +724,7 @@ function getCoords(position) {
 	function init_jqgrid_trust(){
 		// 列名の定義
 		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
-		var grid_name = ["trust_id", "owner_id", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "営業所", "担当者"];
+		var grid_name = ["trust_id", "owner_id", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "訪問(留守）", "訪問(在宅）", "DM(発送）", "DM(反響）", "電話(留守）", "電話(会話）", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "営業所", "担当者"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -735,6 +735,14 @@ function getCoords(position) {
 		 ,{name:"owner_name", index:"owner_name", width:400, align:"left", classes:"no_class"}
 		 ,{name:"owner_address", index:"owner_address", width:300, align:"left", classes:"no_class"}
 		 ,{name:"owner_memo", index:"owner_memo", width:400, align:"left", classes:"no_class"}
+		 
+		 ,{name:"visit_rusu", index:"visit_rusu", width:200, align:"center", classes:"no_class"}
+		 ,{name:"visit_zai", index:"visit_zai", width:200, align:"center", classes:"no_class"}
+		 ,{name:"dm_send", index:"dm_send", width:200, align:"center", classes:"no_class"}
+		 ,{name:"dm_res", index:"dm_res", width:200, align:"center", classes:"no_class"}
+		 ,{name:"tel_call", index:"tel_call", width:200, align:"center", classes:"no_class"}
+		 ,{name:"tel_speack", index:"tel_speack", width:200, align:"center", classes:"no_class"}
+
 		 ,{name:"building_id", index:"building_id", align:"right", classes:"no_class", hidden:true}
 		 ,{name:"building_code", index:"building_code", width:200, align:"center", classes:"no_class"}
 		 ,{name:"building_name", index:"building_name", width:400, align:"left", classes:"no_class"}
@@ -764,6 +772,15 @@ function getCoords(position) {
 			rec['owner_name'] = trust_manage.owner_name
 			rec['owner_address'] = trust_manage.owner_address
 			rec['owner_memo'] = trust_manage.owner_memo
+
+
+			rec['visit_rusu'] = trust_manage.visit_rusu
+			rec['visit_zai'] = trust_manage.visit_zai
+			rec['dm_send'] = trust_manage.dm_send
+			rec['dm_res'] = trust_manage.dm_res
+			rec['tel_call'] = trust_manage.tel_call
+			rec['tel_speack'] = trust_manage.tel_speack
+			
 			rec['building_id'] = trust_manage.building_id
 			rec['building_code'] = trust_manage.building_attack_code
 			rec['building_name'] = trust_manage.building_name
@@ -912,7 +929,7 @@ function getCoords(position) {
 			</div>
 			
 
-			
+			<!--
 			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;" >
 			    <ul>
 			        <li>
@@ -925,7 +942,6 @@ function getCoords(position) {
 			            </ul>
 						
 			        </li>
-					<!--
 			        <li>
 			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">地図操作</span>
 						<div style="display:block;padding:5px;margin-left:10px;padding-top:10px;padding-bottom:10px;">
@@ -945,9 +961,9 @@ function getCoords(position) {
 			        </li>
 			        <li><a href="#">履歴・ランク検索</a></li>
 			        <li><a href="#">貸主登録</a></li>
-				-->
 			    </ul>
 			</div>
+				-->
 			
 			<table id="shop_table"></table>
 			<div id = "shop_pager"></div>

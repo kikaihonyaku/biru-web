@@ -726,7 +726,12 @@ def get_trust_sql(object_user)
   sql = sql + " , shops.longitude as shop_longitude "
   sql = sql + " , biru_users.name as biru_user_name "
   sql = sql + " , attack_states.name as attack_states_name "
-  sql = sql + " , SUM(case approaches.code when '0010' then 1 else 0 end) as houmon_rusu "
+  sql = sql + " , SUM(case approaches.code when '0010' then 1 else 0 end) as visit_rusu "
+  sql = sql + " , SUM(case approaches.code when '0020' then 1 else 0 end) as visit_zai "
+  sql = sql + " , SUM(case approaches.code when '0030' then 1 else 0 end) as dm_send "
+  sql = sql + " , SUM(case approaches.code when '0035' then 1 else 0 end) as dm_res "
+  sql = sql + " , SUM(case approaches.code when '0040' then 1 else 0 end) as tel_call "
+  sql = sql + " , SUM(case approaches.code when '0045' then 1 else 0 end) as tel_speack "
   sql = sql + " FROM trusts inner join owners on trusts.owner_id = owners.id "
   sql = sql + " inner JOIN manage_types on trusts.manage_type_id = manage_types.id "
   sql = sql + " inner JOIN buildings on trusts.building_id = buildings.id "
@@ -788,7 +793,7 @@ def get_trust_sql(object_user)
     
     if @history_visit[:exist]
       kinds = ApproachKind.find_all_by_code(['0010', '0020'])
-  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
+  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where not delete_flg and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
     end
     
   end
@@ -816,7 +821,7 @@ def get_trust_sql(object_user)
 
     if @history_dm[:exist]
       kinds = ApproachKind.find_all_by_code(['0030','0035'])
-  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
+  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where not delete_flg and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
     end
 
     
@@ -844,7 +849,7 @@ def get_trust_sql(object_user)
     if @history_tel[:exist]
       
       kinds = ApproachKind.find_all_by_code(['0040','0045'])
-  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
+  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where not delete_flg and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
     end
     
   end
