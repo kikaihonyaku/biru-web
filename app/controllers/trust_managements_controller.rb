@@ -787,7 +787,8 @@ def get_trust_sql(object_user)
     # end
     
     if @history_visit[:exist]
-  	  sql = sql + " AND ( approaches.code In ('0010', '0020') and approaches.approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
+      kinds = ApproachKind.find_all_by_code(['0010', '0020'])
+  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
     end
     
   end
@@ -814,7 +815,8 @@ def get_trust_sql(object_user)
     # end
 
     if @history_dm[:exist]
-  	  sql = sql + " AND ( approaches.code In ('0030','0035') and approaches.approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
+      kinds = ApproachKind.find_all_by_code(['0030','0035'])
+  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
     end
 
     
@@ -839,8 +841,10 @@ def get_trust_sql(object_user)
     #   filter_not_exist_flg = true
     # end
     
-    if history_tel[:exist]
-  	  sql = sql + " AND ( approaches.code In ('0040','0045') and approaches.approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
+    if @history_tel[:exist]
+      
+      kinds = ApproachKind.find_all_by_code(['0040','0045'])
+  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
     end
     
   end
