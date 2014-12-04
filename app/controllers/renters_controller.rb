@@ -41,7 +41,7 @@ class RentersController < ApplicationController
       gaikan = 0 if gaikan < 0
 
       # 内観
-      naikan = 9 - (rec['J01'].to_i + rec['J02'].to_i + rec['J03'].to_i + rec['J04'].to_i + rec['J05'].to_i + rec['J06'].to_i + rec['J08'].to_i + rec['J09'].to_i )
+      naikan = 9 - (rec['J01'].to_i + rec['J02'].to_i + rec['J03'].to_i + rec['J04'].to_i + rec['J05'].to_i + rec['J06'].to_i + rec['J07'].to_i + rec['J08'].to_i + rec['J09'].to_i )
       naikan = 0 if naikan < 0
 
       # 外観その他
@@ -262,6 +262,7 @@ class RentersController < ApplicationController
       room['J04'] = rec['J04'] # xxxxx
       room['J05'] = rec['J05'] # xxxxx
       room['J06'] = rec['J06'] # xxxxx
+      room['J07'] = rec['J07'] # xxxxx
       room['J08'] = rec['J08'] # xxxxx
       room['J09'] = rec['J09'] # xxxxx
       room['T03'] = rec['T03'] # xxxxx
@@ -324,6 +325,7 @@ class RentersController < ApplicationController
     ,J05
     ,J06
     ,J08
+    ,J07
     ,J09
     ,T03
     ,T04

@@ -48,7 +48,7 @@
 		var rooms = gon.rooms[building.id]
 		rooms.forEach(function(room){
 			
-			res = get_rentes_picture_cnt(room.J00, room.T00, room.J01, room.J02, room.J03, room.J04, room.J05, room.J06, room.J08, room.J09, room.T03, room.T04, room.T05, room.T06, room.T08, room.T11, room.T01);
+			res = get_rentes_picture_cnt(room.J00, room.T00, room.J01, room.J02, room.J03, room.J04, room.J05, room.J06, room.J07, room.J08, room.J09, room.T03, room.T04, room.T05, room.T06, room.T08, room.T11, room.T01);
 			
 			sum = room.madori + room.gaikan + room.naikan + room.gaikan_etc + room.syuuhen
 			
@@ -240,7 +240,7 @@
 			rec['notice_f'] = renters_data.notice_f
 			
 			//tmp = get_suumo_remaining(false,  renters_data.madori,  renters_data.gaikan,  renters_data.naikan,  renters_data.gaikan_etc,  renters_data.syuuhen)
-			res = get_rentes_picture_cnt(renters_data.J00, renters_data.T00, renters_data.J01, renters_data.J02, renters_data.J03, renters_data.J04, renters_data.J05, renters_data.J06, renters_data.J08, renters_data.J09, renters_data.T03, renters_data.T04, renters_data.T05, renters_data.T06, renters_data.T08, renters_data.T11, renters_data.T01);
+			res = get_rentes_picture_cnt(renters_data.J00, renters_data.T00, renters_data.J01, renters_data.J02, renters_data.J03, renters_data.J04, renters_data.J05, renters_data.J06, renters_data.J07, renters_data.J08, renters_data.J09, renters_data.T03, renters_data.T04, renters_data.T05, renters_data.T06, renters_data.T08, renters_data.T11, renters_data.T01);
 			
 			
 			rec['suumo_sum'] = res.suumo_all
@@ -258,6 +258,7 @@
 			rec['naikan_renters_living'] = res.naikan_renters_living
 			rec['naikan_renters_washroom'] = res.naikan_renters_washroom
 			rec['naikan_renters_porch'] = res.naikan_renters_porch
+			rec['naikan_renters_scenery'] = res.naikan_renters_scenery
 			rec['naikan_renters_equipment'] = res.naikan_renters_equipment
 			rec['naikan_renters_etc'] = res.naikan_renters_etc
 			rec['gaikan_etc_renters_entrance'] = res.gaikan_etc_renters_entrance
@@ -489,7 +490,7 @@
 	// }
 	
 	// レンターズの写真枚数をハッシュに格納します。
-	function get_rentes_picture_cnt(J00, T00, J01, J02, J03, J04, J05, J06, J08, J09, T03, T04, T05, T06, T08, T11, T01){
+	function get_rentes_picture_cnt(J00, T00, J01, J02, J03, J04, J05, J06, J07, J08, J09, T03, T04, T05, T06, T08, T11, T01){
 		
 		res = {};
 		
@@ -502,6 +503,7 @@
 		res.naikan_renters_living = J01;
 		res.naikan_renters_washroom = J06;
 		res.naikan_renters_porch = J02;
+		res.naikan_renters_scenery = J07;
 		res.naikan_renters_equipment = J08;
 		res.naikan_renters_etc = J09;
 		res.gaikan_etc_renters_entrance = T04;
@@ -512,7 +514,7 @@
 		res.gaikan_etc_renters_layout = T03;
 		res.syuuhen_renters_syuuhen = T01;
 
-		res.renters_all = res.madori_renters_madori + res.gaikan_renters_gaikan + res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom + res.naikan_renters_porch + res.naikan_renters_equipment + res.naikan_renters_etc + res.gaikan_etc_renters_entrance + res.gaikan_etc_renters_common_utility + res.gaikan_etc_renters_raising_trees + res.gaikan_etc_renters_parking + res.gaikan_etc_renters_etc + res.gaikan_etc_renters_layout + res.syuuhen_renters_syuuhen
+		res.renters_all = res.madori_renters_madori + res.gaikan_renters_gaikan + res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom + res.naikan_renters_porch + res.naikan_renters_scenery + res.naikan_renters_equipment + res.naikan_renters_etc + res.gaikan_etc_renters_entrance + res.gaikan_etc_renters_common_utility + res.gaikan_etc_renters_raising_trees + res.gaikan_etc_renters_parking + res.gaikan_etc_renters_etc + res.gaikan_etc_renters_layout + res.syuuhen_renters_syuuhen
 		
 		// スーモ枚数カウント
 		res.madori_suumo = res.madori_renters_madori;
@@ -525,7 +527,7 @@
 			res.gaikan_suumo = 2;
 		}
 				
-		res.naikan_suumo = (res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom +  res.naikan_renters_porch + res.naikan_renters_equipment + res.naikan_renters_etc);
+		res.naikan_suumo = (res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom +  res.naikan_renters_porch + res.naikan_renters_scenery + res.naikan_renters_equipment + res.naikan_renters_etc);
 		if(res.naikan_suumo > 9){
 			res.naikan_suumo = 9;
 		}

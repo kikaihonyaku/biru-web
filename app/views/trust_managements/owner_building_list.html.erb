@@ -412,7 +412,7 @@ function getCoords(position) {
         build_arr[building.id] = createMarker({
           position : pos
           ,map : mapCanvas
-          ,icon : '/assets/marker_blue.png'
+          ,icon : '/assets/blue-pushpin.png'
           ,siten_icon : get_icon_siten(shop_code)
           ,area_icon : get_icon_area(shop_code)
           ,shop_icon : get_icon_shop(shop_code)
@@ -421,7 +421,7 @@ function getCoords(position) {
           ,kanri_room_num  : get_icon_kanri_room_num(building.kanri_room_num)
           ,free_room : get_icon_free_room(building.kanri_room_num, building.free_num)
           ,biru_age : get_icon_biru_age(building.biru_age)
-          ,shadow : '/assets/marker_shadow.png'
+          ,shadow : '/assets/pushpin_shadow.png'
           ,html : info_msg_biru(building, building_to_owners[building.id])
           ,visible : build_disp
         });
@@ -502,7 +502,7 @@ function getCoords(position) {
       <% end %>
 
       //owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
-	  owner_icon = '/assets/marker_yellow.png'
+	  owner_icon = '/assets/yellow.png'
 
       owner_arr[owner.id] = createMarker({
         position : pos
