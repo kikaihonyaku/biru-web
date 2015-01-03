@@ -80,7 +80,8 @@ BiruWeb::Application.routes.draw do
 
   get "biru_service/index" ,:as => :biru_service
 
-  get "renters/index" ,:as => :renters
+  get "renters/index(/:sakimono)" => 'renters#index' ,:as => :renters
+  
   match "renters/update_all", :as =>:renters_update_all
   get "renters/pictures/:id" => "renters#pictures" , :as => :renters_pictures
 

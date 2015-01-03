@@ -408,20 +408,20 @@ function getCoords(position) {
         <% end %>
 
         var shop_code = convert_shop[building.shop_id];
-
+		
         build_arr[building.id] = createMarker({
           position : pos
           ,map : mapCanvas
-          ,icon : '/assets/blue-pushpin.png'
-          ,siten_icon : get_icon_siten(shop_code)
-          ,area_icon : get_icon_area(shop_code)
-          ,shop_icon : get_icon_shop(shop_code)
-          ,manage_icon : building.tmp_manage_type_icon
-          ,build_type_icon : building.tmp_build_type_icon
-          ,kanri_room_num  : get_icon_kanri_room_num(building.kanri_room_num)
-          ,free_room : get_icon_free_room(building.kanri_room_num, building.free_num)
-          ,biru_age : get_icon_biru_age(building.biru_age)
-          ,shadow : '/assets/pushpin_shadow.png'
+          //,icon : '/assets/' + building_icon
+          //,siten_icon : get_icon_siten(shop_code)
+          //,area_icon : get_icon_area(shop_code)
+          //,shop_icon : get_icon_shop(shop_code)
+          //,manage_icon : building.tmp_manage_type_icon
+          //,build_type_icon : building.tmp_build_type_icon
+          //,kanri_room_num  : get_icon_kanri_room_num(building.kanri_room_num)
+          //,free_room : get_icon_free_room(building.kanri_room_num, building.free_num)
+          //,biru_age : get_icon_biru_age(building.biru_age)
+          //,shadow : '/assets/pushpin_shadow.png'
           ,html : info_msg_biru(building, building_to_owners[building.id])
           ,visible : build_disp
         });
@@ -500,9 +500,12 @@ function getCoords(position) {
         owner_disp = true
         bounds.extend(pos);
       <% end %>
+		
+	  
 
       //owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
-	  owner_icon = '/assets/yellow.png'
+      owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon_withshadow&chld=home%7CFFFF00"
+	  //owner_icon = '/assets/yellow.png'
 
       owner_arr[owner.id] = createMarker({
         position : pos
@@ -517,26 +520,58 @@ function getCoords(position) {
     trust_arr = {}; // varを外してグローバル化
     gon.trusts.forEach(function(trust){
 
-      // 貸主マスタ・建物マスタに委託で指定した貸主CD・建物CDが存在することを確認
-      if ( !owner_arr[trust.owner_id] ){
-          //continue;
+		// 貸主マスタ・建物マスタに委託で指定した貸主CD・建物CDが存在することを確認
+		if ( !owner_arr[trust.owner_id] ){
+		  //continue;
 		  return;
-      }
+		}
 
-      if ( !build_arr[trust.building_id]){
-          //continue;
+		if ( !build_arr[trust.building_id]){
+		  //continue;
 		  return;
-      }
+		}
+	  
+		// 建物・貸主の色を設定
+		var owner_icon = "";
+		var building_icon = "";
 
-      trust_arr[trust.id] = new google.maps.Polyline({
-         map : mapCanvas
-        ,path : [owner_arr[trust.owner_id].position, build_arr[trust.building_id].position]
-        //,strokeColor: gon.manage_line_color[trust.manage_type_id]
+		if(trust.attack_states_code == 'S'){
+		  	owner_icon = "marker_large_gold_S.png";
+		  	building_icon = "marker_orange.png";
+		}else if(trust.attack_states_code == 'A'){
+		  	owner_icon = "marker_large_green_A.png";
+		  	building_icon = "marker_green.png";
+	
+		}else if(trust.attack_states_code == 'B'){
+		  	owner_icon = "marker_large_purple_B.png";
+		  	bbuilding_icon = "marker_purple.png";
+	
+		}else if(trust.attack_states_code == 'C'){
+		  	owner_icon = "marker_large_red_C.png";
+		  	building_icon = "marker_red.png";
+	
+		}else if(trust.attack_states_code == 'D'){
+		  	owner_icon = "marker_large_blue_D.png";
+		  	building_icon = "marker_blue.png";
+	
+		}else{
+		  	owner_icon = "marker_large_white_Z.png";
+		  	building_icon = "marker_white.png";
+		}
+
+		owner_arr[trust.owner_id].setIcon('/assets/' + owner_icon);
+		build_arr[trust.building_id].setIcon('/assets/' + building_icon);
+
+
+		trust_arr[trust.id] = new google.maps.Polyline({
+		 map : mapCanvas
+		,path : [owner_arr[trust.owner_id].position, build_arr[trust.building_id].position]
+		//,strokeColor: gon.manage_line_color[trust.manage_type_id]
 		,strokeColor: 'blue'
-        ,strokeOpacity:0.5
-        ,strokeWeight:3
-        ,zIndex:1
-      });
+		,strokeOpacity:0.5
+		,strokeWeight:3
+		,zIndex:1
+		});
 
       // 初期状態は非表示
       trust_arr[trust.id].set("visible", false);
@@ -724,7 +759,7 @@ function getCoords(position) {
 	function init_jqgrid_trust(){
 		// 列名の定義
 		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
-		var grid_name = ["trust_id", "owner_id", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "訪問(留守）", "訪問(在宅）", "DM(発送）", "DM(反響）", "電話(留守）", "電話(会話）", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "営業所", "担当者"];
+		var grid_name = ["trust_id", "owner_id", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "訪問(留守）", "訪問(在宅）", "DM(発送）", "DM(反響）", "電話(留守）", "電話(会話）", "building_id", "見込ランク", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "営業所", "担当者"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -744,6 +779,8 @@ function getCoords(position) {
 		 ,{name:"tel_speack", index:"tel_speack", width:200, align:"center", classes:"no_class"}
 
 		 ,{name:"building_id", index:"building_id", align:"right", classes:"no_class", hidden:true}
+		 ,{name:"attack_states_code", index:"attack_states_code", align:"center", classes:"no_class"}
+		 
 		 ,{name:"building_code", index:"building_code", width:200, align:"center", classes:"no_class"}
 		 ,{name:"building_name", index:"building_name", width:400, align:"left", classes:"no_class"}
 		 ,{name:"building_address", index:"building_address", width:300, align:"left", classes:"no_class"}
@@ -782,6 +819,8 @@ function getCoords(position) {
 			rec['tel_speack'] = trust_manage.tel_speack
 			
 			rec['building_id'] = trust_manage.building_id
+			
+			rec['attack_states_code'] = trust_manage.attack_states_code
 			rec['building_code'] = trust_manage.building_attack_code
 			rec['building_name'] = trust_manage.building_name
 			rec['building_address'] = trust_manage.building_address
@@ -909,20 +948,64 @@ function getCoords(position) {
 			        <li>
 			            <span class="toggle  ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top ">地図操作</span>
 						<div style="display:block;padding:5px;margin-left:10px;padding-top:10px;padding-bottom:10px;">
+
+    <table class="table table-striped table-bordered table-hover table-condensed">
+    <thead>
+      <tr>
+        <th>種別</th>
+        <th colspan="6" style="text-align:center;">ランク（Ｓ・Ａ・B・C・D・その他）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="vertical-align:middle">貸主</td>
+        <td style="text-align:center">
+			<img src="/assets/marker_large_gold_S.png" />
+		</td>
+        <td style="text-align:center">
+			<img src="/assets/marker_large_green_A.png" />
+		</td>
+        <td style="text-align:center">
+			<img  src="/assets/marker_large_purple_B.png" />
+		</td>
+        <td style="text-align:center">
+			<img  src="/assets/marker_large_red_C.png" />
+		</td>
+        <td style="text-align:center">
+			<img  src="/assets/marker_large_blue_D.png" />
+		</td>
+        <td style="text-align:center">
+			<img  src="/assets/marker_large_white_Z.png" />
+		</td>
+      </tr>
+      <tr height="50">
+        <td style="vertical-align:middle">物件</td>
+        <td style="text-align:center;vertical-align:middle;">
+			<img src="/assets/marker_orange.png" />
+		</td>
+        <td style="text-align:center;vertical-align:middle;">
+			<img src="/assets/marker_green.png" />
+		</td>
+        <td style="text-align:center;vertical-align:middle;">
+			<img  src="/assets/marker_purple.png" />
+		</td>
+        <td style="text-align:center;vertical-align:middle;">
+			<img  src="/assets/marker_red.png" />
+		</td>
+        <td style="text-align:center;vertical-align:middle;">
+			<img  src="/assets/marker_blue.png" />
+		</td>
+        <td style="text-align:center;vertical-align:middle;">
+			<img  src="/assets/marker_white.png" />
+		</td>
+      </tr>
+
+
+    </tbody>
+  </table>
+
 							
-							<table style="margin-left:5px;">
-							   <tbody>
-							     <tr>
-							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_yellow" src="/assets/marker_yellow.png" /></td>
-							       <td style="text-align:left;">貸主マーク</td>
-							     </tr>
-							     <tr>
-							       <td style="text-align:left;height:30px;width:25px;"><img alt="Marker_blue" src="/assets/marker_blue.png" /></td>
-							       <td style="text-align:left;">物件マーク</td>
-							     </tr>
-							   </tbody>
-							 </table>
-							
+
 						</div>
 			        </li>
 			    </ul>

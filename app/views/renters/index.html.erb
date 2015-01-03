@@ -1,3 +1,10 @@
+<% if @sakimono_flg %>
+	<%= stylesheet_link_tag('jquery-themes/pepper-grinder/jquery.ui.theme') %>
+	<% title = 'レンターズ掲載状況（先物）' %>
+<% else %>
+	<% title = 'レンターズ掲載状況' %>
+<% end %>
+
 <script type="text/javascript">
 	
 	init_jqgrid();
@@ -25,7 +32,7 @@
 			 table_name:'building_table'
 			,fotter_name:'building_pager'
 			,div_name:'div_dummy_02'
-			,caption:'レンターズ掲載状況' 
+			,caption:'<%= title %>'
 			,event_type:30
 			,shrinkFit:true
 			,multiselect:true

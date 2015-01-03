@@ -20,7 +20,8 @@
 	<p style="padding-left:25px;">管理物件を地図に展開します。旧版は<%= link_to "こちら", managements_path, :style=>'text-decoration:underline;' %></p>
 	
 	<h3 style="margin-top:30px;"><%= link_to "・レンターズ登録状況確認", renters_path %></h3>
-	<p style="padding-left:25px;">レンターズに掲載中の物件を地図に表示します。</p>
+	<p style="padding-left:25px;">レンターズに掲載中の物件(自社）を地図に表示します。先物は<%= link_to "こちら", renters_path('sakimono'), :style=>'text-decoration:underline;' %></p>
+	
 	
 	<h3 style="margin-top:30px;"><%= link_to "・受託活動報告", trust_managements_path %></h3>
 	<p style="padding-left:25px;">訪問履歴・ＤＭ発送履歴・TELアプローチ履歴の登録・集計を行います。</p>

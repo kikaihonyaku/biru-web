@@ -35,6 +35,20 @@ class TrustManagementsController < ApplicationController
     trust_user['5952'] = {:name=>'テスト1'}
     trust_user['05928'] = {:name=>'テスト1'}
     trust_user['7844'] = {:name=>'テスト1'}
+    
+    # ユーザーを取得
+    biru_users = BiruUser.where("code In ( " + trust_user.keys.join(',') + ")")
+    
+    # 全件件数を取得するためのSQL
+    all_cnt_hash = {}
+    sql = ""
+    sql = sql + "SELECT biru_user_id, count(*) as cnt "
+    sql = sql + "FROM (" + get_trust_sql(biru_users, "") + ") X "
+    sql = sql + "GROUP BY biru_user_id "
+    ActiveRecord::Base.connection.select_all(sql).each do |all_cnt_rec|
+      all_cnt_hash[BiruUser.find(all_cnt_rec['biru_user_id']).code] = all_cnt_rec['cnt']
+    end
+    
     trust_user.keys.each do |key|
       
     	rec = {}
@@ -57,9 +71,15 @@ class TrustManagementsController < ApplicationController
   			rec['tel_result'] = result[:tel_num]
   			rec['tel_value'] = result[:tel_num_jsk]
   			rec['trust_num'] = result[:contract_num]
-  			rec['rank_s'] = 0
-  			rec['rank_a'] = 0
-  			rec['rank_b'] = 0
+  			rec['rank_s'] = result[:rank_s]
+  			rec['rank_a'] = result[:rank_a]
+  			rec['rank_b'] = result[:rank_b]
+  			rec['rank_c'] = result[:rank_c]
+  			rec['rank_d'] = result[:rank_d]
+  			rec['rank_d_over'] = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c] + result[:rank_d]
+        
+        rec['rank_all'] = all_cnt_hash[key]
+        
 
       else
         
@@ -111,6 +131,21 @@ class TrustManagementsController < ApplicationController
     	
   	end
     
+    # 見込みランクの指定
+    rank_arr = ""
+    if params[:rank]
+      params[:rank].split(',').each do |value|
+        
+        if rank_arr.length > 0
+          rank_arr = rank_arr + ','
+        end
+        
+        rank_arr = rank_arr + "'" + value + "'"
+        
+      end
+    end
+    
+    
     # 検索条件にエラーが存在しないとき
     if @error_msg.size == 0
       
@@ -128,7 +163,7 @@ class TrustManagementsController < ApplicationController
       owner_to_buildings = {}
       building_to_owners = {}
       
-      ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user)).each do |rec|
+      ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user, rank_arr)).each do |rec|
         
         #jqgrid用データ
         trust_manages.push(rec)
@@ -147,6 +182,7 @@ class TrustManagementsController < ApplicationController
         trust[:owner_id] = rec['owner_id']
         trust[:building_id] = rec['building_id']
         trust[:manage_type_id] = rec[:trust_manage_type_id]
+        trust[:attack_states_code] = rec['attack_states_code']
         trusts.push(trust) unless trusts.index(trust)
 
 
@@ -547,7 +583,7 @@ class TrustManagementsController < ApplicationController
     gon.owners = ActiveRecord::Base.connection.select_all(get_owners_sql(@biru_trust_user))    
     
     # 委託契約の一覧を取得
-    gon.trusts = ActiveRecord::Base.connection.select_all(get_trust_sql(@biru_trust_user))
+    gon.trusts = ActiveRecord::Base.connection.select_all(get_trust_sql(@biru_trust_user, ""))
     
     
     # layoutでヘッダを非表示
@@ -691,7 +727,7 @@ def get_buildings_sql(object_user)
 end
 
 #def get_trust_data()
-def get_trust_sql(object_user)
+def get_trust_sql(object_user, rank_list)
   
   # trustについているdelete_flg の　default_scopeの副作用で、biru_usersのLEFT_OUTER_JOINが効かなくなっている？（空白のものは出てこない・・）なのでそうであればINNER JOINでつないでしまう（2014/07/15）
   #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").where("owners.code is null")
@@ -699,9 +735,25 @@ def get_trust_sql(object_user)
   
   #trust_data = Trust.joins(:owner).joins("LEFT OUTER JOIN manage_types ON trusts.manage_type_id = manage_types.id").joins("LEFT OUTER JOIN buildings on trusts.building_id = buildings.id").joins("LEFT OUTER JOIN shops on buildings.shop_id = shops.id").joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
   
+  # ユーザーが複数指定されているか判定
+  if object_user.kind_of?(BiruUser)
+    biru_user_id = object_user.id.to_s
+    arr_flg = false
+  else
+    
+    biru_user_ids = []
+    object_user.each do |biru|
+      biru_user_ids.push(biru.id)
+    end
+       
+    
+    arr_flg = true
+  end
+  
   # 指定した列のハッシュだけで返す為に直接SQLを実行する
   sql = ""
   sql = sql + " SELECT trusts.id as trust_id "
+  sql = sql + " , trusts.biru_user_id as biru_user_id "
   sql = sql + " , trusts.manage_type_id as trust_manage_type_id "
   sql = sql + " , owners.id as owner_id "
   sql = sql + " , owners.attack_code as owner_attack_code "
@@ -725,6 +777,7 @@ def get_trust_sql(object_user)
   sql = sql + " , shops.latitude as shop_latitude "
   sql = sql + " , shops.longitude as shop_longitude "
   sql = sql + " , biru_users.name as biru_user_name "
+  sql = sql + " , attack_states.code as attack_states_code "
   sql = sql + " , attack_states.name as attack_states_name "
   sql = sql + " , SUM(case approaches.code when '0010' then 1 else 0 end) as visit_rusu "
   sql = sql + " , SUM(case approaches.code when '0020' then 1 else 0 end) as visit_zai "
@@ -747,9 +800,18 @@ def get_trust_sql(object_user)
   sql = sql + "     ,approach_kinds.name"
   sql = sql + "  from owner_approaches inner join approach_kinds on owner_approaches.approach_kind_id = approach_kinds.id"
   sql = sql + "  where not owner_approaches.delete_flg"
-  sql = sql + "   and owner_approaches.biru_user_id = " + object_user.id.to_s + " "
+  if arr_flg
+    sql = sql + "   and owner_approaches.biru_user_id In ( " + biru_user_ids.join(',') + ") "
+  else
+    sql = sql + "   and owner_approaches.biru_user_id = " + biru_user_id + " "
+  end
   sql = sql + "  ) approaches on owners.id = approaches.owner_id"
   sql = sql + " WHERE owners.code is null "
+  
+  # ランク指定がある場合、そのランクのみ表示
+  if rank_list.length > 0
+    sql = sql + " AND  attack_states.code IN (" + rank_list + ") "
+  end
   
   
 #  # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
@@ -758,7 +820,11 @@ def get_trust_sql(object_user)
 #    sql = sql + " AND trusts.biru_user_id = " + @biru_user.id.to_s
 #  end
 
-	sql = sql + " AND trusts.biru_user_id = " + object_user.id.to_s + " "
+  if arr_flg
+  	sql = sql + " AND trusts.biru_user_id In ( " + biru_user_ids.join(',') + ") "
+  else
+  	sql = sql + " AND trusts.biru_user_id = " + biru_user_id + " "
+  end
 
   #----------------------------------#
   # 検索条件が指定されている時の絞り込み
@@ -984,22 +1050,28 @@ def get_report_info(month, user)
     
   end
   
-#  gon.visit_owner = Owner.find_all_by_id(visit_owner_id_arr)
-#  gon.dm_owner = Owner.find_all_by_id(dm_owner_id_arr)
-#  gon.tel_owner =  Owner.find_all_by_id(tel_owner_id_arr)
-  
-  
+
+
+
   #####################################
   # 成約した物件、見込みが高い物件を表示
   #####################################
   contract_num = 0
   contract_num_jisya = 0
-  
+
+  # 件数のカウント
+  rank_s = 0
+  rank_a = 0
+  rank_b = 0
+  rank_c = 0
+  rank_d = 0
+  p '▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼'
+
   buildings = []
   order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", month).where("trusts.biru_user_id = ?", user.id).group("trusts.id").maximum("month")
-  
+
   order_hash.keys.each do |trust_id|
-    
+
     # trust_idにはidが、order_hash[trust_id]にはその月の最大月数が入っている
     trust_attack_history = TrustAttackStateHistory.find_by_trust_id_and_month(trust_id, order_hash[trust_id])
 
@@ -1007,7 +1079,7 @@ def get_report_info(month, user)
     # where句でやるとそのランクがある中での最大をとってしまうので、仮にその後に別のランクが登録されていたら本来は必要ないのにそのレコードがとれてしまうから
     case trust_attack_history.attack_state_to.code
     when 'S', 'A', 'B'
-  
+
       biru = trust_attack_history.trust.building
       biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
       biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
@@ -1021,19 +1093,86 @@ def get_report_info(month, user)
         biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
         biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
         buildings << biru
-    
+
         # 受託実績戸数を入力
         contract_num = contract_num + trust_attack_history.room_num
-    
+
         if trust_attack_history.trust_oneself
           contract_num_jisya = contract_num_jisya + trust_attack_history.room_num
         end
-    
+
       end
-    
+
     else
     end
+
+    case trust_attack_history.attack_state_to.code
+    when 'S' then
+      
+      rank_s = rank_s + 1
+      p Trust.find(trust_attack_history.trust_id).building
+    when 'A' then
+      rank_a = rank_a + 1
+    when 'B' then
+      rank_b = rank_b + 1
+    when 'C' then
+      rank_c = rank_c + 1
+    when 'D' then
+      rank_d = rank_d + 1
+    else
+
+    end
+
+
   end
+  
+  
+  # #################################################
+  # # 当月の見込み件数を（ランクS、ランクA、ランクB）取得
+  # #################################################
+  # rank_s = 0
+  # rank_a = 0
+  # rank_b = 0
+  # rank_c = 0
+  # rank_d = 0
+  #
+  # sql = ""
+  # sql = sql + "SELECT f.trust_id, f.month, g.code "
+  # sql = sql + "FROM trust_attack_state_histories f INNER JOIN attack_states g on f.attack_state_to_id = g.id "
+  # sql = sql + "WHERE EXISTS ("
+  # sql = sql + " SELECT trust_id, max_month "
+  # sql = sql + " FROM ( "
+  # sql = sql + "   SELECT a.trust_id as trust_id, MAX(a.month) max_month "
+  # sql = sql + "   FROM trust_attack_state_histories a INNER JOIN trusts b ON a.trust_id = b.id "
+  # sql = sql + "   WHERE a.month <= " + month + " "
+  # sql = sql + "     AND b.biru_user_id = " + user.id.to_s + " "
+  # sql = sql + "     AND NOT b.delete_flg  "
+  # sql = sql + "   GROUP BY a.trust_id "
+  # sql = sql + " ) x "
+  # sql = sql + " WHERE x.trust_id = f.trust_id "
+  # sql = sql + "   AND x.max_month = f.month "
+  # sql = sql + ") "
+  #
+  # ActiveRecord::Base.connection.select_all(sql).each do |rec|
+  #
+  #   case rec["code"]
+  #   when 'S' then
+  #     rank_s = rank_s + 1
+  #   when 'A' then
+  #     rank_a = rank_a + 1
+  #   when 'B' then
+  #     rank_b = rank_b + 1
+  #   when 'C' then
+  #     rank_c = rank_c + 1
+  #   when 'D' then
+  #     rank_d = rank_d + 1
+  #   else
+  #
+  #   end
+  #
+  # end
+  #
+    
     
   # 関数の戻り値として設定
   result = {}
@@ -1055,6 +1194,12 @@ def get_report_info(month, user)
   result[:contract_num] = contract_num
   result[:contract_num_jsk] = contract_num_jisya
   result[:buildings] = buildings
+
+  result[:rank_s] = rank_s
+  result[:rank_a] = rank_a
+  result[:rank_b] = rank_b
+  result[:rank_c] = rank_c
+  result[:rank_d] = rank_d
   
   return result
 end

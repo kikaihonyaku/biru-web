@@ -21,6 +21,10 @@ namespace :biruweb do
 	    @data_update.biru_user_id = 1
 	    @data_update.save!
 
+      # 20141205 shiba
+      WorkRentersRoom.delete_all
+      WorkRentersRoomPicture.delete_all
+
 			# レンターズデータを取得
 	    renters_work_data(batch_cd)
 	    
@@ -42,7 +46,8 @@ namespace :biruweb do
 	  
 	  loop do
 	    
-	    url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&count=#{get_cnt.to_s}&start=#{start_idx.to_s}&vacant_div=3,4&torihiki_mode=1,2,3,4")
+	    # url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&count=#{get_cnt.to_s}&start=#{start_idx.to_s}&vacant_div=3,4&torihiki_mode=1,2,3,4")
+	    url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&count=#{get_cnt.to_s}&start=#{start_idx.to_s}&vacant_div=3,4")
 	    xml = open(url).read
 	    doc = REXML::Document.new(xml)
 	    
@@ -145,6 +150,7 @@ namespace :biruweb do
         work_renters_room.notice_d = room.elements['notice[4]'].text if room.elements['notice[4]']
         work_renters_room.notice_e = room.elements['notice[5]'].text if room.elements['notice[5]']
         work_renters_room.notice_f = room.elements['notice[6]'].text if room.elements['notice[6]']
+        work_renters_room.torihiki_mode = room.elements['torihiki_mode'].text if room.elements['torihiki_mode']
 	  
 	      work_renters_room.save!
 	      
@@ -264,6 +270,12 @@ namespace :biruweb do
       room.notice_d = work_room.notice_d
       room.notice_e = work_room.notice_e
       room.notice_f = work_room.notice_f
+      room.torihiki_mode = work_room.torihiki_mode
+      if room.torihiki_mode == '仲介'
+        room.torihiki_mode_sakimono = true
+      else
+        room.torihiki_mode_sakimono = false
+      end
 	    
 	    room.save!
 	    

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141116173454) do
+ActiveRecord::Schema.define(:version => 20141210194530) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -402,11 +402,15 @@ ActiveRecord::Schema.define(:version => 20141116173454) do
     t.string   "notice_d"
     t.string   "notice_e"
     t.string   "notice_f"
+    t.string   "torihiki_mode"
+    t.boolean  "torihiki_mode_sakimono"
   end
 
   add_index "renters_rooms", ["building_code"], :name => "index_renters_rooms_on_building_code"
   add_index "renters_rooms", ["renters_building_id"], :name => "index_renters_rooms_on_renters_building_id"
   add_index "renters_rooms", ["store_code"], :name => "index_renters_rooms_on_store_code"
+  add_index "renters_rooms", ["torihiki_mode"], :name => "index_renters_rooms_on_torihiki_mode"
+  add_index "renters_rooms", ["torihiki_mode_sakimono"], :name => "index_renters_rooms_on_torihiki_mode_sakimono"
 
   create_table "room_layouts", :force => true do |t|
     t.string "code"
@@ -666,6 +670,7 @@ ActiveRecord::Schema.define(:version => 20141116173454) do
     t.string   "notice_d"
     t.string   "notice_e"
     t.string   "notice_f"
+    t.string   "torihiki_mode"
   end
 
 end

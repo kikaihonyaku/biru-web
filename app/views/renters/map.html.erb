@@ -1,6 +1,10 @@
 <% content_for :header do %>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
 
+<% if @sakimono_flg %>
+	<%= stylesheet_link_tag('jquery-themes/pepper-grinder/jquery.ui.theme') %>
+<% end %>
+
 <script type="text/javascript">
 
 
@@ -153,6 +157,16 @@
 
 <script type="text/javascript">
 
+function htmlEscape(str) {
+    return String(str).replace(/&/g, '&')
+            .replace(/"/g, '"')
+            .replace(/</g, '<')
+            .replace(/'/g, "'")
+            .replace(/>/g, '>');
+
+}
+
+
 	$(function () {
 		$(".accordion .toggle").click(function () {
 			$(this).next("ul").slideToggle(200);
@@ -281,7 +295,7 @@
 			//, caption:'募集中物件を表示しています'
 			, event_type:31
 			, shrinkFit:false
-			, multiselect:false
+			, multiselect:true
 		};
 			
 		
@@ -332,6 +346,53 @@
 						
  					 }
  			 });
+			 
+  			table_div.navGrid('#building_pager', {
+  			        edit:false, add:false, del:false, search:false
+  			      }).navButtonAdd('#building_pager', {
+  			        caption:"ファイル出力",  position:"last",  onClickButton: function(){
+
+			            // 選択項目の確認
+			            var rowIds = jQuery('#building_table').getGridParam('selarrrow'); 
+
+			            if (rowIds.length == 0) {
+			                msg = "出力するデータ行を選択してください。";
+			                alert(msg);
+			                return false;
+			            }
+
+			            // 選択したデータを隠しタグに出力してポストする
+			            $('#list_data').html("");    // 送信用バッファーをクリア
+			            // 列見出しの取得
+			            var dataIds = jQuery('#building_table').getDataIDs();
+						
+			            // 列見出し部をinput.hiddenタグへ出力
+			            for (var j = 0; j < grid_name.length; j++) {
+			                $('<input type="hidden" name="data[0]['+j+']" value="'+htmlEscape(grid_name[j])+'" />').appendTo("#list_data");
+			            }
+
+			            // データ部をinput.hiddenタグへ出力
+			            var rowHead = jQuery('#building_table').getRowData(dataIds[0]);
+			            var colNames = new Array();
+			            var i = 0;
+			            for (var col in rowHead) {
+			                colNames[i++] = col;
+			            }
+						
+			            for (var i = 0; i < rowIds.length; i++) {
+			                var row = jQuery('#building_table').getRowData(rowIds[i]);
+			                for (var j = 0; j < colNames.length; j++) {
+			                    $('<input type="hidden" name="data['+(i+1)+']['+j+']" value="'+htmlEscape(row[colNames[j]])+'" />').appendTo("#list_data");
+			                }
+			            }
+						
+			            // 送信
+			            document.frm_out2csv.submit();
+
+			            return true;
+						
+  					}
+  			 });
 			 
 			 
  	        table_div.jqGrid('setGroupHeaders', {
@@ -614,6 +675,11 @@
 		<table id="building_table"></table>
 		<div id = "building_pager"></div>
 	</div>
+	
+	<!-- リスト出力用 -->
+	<%= form_tag({:action=>'csv_out'}, {:method=>'post', :name=>'frm_out2csv' }) do %>
+	   <%= hidden_field_tag 'list_data', ''  %>
+	<% end %>
 	
 
 	<!-- For index -->

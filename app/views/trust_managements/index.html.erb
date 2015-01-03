@@ -1,11 +1,53 @@
 <script type="text/javascript">
 	
 	init_jqgrid_trust_manager();
+	
+	function nvl(value)
+	{
+		ret = "";
+		
+		if(value == null){
+			ret = "0";
+		}else
+		{
+			ret = value;
+		}
+		
+		return ret;
+	}
 
+	function formatter_rank_all(cellValue, options, rowdata, action){
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "' >" + nvl(cellValue) + "</a>";
+	}
+
+	function formatter_rank_d_over(cellValue, options, rowdata, action){
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=S,A,B,C,D' >" + nvl(cellValue) + "</a>";
+	}
+	
+	function formatter_rank_s(cellValue, options, rowdata, action){
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=S' >" + nvl(cellValue) + "</a>";
+	}
+
+	function formatter_rank_a(cellValue, options, rowdata, action){
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=A' >" + nvl(cellValue) + "</a>";
+	}
+	
+	function formatter_rank_b(cellValue, options, rowdata, action){
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=B' >" + nvl(cellValue) + "</a>";
+	}
+
+	function formatter_rank_c(cellValue, options, rowdata, action){
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=C' >" + nvl(cellValue) + "</a>";
+	}
+
+	function formatter_rank_d(cellValue, options, rowdata, action){
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=D' >" + nvl(cellValue) + "</a>";
+	}
+	
 	// 委託契約リストを作成
 	function init_jqgrid_trust_manager(){
 		// 列名の定義
-		var col_names = ["biru_user_id", "担当者", "レポート", "アタックリスト","目標", "実績", "面談", "目標", "実績", "反響", "目標", "実績", "会話", "受託", "見込Ｓ","見込Ａ","見込Ｂ"];
+		var col_names = ["biru_user_id", "担当者", "レポート", "アタックリスト","登録件数", "Ｄ以上", "Ｓ","Ａ","Ｂ","Ｃ","Ｄ","目標", "実績", "面談", "目標", "実績", "反響", "目標", "実績", "会話"];
 	
 		// 列属性の定義
 		var col_model = [
@@ -13,6 +55,15 @@
   		 ,{name:"biru_usr_name", index:"biru_usr_name", width:300, align:"left", classes:"no_class"}
  		 ,{name:"trust_report", index:"trust_report", width:200, align:"left", classes:"no_class", formatter: 'link', hidden:true}
  		 ,{name:"attack_list", index:"attack_list", width:200, align:"left", classes:"no_class", hidden:true}
+		 
+ 		 ,{name:"rank_all", index:"rank_d_over", align:"right", classes:"no_class", formatter:formatter_rank_all}
+ 		 ,{name:"rank_d_over", index:"rank_d_over", align:"right", classes:"no_class", formatter:formatter_rank_d_over}
+ 		 ,{name:"rank_s", index:"rank_s", align:"right", classes:"no_class", formatter:formatter_rank_s}
+ 		 ,{name:"rank_a", index:"rank_a", align:"right", classes:"no_class", formatter:formatter_rank_a}
+ 		 ,{name:"rank_b", index:"rank_b", align:"right", classes:"no_class", formatter:formatter_rank_b}
+ 		 ,{name:"rank_c", index:"rank_c", align:"right", classes:"no_class", formatter:formatter_rank_c}
+ 		 ,{name:"rank_d", index:"rank_d", align:"right", classes:"no_class", formatter:formatter_rank_d}
+		 
  		 ,{name:"visit_plan", index:"visit_plan", align:"right", classes:"no_class"}
  		 ,{name:"visit_result", index:"visit_result", align:"right", classes:"no_class"}
  		 ,{name:"visit_value", index:"visit_value", align:"right", classes:"no_class"}
@@ -25,10 +76,6 @@
  		 ,{name:"tel_result", index:"tel_result", align:"right", classes:"no_class"}
  		 ,{name:"tel_value", index:"tel_value", align:"right", classes:"no_class"}
 		 
- 		 ,{name:"trust_num", index:"trust_num", align:"right", classes:"no_class"}
- 		 ,{name:"rank_s", index:"rank_s", align:"right", classes:"no_class"}
- 		 ,{name:"rank_a", index:"rank_a", align:"right", classes:"no_class"}
- 		 ,{name:"rank_b", index:"rank_b", align:"right", classes:"no_class"}
 		];
 	
 
@@ -72,12 +119,12 @@
 				   // }
 		        },
 			    onSelectRow: function(id) {
-					// クリックイベント
-				    data = jQuery('#building_table').getRowData(id);
-			 		screen_block();
-					
-					location.href = location.protocol + '//' + location.host + '/trust_managements/' + data.attack_list
-					
+					// // クリックイベント
+					// 				    data = jQuery('#building_table').getRowData(id);
+					// 			 		screen_block();
+					//
+					// location.href = location.protocol + '//' + location.host + '/trust_managements/' + data.attack_list
+					//
 				}
 				
 			  	//shrinkToFit : false,　　        //画面サイズに依存せず固定の大きさを表示する設定
@@ -101,10 +148,10 @@
 	        table_div.jqGrid('setGroupHeaders', {
 	          useColSpanStyle: true,
 	          groupHeaders:[
+	            {startColumnName: 'rank_all', numberOfColumns: 7, titleText: '見込みランク'},
 	            {startColumnName: 'visit_plan', numberOfColumns: 3, titleText: '訪問'},
 	            {startColumnName: 'dm_plan', numberOfColumns: 3, titleText: 'ダイレクトメール'},
 	            {startColumnName: 'tel_plan', numberOfColumns: 3, titleText: '電話アプローチ'},
-	            {startColumnName: 'trust_num', numberOfColumns: 4, titleText: '受託状況'},
 	          ]
 	        });
 		});
@@ -122,7 +169,7 @@
 		<div style="padding-bottom:10px;">
 			<%= form_tag({:action => :index}, {:name => 'yyyymm'}) do %>
 				<%= select_tag(:month, options_for_select(@calender, @month),  :onchange=>"javascript:dropsort();") %>
-				<span style="padding-left:100px;">※クリックで詳細画面へ遷移します。</span>
+				<span style="padding-left:100px;">※見込みランクの件数をクリックすると詳細画面へ遷移します。詳細画面は月指定に関係なく最新の見込みランクが表示されます。</span>
 			<% end %>
 		</div>
 
