@@ -157,16 +157,6 @@
 
 <script type="text/javascript">
 
-function htmlEscape(str) {
-    return String(str).replace(/&/g, '&')
-            .replace(/"/g, '"')
-            .replace(/</g, '<')
-            .replace(/'/g, "'")
-            .replace(/>/g, '>');
-
-}
-
-
 	$(function () {
 		$(".accordion .toggle").click(function () {
 			$(this).next("ul").slideToggle(200);

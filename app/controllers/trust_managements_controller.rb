@@ -324,6 +324,19 @@ class TrustManagementsController < ApplicationController
 
   end
   
+  # ファイル出力（CSV出力）
+  def csv_out
+    str = ""
+    
+    params[:data].keys.each do |key|
+      str = str + params[:data][key].values.join(',')
+      str = str + "\n"
+    end
+    
+    send_data str, :filename=>'output.csv'
+  end
+  
+  
   # # アタック用の貸主情報登録
   # def attack_owner_new
   #   @attack_owner = Owner.new

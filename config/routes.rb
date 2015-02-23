@@ -79,6 +79,7 @@ BiruWeb::Application.routes.draw do
 
 
   get "biru_service/index" ,:as => :biru_service
+  get "property/index" ,:as => :property
 
   get "renters/index(/:sakimono)" => 'renters#index' ,:as => :renters
   

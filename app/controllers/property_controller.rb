@@ -1,8 +1,8 @@
 #-*- encoding:utf-8 -*- 
 
-# 建物管理を表示するコントローラ
-class BiruServiceController < ApplicationController
-  
+# 資産(建物）を表示するコントローラ
+class PropertyController < ApplicationController
+
   # 物件種別のiconを変更する時のコントローラ
   def change_biru_icon
     p 'パラメータ ' + params[:disp_type].to_s

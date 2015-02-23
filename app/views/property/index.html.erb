@@ -1,0 +1,200 @@
+<%#= stylesheet_link_tag('jquery-themes/pepper-grinder/jquery.ui.theme') %>
+<%= stylesheet_link_tag('jquery-themes/start/jquery.ui.theme') %>
+
+
+
+<script type="text/javascript">
+	
+	
+	var disp_biru_type;
+	disp_biru_type = false;
+
+	var disp_biru_mentenance;
+	disp_biru_mentenance = false;
+
+	
+	init_jqgrid();
+	
+	// ダブルクリック時のイベント
+
+	function init_jqgrid(){
+		// 列名の定義
+		var col_names = [
+			"支店",
+			 "営業所",
+			 "管理棟数",
+			 "マンション",
+			 "アパート",
+			 "分譲M",
+			 "戸建て",
+			 "その他",
+			 "巡回清掃",
+			 "給水設備点検",
+			 "貯水槽清掃",
+			 "エレベータ保守点検",
+			 "防犯カメラ",
+			 "管理戸数",
+			 "リンク",
+		];
+	
+		// 列属性の定義
+		var col_model = [
+	  	  {name:"group_name", index:"group_name", align:"center",classes:"no_class"}
+		 ,{name:"shop_name", index:"shop_name", align:"center",classes:"no_class"}
+		 ,{name:"building_cnt", index:"building_cnt", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
+
+		 ,{name:"biru_type_mn_cnt", index:"biru_type_mn_cnt", align:"center", width:100, classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_type_bm_cnt", index:"biru_type_bm_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_type_ap_cnt", index:"biru_type_ap_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_type_kdt_cnt", index:"biru_type_kdt_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"biru_type_etc_cnt", index:"biru_type_etc_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 
+
+		 ,{name:"trust_mente_junkai_seisou_cnt", index:"trust_mente_junkai_seisou_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"trust_mente_kyusui_setubi_cnt", index:"trust_mente_kyusui_setubi_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"trust_mente_tyosui_seisou_cnt", index:"trust_mente_tyosui_seisou_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"trust_mente_elevator_hosyu_cnt", index:"trust_mente_elevator_hosyu_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+		 ,{name:"trust_mente_bouhan_camera_cnt", index:"trust_mente_bouhan_camera_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:true}
+
+		 ,{name:"room_cnt", index:"room_cnt", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
+ 		 ,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", hidden:true}
+		];
+	
+
+		// その他の設定
+		jqgrid_opt = {
+			 table_name:'building_table'
+			,fotter_name:'building_pager'
+			,div_name:'div_dummy_02'
+			,caption:'管理物件集計' 
+			,event_type:30
+			,shrinkFit:true
+			,multiselect:true
+		};
+		
+		// jqgrid作成
+		$(function(){
+			
+			var table_div = $('#' + jqgrid_opt.table_name);
+			var div_box = $('#' + jqgrid_opt.div_name);
+	
+			table_div.jqGrid({
+			  	data : gon.data_list,  //表示したいデータ
+			  	datatype : "local",            //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
+			  	colNames : col_names,           //列の表示名
+			  	colModel : col_model,   //列ごとの設定
+			  	caption : jqgrid_opt.caption,    //ヘッダーのキャプション
+			  	rowNum : 100,                   //一ページに表示する行数
+				height : 800,                  //高さ
+			  	shrinkToFit : true,　　        //画面サイズに依存せず固定の大きさを表示する設定
+				pager : 'building_pager',
+				viewrecords: true,
+				grouping:true,                    //グルーピングon
+				groupingView : {                  //グルーピング設定
+					groupField : ['group_name'],     //グループする列指
+			　　　　        groupSummary : [true]
+				},
+			
+			    onSelectRow: function(id) {
+					// シングルクリックイベント
+				    data = jQuery('#building_table').getRowData(id);
+					//alert(location.href);
+					//alert(location.host);
+			 		screen_block();
+					
+					location.href = location.protocol + '//' + location.host + '/property/' + data.url
+					
+				}
+				
+			});
+			
+			
+ 			table_div.navGrid('#building_pager', {
+ 			        edit:false, add:false, del:false, search:false
+ 			      }).navButtonAdd('#building_pager', {
+ 			        caption:"棟数内訳",  position:"last",  onClickButton: function(){
+
+						if( disp_biru_type == false ){
+							
+	   						 table_div.jqGrid('showCol',"biru_type_mn_cnt");
+	   						 table_div.jqGrid('showCol',"biru_type_bm_cnt");
+	   						 table_div.jqGrid('showCol',"biru_type_ap_cnt");
+	   						 table_div.jqGrid('showCol',"biru_type_kdt_cnt");
+	   						 table_div.jqGrid('showCol',"biru_type_etc_cnt");
+		 					 table_div.trigger("reloadGrid");
+							 
+							 disp_biru_type = true;
+						}else{
+							
+	   						 table_div.jqGrid('hideCol',"biru_type_mn_cnt");
+	   						 table_div.jqGrid('hideCol',"biru_type_bm_cnt");
+	   						 table_div.jqGrid('hideCol',"biru_type_ap_cnt");
+	   						 table_div.jqGrid('hideCol',"biru_type_kdt_cnt");
+	   						 table_div.jqGrid('hideCol',"biru_type_etc_cnt");
+		 					 table_div.trigger("reloadGrid");
+							 
+							disp_biru_type = false;
+						}
+						
+ 					 }
+ 			 });
+
+
+  			table_div.navGrid('#building_pager', {
+  			        edit:false, add:false, del:false, search:false
+  			      }).navButtonAdd('#building_pager', {
+  			        caption:"建物メンテ",  position:"last",  onClickButton: function(){
+
+ 						if( disp_biru_mentenance == false ){
+							
+ 	   						 table_div.jqGrid('showCol',"trust_mente_junkai_seisou_cnt");
+ 	   						 table_div.jqGrid('showCol',"trust_mente_kyusui_setubi_cnt");
+ 	   						 table_div.jqGrid('showCol',"trust_mente_tyosui_seisou_cnt");
+ 	   						 table_div.jqGrid('showCol',"trust_mente_elevator_hosyu_cnt");
+ 	   						 table_div.jqGrid('showCol',"trust_mente_bouhan_camera_cnt");
+ 		 					 table_div.trigger("reloadGrid");
+							 
+ 							 disp_biru_mentenance = true;
+ 						}else{
+							
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_junkai_seisou_cnt");
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_kyusui_setubi_cnt");
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_tyosui_seisou_cnt");
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_elevator_hosyu_cnt");
+ 	   						 table_div.jqGrid('hideCol',"trust_mente_bouhan_camera_cnt");
+ 		 					 table_div.trigger("reloadGrid");
+							 
+ 							disp_biru_mentenance = false;
+ 						}
+						
+  					 }
+  			 });
+
+			 			
+ 	        table_div.jqGrid('setGroupHeaders', {
+ 	          useColSpanStyle: true,
+ 	          groupHeaders:[
+ 	            {startColumnName: 'biru_type_mn_cnt', numberOfColumns: 5, titleText: '<em>棟数内訳</em>'},
+ 	            {startColumnName: 'trust_mente_junkai_seisou_cnt', numberOfColumns: 5, titleText: '<em>建物メンテナンス</em>'},
+				
+ 	          ]
+ 	        });			
+			
+		});
+
+		
+		
+		
+	}
+</script>
+
+
+<div style="padding:50px 80px 10px 80px;">
+	※管理方式B以上を表示しています。<br/>※営業所をクリックすると詳細画面に飛びます。
+	<div id="div_dummy_02" style="width:100%;height:90%;">
+		<table id="building_table"></table>
+		<div id = "building_pager"></div>
+	</div>
+</div>
+
+

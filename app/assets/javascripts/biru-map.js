@@ -1176,3 +1176,13 @@ function jqgrid_create(col_names, col_model, data_list, jqgrid_opt){
 	});		
 }
 
+function htmlEscape(str) {
+    return String(str).replace(/&/g, '&')
+            .replace(/"/g, '"')
+            .replace(/</g, '<')
+            .replace(/'/g, "'")
+            .replace(/>/g, '>');
+
+}
+
+
