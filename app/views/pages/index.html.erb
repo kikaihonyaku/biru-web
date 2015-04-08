@@ -2,12 +2,16 @@
         <div class="span3" >
           <div class="well sidebar-nav" style="margin-top:30px;margin-left:20px;height:800px;">
 			  <div style="padding-bottom:5px;">変更履歴</div>
+			  <div style="margin-bottom:10px;">
+			  	<div>【2015/04/08】</div>
+				<div style="padding-left:10px;">建物管理メニュー追加</div>
+			  </div>
 			  <div>
 			  	<div>【2014/10/19】</div>
 				<div style="padding-left:10px;">地図トップを改訂</div>
 			  </div>
-          </div><!--/.well -->		  
-        </div><!--/span-->
+          </div>
+        </div>
 <% end %>
 
 
@@ -19,7 +23,7 @@
 	<h3 style="margin-top:50px;"><%= link_to "・管理物件確認", property_path %></h3>
 	<p style="padding-left:25px;">管理物件を地図に展開します。旧版は<%= link_to "こちら", managements_path, :style=>'text-decoration:underline;' %></p>
 
-	<h3 style="margin-top:50px;"><%= link_to "・建物管理(定期メンテナンス）", biru_service_path %></h3>
+	<h3 style="margin-top:30px;"><%= link_to "・建物管理(定期メンテナンス）", biru_service_path %></h3>
 	<p style="padding-left:25px;">管理物件の定期メンテナンスの情報を表示します。</p>
 	
 	<h3 style="margin-top:30px;"><%= link_to "・レンターズ登録状況確認", renters_path %></h3>
