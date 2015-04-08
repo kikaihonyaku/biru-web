@@ -312,7 +312,7 @@ class BiruServiceController < ApplicationController
         :shop_code=>rec["shop_code"],
         
         :trust_mente_junkai_seisou=>rec["trust_mente_junkai_seisou"],
-        :trust_mente_kyusui_setubi=>rec["trust_mente_kyusui_setubi"], 
+        :trust_mente_kyusui_setubi=>rec["trust_mente_kyusui_setubi"],
         :trust_mente_tyosui_seisou=>rec["trust_mente_tyosui_seisou"],
         :trust_mente_elevator_hosyu=>rec["trust_mente_elevator_hosyu"],
         :trust_mente_bouhan_camera=>rec["trust_mente_bouhan_camera"],
@@ -399,10 +399,6 @@ class BiruServiceController < ApplicationController
   
 private
   # 自社管理（B以上）の物件を戸数単位で営業所別に表示する
-  # アパート・マンションのみ
-  # １棟管理のみ（＝戸数が4戸以上）
-  # 150平米以上
-  
   def get_biru_list_sql(shop_list)
     
     strSql = ""
@@ -463,7 +459,36 @@ private
     strSql = strSql + "and not b.delete_flg  "
     strSql = strSql + "and not d.delete_flg "
     strSql = strSql + "and e.code in (3,4,5,6,9, 7,8,10) "
-    strSql = strSql + "group by a.id, a.code, a.name, e.name, c.id, c.code, c.name "
+    strSql = strSql + "group by a.id "
+    strSql = strSql + ",a.code"
+    strSql = strSql + ",a.name"
+    strSql = strSql + ",a.address"
+    strSql = strSql + ",a.latitude"
+    strSql = strSql + ",a.longitude"
+    strSql = strSql + ",c.id"
+    strSql = strSql + ",c.code"
+    strSql = strSql + ",c.name"
+    strSql = strSql + ",c.address"
+    strSql = strSql + ",c.latitude"
+    strSql = strSql + ",c.longitude"
+    strSql = strSql + ",c.icon"
+    strSql = strSql + ",d.id "
+    strSql = strSql + ",e.name "
+    strSql = strSql + ",e.icon "
+    strSql = strSql + ",f.id "
+    strSql = strSql + ",f.code "
+    strSql = strSql + ",f.name "
+    strSql = strSql + ",f.address "
+    strSql = strSql + ",f.latitude "
+    strSql = strSql + ",f.longitude "
+    strSql = strSql + " ,g.name"
+    strSql = strSql + " ,g.code"
+    strSql = strSql + " ,g.icon"
+    strSql = strSql + " ,a.kanri_room_num"
+    strSql = strSql + " ,a.free_num"
+    strSql = strSql + " ,a.biru_age"
+    strSql = strSql + " "
+    strSql = strSql + " "
     strSql = strSql + "     "
     
     return strSql

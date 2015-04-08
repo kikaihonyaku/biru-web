@@ -251,6 +251,7 @@ class RentersController < ApplicationController
       room['room_code'] = rec['room_code']
       room['room_no'] = rec['real_room_no']
       room['vacant_div'] = rec['vacant_div']
+      room['enter_ym'] = rec['enter_ym']
       # room['notice'] = rec['notice']
 
       room['notice_a'] = rec['notice_a']
@@ -260,6 +261,9 @@ class RentersController < ApplicationController
       room['notice_e'] = rec['notice_e']
       room['notice_f'] = rec['notice_f']
 
+      room['notice_g'] = rec['notice_g']
+      room['notice_h'] = rec['notice_h']
+      
       # room['madori'] = rec['madori']
       # room['gaikan'] = rec['gaikan']
       # room['naikan'] = rec['naikan']
@@ -331,6 +335,7 @@ class RentersController < ApplicationController
     ,building_code
     ,building_id
     ,vacant_div
+    ,enter_ym
     ,address
     ,notice_a
     ,notice_b
@@ -338,6 +343,8 @@ class RentersController < ApplicationController
     ,notice_d
     ,notice_e
     ,notice_f
+    ,notice_g
+    ,notice_h
     ,latitude
     ,longitude
     ,J00
@@ -367,6 +374,7 @@ class RentersController < ApplicationController
     ,a.real_building_name
     ,a.real_room_no
     ,a.vacant_div
+    ,a.enter_ym
     ,a.building_code
     ,a.notice_a
     ,a.notice_b
@@ -374,6 +382,8 @@ class RentersController < ApplicationController
     ,a.notice_d
     ,a.notice_e
     ,a.notice_f
+    ,a.notice_g
+    ,a.notice_h
     ,c.id as building_id
     ,c.address
     ,c.latitude
@@ -425,6 +435,7 @@ class RentersController < ApplicationController
     ,a.real_building_name
     ,a.real_room_no
     ,a.vacant_div
+    ,a.enter_ym
     ,a.building_code
     ,a.notice_a
     ,a.notice_b
@@ -432,6 +443,8 @@ class RentersController < ApplicationController
     ,a.notice_d
     ,a.notice_e
     ,a.notice_f
+    ,a.notice_g
+    ,a.notice_h
     ,c.id
     ,c.address
     ,c.latitude
@@ -511,127 +524,127 @@ class RentersController < ApplicationController
   
   
   
-  # 管理物件からレンターズの登録内容を更新取得します。
-   def update_all
-
-     @data_update = DataUpdateTime.find_by_code("310")
-     @data_update.start_datetime = Time.now
-     @data_update.update_datetime = nil
-     @data_update.biru_user_id = @biru_user.id
-     @data_update.save!
-
- 		# レンターズのデータを本番に反映する
-     renters_reflect(params[:batch][:value])
-  
-     @data_update.update_datetime = Time.now
-     @data_update.save!
-    
-     redirect_to :action=>'index'
-    
-   end
-  
-   # レンターズデータを本番に反映する
-   # レンターズデータを本番に反映する
-   def renters_reflect(batch_cd)
-    
-     RentersBuilding.update_all("delete_flg = ?", true) # SQLServerは1
-     RentersRoom.update_all("delete_flg = ?", true) # SQLServerは1
-     RentersRoomPicture.update_all("delete_flg = ?", true) # SQLServerは1
-    
-     chk_building_code = ""
-    
-     building = nil
-     # renters_roomへの反映
-     WorkRentersRoom.where("batch_cd = ?", batch_cd).order("building_cd").each do |work_room|
-      
-       # もし建物コードが変わったら最新の建物コードを取得
-       unless chk_building_code == work_room.building_cd
-      	
- 	      building = RentersBuilding.unscoped.find_or_create_by_building_cd(work_room.building_cd)
- 	      building.building_cd = work_room.building_cd
- 	      building.clientcorp_building_cd = work_room.clientcorp_building_cd
-
- 	      #building.store_code = work_room.store_code
- 	      #building.store_name = work_room.store_name
- 	      building.building_name = work_room.building_name
- 	      building.real_building_name = work_room.real_building_name
- 	      building.building_type = work_room.building_type
- 	      building.structure = work_room.structure
- 	      building.address = work_room.detail_address
-
-         unless building.gmaps
-   	      # geocode
-   	      gmaps_ret = Gmaps4rails.geocode(building.address)
-   	      building.latitude = gmaps_ret[0][:lat]
-   	      building.longitude = gmaps_ret[0][:lng]
-   	      building.gmaps = true
-         end
-
- 	      building.delete_flg = false
- 	      building.save!
-	      
-       	# 建物コードの保存
-       	chk_building_code =  work_room.building_cd
-      	
-       end
-      
-       room = RentersRoom.unscoped.find_or_create_by_room_code(work_room.room_cd)
-       room.room_code = work_room.room_cd
-       room.building_code = work_room.building_cd
-       room.clientcorp_room_cd = work_room.clientcorp_room_cd
-       room.clientcorp_building_cd = work_room.clientcorp_building_cd
-       room.store_code = work_room.store_code
-       room.store_name = work_room.store_name
-       room.building_name = work_room.building_name
-       room.room_no = work_room.room_no
-       room.real_building_name = work_room.real_building_name
-       room.real_room_no = work_room.real_room_no
-       room.floor = work_room.floor
-       room.building_type = work_room.building_type
-       room.structure = work_room.structure
-       room.construction = work_room.construction
-       room.room_num = work_room.room_num
-       room.address = work_room.address
-       room.detail_address = work_room.detail_address
-       room.vacant_div = work_room.vacant_div
-       room.enter_ym = work_room.enter_ym
-       room.new_status = work_room.new_status
-       room.completion_ym = work_room.completion_ym
-       room.square = work_room.square
-       room.room_layout_type = work_room.room_layout_type
-       room.delete_flg = false
-       room.renters_building_id = building.id
-       room.notice = work_room.notice # 2014/11/4 add
-       
-       room.notice_a = work_room.notice_a
-       room.notice_b = work_room.notice_b
-       room.notice_c = work_room.notice_c
-       room.notice_d = work_room.notice_d
-       room.notice_e = work_room.notice_e
-       room.notice_f = work_room.notice_f
-       
-       room.save!
-      
-       # 部屋の物件情報を反映
-       WorkRentersRoomPicture.where("batch_cd = ?", batch_cd).where("batch_cd_idx = ?", work_room.batch_cd_idx).order("batch_picture_idx").each_with_index do |work_picture, j |
-       	picture = RentersRoomPicture.unscoped.find_or_create_by_renters_room_id_and_idx(room.id, j)
- 				picture.renters_room_id = room.id
- 				picture.idx = j
- 				picture.true_url = work_picture.true_url
- 				picture.large_url = work_picture.large_url
- 				picture.mini_url = work_picture.mini_url
- 				picture.main_category_code = work_picture.main_category_code
- 				picture.sub_category_code = work_picture.sub_category_code
- 				picture.sub_category_name = work_picture.sub_category_name
- 				picture.caption = work_picture.caption
- 				picture.priority = work_picture.priority
- 				picture.entry_datetime = work_picture.entry_datetime
- 				picture.delete_flg = false
- 				picture.save!
-       end
-     end
-    
-   end
+#  # 管理物件からレンターズの登録内容を更新取得します。
+#   def update_all
+#
+#     @data_update = DataUpdateTime.find_by_code("310")
+#     @data_update.start_datetime = Time.now
+#     @data_update.update_datetime = nil
+#     @data_update.biru_user_id = @biru_user.id
+#     @data_update.save!
+#
+# 		# レンターズのデータを本番に反映する
+#     renters_reflect(params[:batch][:value])
+#  
+#     @data_update.update_datetime = Time.now
+#     @data_update.save!
+#    
+#     redirect_to :action=>'index'
+#    
+#   end
+#  
+#   # レンターズデータを本番に反映する
+#   # レンターズデータを本番に反映する
+#   def renters_reflect(batch_cd)
+#    
+#     RentersBuilding.update_all("delete_flg = ?", true) # SQLServerは1
+#     RentersRoom.update_all("delete_flg = ?", true) # SQLServerは1
+#     RentersRoomPicture.update_all("delete_flg = ?", true) # SQLServerは1
+#    
+#     chk_building_code = ""
+#    
+#     building = nil
+#     # renters_roomへの反映
+#     WorkRentersRoom.where("batch_cd = ?", batch_cd).order("building_cd").each do |work_room|
+#      
+#       # もし建物コードが変わったら最新の建物コードを取得
+#       unless chk_building_code == work_room.building_cd
+#      	
+# 	      building = RentersBuilding.unscoped.find_or_create_by_building_cd(work_room.building_cd)
+# 	      building.building_cd = work_room.building_cd
+# 	      building.clientcorp_building_cd = work_room.clientcorp_building_cd
+#
+# 	      #building.store_code = work_room.store_code
+# 	      #building.store_name = work_room.store_name
+# 	      building.building_name = work_room.building_name
+# 	      building.real_building_name = work_room.real_building_name
+# 	      building.building_type = work_room.building_type
+# 	      building.structure = work_room.structure
+# 	      building.address = work_room.detail_address
+#
+#         unless building.gmaps
+#   	      # geocode
+#   	      gmaps_ret = Gmaps4rails.geocode(building.address)
+#   	      building.latitude = gmaps_ret[0][:lat]
+#   	      building.longitude = gmaps_ret[0][:lng]
+#   	      building.gmaps = true
+#         end
+#
+# 	      building.delete_flg = false
+# 	      building.save!
+#	      
+#       	# 建物コードの保存
+#       	chk_building_code =  work_room.building_cd
+#      	
+#       end
+#      
+#       room = RentersRoom.unscoped.find_or_create_by_room_code(work_room.room_cd)
+#       room.room_code = work_room.room_cd
+#       room.building_code = work_room.building_cd
+#       room.clientcorp_room_cd = work_room.clientcorp_room_cd
+#       room.clientcorp_building_cd = work_room.clientcorp_building_cd
+#       room.store_code = work_room.store_code
+#       room.store_name = work_room.store_name
+#       room.building_name = work_room.building_name
+#       room.room_no = work_room.room_no
+#       room.real_building_name = work_room.real_building_name
+#       room.real_room_no = work_room.real_room_no
+#       room.floor = work_room.floor
+#       room.building_type = work_room.building_type
+#       room.structure = work_room.structure
+#       room.construction = work_room.construction
+#       room.room_num = work_room.room_num
+#       room.address = work_room.address
+#       room.detail_address = work_room.detail_address
+#       room.vacant_div = work_room.vacant_div
+#       room.enter_ym = work_room.enter_ym
+#       room.new_status = work_room.new_status
+#       room.completion_ym = work_room.completion_ym
+#       room.square = work_room.square
+#       room.room_layout_type = work_room.room_layout_type
+#       room.delete_flg = false
+#       room.renters_building_id = building.id
+#       room.notice = work_room.notice # 2014/11/4 add
+#       
+#       room.notice_a = work_room.notice_a
+#       room.notice_b = work_room.notice_b
+#       room.notice_c = work_room.notice_c
+#       room.notice_d = work_room.notice_d
+#       room.notice_e = work_room.notice_e
+#       room.notice_f = work_room.notice_f
+#       
+#       room.save!
+#      
+#       # 部屋の物件情報を反映
+#       WorkRentersRoomPicture.where("batch_cd = ?", batch_cd).where("batch_cd_idx = ?", work_room.batch_cd_idx).order("batch_picture_idx").each_with_index do |work_picture, j |
+#       	picture = RentersRoomPicture.unscoped.find_or_create_by_renters_room_id_and_idx(room.id, j)
+# 				picture.renters_room_id = room.id
+# 				picture.idx = j
+# 				picture.true_url = work_picture.true_url
+# 				picture.large_url = work_picture.large_url
+# 				picture.mini_url = work_picture.mini_url
+# 				picture.main_category_code = work_picture.main_category_code
+# 				picture.sub_category_code = work_picture.sub_category_code
+# 				picture.sub_category_name = work_picture.sub_category_name
+# 				picture.caption = work_picture.caption
+# 				picture.priority = work_picture.priority
+# 				picture.entry_datetime = work_picture.entry_datetime
+# 				picture.delete_flg = false
+# 				picture.save!
+#       end
+#     end
+#    
+#   end
   
   
   

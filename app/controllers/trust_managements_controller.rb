@@ -27,29 +27,45 @@ class TrustManagementsController < ApplicationController
     user_list = []
     
     # 受託担当者のリスト
-    trust_user = {} 
-    trust_user['06365'] = {:name=>'テスト1'}
-    trust_user['3000'] = {:name=>'テスト1'}
-    trust_user['6406'] = {:name=>'テスト1'}
-    trust_user['6425'] = {:name=>'テスト1'}
-    trust_user['5952'] = {:name=>'テスト1'}
-    trust_user['05928'] = {:name=>'テスト1'}
-    trust_user['7844'] = {:name=>'テスト1'}
+    trust_user_hash = {} 
+    trust_user_hash['6365'] = {:name=>'松本', :shop_name => '草加'}
+    trust_user_hash['6487'] = {:name=>'氏家', :shop_name => '草加新田'}
+    trust_user_hash['5952'] = {:name=>'山口', :shop_name => '北千住'}
     
+    trust_user_hash['6464'] = {:name=>'猪原', :shop_name => '南越谷'}
+    trust_user_hash['6406'] = {:name=>'末吉', :shop_name => '越谷'}
+    trust_user_hash['6425'] = {:name=>'赤坂', :shop_name => '北越谷'}
+#    trust_user_hash['xxxx'] = {:name=>'xxx', :shop_name => '春日部'}
+
+    trust_user_hash['5684'] = {:name=>'帰山', :shop_name => 'せんげん台'}
+
+    trust_user_hash['6461'] = {:name=>'中野', :shop_name => '戸田公園'}
+    trust_user_hash['7844'] = {:name=>'辻', :shop_name => '戸田'}
+#    trust_user_hash['xxxx'] = {:name=>'xxx', :shop_name => '武蔵浦和'}
+
+    trust_user_hash['6338'] = {:name=>'鈴木', :shop_name => '川口'}
+    trust_user_hash['5313'] = {:name=>'宮川', :shop_name => '与野'}
+
+#    trust_user_hash['xxx'] = {:name=>'xxx', :shop_name => '浦和'}
+
+    trust_user_hash['5473'] = {:name=>'小泉', :shop_name => '東浦和'}
+    trust_user_hash['5841'] = {:name=>'下地', :shop_name => '戸塚安行'}
+    trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '千葉支店'}
+    trust_user_hash['5928'] = {:name=>'柴田', :shop_name => 'テスト'}
+
     # ユーザーを取得
-    biru_users = BiruUser.where("code In ( " + trust_user.keys.join(',') + ")")
-    
+    biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
     # 全件件数を取得するためのSQL
     all_cnt_hash = {}
     sql = ""
     sql = sql + "SELECT biru_user_id, count(*) as cnt "
-    sql = sql + "FROM (" + get_trust_sql(biru_users, "") + ") X "
+    sql = sql + "FROM (" + get_trust_sql(biru_users, "", false) + ") X "
     sql = sql + "GROUP BY biru_user_id "
     ActiveRecord::Base.connection.select_all(sql).each do |all_cnt_rec|
       all_cnt_hash[BiruUser.find(all_cnt_rec['biru_user_id']).code] = all_cnt_rec['cnt']
     end
     
-    trust_user.keys.each do |key|
+    trust_user_hash.keys.each do |key|
       
     	rec = {}
       trust_user = BiruUser.find_by_code(key)
@@ -59,6 +75,9 @@ class TrustManagementsController < ApplicationController
 
   			rec['biru_user_id'] = trust_user.id.to_s
   			rec['biru_usr_name'] = trust_user.name
+
+  			rec['shop_name'] = trust_user_hash[key][:shop_name]
+  			
   			rec['trust_report'] = "trust_user_report?sid=" + trust_user.id.to_s
   			rec['attack_list'] = "owner_building_list?sid=" + trust_user.id.to_s
   			rec['visit_plan'] = result[:biru_user_monthly].trust_plan_visit
@@ -163,7 +182,7 @@ class TrustManagementsController < ApplicationController
       owner_to_buildings = {}
       building_to_owners = {}
       
-      ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user, rank_arr)).each do |rec|
+      ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user, rank_arr, true)).each do |rec|
         
         #jqgrid用データ
         trust_manages.push(rec)
@@ -596,7 +615,7 @@ class TrustManagementsController < ApplicationController
     gon.owners = ActiveRecord::Base.connection.select_all(get_owners_sql(@biru_trust_user))    
     
     # 委託契約の一覧を取得
-    gon.trusts = ActiveRecord::Base.connection.select_all(get_trust_sql(@biru_trust_user, ""))
+    gon.trusts = ActiveRecord::Base.connection.select_all(get_trust_sql(@biru_trust_user, "", true))
     
     
     # layoutでヘッダを非表示
@@ -740,7 +759,7 @@ def get_buildings_sql(object_user)
 end
 
 #def get_trust_data()
-def get_trust_sql(object_user, rank_list)
+def get_trust_sql(object_user, rank_list, order_flg)
   
   # trustについているdelete_flg の　default_scopeの副作用で、biru_usersのLEFT_OUTER_JOINが効かなくなっている？（空白のものは出てこない・・）なのでそうであればINNER JOINでつないでしまう（2014/07/15）
   #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").where("owners.code is null")
@@ -947,6 +966,7 @@ def get_trust_sql(object_user, rank_list)
   
   sql = sql + " group by trusts.manage_type_id  "
   sql = sql + " , owners.id  "
+  sql = sql + " , trusts.id  "
   sql = sql + " , owners.attack_code  "
   sql = sql + " , owners.name  "
   sql = sql + " , owners.address  "
@@ -969,9 +989,14 @@ def get_trust_sql(object_user, rank_list)
   sql = sql + " , shops.longitude  "
   sql = sql + " , biru_users.name  "
   sql = sql + " , attack_states.name  "  
+  sql = sql + " , attack_states.code  "  
+  sql = sql + " , trusts.biru_user_id  "  
 
-  sql = sql + " ORDER BY buildings.id asc"
-  #trust_data
+	# 複数指定
+	if order_flg
+    sql = sql + " ORDER BY buildings.id asc"
+  end
+
   sql
 end
 
@@ -1078,7 +1103,6 @@ def get_report_info(month, user)
   rank_b = 0
   rank_c = 0
   rank_d = 0
-  p '▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼'
 
   buildings = []
   order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", month).where("trusts.biru_user_id = ?", user.id).group("trusts.id").maximum("month")
@@ -1123,7 +1147,6 @@ def get_report_info(month, user)
     when 'S' then
       
       rank_s = rank_s + 1
-      p Trust.find(trust_attack_history.trust_id).building
     when 'A' then
       rank_a = rank_a + 1
     when 'B' then

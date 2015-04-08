@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   before_filter :check_logined
   
   # CSV出力する際、Windowsで開くためにShift_JISに変換する。■2014/08/12 当面はpdfで出力するため、文字コードはutf-8に戻す。
-  #after_filter :change_charset_to_sjis, :if => :trust_managements?
+  after_filter :change_charset_to_sjis, :if => :csv?
   
   protected
   def change_charset_to_sjis
@@ -91,6 +91,10 @@ class ApplicationController < ActionController::Base
   
   def trust_managements?
     self.controller_name == 'trust_managements'
+  end
+  
+  def csv?
+    return request.original_url.match(/csv/) ? true : false
   end
   
   # 文字列の日付が正しいかチェックします

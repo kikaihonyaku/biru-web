@@ -3,7 +3,14 @@ class LoginController < ApplicationController
   skip_before_filter :check_logined
   
   def auth
-    biru_user = BiruUser.authenticate(params[:code], params[:password])
+  	
+  	if params[:code].to_i != 0
+  		code = params[:code].to_i.to_s
+    else
+  		code = params[:code]
+  	end
+  	
+    biru_user = BiruUser.authenticate(code, params[:password])
     if biru_user
       
     	# ログの保存
@@ -17,7 +24,7 @@ class LoginController < ApplicationController
       
     	# refererがブランクだったらルートに飛ばす。      
       if params[:referer].blank?
-        redirect_to '/managements/index'
+        redirect_to '/'
       else
         redirect_to params[:referer]
       end

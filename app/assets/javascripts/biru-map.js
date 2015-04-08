@@ -896,18 +896,17 @@ function info_msg_biru(biru, owners){
     code_msg = "建物CD：" + biru.code;
   }else{
     // 他社建物CDの時
-    code_msg = "他社建物CD：" + biru.attack_code;
+    code_msg = "他社建物CD：" + biru.code;
   }
-
+  
   owners.forEach(function(owner){
     inner_text = inner_text +
       '<li>' +
-      '  <a href="javascript:link_owner_click(' + owner.id + ',' + owner.latitude + ',' + owner.longitude + ')">' + owner.name + '</a></td>' +
+      '  <a href="javascript:link_owner_click(' + owner.id + ',' + owner.latitude + ',' + owner.longitude + ')">' + owner.name + '</a>' +
       '</li>'
   });
 
   vhtml = '<div><b>' + biru.name + '（<a href="javascript:win_building(' + biru.id + ');">詳細</a>）</b><br>' +
-    '<div>住所：' + biru.address +'</div>' +
     '<div>' + code_msg +'</div>' +
     '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
     '<hr/>' +
@@ -927,26 +926,25 @@ function info_msg_biru(biru, owners){
 // 貸主のInfoBoxのメッセージを作成する。
 function info_msg_owner(owner, buildings){
 
-  var inner_text = "";
-  	
-  buildings.forEach(function(building){
-    inner_text = inner_text +
-      '<li>' +
-      '  <a href="javascript:link_building_click(' + building.id + ',' + building.latitude + ',' + building.longitude + ')">' + building.name + '</a></td>' +
-      '</li>'
-  });
-
   var code_msg;
   if(owner.code != null){
     // 通常建物CDの時
     code_msg = "貸主CD：" + owner.code;
   }else{
     // 他社建物CDの時
-    code_msg = "他社貸主CD：" + owner.attack_code;
+    code_msg = "他社貸主CD：" + owner.code;
   }
 
+  var inner_text = "";
+  	
+  buildings.forEach(function(building){
+    inner_text = inner_text +
+      '<li>' +
+      '  <a href="javascript:link_building_click(' + building.id + ',' + building.latitude + ',' + building.longitude + ')">' + building.name + '</a>' +
+      '</li>'
+  });
+
   var vhtml = '<div><b>' + owner.name + '（<a href="javascript:win_owner(' + owner.id + ');">詳細</a>）</b><br>' +
-    '<div>住所：' + owner.address +'</div>' +
     '<div>' + code_msg +'</div>' +
     '<ul style="padding-top:10px;">' + inner_text  + '</ul>' +
     '<hr/>' +
