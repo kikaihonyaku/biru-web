@@ -646,7 +646,7 @@
 			        <li>
 			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" style="color:white;font-weight:lighter">基本メニュー</span>
 					</li>
-			        <li><%= link_to "一覧へ戻る",  renters_path %></li>
+			        <li><%= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();' %></li>
 			    </ul>
 			</div>
 			

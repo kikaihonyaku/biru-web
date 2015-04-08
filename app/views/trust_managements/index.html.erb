@@ -17,31 +17,31 @@
 	}
 
 	function formatter_rank_all(cellValue, options, rowdata, action){
-	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "' >" + nvl(cellValue) + "</a>";
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "' onclick='javascript:screen_block();' >" + nvl(cellValue) + "</a>";
 	}
 
 	function formatter_rank_d_over(cellValue, options, rowdata, action){
-	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=S,A,B,C,D' >" + nvl(cellValue) + "</a>";
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=S,A,B,C,D' onclick='javascript:screen_block();'>" + nvl(cellValue) + "</a>";
 	}
 	
 	function formatter_rank_s(cellValue, options, rowdata, action){
-	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=S' >" + nvl(cellValue) + "</a>";
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=S' onclick='javascript:screen_block();' >" + nvl(cellValue) + "</a>";
 	}
 
 	function formatter_rank_a(cellValue, options, rowdata, action){
-	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=A' >" + nvl(cellValue) + "</a>";
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=A' onclick='javascript:screen_block();'>" + nvl(cellValue) + "</a>";
 	}
 	
 	function formatter_rank_b(cellValue, options, rowdata, action){
-	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=B' >" + nvl(cellValue) + "</a>";
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=B' onclick='javascript:screen_block();'>" + nvl(cellValue) + "</a>";
 	}
 
 	function formatter_rank_c(cellValue, options, rowdata, action){
-	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=C' >" + nvl(cellValue) + "</a>";
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=C' onclick='javascript:screen_block();'>" + nvl(cellValue) + " </a>";
 	}
 
 	function formatter_rank_d(cellValue, options, rowdata, action){
-	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=D' >" + nvl(cellValue) + "</a>";
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=D' onclick='javascript:screen_block();'>" + nvl(cellValue) + "</a>";
 	}
 	
 	// 委託契約リストを作成
@@ -125,7 +125,14 @@
 					//
 					// location.href = location.protocol + '//' + location.host + '/trust_managements/' + data.attack_list
 					//
-				}
+					
+				},
+				// onCellSelect: function(rowid, iCol, cellcontent){
+				// 	alert(rowid);
+				// 	alert(iCol);
+				// 	alert(cellcontent);
+				//
+				// }
 				
 			  	//shrinkToFit : false,　　        //画面サイズに依存せず固定の大きさを表示する設定
 			});
@@ -167,7 +174,7 @@
 	<div id="div_dummy_02" style="width:100%;height:90%;">
 		
 		<div style="padding-bottom:10px;">
-			<%= form_tag({:action => :index}, {:name => 'yyyymm'}) do %>
+			<%= form_tag({:action => :index}, {:name => 'yyyymm', :onchange=>'javascript:screen_block();'}) do %>
 				<%= select_tag(:month, options_for_select(@calender, @month),  :onchange=>"javascript:dropsort();") %>
 				<span style="padding-left:100px;">※見込みランクの件数をクリックすると詳細画面へ遷移します。詳細画面は月指定に関係なく最新の見込みランクが表示されます。</span>
 			<% end %>

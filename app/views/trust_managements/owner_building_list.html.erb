@@ -989,7 +989,7 @@ function getCoords(position) {
 			        <li><a href="javascript:win_trust_report(<%= @object_user.id %>);">受託月報を表示</a></li>
 			        <li><a href="javascript:win_attack_list_maintenance(<%= @object_user.id %>);">アタックリスト編集</a></li>
 			        <li><a data-toggle="modal" href="#modal-history-regist" onclick="return check_file_api();">履歴の取り込み</a></li>
-			        <li><%= link_to '一覧へ戻る', :action=>'index' %></li>
+			        <li><%= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();' %></li>
 			    </ul>
 			</div>
 			

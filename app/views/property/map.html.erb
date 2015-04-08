@@ -791,7 +791,7 @@ function getCoords(position) {
 			        <li>
 			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" >基本メニュー</span>
 					</li>
-			        <li><%= link_to "一覧へ戻る",  :action=>'index' %></li>
+			        <li><%= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();' %></li>
 			    </ul>
 			</div>
 			
