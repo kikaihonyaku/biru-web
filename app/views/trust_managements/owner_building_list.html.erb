@@ -847,9 +847,7 @@ function getCoords(position) {
 			jqgrid_create(grid_name, grid_model, grid_data, jqgrid_opt);
 			
 			// 反映ボタン押下
-			jQuery("#building_table").navGrid('#building_pager',{
-			        edit:false,add:false,del:false,search:false
-			      }).navButtonAdd('#building_pager',{
+			jQuery("#building_table").navGrid('#building_pager',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager',{
 			        caption:"地図に反映", position:"last", onClickButton: function(){
 						 
 						// 建物非表示
@@ -902,61 +900,63 @@ function getCoords(position) {
 						 //mapCanvas.fitBounds(bounds);
 						 
 					 }
-			      });
+		      });
 				  
 				  
   	  			// ファイル出力ボタン
   	  			jQuery("#building_table").navGrid('#building_pager',{
-	    			        edit:false, add:false, del:false, search:false
-	    			      }).navButtonAdd('#building_pager', {
-	    			        caption:"ファイル出力",  position:"last",  onClickButton: function(){
+				        edit:false, add:false, del:false, search:false
+				      }).navButtonAdd('#building_pager', {
+				        caption:"ファイル出力",  position:"last",  onClickButton: function(){
 
-	  			            // 選択項目の確認
-	  			            var rowIds = jQuery('#building_table').getGridParam('selarrrow'); 
+			            // 選択項目の確認
+			            var rowIds = jQuery('#building_table').getGridParam('selarrrow'); 
 
-	  			            if (rowIds.length == 0) {
-	  			                msg = "出力するデータ行を選択してください。";
-	  			                alert(msg);
-	  			                return false;
-	  			            }
+			            if (rowIds.length == 0) {
+			                msg = "出力するデータ行を選択してください。";
+			                alert(msg);
+			                return false;
+			            }
 
-	  			            // 選択したデータを隠しタグに出力してポストする
-	  			            $('#list_data').html("");    // 送信用バッファーをクリア
-	  			            // 列見出しの取得
-	  			            var dataIds = jQuery('#building_table').getDataIDs();
-						
-	  			            // 列見出し部をinput.hiddenタグへ出力
-	  			            for (var j = 0; j < grid_name.length; j++) {
-	  			                $('<input type="hidden" name="data[0]['+j+']" value="'+htmlEscape(grid_name[j])+'" />').appendTo("#list_data");
-	  			            }
+			            // 選択したデータを隠しタグに出力してポストする
+			            $('#list_data').html("");    // 送信用バッファーをクリア
+			            // 列見出しの取得
+			            var dataIds = jQuery('#building_table').getDataIDs();
+				
+			            // 列見出し部をinput.hiddenタグへ出力
+			            for (var j = 0; j < grid_name.length; j++) {
+			                $('<input type="hidden" name="data[0]['+j+']" value="'+htmlEscape(grid_name[j])+'" />').appendTo("#list_data");
+			            }
 
-	  			            // データ部をinput.hiddenタグへ出力
-	  			            var rowHead = jQuery('#building_table').getRowData(dataIds[0]);
-	  			            var colNames = new Array();
-	  			            var i = 0;
-	  			            for (var col in rowHead) {
-	  			                colNames[i++] = col;
-	  			            }
-						
-	  			            for (var i = 0; i < rowIds.length; i++) {
-	  			                var row = jQuery('#building_table').getRowData(rowIds[i]);
-	  			                for (var j = 0; j < colNames.length; j++) {
-	  			                    $('<input type="hidden" name="data['+(i+1)+']['+j+']" value="'+htmlEscape(row[colNames[j]])+'" />').appendTo("#list_data");
-	  			                }
-	  			            }
-						
-	  			            // 送信
-	  			            document.frm_out2csv.submit();
+			            // データ部をinput.hiddenタグへ出力
+			            var rowHead = jQuery('#building_table').getRowData(dataIds[0]);
+			            var colNames = new Array();
+			            var i = 0;
+			            for (var col in rowHead) {
+			                colNames[i++] = col;
+			            }
+				
+			            for (var i = 0; i < rowIds.length; i++) {
+			                var row = jQuery('#building_table').getRowData(rowIds[i]);
+			                for (var j = 0; j < colNames.length; j++) {
+			                    $('<input type="hidden" name="data['+(i+1)+']['+j+']" value="'+htmlEscape(row[colNames[j]])+'" />').appendTo("#list_data");
+			                }
+			            }
+				
+			            // 送信
+			            document.frm_out2csv.submit();
 
-	  			            return true;
-						
-	    					}
-	    			 });
-				  
-
+			            return true;
+				
+						}
+				 });
 				  
 		});
 		
+	    $(window).bind('resize', function () {
+	        $('#building_table').setGridWidth($(window).width() - 40 )
+	                    .setGridHeight($(window).height() * 0.4 - 50);
+	    }).trigger('resize');
 	}
 	
 	

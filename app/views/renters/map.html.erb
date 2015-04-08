@@ -471,6 +471,14 @@
 			
 		});
 		
+		
+		// resize
+	    $(window).bind('resize', function () {
+	        $('#building_table').setGridWidth($(window).width() - 40 )
+	                    .setGridHeight($(window).height() * 0.4 - 50);
+	    }).trigger('resize');
+		
+		
 	}
 	
 	// suumoのそれぞれの残数をハッシュで返します
@@ -638,8 +646,6 @@
 			        </li>
 			    </ul>
 			</div>
-			
-			
 			
 			<div class="accordion ui-jqgrid  ui-widget-content ui-corner-all" style="width:100%;margin-bottom:10px;" >
 			    <ul>
