@@ -402,6 +402,8 @@ ActiveRecord::Schema.define(:version => 20141210194530) do
     t.string   "notice_d"
     t.string   "notice_e"
     t.string   "notice_f"
+    t.string   "notice_g"
+    t.string   "notice_h"
     t.string   "torihiki_mode"
     t.boolean  "torihiki_mode_sakimono"
   end
@@ -515,6 +517,7 @@ ActiveRecord::Schema.define(:version => 20141210194530) do
   add_index "trust_attack_state_histories", ["attack_state_from_id"], :name => "index_trust_attack_state_histories_on_attack_state_from_id"
   add_index "trust_attack_state_histories", ["attack_state_to_id"], :name => "index_trust_attack_state_histories_on_attack_state_to_id"
   add_index "trust_attack_state_histories", ["manage_type_id"], :name => "index_trust_attack_state_histories_on_manage_type_id"
+  add_index "trust_attack_state_histories", ["month"], :name => "index_trust_attack_state_histories_on_month"
   add_index "trust_attack_state_histories", ["trust_id"], :name => "index_trust_attack_state_histories_on_trust_id"
 
   create_table "trust_maintenances", :force => true do |t|
@@ -584,6 +587,10 @@ ActiveRecord::Schema.define(:version => 20141210194530) do
     t.datetime "created_at",         :null => false
     t.datetime "updated_at",         :null => false
   end
+
+  add_index "work_renters_room_pictures", ["batch_cd"], :name => "index_work_renters_room_pictures_on_batch_cd"
+  add_index "work_renters_room_pictures", ["batch_cd_idx"], :name => "index_work_renters_room_pictures_on_batch_cd_idx"
+  add_index "work_renters_room_pictures", ["batch_picture_idx"], :name => "index_work_renters_room_pictures_on_batch_picture_idx"
 
   create_table "work_renters_rooms", :force => true do |t|
     t.string   "batch_cd"
@@ -670,7 +677,12 @@ ActiveRecord::Schema.define(:version => 20141210194530) do
     t.string   "notice_d"
     t.string   "notice_e"
     t.string   "notice_f"
+    t.string   "notice_g"
+    t.string   "notice_h"
     t.string   "torihiki_mode"
   end
+
+  add_index "work_renters_rooms", ["batch_cd"], :name => "index_work_renters_rooms_on_batch_cd"
+  add_index "work_renters_rooms", ["building_cd"], :name => "index_work_renters_rooms_on_building_cd"
 
 end

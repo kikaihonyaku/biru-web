@@ -343,6 +343,8 @@ class RentersController < ApplicationController
     ,notice_d
     ,notice_e
     ,notice_f
+    ,notice_g
+    ,notice_h
     ,latitude
     ,longitude
     ,J00
@@ -380,6 +382,8 @@ class RentersController < ApplicationController
     ,a.notice_d
     ,a.notice_e
     ,a.notice_f
+    ,a.notice_g
+    ,a.notice_h
     ,c.id as building_id
     ,c.address
     ,c.latitude
@@ -440,6 +444,8 @@ class RentersController < ApplicationController
     ,a.notice_d
     ,a.notice_e
     ,a.notice_f
+    ,a.notice_g
+    ,a.notice_h
     ,c.id
     ,c.address
     ,c.latitude
