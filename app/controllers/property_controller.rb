@@ -10,8 +10,10 @@ class PropertyController < ApplicationController
   end
   
   def index
-    # 管理物件、巡回清掃、定期メンテ、在宅清掃が入っている一覧表を営業所別に作成
     
+    @data_update = DataUpdateTime.find_by_code("110")
+    
+    # 管理物件、巡回清掃、定期メンテ、在宅清掃が入っている一覧表を営業所別に作成
     data_list = []
     arr_tobu = []
     arr_saitama = []

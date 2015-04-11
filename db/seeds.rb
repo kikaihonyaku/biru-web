@@ -665,6 +665,14 @@ def regist_oneself(filename)
 
   # バッチコード
   batch_code = "JS" + Time.now.strftime("%Y%m%d%H%M%S")
+
+  # 登録開始日の保存
+  @data_update = DataUpdateTime.find_by_code("110")
+  @data_update.start_datetime = Time.now
+  @data_update.update_datetime = nil
+  @data_update.biru_user_id = 1
+  @data_update.save!
+
   
 	# 自社データのインポート
   import_data_oneself(filename, batch_code)
@@ -673,7 +681,11 @@ def regist_oneself(filename)
 	update_imp_oneself(batch_code)
   
   p "バッチコード：" + batch_code
-
+  
+  # 登録完了日を保存
+  @data_update.update_datetime = Time.now
+  @data_update.save!
+  
 end
 
 # importデータの読み込み（自社）
@@ -2938,7 +2950,7 @@ end
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201412.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201501.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201502.csv"))
-monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201503.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201503.csv"))
 
 ###########################
 # 業績分析(空室)
