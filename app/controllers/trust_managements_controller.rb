@@ -832,11 +832,13 @@ def get_trust_sql(object_user, rank_list, order_flg)
   sql = sql + "     ,approach_kinds.name"
   sql = sql + "  from owner_approaches inner join approach_kinds on owner_approaches.approach_kind_id = approach_kinds.id"
   sql = sql + "  where not owner_approaches.delete_flg"
-  if arr_flg
-    sql = sql + "   and owner_approaches.biru_user_id In ( " + biru_user_ids.join(',') + ") "
-  else
-    sql = sql + "   and owner_approaches.biru_user_id = " + biru_user_id + " "
-  end
+  
+  # if arr_flg
+  #   sql = sql + "   and owner_approaches.biru_user_id In ( " + biru_user_ids.join(',') + ") "
+  # else
+  #   sql = sql + "   and owner_approaches.biru_user_id = " + biru_user_id + " "
+  # end
+  
   sql = sql + "  ) approaches on owners.id = approaches.owner_id"
   sql = sql + " WHERE owners.code is null "
   
