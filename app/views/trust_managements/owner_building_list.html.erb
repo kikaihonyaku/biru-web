@@ -762,18 +762,18 @@ function getCoords(position) {
 		var grid_model = [
 		  {name:"trust_id", index:"trust_id", align:"right", classes:"no_class", hidden:true}
 		 ,{name:"owner_id", index:"owner_id", align:"right", classes:"no_class", hidden:true}
-		 ,{name:"owner_dm_delivery", index:"owner_dm_delivery", width:80, align:"center", classes:"no_class"}
+		 ,{name:"owner_dm_delivery", index:"owner_dm_delivery", width:80, align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":全て;○:可;×:不可" }}
 		 ,{name:"owner_code", index:"owner_code", width:200, align:"center", classes:"no_class"}
 		 ,{name:"owner_name", index:"owner_name", width:400, align:"left", classes:"no_class"}
 		 ,{name:"owner_address", index:"owner_address", width:300, align:"left", classes:"no_class"}
 		 ,{name:"owner_memo", index:"owner_memo", width:400, align:"left", classes:"no_class"}
 		 
-		 ,{name:"visit_rusu", index:"visit_rusu", width:200, align:"center", classes:"no_class"}
-		 ,{name:"visit_zai", index:"visit_zai", width:200, align:"center", classes:"no_class"}
-		 ,{name:"dm_send", index:"dm_send", width:200, align:"center", classes:"no_class"}
-		 ,{name:"dm_res", index:"dm_res", width:200, align:"center", classes:"no_class"}
-		 ,{name:"tel_call", index:"tel_call", width:200, align:"center", classes:"no_class"}
-		 ,{name:"tel_speack", index:"tel_speack", width:200, align:"center", classes:"no_class"}
+		 ,{name:"visit_rusu", index:"visit_rusu", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+		 ,{name:"visit_zai", index:"visit_zai", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+		 ,{name:"dm_send", index:"dm_send", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+		 ,{name:"dm_res", index:"dm_res", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+		 ,{name:"tel_call", index:"tel_call", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+		 ,{name:"tel_speack", index:"tel_speack", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
 
 		 ,{name:"building_id", index:"building_id", align:"right", classes:"no_class", hidden:true}
 		 ,{name:"attack_states_code", index:"attack_states_code", align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":all;S:ランクS;A:ランクA;B:ランクB;C:ランクC" }}
