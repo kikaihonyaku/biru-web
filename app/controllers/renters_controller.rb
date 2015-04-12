@@ -298,6 +298,9 @@ class RentersController < ApplicationController
     gon.grid_renters_data = grid_renters_data
     gon.rooms = rooms
     
+    # 一覧のコンボボックス
+    @combo_shop = jqgrid_combo_shop
+    
   end
   
   # ファイル出力（CSV出力）

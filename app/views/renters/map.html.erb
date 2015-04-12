@@ -184,7 +184,7 @@
 		var grid_model = [
 		  {name:"renters_room_id",  index:"renters_room_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
 		 , {name:"building_id",  index:"building_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
-		 , {name:"store_name",  index:"store_name",  width:80,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"store_name",  index:"store_name",  width:80,  align:"center",  classes:"no_class",frozen:true, stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_shop.gsub(/南越谷営業所/, '南越谷本店')  %>" }}
 		 , {name:"real_building_name",  index:"real_building_name",  width:150,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"real_room_name",  index:"real_room_name",  width:50,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"vacant_div",  index:"vacant_div",  width:80,  align:"center",  classes:"no_class",frozen:true}
