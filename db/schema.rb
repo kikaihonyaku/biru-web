@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141210194530) do
+ActiveRecord::Schema.define(:version => 20150412023246) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -533,6 +533,13 @@ ActiveRecord::Schema.define(:version => 20141210194530) do
 
   add_index "trust_maintenances", ["delete_flg"], :name => "index_trust_maintenances_on_delete_flg"
   add_index "trust_maintenances", ["trust_id"], :name => "index_trust_maintenances_on_trust_id"
+
+  create_table "trust_rewindings", :force => true do |t|
+    t.string   "code"
+    t.integer  "status",     :default => 0
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
 
   create_table "trusts", :force => true do |t|
     t.integer  "owner_id"
