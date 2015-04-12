@@ -35,7 +35,7 @@ namespace :biruweb do
 	    @data_update.update_datetime = Time.now
 	    @data_update.save!
 	    
-	    P "開始:" + @data_update.start_datetime.to_s + " 終了:" + @data_update.update_datetime.to_s
+	    p "開始:" + @data_update.start_datetime.to_s + " 終了:" + @data_update.update_datetime.to_s
 	end
 		  
 	# ワークデータを作成します

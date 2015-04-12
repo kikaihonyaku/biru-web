@@ -2875,6 +2875,7 @@ end
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20141120.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150120.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150320.csv"))
+regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
 
 
 # データの登録(他社)
