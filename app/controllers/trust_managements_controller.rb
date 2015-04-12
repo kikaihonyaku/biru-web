@@ -739,7 +739,7 @@ def get_owners_sql(object_user)
   sql = sql + ", a.memo "
   sql = sql + "FROM owners a "
   sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
-  sql = sql + "AND NOT a.delete_flg "
+  sql = sql + "AND a.delete_flg = 'f' "
   sql = sql + "ORDER BY updated_at DESC "
   
 end
@@ -754,7 +754,7 @@ def get_buildings_sql(object_user)
   sql = sql + ", b.name as shop_name "
   sql = sql + "FROM buildings a inner join shops b on a.shop_id = b.id "
   sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
-  sql = sql + "AND NOT a.delete_flg "
+  sql = sql + "AND a.delete_flg = 'f' "
   sql = sql + "ORDER BY updated_at DESC "
 end
 
@@ -831,7 +831,7 @@ def get_trust_sql(object_user, rank_list, order_flg)
   sql = sql + "     ,approach_kinds.code"
   sql = sql + "     ,approach_kinds.name"
   sql = sql + "  from owner_approaches inner join approach_kinds on owner_approaches.approach_kind_id = approach_kinds.id"
-  sql = sql + "  where not owner_approaches.delete_flg"
+  sql = sql + "  where owner_approaches.delete_flg = 'f'"
   
   # if arr_flg
   #   sql = sql + "   and owner_approaches.biru_user_id In ( " + biru_user_ids.join(',') + ") "
@@ -841,6 +841,9 @@ def get_trust_sql(object_user, rank_list, order_flg)
   
   sql = sql + "  ) approaches on owners.id = approaches.owner_id"
   sql = sql + " WHERE owners.code is null "
+  sql = sql + "   AND trusts.delete_flg = 'f' "
+  sql = sql + "   AND owners.delete_flg = 'f' "
+  sql = sql + "   AND buildings.delete_flg = 'f' "
   
   # ランク指定がある場合、そのランクのみ表示
   if rank_list.length > 0
@@ -893,7 +896,7 @@ def get_trust_sql(object_user, rank_list, order_flg)
     
     if @history_visit[:exist]
       kinds = ApproachKind.find_all_by_code(['0010', '0020'])
-  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where not delete_flg and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
+  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
     end
     
   end
@@ -921,7 +924,7 @@ def get_trust_sql(object_user, rank_list, order_flg)
 
     if @history_dm[:exist]
       kinds = ApproachKind.find_all_by_code(['0030','0035'])
-  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where not delete_flg and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
+  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
     end
 
     
@@ -949,7 +952,7 @@ def get_trust_sql(object_user, rank_list, order_flg)
     if @history_tel[:exist]
       
       kinds = ApproachKind.find_all_by_code(['0040','0045'])
-  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where not delete_flg and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
+  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
     end
     
   end
@@ -1119,10 +1122,13 @@ def get_report_info(month, user)
     case trust_attack_history.attack_state_to.code
     when 'S', 'A', 'B'
 
-      biru = trust_attack_history.trust.building
-      biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
-      biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
-      buildings << biru
+      if trust_attack_history.trust
+        biru = trust_attack_history.trust.building
+        biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
+        biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
+        buildings << biru
+      end
+      
 
     when 'Z'
       # 成約になった物件は、当月のみ表示対象
@@ -1184,7 +1190,7 @@ def get_report_info(month, user)
   # sql = sql + "   FROM trust_attack_state_histories a INNER JOIN trusts b ON a.trust_id = b.id "
   # sql = sql + "   WHERE a.month <= " + month + " "
   # sql = sql + "     AND b.biru_user_id = " + user.id.to_s + " "
-  # sql = sql + "     AND NOT b.delete_flg  "
+  # sql = sql + "     AND b.delete_flg = 'f' "
   # sql = sql + "   GROUP BY a.trust_id "
   # sql = sql + " ) x "
   # sql = sql + " WHERE x.trust_id = f.trust_id "

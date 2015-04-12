@@ -6,4 +6,5 @@ module ApplicationHelper
     button_to_function "Export CSV", "alert(reloadWithFormat('csv'));", options
   end
   
+
 end

@@ -535,7 +535,7 @@ ActiveRecord::Schema.define(:version => 20150412023246) do
   add_index "trust_maintenances", ["trust_id"], :name => "index_trust_maintenances_on_trust_id"
 
   create_table "trust_rewindings", :force => true do |t|
-    t.string   "code"
+    t.string   "trust_code"
     t.integer  "status",     :default => 0
     t.datetime "created_at",                :null => false
     t.datetime "updated_at",                :null => false

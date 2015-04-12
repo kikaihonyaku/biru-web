@@ -638,28 +638,28 @@ function getCoords(position) {
 		
 		// 列属性の定義
 		var grid_model = [
-		  {name:"trust_id",  index:"trust_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
-		 , {name:"building_id",  index:"building_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
-		 , {name:"shop_name",  index:"shop_name",  width:50,  align:"center",  classes:"no_class",frozen:true, stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_shop %>" }}
-		 , {name:"building_code",  index:"building_code",  width:80,  align:"center",  classes:"no_class",frozen:true, searchoptions:{ sopt:['eq']}}
-		 , {name:"building_name",  index:"building_name",  width:100,  align:"center",  classes:"no_class",frozen:true}
-		 , {name:"building_address",  index:"building_address",  width:70,  align:"center",  classes:"no_class"}
-		 , {name:"build_type_name",  index:"build_type_name",  width:70,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_build_type %>" }}
-		 , {name:"manage_type_name",  index:"manage_type_name",  width:70,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_manage_type %>" }}
-		 , {name:"biru_age",  index:"biru_age",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
-		 , {name:"room_cnt",  index:"room_cnt",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
-		 , {name:"free_cnt",  index:"free_cnt",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
-		 , {name:"free_par",  index:"free_par",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+  		  {name:"trust_id",  index:"trust_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+  		 , {name:"building_id",  index:"building_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+  		 , {name:"shop_name",  index:"shop_name",  width:50,  align:"center",  classes:"no_class",frozen:true, stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_shop %>" }}
+  		 , {name:"building_code",  index:"building_code",  width:80,  align:"center",  classes:"no_class",frozen:true, searchoptions:{ sopt:['eq']}}
+  		 , {name:"building_name",  index:"building_name",  width:100,  align:"center",  classes:"no_class",frozen:true}
+  		 , {name:"building_address",  index:"building_address",  width:70,  align:"center",  classes:"no_class"}
+  		 , {name:"build_type_name",  index:"build_type_name",  width:70,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_build_type %>" }}
+  		 , {name:"manage_type_name",  index:"manage_type_name",  width:70,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_manage_type %>" }}
+  		 , {name:"biru_age",  index:"biru_age",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+  		 , {name:"room_cnt",  index:"room_cnt",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+  		 , {name:"free_cnt",  index:"free_cnt",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+  		 , {name:"free_par",  index:"free_par",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
 		 
-		 , {name:"trust_mente_junkai_seisou",  index:"trust_mente_junkai_seisou",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
-		 , {name:"trust_mente_kyusui_setubi",  index:"trust_mente_kyusui_setubi",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
-		 , {name:"trust_mente_tyosui_seisou",  index:"trust_mente_tyosui_seisou",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
-		 , {name:"trust_mente_elevator_hosyu",  index:"trust_mente_elevator_hosyu",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
-		 , {name:"trust_mente_bouhan_camera",  index:"trust_mente_bouhan_camera",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
+  		 , {name:"trust_mente_junkai_seisou",  index:"trust_mente_junkai_seisou",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
+  		 , {name:"trust_mente_kyusui_setubi",  index:"trust_mente_kyusui_setubi",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
+  		 , {name:"trust_mente_tyosui_seisou",  index:"trust_mente_tyosui_seisou",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
+  		 , {name:"trust_mente_elevator_hosyu",  index:"trust_mente_elevator_hosyu",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
+  		 , {name:"trust_mente_bouhan_camera",  index:"trust_mente_bouhan_camera",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
 		 
-		 , {name:"owner_code",  index:"owner_code",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
-		 , {name:"owner_name",  index:"owner_name",  width:70,  align:"center",  classes:"no_class"}
-		 , {name:"owner_address",  index:"owner_address",  width:70,  align:"center",  classes:"no_class"}
+  		 , {name:"owner_code",  index:"owner_code",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+  		 , {name:"owner_name",  index:"owner_name",  width:70,  align:"center",  classes:"no_class"}
+  		 , {name:"owner_address",  index:"owner_address",  width:70,  align:"center",  classes:"no_class"}
 
 		];
 
@@ -676,7 +676,7 @@ function getCoords(position) {
 		
 		$(function(){
 			jqgrid_create(grid_name,  grid_model,  gon.grid_data,  jqgrid_opt);
-			
+
 			jQuery("#building_table").navGrid('#building_pager',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager',{
 			        caption:"地図に反映", position:"last", onClickButton: function(){
 						 
@@ -722,6 +722,7 @@ function getCoords(position) {
 						 
 					 }
 				 })
+
 		});
 		
 		// resize

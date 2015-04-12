@@ -80,6 +80,7 @@ BiruWeb::Application.routes.draw do
 
   get "biru_service/index" ,:as => :biru_service
   get "property/index" ,:as => :property
+  get "trust_rewinding/index" ,:as => :trust_rewinding
 
   get "renters/index(/:sakimono)" => 'renters#index' ,:as => :renters
   

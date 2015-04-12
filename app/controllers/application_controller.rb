@@ -257,8 +257,6 @@ class ApplicationController < ActionController::Base
     return conv_code(user_id + '_' + address + '_' + name )
   end
   
-  
-  
   # 指定された日のポラスの月度を取得する
   def get_month(cur_date)
     if cur_date.day > 20
@@ -285,5 +283,44 @@ class ApplicationController < ActionController::Base
      month = "%04d%02d"%[cur_date.year.to_s, cur_date.month.to_s]
     
   end
+  
+  # jqgridの営業所リストを返す
+  def jqgrid_combo_shop
+    result = ":"
+    Shop.order(:group_id,  :area_id).each do |shop|
+      result = result + ";" + shop.name + ":" + shop.name
+    end
+    result
+  end
+  
+
+  # jqgridの営業所リストを返す
+  def jqgrid_combo_shop
+    result = ":"
+    Shop.order(:group_id,  :area_id).each do |obj|
+      result = result + ";" + obj.name + ":" + obj.name
+    end
+    result
+  end
+
+  # jqgridの建物種別のリストを返す
+  def jqgrid_combo_build_type
+    result = ":"
+    BuildType.find(:all).each do |obj|
+      result = result + ";" + obj.name + ":" + obj.name
+    end
+    result
+  end
+
+  # jqgridの管理方式のリストを返す
+  def jqgrid_combo_manage_type
+    result = ":"
+    ManageType.find(:all).each do |obj|
+      result = result + ";" + obj.name + ":" + obj.name
+    end
+    result
+  end
+
+  
 
 end
