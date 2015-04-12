@@ -299,7 +299,28 @@
 			        edit:false, add:false, del:false, search:false
 			      }).navButtonAdd('#building_pager', {
 			        caption:"地図に反映",  position:"last",  onClickButton: function(){
-						alert('これはまだ未実装です');
+						
+						// 建物非表示
+						 for(var item in build_arr){
+						    build_arr[item].set("visible", false);
+						 };
+		 
+						 //var bounds = new google.maps.LatLngBounds();
+						 var table_div = $('#building_table');
+						 var row_data = table_div.getRowData();
+		 
+						 for(var j in  row_data){
+			
+							 building = build_arr[row_data[j].building_id];
+							 if(building != null){
+	 							 building.set("visible", true);
+				 
+							 }
+			 
+						 }
+
+
+						
 					 }
 			 });
 
