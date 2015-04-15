@@ -6,7 +6,7 @@
 
 
 <%#= stylesheet_link_tag('jquery-themes/cupertino/jquery-ui') %>
-<%= stylesheet_link_tag('jquery-themes/start/jquery-ui') %>
+<%#= stylesheet_link_tag('jquery-themes/start/jquery-ui') %>
 
 
 <script type="text/javascript">
@@ -38,6 +38,12 @@ function change_biru_icon(type){
     // 営業所表示
     for(var item in build_arr){
       build_arr[item].setIcon(build_arr[item].shop_icon );
+    };
+
+  } else if(type == "rewinding" ){
+    // 巻き直し
+    for(var item in build_arr){
+		build_arr[item].setIcon(build_arr[item].rewinding_icon );
     };
 
   } else if(type == "biru_kind" ){
@@ -95,6 +101,7 @@ function change_biru_icon(type){
 		for(var item in build_arr){
 			build_arr[item].setIcon(build_arr[item].trust_mente_bouhan_camera );
   		};
+
 	} else {
     // 何もしない
   }
@@ -339,6 +346,22 @@ function get_icon_teiki_mente(num){
 }
 
 
+// 巻き直し
+function get_icon_rewinding(num){
+
+	var icon;
+	
+	if(num > 0){
+	    icon = 'marker_blue.png'; // 千葉支店
+	}else{
+	    icon = 'marker_yellow.png'; // 不明
+	}
+	
+    icon = '/assets/' + icon;
+    return icon;
+}
+
+
 // Infoウィンドウに設定します
 function setInfoWnd(marker, msg){
     google.maps.event.addListener(marker, "click", function(){
@@ -418,7 +441,8 @@ function getCoords(position) {
         build_arr[building.id] = createMarker({
           position : pos
           ,map : mapCanvas
-          ,icon : building.build_type_icon
+          ,icon : get_icon_rewinding(building.trust_rewinding_complete)
+		  ,rewinding_icon :get_icon_rewinding(building.trust_rewinding_complete)
           ,siten_icon : get_icon_siten(shop_code)
           ,area_icon : get_icon_area(shop_code)
           ,shop_icon : get_icon_shop(shop_code)
@@ -620,11 +644,8 @@ function getCoords(position) {
 			  "建物名",
 			  "建物住所",
 			  "建物種別", 
+			  "巻き直し状況",
 			  "管理方式",
-			  "築年数",
-			  "部屋数",
-			  "空室数",
-		 	  "空室割合(%)",
 			  "巡回清掃",
 			  "給水設備",
 			  "貯水槽清掃",
@@ -645,11 +666,8 @@ function getCoords(position) {
   		 , {name:"building_name",  index:"building_name",  width:100,  align:"center",  classes:"no_class",frozen:true}
   		 , {name:"building_address",  index:"building_address",  width:70,  align:"center",  classes:"no_class"}
   		 , {name:"build_type_name",  index:"build_type_name",  width:70,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_build_type %>" }}
+  		 , {name:"trust_rewinding_complete",  index:"trust_rewinding_complete",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
   		 , {name:"manage_type_name",  index:"manage_type_name",  width:70,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_manage_type %>" }}
-  		 , {name:"biru_age",  index:"biru_age",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
-  		 , {name:"room_cnt",  index:"room_cnt",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
-  		 , {name:"free_cnt",  index:"free_cnt",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
-  		 , {name:"free_par",  index:"free_par",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
 		 
   		 , {name:"trust_mente_junkai_seisou",  index:"trust_mente_junkai_seisou",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
   		 , {name:"trust_mente_kyusui_setubi",  index:"trust_mente_kyusui_setubi",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
@@ -744,8 +762,9 @@ function getCoords(position) {
 			    <ul>
 			        <li>
 			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" >								
-					  <%= form_tag('/biru_service/change_biru_icon', :remote => true, :format => 'js', :name=>'biru_icon', :id=>'biru_icon_id') do %>
+					  <%= form_tag('/trust_rewinding/change_biru_icon', :remote => true, :format => 'js', :name=>'biru_icon', :id=>'biru_icon_id') do %>
 					    <%= select_tag 'disp_type', options_for_select({
+						"巻き直し" => "rewinding",
 						"建物種別" => "biru_kind",
 						 "管理方式" => "manage_type",
 						 "空室数" => "aki",
@@ -783,40 +802,13 @@ function getCoords(position) {
     <tbody>
       <tr>
         <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_blue.png') %></td>
-        <td style="font-size:medium;">アパート</td>
+        <td style="font-size:medium;">完了</td>
       </tr>
       <tr>
         <td><%= image_tag('marker_yellow.png') %></td>
-        <td style="font-size:medium;">マンション</td>
+        <td style="font-size:medium;">未完了</td>
       </tr>
-      <tr>
-        <td><%= image_tag('marker_purple.png') %></td>
-        <td style="font-size:medium;">分譲M</td>
-      </tr>
-      <tr>
-        <td><%= image_tag('marker_red.png') %></td>
-        <td style="font-size:medium;">戸建て</td>
-      </tr>
-      <tr>
-        <td><%= image_tag('marker_orange.png') %></td>
-        <td style="font-size:medium;">テラス</td>
-      </tr>
-      <tr>
-        <td><%= image_tag('marker_green.png') %></td>
-        <td style="font-size:medium;">メゾネット</td>
-      </tr>
-      <tr>
-        <td><%= image_tag('marker_gray.png') %></td>
-        <td style="font-size:medium;">店舗等</td>
-      </tr>
-      <tr>
-        <td><%= image_tag('marker_gray.png') %></td>
-        <td style="font-size:medium;">事務所等</td>
-      </tr>
-      <tr>
-        <td><%= image_tag('marker_white.png') %></td>
-        <td style="font-size:medium;">その他</td>
-      </tr>
+
     </tbody>
   </table>
 					

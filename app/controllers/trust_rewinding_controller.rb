@@ -256,6 +256,7 @@ class TrustRewindingController < ApplicationController
         :trust_mente_elevator_hosyu=>rec["trust_mente_elevator_hosyu"],
         :trust_mente_bouhan_camera=>rec["trust_mente_bouhan_camera"],
         
+        :trust_rewinding_complete=>rec["trust_rewinding_complete"],
       }
       
       
@@ -321,6 +322,7 @@ class TrustRewindingController < ApplicationController
       row_data[:trust_mente_tyosui_seisou] = rec["trust_mente_tyosui_seisou"]
       row_data[:trust_mente_elevator_hosyu] = rec["trust_mente_elevator_hosyu"]
       row_data[:trust_mente_bouhan_camera] = rec["trust_mente_bouhan_camera"]
+      row_data[:trust_rewinding_complete] = rec["trust_rewinding_complete"]
 
       grid_data.push(row_data)
     end

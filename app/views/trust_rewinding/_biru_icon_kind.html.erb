@@ -360,6 +360,21 @@
       </tr>
     </tbody>
   </table>
+<% elsif biru_icon == "rewinding" %>
+
+  <!-- 巻き直し -->
+  <table style="margin-left:30px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;height:20px;width:25px;"><%= image_tag('marker_blue.png') %></td>
+        <td style="font-size:medium;">完了</td>
+      </tr>
+      <tr>
+        <td><%= image_tag('marker_yellow.png') %></td>
+        <td style="font-size:medium;">未完了</td>
+      </tr>
+    </tbody>
+  </table>  
 <% elsif ( biru_icon ==  "junkai_seisou" )  or ( biru_icon ==  "kyusui_setubi") or  (biru_icon ==   "tyosui_seisou") or (biru_icon ==   "elevator_hosyu") or (biru_icon ==  "bouhan_camera")  %>
 
   <!-- 戸数  -->
@@ -375,6 +390,7 @@
       </tr>
     </tbody>
   </table>
+
 
 
 <% else %>
