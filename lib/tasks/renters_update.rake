@@ -1,4 +1,4 @@
-﻿# -*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 require 'csv'
 require 'kconv'
@@ -11,6 +11,31 @@ require 'rexml/document'
 
 
 namespace :biruweb do
+	
+	task :renters_update_test => :environment  do
+		
+	    batch_cd = Time.now.strftime('%Y%m%d%H%M%S')
+	    
+	    @data_update = DataUpdateTime.find_by_code("310")
+	    @data_update.start_datetime = Time.now
+	    @data_update.update_datetime = nil
+	    @data_update.biru_user_id = 1
+	    @data_update.save!
+
+			# レンターズデータを取得
+	    #renters_work_data(batch_cd)
+	    
+	    # レンターズデータを反映
+	    #renters_reflect(batch_cd)
+	    renters_reflect("20141113010010")
+
+	    @data_update.update_datetime = Time.now
+	    @data_update.save!
+	    
+	    P "開始:" + @data_update.start_datetime.to_s + " 終了:" + @data_update.update_datetime.to_s
+	end
+		  
+	
 	task :renters_update => :environment  do
 		
 	    batch_cd = Time.now.strftime('%Y%m%d%H%M%S')
@@ -21,16 +46,11 @@ namespace :biruweb do
 	    @data_update.biru_user_id = 1
 	    @data_update.save!
 
-      # 20141205 shiba
-      WorkRentersRoom.delete_all
-      WorkRentersRoomPicture.delete_all
-
 			# レンターズデータを取得
 	    renters_work_data(batch_cd)
 	    
 	    # レンターズデータを反映
 	    renters_reflect(batch_cd)
-	    #renters_reflect("20141106084430")
 
 	    @data_update.update_datetime = Time.now
 	    @data_update.save!
@@ -43,6 +63,10 @@ namespace :biruweb do
 		
 	  get_cnt = 50
 	  start_idx = 1
+	  
+	  # 不要データを削除
+	  WorkRentersRoom.destroy_all
+	  WorkRentersRoomPicture.destroy_all
 	  
 	  loop do
 	    
@@ -150,8 +174,10 @@ namespace :biruweb do
         work_renters_room.notice_d = room.elements['notice[4]'].text if room.elements['notice[4]']
         work_renters_room.notice_e = room.elements['notice[5]'].text if room.elements['notice[5]']
         work_renters_room.notice_f = room.elements['notice[6]'].text if room.elements['notice[6]']
-        work_renters_room.torihiki_mode = room.elements['torihiki_mode'].text if room.elements['torihiki_mode']
-	  
+        work_renters_room.notice_g = room.elements['notice[7]'].text if room.elements['notice[7]']
+        work_renters_room.notice_h = room.elements['notice[8]'].text if room.elements['notice[8]']
+		work_renters_room.torihiki_mode = room.elements['torihiki_mode'].text if room.elements['torihiki_mode']
+
 	      work_renters_room.save!
 	      
 	      # 画像を登録
@@ -277,6 +303,9 @@ namespace :biruweb do
         room.torihiki_mode_sakimono = false
       end
 	    
+      room.notice_g = work_room.notice_g
+      room.notice_h = work_room.notice_h
+
 	    room.save!
 	    
 	    # 部屋の物件情報を反映
