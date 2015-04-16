@@ -957,8 +957,23 @@ function getCoords(position) {
 	        $('#building_table').setGridWidth($(window).width() - 40 )
 	                    .setGridHeight($(window).height() * 0.4 - 50);
 	    }).trigger('resize');
+		
+		
 	}
 	
+	// 貸主のアイコンを表示・非表示にする。
+	function icon_kind_kasi_click(){
+	    for(var item in owner_arr){
+	      owner_arr[item].set("visible", document.getElementById('kind_kasi').checked);
+	    };
+	}
+	
+	function icon_kind_biru_click(){
+	    for(var item in build_arr){
+	      build_arr[item].set("visible", document.getElementById('kind_biru').checked);
+	    };
+		
+	}
 	
 
 </script>
@@ -1008,7 +1023,7 @@ function getCoords(position) {
     </thead>
     <tbody>
       <tr>
-        <td style="vertical-align:middle"><input type="checkbox" name="riyu" value="1" checked="checked">&nbsp;貸主</td>
+        <td style="vertical-align:middle"><input type="checkbox"  id="kind_kasi" checked="checked" onclick="icon_kind_kasi_click();">&nbsp;貸主</td>
         <td style="text-align:center">
 			<img src="/assets/marker_large_gold_S.png" />
 		</td>
@@ -1029,7 +1044,7 @@ function getCoords(position) {
 		</td>
       </tr>
       <tr height="50">
-        <td style="vertical-align:middle"><input type="checkbox" name="riyu" value="2" checked="checked">&nbsp;物件</td>
+        <td style="vertical-align:middle"><input type="checkbox"  id="kind_biru" checked="checked" onclick="icon_kind_biru_click();">&nbsp;物件</td>
         <td style="text-align:center;vertical-align:middle;">
 			<img src="/assets/marker_orange.png" />
 		</td>
