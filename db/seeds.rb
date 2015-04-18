@@ -541,8 +541,15 @@ end
 # 社員マスタ登録
 def init_biru_user
 	arr = []
-  arr.push({:uid=>'161', :code=>'999999', :name=>'スーパーバイザー', :pass=>'9'})
+#  arr.push({:uid=>'100', :code=>'5000', :name=>'東武北担当者', :pass=>'5000'})
 
+arr.push({:uid=>'2378', :code=>'6365', :name=>'松本 貴之', :pass=>'6365'})
+arr.push({:uid=>'2473', :code=>'6425', :name=>'赤坂　裕貴', :pass=>'6425'})
+arr.push({:uid=>'2533', :code=>'6464', :name=>'猪原 勇太', :pass=>'6464'})
+arr.push({:uid=>'2513', :code=>'7811', :name=>'池ノ谷　宙', :pass=>'7811'})
+arr.push({:uid=>'1758', :code=>'5313', :name=>'宮川　雄介', :pass=>'5313'})
+arr.push({:uid=>'2066', :code=>'5518', :name=>'齋藤　慎吾', :pass=>'5518'})
+arr.push({:uid=>'1527', :code=>'4917', :name=>'市橋　弘如', :pass=>'4917'})
 
   arr.each do |obj|
     biru_user = BiruUser.find_or_create_by_code(obj[:code])
@@ -1635,7 +1642,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       	
    		elsif row[5].strip.length
    			# 地番が入っている時
-	      imp.building_address = (row[3] + ' ' + row[5]).strip
+	      imp.building_address = (row[3] + ' ' + row[4] + ' ' + row[5]).strip
   		else
   			# 住所２も地番も入っていない時
 	      imp.building_address = (row[3]).strip
@@ -3119,7 +3126,7 @@ end
 #init_data_update
 
 # 社員マスタ登録
-#init_biru_user
+init_biru_user
 
 
 # 受託巻き直し対象データ
@@ -3154,37 +3161,36 @@ end
 ###########################
 # アタックリストの登録
 ###########################
-
 #reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "01_01_souka.csv")) # 草加 松本
 #reg_attack_owner_building('6487', '草加新田営業所', Rails.root.join( "tmp", "01_02_shinden.csv")) # 草加新田　氏家
 # reg_attack_owner_building('5952', '北千住営業所', Rails.root.join( "tmp", "01_02_kitasenju.csv")) # 北千住営業所　山口
-
-
 #reg_attack_owner_building('6464', '南越谷営業所', Rails.root.join( "tmp", "01_04_minami_kosigaya.csv")) # 南越谷　猪原
 #reg_attack_owner_building('6406', '越谷営業所', Rails.root.join( "tmp", "01_05_koshigaya.csv")) # 越谷　末吉
 #reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "01_07_kitakoshigaya.csv")) # 北越谷　赤坂
 #reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "akasaka_add.csv")) # 北越谷　赤坂
-
-
 #reg_attack_owner_building('5684', 'せんげん台営業所', Rails.root.join( "tmp", "01_08_sengendai.csv")) # せんげん台　帰山
-
 #reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_01_todakoenn.csv")) # 戸田公園 中野主任
 #reg_attack_owner_building('7844', '戸田営業所', Rails.root.join( "tmp", "02_02_toda.csv")) # 戸田　辻社員’
 ####reg_attack_owner_building('6338', '川口営業所', Rails.root.join( "tmp", "02_04_kawaguchi.csv")) # 川口営業所　鈴木
-
 ####reg_attack_owner_building('5313', '与野営業所', Rails.root.join( "tmp", "02_05_yono.csv")) # 与野営業所　宮川
-
 #reg_attack_owner_building('5473', '東浦和営業所', Rails.root.join( "tmp", "02_07_higashi_urawa.csv")) # 東浦和 小泉主任
 #reg_attack_owner_building('5841', '戸塚安行営業所', Rails.root.join( "tmp", "02_09_totukaangyo.csv")) # 戸塚安行 下地社員
 #reg_attack_owner_building('5841', '戸塚安行営業所', Rails.root.join( "tmp", "02_09_totukaangyo_02.csv")) # 戸塚安行 下地社員
-
-
-
 # 千葉支店 市橋主任
 #reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "03_01_matudo.csv"))
 #reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "03_02_kitamatudo.csv"))
 #reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "03_03_minaminagareyama.csv"))
 #reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "03_04_kasiwa.csv"))
+
+
+###########################
+# アタックリストの登録(2nd)
+###########################
+reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "attack2015_01_souka.csv")) # 松本
+reg_attack_owner_building('6365', '草加新田営業所', Rails.root.join( "tmp", "attack2015_02_shinden.csv")) # 松本
+reg_attack_owner_building('6464', '北千住営業所', Rails.root.join( "tmp", "attack2015_02_kitasenjyu.csv")) # 猪原
+
+
 
 
 ###########################

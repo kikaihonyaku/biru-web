@@ -52,6 +52,7 @@ class TrustManagementsController < ApplicationController
     trust_user_hash['5841'] = {:name=>'下地', :shop_name => '戸塚安行'}
     trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '千葉支店'}
     trust_user_hash['5928'] = {:name=>'柴田', :shop_name => 'テスト'}
+    trust_user_hash['5000'] = {:name=>'東武北エリア', :shop_name => 'テスト'}
 
     # ユーザーを取得
     biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")

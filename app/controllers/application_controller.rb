@@ -25,6 +25,17 @@ class ApplicationController < ActionController::Base
   # CSV出力する際、Windowsで開くためにShift_JISに変換する。■2014/08/12 当面はpdfで出力するため、文字コードはutf-8に戻す。
   after_filter :change_charset_to_sjis, :if => :csv?
   
+  
+  # 建物用のハッシュを取得します
+  def conv_code_building(user_id, address, name)
+    return conv_code(user_id + '_' + address + '_' + name )
+  end
+  
+  # 貸主用のハッシュを取得します
+  def conv_code_owner(user_id, address, name)
+    return conv_code(user_id + '_' + address + '_' + name )
+  end
+  
   protected
   def change_charset_to_sjis
     response.body = NKF::nkf('-Ws', response.body)
@@ -245,16 +256,6 @@ class ApplicationController < ActionController::Base
 
    # ハッシュ化
    return Digest::MD5.new.update(str).to_s
-  end
-  
-  # 建物用のハッシュを取得します
-  def conv_code_building(user_id, address, name)
-    return conv_code(user_id + '_' + address + '_' + name )
-  end
-  
-  # 貸主用のハッシュを取得します
-  def conv_code_owner(user_id, address, name)
-    return conv_code(user_id + '_' + address + '_' + name )
   end
   
   # 指定された日のポラスの月度を取得する
