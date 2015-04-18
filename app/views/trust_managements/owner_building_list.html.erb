@@ -756,12 +756,14 @@ function getCoords(position) {
 	function init_jqgrid_trust(){
 		// 列名の定義
 		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
-		var grid_name = ["trust_id", "owner_id", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "訪問(留守）", "訪問(在宅）", "DM(発送）", "DM(反響）", "電話(留守）", "電話(会話）", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "営業所", "担当者"];
+		var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "訪問(留守）", "訪問(在宅）", "DM(発送）", "DM(反響）", "電話(留守）", "電話(会話）", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者"];
 		
 		// 列属性の定義
 		var grid_model = [
 		  {name:"trust_id", index:"trust_id", align:"right", classes:"no_class", hidden:true}
 		 ,{name:"owner_id", index:"owner_id", align:"right", classes:"no_class", hidden:true}
+		 ,{name:"shop_name",  index:"shop_name",  width:200,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_shop %>" }}
+		 
 		 ,{name:"attack_states_code", index:"attack_states_code", align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":all;S:ランクS;A:ランクA;B:ランクB;C:ランクC" }}
 		 ,{name:"owner_dm_delivery", index:"owner_dm_delivery", width:80, align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":全て;○:可;×:不可" }}
 		 ,{name:"owner_code", index:"owner_code", width:200, align:"center", classes:"no_class"}
@@ -783,7 +785,6 @@ function getCoords(position) {
 		 ,{name:"building_address", index:"building_address", width:300, align:"left", classes:"no_class"}
 		 ,{name:"building_memo", index:"building_memo", width:400, align:"left", classes:"no_class"}
 		 ,{name:"proprietary_company", index:"proprietary_company", width:200, align:"left", classes:"no_class"}
-		 ,{name:"shop_name", index:"shop_memo", align:"left", classes:"no_class"}
 		 ,{name:"user_name", index:"user_memo", align:"left", classes:"no_class"}
 		];
 		

@@ -165,6 +165,7 @@ class TrustManagementsController < ApplicationController
       end
     end
     
+    @combo_shop = jqgrid_combo_shop
     
     # 検索条件にエラーが存在しないとき
     if @error_msg.size == 0
@@ -182,6 +183,7 @@ class TrustManagementsController < ApplicationController
       owners = []
       owner_to_buildings = {}
       building_to_owners = {}
+      
       
       ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user, rank_arr, true)).each do |rec|
         
