@@ -10,5 +10,6 @@ class Room < ActiveRecord::Base
   belongs_to :trust
   belongs_to :manage_type
   belongs_to :renters_room
+  belongs_to :room_status
 
 end

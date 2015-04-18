@@ -469,6 +469,25 @@ def init_room_layout
 end
 
 
+# 間取りの登録
+def init_room_status
+  status_arr = []
+  status_arr.push({:name=>'未計上', :code=>'10'})
+  status_arr.push({:name=>'オーナー止め', :code=>'20'})
+  status_arr.push({:name=>'空室', :code=>'30'})
+  status_arr.push({:name=>'入居中', :code=>'40'})
+  status_arr.push({:name=>'その他', :code=>'50'})
+
+
+  status_arr.each do |obj|
+    room_status = RoomStatus.find_or_create_by_code(obj[:code])
+    room_status.code = obj[:code]
+    room_status.name = obj[:name]
+    room_status.save!
+    p room_status
+  end
+end
+
 # アプローチ種別を登録
 def init_approach_kind
   arr = []
@@ -3116,6 +3135,9 @@ end
 # 部屋間取登録
 #init_room_layout
 
+# 部屋状態登録
+init_room_status
+
 # アプローチ種別登録
 #init_approach_kind
 
@@ -3126,7 +3148,7 @@ end
 #init_data_update
 
 # 社員マスタ登録
-init_biru_user
+# init_biru_user
 
 
 # 受託巻き直し対象データ
@@ -3186,9 +3208,9 @@ init_biru_user
 ###########################
 # アタックリストの登録(2nd)
 ###########################
-reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "attack2015_01_souka.csv")) # 松本
-reg_attack_owner_building('6365', '草加新田営業所', Rails.root.join( "tmp", "attack2015_02_shinden.csv")) # 松本
-reg_attack_owner_building('6464', '北千住営業所', Rails.root.join( "tmp", "attack2015_02_kitasenjyu.csv")) # 猪原
+# reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "attack2015_01_souka.csv")) # 松本
+# reg_attack_owner_building('6365', '草加新田営業所', Rails.root.join( "tmp", "attack2015_02_shinden.csv")) # 松本
+# reg_attack_owner_building('6464', '北千住営業所', Rails.root.join( "tmp", "attack2015_02_kitasenjyu.csv")) # 猪原
 
 
 

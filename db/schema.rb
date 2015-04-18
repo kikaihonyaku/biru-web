@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150412023246) do
+ActiveRecord::Schema.define(:version => 20150418213525) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -419,6 +419,13 @@ ActiveRecord::Schema.define(:version => 20150412023246) do
     t.string "name"
   end
 
+  create_table "room_statuses", :force => true do |t|
+    t.string   "code"
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "room_types", :force => true do |t|
     t.string "code"
     t.string "name"
@@ -441,12 +448,14 @@ ActiveRecord::Schema.define(:version => 20150412023246) do
     t.boolean  "owner_stop_state", :default => false
     t.boolean  "advertise_state",  :default => false
     t.integer  "renters_room_id"
+    t.integer  "room_status_id"
   end
 
   add_index "rooms", ["building_id"], :name => "index_rooms_on_building_id"
   add_index "rooms", ["manage_type_id"], :name => "index_rooms_on_manage_type_id"
   add_index "rooms", ["renters_room_id"], :name => "index_rooms_on_renters_room_id"
   add_index "rooms", ["room_layout_id"], :name => "index_rooms_on_room_layout_id"
+  add_index "rooms", ["room_status_id"], :name => "index_rooms_on_room_status_id"
   add_index "rooms", ["room_type_id"], :name => "index_rooms_on_room_type_id"
   add_index "rooms", ["trust_id"], :name => "index_rooms_on_trust_id"
 
