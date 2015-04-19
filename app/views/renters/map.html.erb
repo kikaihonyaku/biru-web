@@ -159,6 +159,16 @@
 
 <script type="text/javascript">
 
+function htmlEscape(str) {
+    return String(str).replace(/&/g, '&')
+            .replace(/"/g, '"')
+            .replace(/</g, '<')
+            .replace(/'/g, "'")
+            .replace(/>/g, '>');
+
+}
+
+
 	$(function () {
 		$(".accordion .toggle").click(function () {
 			$(this).next("ul").slideToggle(200);
@@ -175,12 +185,12 @@
 	init_renters_jqgrid();
 	
 	// 絞り込みテーブルを作成します。
-	init_search_jqgrid();
+	// init_search_jqgrid();
 	
 	
 	function init_renters_jqgrid(){
 		// 列名の定義
- 		var grid_name = ["renters_room_id",  "building_id",  "営業所",  "建物名",  "部屋",  "空室状況",  "住所",  "room_code", "備考1","備考2","備考3","備考4","備考5","備考6", "合計(20)",  "間取り(1)",  "外観(2)",  "内観(9)",  "外観その他(2)",  "周辺(6)", "間取図", "外観", "キッチン", "トイレ", "バス", "居室", "洗面所", "玄関", "設備", "その他", "エントランス", "共用設備", "植栽", "駐車場", "その他", "配置図", "周辺"];
+ 		var grid_name = ["renters_room_id",  "building_id",  "営業所",  "建物名",  "部屋",  "空室状況", "入居区分", "住所",  "room_code", "備考1","備考2","備考3","備考4","備考5","備考6","備考7","備考8", "合計(20)",  "間取り(1)",  "外観(2)",  "内観(9)",  "外観その他(2)",  "周辺(6)", "間取図", "外観", "キッチン", "トイレ", "バス", "居室", "洗面所", "玄関", "設備", "その他", "エントランス", "共用設備", "植栽", "駐車場", "その他", "配置図", "周辺"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -190,6 +200,7 @@
 		 , {name:"real_building_name",  index:"real_building_name",  width:150,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"real_room_name",  index:"real_room_name",  width:50,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"vacant_div",  index:"vacant_div",  width:80,  align:"center",  classes:"no_class",frozen:true}
+		 , {name:"enter_ym",  index:"enter_ym",  width:80,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"address",  index:"address",  width:100,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"room_code",  index:"room_code",  width:80,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"notice_a",  index:"notice_a",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
@@ -198,6 +209,8 @@
 		 , {name:"notice_d",  index:"notice_d",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
 		 , {name:"notice_e",  index:"notice_e",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
 		 , {name:"notice_f",  index:"notice_f",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
+		 , {name:"notice_g",  index:"notice_g",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
+		 , {name:"notice_h",  index:"notice_h",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
 		 , {name:"suumo_sum",  index:"suumo_sum",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
 		 , {name:"suumo_madori",  index:"suumo_madori",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
 		 , {name:"suumo_gaikan",  index:"suumo_gaikan",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
@@ -236,6 +249,7 @@
 			rec['address'] = renters_data.address
 			rec['room_code'] = renters_data.room_code
 			rec['vacant_div'] = renters_data.vacant_div
+			rec['enter_ym'] = renters_data.enter_ym
 			//rec['notice'] = renters_data.notice
 
 			rec['notice_a'] = renters_data.notice_a
@@ -244,7 +258,9 @@
 			rec['notice_d'] = renters_data.notice_d
 			rec['notice_e'] = renters_data.notice_e
 			rec['notice_f'] = renters_data.notice_f
-			
+			rec['notice_g'] = renters_data.notice_g
+			rec['notice_h'] = renters_data.notice_h
+
 			//tmp = get_suumo_remaining(false,  renters_data.madori,  renters_data.gaikan,  renters_data.naikan,  renters_data.gaikan_etc,  renters_data.syuuhen)
 			res = get_rentes_picture_cnt(renters_data.J00, renters_data.T00, renters_data.J01, renters_data.J02, renters_data.J03, renters_data.J04, renters_data.J05, renters_data.J06, renters_data.J07, renters_data.J08, renters_data.J09, renters_data.T03, renters_data.T04, renters_data.T05, renters_data.T06, renters_data.T08, renters_data.T11, renters_data.T01);
 			
@@ -340,8 +356,10 @@
 	   						 table_div.jqGrid('showCol',"notice_d");
 	   						 table_div.jqGrid('showCol',"notice_e");
 	   						 table_div.jqGrid('showCol',"notice_f");
-		 					 table_div.trigger("reloadGrid");
-							 
+	   						 table_div.jqGrid('showCol',"notice_g");
+	   						 table_div.jqGrid('showCol',"notice_h");
+							
+                             table_div.trigger("reloadGrid");
 							 //screen_unblock();
 							 notice_disp = true;
 						}else{
@@ -352,9 +370,11 @@
 	   						 table_div.jqGrid('hideCol',"notice_d");
 	   						 table_div.jqGrid('hideCol',"notice_e");
 	   						 table_div.jqGrid('hideCol',"notice_f");
-		 					 table_div.trigger("reloadGrid");
-							 
-							notice_disp = false;
+	   						 table_div.jqGrid('hideCol',"notice_g");
+	   						 table_div.jqGrid('hideCol',"notice_h");
+	   						 
+                             table_div.trigger("reloadGrid");
+							 notice_disp = false;
 						}
 						
  					 }
@@ -417,7 +437,7 @@
  	            {startColumnName: 'naikan_renters_kitchen', numberOfColumns: 8, titleText: '<em>内観</em>'},
  	            {startColumnName: 'gaikan_etc_renters_entrance', numberOfColumns: 6, titleText: '<em>外観その他</em>'},
  	            {startColumnName: 'syuuhen_renters_syuuhen', numberOfColumns: 1, titleText: '<em>周辺</em>'},
- 	            {startColumnName: 'notice_a', numberOfColumns: 6, titleText: '<em>備考</em>'},
+ 	            {startColumnName: 'notice_a', numberOfColumns: 8, titleText: '<em>備考</em>'},
 				
  	          ]
  	        });
@@ -429,71 +449,101 @@
 	}
 	
 	
-	// 絞り込み条件grid
-	function init_search_jqgrid(){
-		
-		var col_names = ["部署の絞り込み",  "リンク"];
-	
-		// 列属性の定義
-		var col_model = [
-		  {name:"store_name",  index:"store_name",  width:300,  align:"left", classes:"no_class"}
- 		 , {name:"url",  index:"url",  align:"center",  classes:"no_class",  hidden:true}
-		];
-		
-		// データの作成
-		var grid_data = [];
+// 	// 絞り込み条件grid
+// 	function init_search_jqgrid(){
+// 		
+// 		var col_names = ["部署の絞り込み",  "リンク"];
+// 	
+// 		// 列属性の定義
+// 		var col_model = [
+// 		  {name:"store_name",  index:"store_name",  width:300,  align:"left", classes:"no_class"}
+//  		 , {name:"url",  index:"url",  align:"center",  classes:"no_class",  hidden:true}
+// 		];
+// 		
+// 		// データの作成
+// 		var grid_data = [];
+// 
+// 	    grid_data.push({ url:  'map',  store_name: '全体' }) 
+// 	    grid_data.push({ url:  'map?stcd=335, 336, 339, 334, 340, 337, 338, 667',  store_name: '東武支店' }) 
+// 	    grid_data.push({ url:  'map?stcd=2763, 341, 342, 344, 348, 346, 349, 343, 345',  store_name: 'さいたま支店' }) 
+// 	    grid_data.push({ url:  'map?stcd=352, 347, 351, 350',  store_name: '千葉支店' }) 
+// 	    grid_data.push({ url:  'map?stcd=335',   store_name: '草加' }) 
+// 	    grid_data.push({ url:  'map?stcd=336',   store_name: '草加新田' }) 
+// 	    grid_data.push({ url:  'map?stcd=339',   store_name: '北千住' }) 
+// 	    grid_data.push({ url:  'map?stcd=334',   store_name: '南越谷' }) 
+// 	    grid_data.push({ url:  'map?stcd=340',   store_name: '越谷' }) 
+// 	    grid_data.push({ url:  'map?stcd=337',   store_name: '北越谷' }) 
+// 	    grid_data.push({ url:  'map?stcd=338',   store_name: '春日部' }) 
+// 	    grid_data.push({ url:  'map?stcd=667',   store_name: 'せんげん台' }) 
+// 	    grid_data.push({ url:  'map?stcd=2763', store_name: '戸田公園' }) 
+// 	    grid_data.push({ url:  'map?stcd=341',  store_name: '戸田' }) 
+// 	    grid_data.push({ url:  'map?stcd=342',  store_name: '武蔵浦和' }) 
+// 	    grid_data.push({ url:  'map?stcd=344',  store_name: '与野' }) 
+// 	    grid_data.push({ url:  'map?stcd=348',  store_name: '浦和' }) 
+// 	    grid_data.push({ url:  'map?stcd=346',  store_name: '川口' }) 
+// 	    grid_data.push({ url:  'map?stcd=349',  store_name: '東浦和' }) 
+// 	    grid_data.push({ url:  'map?stcd=343',  store_name: '東川口' }) 
+// 	    grid_data.push({ url:  'map?stcd=345',  store_name: '戸塚安行' }) 
+// 	    grid_data.push({ url:  'map?stcd=352',   store_name: '松戸' }) 
+// 	    grid_data.push({ url:  'map?stcd=347',   store_name: '北松戸' }) 
+// 	    grid_data.push({ url:  'map?stcd=351',   store_name: '南流山' }) 
+// 	    grid_data.push({ url:  'map?stcd=350',   store_name: '柏' }) 
+// 		
+// 		$(function(){
+// 
+// 			var table_div = $('#search_table');
+// 			var div_box = $('#search_div');
+// 
+// 			table_div.jqGrid({
+// 			  	data : grid_data,   //表示したいデータ
+// 			  	datatype : "local",             //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
+// 			  	colNames : col_names,            //列の表示名
+// 			  	colModel : col_model,    //列ごとの設定
+// 			  	rowNum : 100,                    //一ページに表示する行数
+// 				loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
+// 					table_div.jqGrid('setGridWidth',  div_box.width(),  true);
+// 				    table_div.jqGrid('setGridHeight',  div_box.height(),  true);
+// 				}, 
+// 				
+// 			    onSelectRow: function(id) {
+// 				    data = table_div.getRowData(id);
+// 			 		screen_block();
+// 					location.href = location.protocol + '//' + location.host + '/biruweb/renters/' + data.url
+// 				}
+// 			});
+// 			
+// 		});
+// 		
+// 	}
+// 	
 
-	    grid_data.push({ url:  'map',  store_name: '全体' }) 
-	    grid_data.push({ url:  'map?stcd=335, 336, 339, 334, 340, 337, 338, 667',  store_name: '東武支店' }) 
-	    grid_data.push({ url:  'map?stcd=2763, 341, 342, 344, 348, 346, 349, 343, 345',  store_name: 'さいたま支店' }) 
-	    grid_data.push({ url:  'map?stcd=352, 347, 351, 350',  store_name: '千葉支店' }) 
-	    grid_data.push({ url:  'map?stcd=335',   store_name: '草加' }) 
-	    grid_data.push({ url:  'map?stcd=336',   store_name: '草加新田' }) 
-	    grid_data.push({ url:  'map?stcd=339',   store_name: '北千住' }) 
-	    grid_data.push({ url:  'map?stcd=334',   store_name: '南越谷' }) 
-	    grid_data.push({ url:  'map?stcd=340',   store_name: '越谷' }) 
-	    grid_data.push({ url:  'map?stcd=337',   store_name: '北越谷' }) 
-	    grid_data.push({ url:  'map?stcd=338',   store_name: '春日部' }) 
-	    grid_data.push({ url:  'map?stcd=667',   store_name: 'せんげん台' }) 
-	    grid_data.push({ url:  'map?stcd=2763', store_name: '戸田公園' }) 
-	    grid_data.push({ url:  'map?stcd=341',  store_name: '戸田' }) 
-	    grid_data.push({ url:  'map?stcd=342',  store_name: '武蔵浦和' }) 
-	    grid_data.push({ url:  'map?stcd=344',  store_name: '与野' }) 
-	    grid_data.push({ url:  'map?stcd=348',  store_name: '浦和' }) 
-	    grid_data.push({ url:  'map?stcd=346',  store_name: '川口' }) 
-	    grid_data.push({ url:  'map?stcd=349',  store_name: '東浦和' }) 
-	    grid_data.push({ url:  'map?stcd=343',  store_name: '東川口' }) 
-	    grid_data.push({ url:  'map?stcd=345',  store_name: '戸塚安行' }) 
-	    grid_data.push({ url:  'map?stcd=352',   store_name: '松戸' }) 
-	    grid_data.push({ url:  'map?stcd=347',   store_name: '北松戸' }) 
-	    grid_data.push({ url:  'map?stcd=351',   store_name: '南流山' }) 
-	    grid_data.push({ url:  'map?stcd=350',   store_name: '柏' }) 
-		
-		$(function(){
 
-			var table_div = $('#search_table');
-			var div_box = $('#search_div');
 
-			table_div.jqGrid({
-			  	data : grid_data,   //表示したいデータ
-			  	datatype : "local",             //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
-			  	colNames : col_names,            //列の表示名
-			  	colModel : col_model,    //列ごとの設定
-			  	rowNum : 100,                    //一ページに表示する行数
-				loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
-					table_div.jqGrid('setGridWidth',  div_box.width(),  true);
-				    table_div.jqGrid('setGridHeight',  div_box.height(),  true);
-				}, 
-				
-			    onSelectRow: function(id) {
-				    data = table_div.getRowData(id);
-			 		screen_block();
-					location.href = location.protocol + '//' + location.host + '/renters/' + data.url
-				}
-			});
-			
-		});
-		
+//		$(function(){
+//
+//			var table_div = $('#search_table');
+//			var div_box = $('#search_div');
+//
+//			table_div.jqGrid({
+//			  	data : grid_data,   //表示したいデータ
+//			  	datatype : "local",             //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
+//			  	colNames : col_names,            //列の表示名
+//			  	colModel : col_model,    //列ごとの設定
+//			  	rowNum : 100,                    //一ページに表示する行数
+//				loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
+//					table_div.jqGrid('setGridWidth',  div_box.width(),  true);
+//				    table_div.jqGrid('setGridHeight',  div_box.height(),  true);
+//				}, 
+//				
+//			    onSelectRow: function(id) {
+//				    data = table_div.getRowData(id);
+//			 		screen_block();
+//					location.href = location.protocol + '//' + location.host + '/renters/' + data.url
+//				}
+//			});
+//			
+//		});
+//		
 		
 		// resize
 	    $(window).bind('resize', function () {
@@ -501,8 +551,6 @@
 	                    .setGridHeight($(window).height() * 0.4 - 50);
 	    }).trigger('resize');
 		
-		
-	}
 	
 	// suumoのそれぞれの残数をハッシュで返します
 	// cnt_type ture:残数、false:総数
@@ -679,11 +727,12 @@
 			    </ul>
 			</div>
 			
+			<!--
 			<div id="search_div" style="width:100%;height:60%;margin-bottom:50px;">
 				<table id="search_table" ></table>
 				<div id="search_pager"></div>
 			</div>
-			
+			-->
 			
 		</div>
 		<div id="panowide" style="width: 100%; height: 0px;float:right;"></div>

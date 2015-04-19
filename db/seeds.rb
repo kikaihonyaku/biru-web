@@ -499,6 +499,7 @@ def init_approach_kind
   arr.push({:name=>'電話(会話)', :code=>'0045'} )
   arr.push({:name=>'メモ(通常)', :code=>'0050'} )
   arr.push({:name=>'メモ(移行)', :code=>'0055'} )
+  arr.push({:name=>'提案(通常)', :code=>'0060'} )
   
   arr.each do |obj|
     app =  ApproachKind.find_or_create_by_code(obj[:code])
@@ -546,6 +547,7 @@ def init_data_update
   arr.push({:code=>'230', :name=>'空き日数'})
   arr.push({:code=>'310', :name=>'レンターズ'})
   arr.push({:code=>'320', :name=>'スーモ'})
+  arr.push({:code=>'500', :name=>'受託巻き直し'})
 
   arr.each do |obj|
     rec = DataUpdateTime.find_or_create_by_code(obj[:code])
@@ -1172,17 +1174,60 @@ def update_imp_oneself(batch_code)
 
       kanri_room_num = kanri_room_num + 1 # TODO:本来はB管理以上とかが必要かも。管理方式に戸数カウントフラグを持たせてそれで判定させよう。
 
-      # 空き状態の設定
-      if imp_room.room_aki.to_i == 2
-        room.free_state = true
-        free_num = free_num + 1
-        p room.building_cd.to_s + ' ' + room.code + ' ' + '空き'
-      else
-        room.free_state = false
-        p room.building_cd.to_s + ' ' + room.code + ' ' + '入居'
-      end
+#      if imp_room.room_aki.to_i == 2
+#        room.free_state = true
+#        free_num = free_num + 1
+#        p room.building_cd.to_s + ' ' + room.code + ' ' + '空き'
+#      else
+#        room.free_state = false
+#        p room.building_cd.to_s + ' ' + room.code + ' ' + '入居'
+#      end
 
-      # TODO:オーナー止も取得する。
+
+      # 空き状態の設定
+      #
+			# 管理契約無効:1
+			# ｵｰﾅｰ止:2
+			# 稼働率・空室率_ｶｳﾝﾄ対象外:3
+			# 未計上:4
+			# 空室:5
+			# 入居中:6
+			code = ""
+			case imp_room.room_aki.to_i
+				when 2 then 
+					# ｵｰﾅｰ止め
+					code = "20"
+	        room.free_state = false
+					
+				when 4 then
+					# 未計上
+					code = "10"
+	        room.free_state = true
+	        free_num = free_num + 1
+					
+				when 5 then
+					# 空室
+					code = "30"
+	        room.free_state = true
+	        free_num = free_num + 1
+					
+				when 6 then
+					# 入居中
+					code = "40"
+	        room.free_state = false
+	        
+				else 
+					# その他
+					code = "50"
+	        room.free_state = false
+	        
+			end
+			
+			room_status = RoomStatus.find_by_code(code)
+			if room_status
+				room.room_status_id = room_status.id
+			end
+			
       room.delete_flg = false
       room.save!
 
@@ -1661,7 +1706,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       	
    		elsif row[5].strip.length
    			# 地番が入っている時
-	      imp.building_address = (row[3] + ' ' + row[4] + ' ' + row[5]).strip
+	      imp.building_address = (row[3] + ' ' + row[5]).strip
   		else
   			# 住所２も地番も入っていない時
 	      imp.building_address = (row[3]).strip
@@ -2886,184 +2931,63 @@ def regist_lease_contract(filename)
   end
 end
 
-
-# レンターズデータのアップデートをする。
-def create_work_renters_rooms
+# SUUMOの登録を行います。
+def suumo_update
 	
-    batch_cd = Time.now.strftime('%Y%m%d%H%M%S')
-    
-    get_cnt = 50
-    start_idx = 1
-    
-    loop do
-      
-      url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&count=#{get_cnt.to_s}&start=#{start_idx.to_s}&vacant_div=3,4&torihiki_mode=1,2,3,4")
-      xml = open(url).read
-      doc = REXML::Document.new(xml)
-      
-      # １件も取得できなかったら終了
-      ret_status = doc.elements['results/results_returned']
-      break unless ret_status
-      break if ret_status.text == "0"
-
-      # 次の取得の準備
-      start_idx = start_idx + get_cnt
-      
-      #break if start_idx > 100
-      
-      # 配列がなくなるまで建物・部屋を作成
-      doc.elements.each_with_index('results/room') do |room, i|
-        p room.elements['room_cd'].text
-        
-        # レンターズ 部屋情報の取得
-        work_renters_room = WorkRentersRoom.create
-        work_renters_room.batch_cd = batch_cd
-        work_renters_room.batch_cd_idx = start_idx + i
-        work_renters_room.room_cd = room.elements['room_cd'].text if room.elements['room_cd']
-        work_renters_room.building_cd = room.elements['building_cd'].text if room.elements['building_cd']
-        work_renters_room.clientcorp_room_cd = room.elements['clientcorp_room_cd'].text if room.elements['clientcorp_room_cd']
-        work_renters_room.clientcorp_building_cd = room.elements['clientcorp_building_cd'].text if room.elements['clientcorp_building_cd']
-        work_renters_room.store_code = room.elements['store/code'].text if room.elements['store/code']
-        work_renters_room.store_name = room.elements['store/name'].text if room.elements['store/name']
-        work_renters_room.building_name = room.elements['building_name'].text if room.elements['building_name']
-        work_renters_room.gaikugoutou = room.elements['gaikugoutou'].text if room.elements['gaikugoutou']
-        work_renters_room.room_no = room.elements['room_no'].text if room.elements['room_no']
-        work_renters_room.real_building_name = room.elements['real_building_name'].text if room.elements['real_building_name']
-        work_renters_room.real_gaikugoutou = room.elements['real_gaikugoutou'].text if room.elements['real_gaikugoutou']
-        work_renters_room.real_room_no = room.elements['real_room_no'].text if room.elements['real_room_no']
-        work_renters_room.floor = room.elements['floor'].text if room.elements['floor']
-        work_renters_room.building_type = room.elements['building_type'].text if room.elements['building_type']
-        work_renters_room.structure = room.elements['structure'].text if room.elements['structure']
-        work_renters_room.construction = room.elements['construction'].text if room.elements['construction']
-        work_renters_room.room_num = room.elements['room_num'].text if room.elements['room_num']
-        work_renters_room.address = room.elements['address'].text if room.elements['address']
-        work_renters_room.detail_address = room.elements['detail_address'].text if room.elements['detail_address']
-        work_renters_room.pref_code = room.elements['pref/code'].text if room.elements['pref/code']
-        work_renters_room.pref_name = room.elements['pref/name'].text if room.elements['pref/name']
-        work_renters_room.city_code = room.elements['city/code'].text if room.elements['city/code']
-        work_renters_room.city_name = room.elements['city/name'].text if room.elements['city/name']
-        work_renters_room.choume_code = room.elements['choume/code'].text if room.elements['choume/code']
-        work_renters_room.choume_name = room.elements['choume/name'].text if room.elements['choume/name']
-        work_renters_room.latitude = room.elements['latitude'].text if room.elements['latitude']
-        work_renters_room.longitude = room.elements['longitude'].text if room.elements['longitude']
-        work_renters_room.vacant_div = room.elements['vacant_div'].text if room.elements['vacant_div']
-        work_renters_room.enter_ym = room.elements['enter_ym'].text if room.elements['enter_ym']
-        work_renters_room.new_status = room.elements['new_status'].text if room.elements['new_status']
-        work_renters_room.completion_ym = room.elements['completion_ym'].text if room.elements['completion_ym']
-        work_renters_room.square = room.elements['square'].text if room.elements['square']
-        work_renters_room.room_layout_type = room.elements['room_layout_type'].text if room.elements['room_layout_type']
-#        work_renters_room.        #renters_room.work_renters_room_layout_id = room.elements['#renters_room.work_renters_room_layout_id'].text if room.elements['#renters_room.layout_id']
-#        work_renters_room.        #renters_room.work_renters_access_id = room.elements['#renters_room.work_renters_access_id'].text if room.elements['#renters_room.work_renters_access_id']
-        work_renters_room.cond = room.elements['cond'].text if room.elements['cond']
-        work_renters_room.contract_div = room.elements['contract_div'].text if room.elements['contract_div']
-        work_renters_room.contract_comment = room.elements['contract_comment'].text if room.elements['contract_comment']
-        work_renters_room.rent_amount = room.elements['rent_amount'].text if room.elements['rent_amount']
-        work_renters_room.managing_fee = room.elements['managing_fee'].text if room.elements['managing_fee']
-        work_renters_room.reikin = room.elements['reikin'].text if room.elements['reikin']
-        work_renters_room.shikihiki = room.elements['shikihiki'].text if room.elements['shikihiki']
-        work_renters_room.shikikin = room.elements['shikikin'].text if room.elements['shikikin']
-        work_renters_room.shoukyakukin = room.elements['shoukyakukin'].text if room.elements['shoukyakukin']
-        work_renters_room.hoshoukin = room.elements['hoshoukin'].text if room.elements['hoshoukin']
-        work_renters_room.renewal_fee = room.elements['renewal_fee'].text if room.elements['renewal_fee']
-        work_renters_room.insurance = room.elements['insurance'].text if room.elements['insurance']
-        work_renters_room.agent_fee = room.elements['agent_fee'].text if room.elements['agent_fee']
-        work_renters_room.other_fee = room.elements['other_fee'].text if room.elements['other_fee']
-        work_renters_room.airconditioner = room.elements['airconditioner'].text if room.elements['airconditioner']
-        work_renters_room.washer_space = room.elements['washer_space'].text if room.elements['washer_space']
-        work_renters_room.burner = room.elements['burner'].text if room.elements['burner']
-        work_renters_room.equipment = room.elements['equipment'].text if room.elements['equipment']
-        work_renters_room.carpark_status = room.elements['carpark/status'].text if room.elements['carpark/status']
-        work_renters_room.carpark_fee = room.elements['carpark/carpark_fee'].text if room.elements['carpark/carpark_fee']
-        work_renters_room.carpark_reikin = room.elements['carpark/reikin'].text if room.elements['carpark/reikin']
-        work_renters_room.carpark_shikikin = room.elements['carpark/shikikin'].text if room.elements['carpark/shikikin']
-        work_renters_room.carpark_distance_to_nearby = room.elements['carpark/distance_to_nearby'].text if room.elements['carpark/distance_to_nearby']
-        work_renters_room.carpark_car_num = room.elements['carpark/car_num'].text if room.elements['carpark/car_num']
-        work_renters_room.carpark_indoor = room.elements['carpark/indoor'].text if room.elements['carpark/indoor']
-        work_renters_room.carpark_shape = room.elements['carpark/shape'].text if room.elements['carpark/shape']
-        work_renters_room.carpark_underground = room.elements['carpark/underground'].text if room.elements['carpark/underground']
-        work_renters_room.carpark_roof = room.elements['carpark/roof'].text if room.elements['carpark/roof']
-        work_renters_room.carpark_shutter = room.elements['carpark/shutter'].text if room.elements['carpark/shutter']
-        
-        # tmo_notice = ""
-        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[1]'].text if room.elements['notice[1]']
-        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[2]'].text if room.elements['notice[2]']
-        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[3]'].text if room.elements['notice[3]']
-        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[4]'].text if room.elements['notice[4]']
-        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[5]'].text if room.elements['notice[5]']
-        # tmo_notice = tmo_notice + ' / ' + room.elements['notice[6]'].text if room.elements['notice[6]']
-        # work_renters_room.notice =  tmo_notice
-        
-        work_renters_room.notice_a = room.elements['notice[1]'].text if room.elements['notice[1]']
-        work_renters_room.notice_b = room.elements['notice[2]'].text if room.elements['notice[2]']
-        work_renters_room.notice_c = room.elements['notice[3]'].text if room.elements['notice[3]']
-        work_renters_room.notice_d = room.elements['notice[4]'].text if room.elements['notice[4]']
-        work_renters_room.notice_e = room.elements['notice[5]'].text if room.elements['notice[5]']
-        work_renters_room.notice_f = room.elements['notice[6]'].text if room.elements['notice[6]']
-        
-        work_renters_room.building_main_catch = room.elements['building_main_catch'].text if room.elements['building_main_catch']
-        work_renters_room.room_main_catch = room.elements['room_main_catch'].text if room.elements['room_main_catch']
-        work_renters_room.recruit_catch = room.elements['recruit_catch'].text if room.elements['recruit_catch']
-        work_renters_room.room_updated_at = room.elements['room_updated_at'].text if room.elements['room_updated_at']
-#        work_renters_room.        #renters_room.work_renters_picture_id = room.elements['#renters_room.work_renters_picture_id'].text if room.elements['#renters_room.work_renters_picture_id']
-        work_renters_room.zumen_url = room.elements['zumen_url'].text if room.elements['zumen_url']
-        work_renters_room.location = room.elements['location'].text if room.elements['location']
-        work_renters_room.net_use_freecomment = room.elements['net_use_freecomment'].text if room.elements['net_use_freecomment']
-        work_renters_room.athome_pro_comment = room.elements['athome_pro_comment'].text if room.elements['athome_pro_comment']
-    
-        work_renters_room.save!
-
-        # # 画像を登録
-
-        picture_num = 0
-        room.elements.each_with_index('picture') do |pic, i|
-          room_picture = WorkRentersRoomPicture.create
-          room_picture.batch_cd = batch_cd
-          room_picture.batch_cd_idx = work_renters_room.batch_cd_idx
-          room_picture.room_cd = work_renters_room.room_cd
-          room_picture.batch_picture_idx = i
-          
-          room_picture.true_url = pic.elements['true_url'].text
-          room_picture.large_url = pic.elements['large_url'].text
-          room_picture.mini_url = pic.elements['mini_url'].text
-          
-          room_picture.sub_category_code = pic.elements['sub_category/code'].text
-          room_picture.sub_category_name = pic.elements['sub_category/name'].text
-          room_picture.caption = pic.elements['caption'].text
-          room_picture.priority = pic.elements['priority'].text
-
-          #room_picture.delete_flg = false
-          room_picture.save!
-
-          picture_num = picture_num + 1
-        end
-        
-        if work_renters_room.building_name
-          p work_renters_room.building_name + ' ' + picture_num.to_s + "枚登録"
-        end
-
-        # 画像の枚数を保存
-        # renters_room.picture_num = picture_num
-        # renters_room.save!
-        #
-        # if renters_room.building_name
-        #   p renters_room.building_name + ' ' + picture_num.to_s + "枚登録"
-        # end
-
-      end
-    end    
-    
-	  p "バッチコード" + batch_cd
+	# 指定した年月・指定の週(第何週か)を取得
+	yyyymm = 201410
+	week_idx = 1
+	
+	# 指定した年月・指定の週が存在したら削除
+	SuumoResponse.destroy_all("yyyymm = " + yyyymm.to_s + "and week_idx = " + week_idx.to_s)
+	
+	str_sql = ""
+	str_sql = str_sql + "SELECT "
+	str_sql = str_sql + "貴社物件コード "
+	str_sql = str_sql + ",本日までの経過日数 "
+	str_sql = str_sql + ",SUUMO指定期間_掲載日数 "
+	str_sql = str_sql + ",SUUMO指定期間_一覧_合計 "
+	str_sql = str_sql + ",SUUMO指定期間_一覧_1日あたり "
+	str_sql = str_sql + ",SUUMO指定期間_詳細_合計 "
+	str_sql = str_sql + ",SUUMO指定期間_詳細_1日あたり "
+	str_sql = str_sql + ",SUUMO指定期間_見学予約問合せ "
+	str_sql = str_sql + ",SUUMO指定期間_問合せ見学予約含 "
+	str_sql = str_sql + ",集計_開始日 "
+	str_sql = str_sql + ",集計_終了日 "
+	str_sql = str_sql + "FROM W_SUUMO "
+	
+	# 指定した年月・週で取込開始
+	ActiveRecord::Base.connection.select_all(str_sql).each do |rec|
+		
+		# SuumoResponseに登録
+		suumo = SuumoResponse.create
+		suumo.yyyymm = yyyymm
+		suumo.week_idx = week_idx
+		suumo.renters_room_cd = rec['貴社物件コード'].strip
+		suumo.public_days = rec['本日までの経過日数'].to_i
+		suumo.view_list_summary = rec['SUUMO指定期間_一覧_合計'].to_i
+		suumo.view_list_daily = rec['SUUMO指定期間_一覧_1日あたり'].to_i
+		suumo.view_detail_summary = rec['SUUMO指定期間_詳細_合計'].to_i
+		suumo.view_detail_daily = rec['SUUMO指定期間_詳細_1日あたり'].to_i
+		suumo.inquery_visite_reserve = rec['SUUMO指定期間_見学予約問合せ'].to_i
+		suumo.inquery_summary = rec['SUUMO指定期間_問合せ見学予約含'].to_i
+		suumo.suumary_start_day = rec['集計_開始日']
+		suumo.summary_end_day = rec['集計_終了日']
+		
+		renters = RentersRoom.unscoped.find_by_room_code(suumo.renters_room_cd)
+		if renters
+			p '発見'
+			suumo.renters_room_id = renters.id
+		end
+		suumo.save!
+		p suumo.id
+		
+	end
 	
 end
 
 # 定期メンテナンスを登録します。
-def regist_trust_maintenance_all(filename)
-  
-  # ファイルの存在チェック
-  unless File.exist?(filename)
-    puts 'file not exist'
-    return false
-  end
+def regist_trust_maintenance_all
   
   # 削除フラグをたてる
   TrustMaintenance.unscoped.update_all(:delete_flg => true )
@@ -3071,45 +2995,121 @@ def regist_trust_maintenance_all(filename)
   unknown_cnt = 0
   
   # 委託の定期メンテナンスの登録
-  open(filename).each do |line|
-    catch :not_header do
-
-      if cnt == 0
-        cnt = cnt + 1
-        throw :not_header
-      end
-
-      row = line.split(",")
+  str_sql = ""
+  str_sql = str_sql + "SELECT "
+  str_sql = str_sql + " MTITCD "
+  str_sql = str_sql + ",MTENO "
+  str_sql = str_sql + ",SBNM "
+  str_sql = str_sql + ",PRICE "
+  str_sql = str_sql + "FROM V_定期メンテナンス工事 "
+  ActiveRecord::Base.connection.select_all(str_sql).each do |rec|
 
       # 委託契約の取得
-      trust = Trust.find_by_code(row[0])
-      unless trust
-        p "不明な委託契約が指定されました。 コード：" + row[0] 
+      itcd = rec['MTITCD'].to_i.to_s
+      trust = Trust.find_by_code(itcd)
+      if trust
+	      trust_maintenance = TrustMaintenance.unscoped.find_by_trust_id_and_idx(trust.id, rec['MTENO'])
+	      unless trust_maintenance
+	        # 最初に登録するときは新規作成
+	        trust_maintenance = TrustMaintenance.create
+	      end
+	      
+	      trust_maintenance.trust_id = trust.id
+	      trust_maintenance.idx = rec['MTENO']
+	      trust_maintenance.code = itcd
+	      trust_maintenance.name = rec['SBNM']
+	      trust_maintenance.price = rec['PRICE']
+	      trust_maintenance.delete_flg = false
+	      
+	      trust_maintenance.save!
+	      p trust_maintenance.code + ' ' + trust_maintenance.name
+	      cnt = cnt + 1
+      	  
+      else
+        p "不明な委託契約が指定されました。 コード：" + itcd
         unknown_cnt = unknown_cnt + 1
-        throw :not_header
       end
-      
-      trust_maintenance = TrustMaintenance.unscoped.find_by_trust_id_and_idx(trust.id, row[1])
-      unless trust_maintenance
-        # 最初に登録するときは新規作成
-        trust_maintenance = TrustMaintenance.create
-      end
-      
-      trust_maintenance.trust_id = trust.id
-      trust_maintenance.idx = row[1]
-      trust_maintenance.code = row[2]
-      trust_maintenance.name = row[3]
-      trust_maintenance.price = row[4]
-      trust_maintenance.delete_flg = false
-      
-      trust_maintenance.save!
-      p trust_maintenance.code + ' ' + trust_maintenance.name
-      cnt = cnt + 1
-    end
   end  
   
   p "出力結果:登録：" + cnt.to_s + '　不明：' + unknown_cnt.to_s + '件'
 
+end
+
+
+# 管理受託巻き直しデータ更新
+def trust_rewinding_update
+  # 登録開始日の保存
+  @data_update = DataUpdateTime.find_by_code("500")
+  @data_update.start_datetime = Time.now
+  @data_update.update_datetime = nil
+  @data_update.biru_user_id = 1
+  @data_update.save!
+
+  cnt = 0
+  unknown_cnt = 0
+  skip_cnt = 0
+
+  # 委託の定期メンテナンスの登録
+  str_sql = ""
+  str_sql = str_sql + "SELECT "
+  str_sql = str_sql + " 管理委託契約CD "
+  str_sql = str_sql + "FROM V_管理受託_巻き直し完了 "
+  ActiveRecord::Base.connection.select_all(str_sql).each do |rec|
+
+      # 委託契約の取得
+      itcd = rec['管理委託契約CD'].to_i.to_s
+      trust_rewinding = TrustRewinding.find_by_trust_code(itcd)
+      if trust_rewinding
+	      if trust_rewinding.status == 0
+	      	  trust_rewinding.status = 1 # 巻き直し完了へ
+	      	  trust_rewinding.save!
+		      cnt = cnt + 1
+		      p "登録更新　 委託コード：" + itcd
+		  else
+		  	  skip_cnt = skip_cnt + 1
+	        p "すでに完了登録済みの為スキップ。 委託コード：" + itcd
+      	  end
+      else
+        p "不明な委託契約が指定されました。 委託コード：" + itcd
+        unknown_cnt = unknown_cnt + 1
+      end
+  end	
+		
+  p "出力結果:登録：" + cnt.to_s + '　不明：' + unknown_cnt.to_s + '件'
+  
+  # 登録完了日を保存
+  @data_update.update_datetime = Time.now
+  @data_update.save!
+
+end
+
+
+# 社員マスタの情報を更新します。
+def biru_user_update
+	
+	# 社員情報の初期化
+	str_sql = ""
+	str_sql = str_sql + "SELECT "
+	str_sql = str_sql + " 社員CD "
+	str_sql = str_sql + ",社員番号 "
+	str_sql = str_sql + ",社員名 "
+	str_sql = str_sql + ",パスワード "
+	str_sql = str_sql + "FROM biru_users4 "
+	ActiveRecord::Base.connection.select_all(str_sql).each do |rec|
+		
+		biru_user = BiruUser.find_by_code(rec['社員番号'].to_i.to_s)
+		unless biru_user
+			biru_user = BiruUser.new
+	  end
+		
+		p rec['社員番号'].to_i.to_s
+		biru_user.code = rec['社員番号'].to_i.to_s
+		biru_user.name = rec['社員名'].to_s
+		biru_user.password = rec['パスワード']
+		biru_user.syain_id = rec['社員CD'].to_s
+		biru_user.save!
+		
+	end
 end
 
 
@@ -3145,11 +3145,13 @@ init_room_status
 #init_attack_state
 
 # システムアップデート管理
-#init_data_update
+init_data_update
 
 # 社員マスタ登録
 # init_biru_user
 
+# 社員マスタ更新
+# biru_user_update
 
 # 受託巻き直し対象データ
 # init_trust_rewinding
@@ -3170,7 +3172,9 @@ init_room_status
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20141120.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150120.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150320.csv"))
-# regist_oneself(Rails.root.join( "tmp", "imp_data_20140312.csv"))
+
+regist_oneself(Rails.root.join( "tmp", "imp_data_20150419.csv"))
+
 
 
 # データの登録(他社)
@@ -3279,4 +3283,9 @@ init_room_status
 ############################
 # 定期メンテナンス登録
 ############################
-#regist_trust_maintenance_all(Rails.root.join( "tmp", "trust_maintenance_20141117.csv"))
+# regist_trust_maintenance_all
+
+############################
+# 管理受託巻き直し更新
+############################
+# trust_rewinding_update

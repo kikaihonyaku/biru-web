@@ -1,4 +1,5 @@
 #-*- encoding:utf-8 -*- 
+require 'csv'
 
 # 資産(建物）を表示するコントローラ
 class PropertyController < ApplicationController
@@ -260,17 +261,17 @@ class PropertyController < ApplicationController
     ##########################
     # 取得する営業所の絞り込み
     ##########################
-    shop_where = ""
+    @shop_where = ""
     if params[:stcd]
       params[:stcd].split(",").each do |store_code|
         # 数字になり得るのなら引数として採用
         if store_code.strip =~ /\A-?\d+(.\d+)?\Z/
           
-          unless shop_where.length == 0
-            shop_where = shop_where + ","
+          unless @shop_where.length == 0
+            @shop_where = @shop_where + ","
           end
         
-          shop_where = shop_where + store_code
+          @shop_where = @shop_where + store_code
           
         end
         
@@ -296,7 +297,7 @@ class PropertyController < ApplicationController
           
     grid_data = []
     
-    ActiveRecord::Base.connection.select_all(get_biru_list_sql(shop_where)).each do |rec|
+    ActiveRecord::Base.connection.select_all(get_biru_list_sql(@shop_where)).each do |rec|
       
       ####################
       # 地図で使う物件情報
@@ -404,13 +405,41 @@ class PropertyController < ApplicationController
     
   end
   
+  
+  # ファイル出力（CSV出力）
+  def csv_out
+    str = ""
+    
+    # params[:data].keys.each do |key|
+    #   str = str + params[:data][key].values.join(',')
+    #   str = str + "\n"
+    # end
+
+    # csvデータ作成
+    data = ActiveRecord::Base.connection.select_all(get_biru_list_sql(params[:shop_list], true))
+    
+    keys = ["building_code", "building_name", "shop_name", "owner_code", "owner_name", "manage_type_name", "build_type_name", "room_name", "room_status"]
+    
+    data.each do |row|
+      keys.each do |key|
+        str = str + row[key].to_s + ","
+      end
+      str = str + "\n"
+    end
+    
+    send_data str, :filename=>'output_room.csv'
+  end
+  
+  
+  
 private
   # 自社管理（B以上）の物件を戸数単位で営業所別に表示する
   # アパート・マンションのみ
   # １棟管理のみ（＝戸数が4戸以上）
   # 150平米以上
   
-  def get_biru_list_sql(shop_list)
+  # room_flg : 部屋単位の出力をする
+  def get_biru_list_sql(shop_list, room_flg = false)
     
     strSql = ""
     strSql = strSql + "select "
@@ -456,6 +485,18 @@ private
     strSql = strSql + ",MAX(case h.code when '45' then 1 else 0 end ) trust_mente_elevator_hosyu "
     strSql = strSql + ",MAX(case h.code when '48' then 1 else 0 end ) trust_mente_bouhan_camera "
     
+
+    strSql = strSql + ",SUM(case j.code when '10' then 1 else 0 end ) room_status_unrecognized "
+    strSql = strSql + ",SUM(case j.code when '20' then 1 else 0 end ) room_status_owner_stop "
+    strSql = strSql + ",SUM(case j.code when '30' then 1 else 0 end ) room_status_space "
+    strSql = strSql + ",SUM(case j.code when '40' then 1 else 0 end ) room_status_occupancy "
+    strSql = strSql + ",SUM(case j.code when '50' then 1 else 0 end ) room_status_etc "
+    
+    if room_flg then
+      strSql = strSql + ",b.name as room_name "
+      strSql = strSql + ",j.name as room_status "
+    end
+
     strSql = strSql + "from buildings a "
     strSql = strSql + "inner join rooms b on a.id = b.building_id "
     strSql = strSql + "inner join shops c on c.id = a.shop_id "
@@ -463,6 +504,7 @@ private
     strSql = strSql + "inner join manage_types e on e.id = b.manage_type_id  "
     strSql = strSql + "inner join owners f on d.owner_id = f.id "
     strSql = strSql + "inner join build_types g on a.build_type_id = g.id "
+    strSql = strSql + "inner join room_statuses j on b.room_status_id = j.id "
     strSql = strSql + "left outer join (select * from trust_maintenances where delete_flg = 'f' ) h on h.trust_id = d.id "
     strSql = strSql + "where 1 = 1  "
     strSql = strSql + "and c.code in ( " + shop_list + ") " if shop_list.length > 0
@@ -470,8 +512,41 @@ private
     strSql = strSql + "and b.delete_flg = 'f' "
     strSql = strSql + "and d.delete_flg = 'f' "
     strSql = strSql + "and e.code in (3,4,5,6,9, 7,8,10) "
-    strSql = strSql + "group by a.id, a.code, a.name, e.name, c.id, c.code, c.name "
-    strSql = strSql + "     "
+    strSql = strSql + "group by a.id "
+    strSql = strSql + ",a.code"
+    strSql = strSql + ",a.name"
+    strSql = strSql + ",a.address"
+    strSql = strSql + ",a.latitude"
+    strSql = strSql + ",a.longitude"
+    strSql = strSql + ",c.id"
+    strSql = strSql + ",c.code"
+    strSql = strSql + ",c.name"
+    strSql = strSql + ",c.address"
+    strSql = strSql + ",c.latitude"
+    strSql = strSql + ",c.longitude"
+    strSql = strSql + ",c.icon"
+    strSql = strSql + ",d.id "
+    strSql = strSql + ",e.name "
+    strSql = strSql + ",e.icon "
+    strSql = strSql + ",f.id "
+    strSql = strSql + ",f.code "
+    strSql = strSql + ",f.name "
+    strSql = strSql + ",f.address "
+    strSql = strSql + ",f.latitude "
+    strSql = strSql + ",f.longitude "
+    strSql = strSql + " ,g.name"
+    strSql = strSql + " ,g.code"
+    strSql = strSql + " ,g.icon"
+    strSql = strSql + " ,a.kanri_room_num"
+    strSql = strSql + " ,a.free_num"
+    strSql = strSql + " ,a.biru_age"
+    
+    if room_flg then
+      strSql = strSql + ",b.name "
+      strSql = strSql + ",j.name "
+    end
+    
+    strSql = strSql + " "
     
     return strSql
   end
@@ -494,9 +569,14 @@ private
     strSql = strSql + ",SUM( trust_mente_elevator_hosyu ) as trust_mente_elevator_hosyu_cnt "
     strSql = strSql + ",SUM( trust_mente_bouhan_camera ) as trust_mente_bouhan_camera_cnt "
     strSql = strSql + ",sum(room_cnt) as shop_room_cnt "
+    strSql = strSql + ",SUM(room_status_unrecognized) as room_status_unrecognized_sum "
+    strSql = strSql + ",SUM(room_status_owner_stop) as room_status_owner_stop_sum "
+    strSql = strSql + ",SUM(room_status_space) as room_status_space_sum "
+    strSql = strSql + ",SUM(room_status_occupancy) as room_status_occupancy_sum "
+    strSql = strSql + ",SUM(room_status_etc) as room_status_etc_sum "
+    
     strSql = strSql + "FROM (" + get_biru_list_sql('') + ") X "
     strSql = strSql + "GROUP BY shop_id, shop_name, shop_code "
-    
     
     return strSql
   end

@@ -721,7 +721,22 @@ function getCoords(position) {
 						 }
 						 
 					 }
-				 })
+				 });
+				 
+   	  			// ファイル出力ボタン
+   	  			jQuery("#building_table").navGrid('#building_pager',{
+ 				        edit:false, add:false, del:false, search:false
+ 				      }).navButtonAdd('#building_pager', {
+ 				        caption:"ファイル出力(部屋単位)",  position:"last",  onClickButton: function(){
+ 			            // 送信
+ 			            document.frm_out2csv.submit();
+
+ 			            return true;
+				
+ 						}
+ 				 });
+				 
+				 
 		});
 		
 		// resize
@@ -941,7 +956,11 @@ function getCoords(position) {
 		<div id = "building_pager"></div>
 	</div>
 	
-
+	<!-- リスト出力用 -->
+	<%= form_tag({:action=>'csv_out'}, {:method=>'post', :name=>'frm_out2csv' }) do %>
+	   <%= hidden_field_tag 'shop_list', @shop_where  %>
+	<% end %>
+	
 	<!-- For index -->
 
 	  <style type="text/css">

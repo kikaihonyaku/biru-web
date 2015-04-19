@@ -8,5 +8,7 @@ class CreateRoomStatuses < ActiveRecord::Migration
     
     add_column :rooms, :room_status_id, :integer
     add_index :rooms, :room_status_id
+    
+    add_column :imp_tables, :room_status_nm, :string
   end
 end

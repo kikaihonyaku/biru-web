@@ -8,7 +8,7 @@ class TrustRewindingController < ApplicationController
   
   def index
     
-    @data_update = DataUpdateTime.find_by_code("110")
+    @data_update = DataUpdateTime.find_by_code("500")
     
     # 管理物件、巡回清掃、定期メンテ、在宅清掃が入っている一覧表を営業所別に作成
     data_list = []
@@ -39,14 +39,14 @@ class TrustRewindingController < ApplicationController
       end
       
       data_list.push({
-        :shop_code => shop.code, :shop_name => shop.name, :group_name => group_name ,:url => 'map?stcd=' + shop.code, :plan_cnt => 0 ,:complete_cnt => 0
+        :shop_code => shop.code, :shop_name => shop.name, :group_name => group_name ,:url => 'map?stcd=' + shop.code, :plan_cnt => 0 ,:complete_cnt => 0,  :complete_per => 0
       })
     end
     
-    data_list.push({ :shop_code => '100', :shop_name => '東武支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_tobu.join(','), :plan_cnt => 0 ,:complete_cnt => 0})
-    data_list.push({ :shop_code => '200', :shop_name => 'さいたま支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_saitama.join(','), :plan_cnt => 0 ,:complete_cnt => 0})
-    data_list.push({ :shop_code => '300', :shop_name => '千葉支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_chiba.join(','), :plan_cnt => 0 ,:complete_cnt => 0})
-    data_list.push({ :shop_code => '900', :shop_name => 'ビル全体', :group_name => '99その他' ,:url => 'map', :plan_cnt => 0 ,:complete_cnt => 0})
+    data_list.push({ :shop_code => '100', :shop_name => '東武支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_tobu.join(','), :plan_cnt => 0 ,:complete_cnt => 0, :complete_per => 0})
+    data_list.push({ :shop_code => '200', :shop_name => 'さいたま支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_saitama.join(','), :plan_cnt => 0 ,:complete_cnt => 0, :complete_per => 0})
+    data_list.push({ :shop_code => '300', :shop_name => '千葉支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_chiba.join(','), :plan_cnt => 0 ,:complete_cnt => 0, :complete_per => 0})
+    data_list.push({ :shop_code => '900', :shop_name => 'ビル全体', :group_name => '99その他' ,:url => 'map', :plan_cnt => 0 ,:complete_cnt => 0, :complete_per => 0})
 
     ##############################
     # 営業所データをハッシュに格納
@@ -58,6 +58,7 @@ class TrustRewindingController < ApplicationController
            :shop_code => rec['shop_code'],
            :plan_cnt => rec['plan_cnt'],
            :complete_cnt => rec['complete_cnt'],
+           :complete_per => rec['complete_per'],
          }
       end
     end
@@ -68,21 +69,25 @@ class TrustRewindingController < ApplicationController
     toubu_hash = {
       :plan_cnt =>0,
       :complete_cnt =>0,
+      :complete_per =>0,
     }
     
     saitama_hash = {
       :plan_cnt =>0,
       :complete_cnt =>0,
+      :complete_per =>0,
     }
 
     chiba_hash = {
       :plan_cnt =>0,
       :complete_cnt =>0,
+      :complete_per =>0,
     }
 
     etc_hash = {
       :plan_cnt =>0,
       :complete_cnt =>0,
+      :complete_per =>0,
     }
 
     
@@ -92,9 +97,12 @@ class TrustRewindingController < ApplicationController
         # 支店データを設定
         if data_hash[:shop_name] == '東武支店'
           data_hash.keys.each do |key|
-            if key != :shop_code and key != :shop_name and key != :group_name and key != :url
+            if key != :shop_code and key != :shop_name and key != :group_name and key != :url and key != :complete_per
               data_hash[key] = toubu_hash[key]
+            elsif key == :complete_per
+            	data_hash[:complete_per] =  (toubu_hash[:complete_cnt].to_f / toubu_hash[:plan_cnt].to_f * 100).round(2)
             end
+            
           end
           
           # ここでやっていること↑
@@ -103,15 +111,19 @@ class TrustRewindingController < ApplicationController
            
         elsif data_hash[:shop_name] == 'さいたま支店'
           data_hash.keys.each do |key|
-            if key != :shop_code and key != :shop_name and key != :group_name and key != :url
+            if key != :shop_code and key != :shop_name and key != :group_name and key != :url and key != :complete_per
               data_hash[key] = saitama_hash[key]
+            elsif key == :complete_per
+            	data_hash[:complete_per] =  (saitama_hash[:complete_cnt].to_f / saitama_hash[:plan_cnt].to_f * 100).round(2)
             end
           end
 
         elsif data_hash[:shop_name] == '千葉支店'
           data_hash.keys.each do |key|
-            if key != :shop_code and key != :shop_name and key != :group_name and key != :url
+            if key != :shop_code and key != :shop_name and key != :group_name and key != :url and key != :complete_per
               data_hash[key] = chiba_hash[key]
+            elsif key == :complete_per
+            	data_hash[:complete_per] =  (chiba_hash[:complete_cnt].to_f / chiba_hash[:plan_cnt].to_f * 100).round(2)
             end
           end
         end
@@ -122,8 +134,10 @@ class TrustRewindingController < ApplicationController
           # data_hash[:room_cnt] = toubu_room_cnt + saitama_room_cnt + chiba_room_cnt + etc_room_cnt
 
           data_hash.keys.each do |key|
-            if key != :shop_code and key != :shop_name and key != :group_name and key != :url
+            if key != :shop_code and key != :shop_name and key != :group_name and key != :url and key != :complete_per
               data_hash[key] = toubu_hash[key].to_i + saitama_hash[key].to_i + chiba_hash[key].to_i
+            elsif key == :complete_per
+            	data_hash[:complete_per] =  ((toubu_hash[:complete_cnt].to_f + saitama_hash[:complete_cnt].to_f + chiba_hash[:complete_cnt].to_f) / (toubu_hash[:plan_cnt].to_f + saitama_hash[:plan_cnt].to_f + chiba_hash[:plan_cnt].to_f) * 100).round(2)
             end
           end
         
@@ -134,8 +148,10 @@ class TrustRewindingController < ApplicationController
         if grid_rec
 
           data_hash.keys.each do |key|
-            if key != :shop_code and key != :shop_name and key != :group_name and key != :url
+            if key != :shop_code and key != :shop_name and key != :group_name and key != :url and key != :complete_per
               data_hash[key] = grid_rec[key]
+            elsif key == :complete_per
+            	data_hash[:complete_per] =  (grid_rec[:complete_cnt].to_f / grid_rec[:plan_cnt].to_f * 100).round(2)
             end
           end
           
@@ -152,7 +168,7 @@ class TrustRewindingController < ApplicationController
           if data_hash[:group_name] == '01東武'
 
             toubu_hash.keys.each do |key|
-              if key != :shop_code and key != :shop_name and key != :group_name and key != :url
+              if key != :shop_code and key != :shop_name and key != :group_name and key != :url and key != :complete_per
                 toubu_hash[key] = toubu_hash[key] + grid_rec[key]
               end
             end
@@ -160,14 +176,14 @@ class TrustRewindingController < ApplicationController
             
           elsif data_hash[:group_name] == '02さいたま'
             saitama_hash.keys.each do |key|
-              if key != :shop_code and key != :shop_name and key != :group_name and key != :url
+              if key != :shop_code and key != :shop_name and key != :group_name and key != :url and key != :complete_per
                 saitama_hash[key] = saitama_hash[key] + grid_rec[key]
               end
             end
 
           elsif data_hash[:group_name] == '03千葉'
             chiba_hash.keys.each do |key|
-              if key != :shop_code and key != :shop_name and key != :group_name and key != :url
+              if key != :shop_code and key != :shop_name and key != :group_name and key != :url and key != :complete_per
                 chiba_hash[key] = chiba_hash[key] + grid_rec[key]
               end
             end
@@ -175,7 +191,7 @@ class TrustRewindingController < ApplicationController
           else
 
             etc_hash.keys.each do |key|
-              if key != :shop_code and key != :shop_name and key != :group_name and key != :url
+              if key != :shop_code and key != :shop_name and key != :group_name and key != :url and key != :complete_per
                 etc_hash[key] = etc_hash[key] + grid_rec[key]
               end
             end
@@ -412,8 +428,35 @@ private
     strSql = strSql + "and b.delete_flg = 'f'  "
     strSql = strSql + "and d.delete_flg = 'f' "
 #    strSql = strSql + "and e.code in (3,4,5,6,9, 7,8,10) "
-    strSql = strSql + "group by a.id, a.code, a.name, e.name, c.id, c.code, c.name "
-    strSql = strSql + "     "
+    strSql = strSql + "group by a.id "
+    strSql = strSql + ",a.code"
+    strSql = strSql + ",a.name"
+    strSql = strSql + ",a.address"
+    strSql = strSql + ",a.latitude"
+    strSql = strSql + ",a.longitude"
+    strSql = strSql + ",c.id"
+    strSql = strSql + ",c.code"
+    strSql = strSql + ",c.name"
+    strSql = strSql + ",c.address"
+    strSql = strSql + ",c.latitude"
+    strSql = strSql + ",c.longitude"
+    strSql = strSql + ",c.icon"
+    strSql = strSql + ",d.id "
+    strSql = strSql + ",e.name "
+    strSql = strSql + ",e.icon "
+    strSql = strSql + ",f.id "
+    strSql = strSql + ",f.code "
+    strSql = strSql + ",f.name "
+    strSql = strSql + ",f.address "
+    strSql = strSql + ",f.latitude "
+    strSql = strSql + ",f.longitude "
+    strSql = strSql + " ,g.name"
+    strSql = strSql + " ,g.code"
+    strSql = strSql + " ,g.icon"
+    strSql = strSql + " ,a.kanri_room_num"
+    strSql = strSql + " ,a.free_num"
+    strSql = strSql + " ,a.biru_age"
+    strSql = strSql + " "
     
     return strSql
   end
@@ -426,6 +469,7 @@ private
     strSql = strSql + ",shop_code "
     strSql = strSql + ",count(*) as plan_cnt "
     strSql = strSql + ",SUM(trust_rewinding_complete) as complete_cnt "
+    strSql = strSql + ",round(SUM(trust_rewinding_complete)/count(*) * 100,1) as complete_per "
     strSql = strSql + ",SUM(case when build_type_code = '01010' then 1 else 0 end ) as biru_type_mn_cnt "
     strSql = strSql + ",SUM(case when build_type_code = '01015' then 1 else 0 end ) as biru_type_bm_cnt "
     strSql = strSql + ",SUM(case when build_type_code = '01020' then 1 else 0 end ) as biru_type_ap_cnt "

@@ -209,6 +209,7 @@ ActiveRecord::Schema.define(:version => 20150418213525) do
     t.string  "approach_04"
     t.string  "approach_05"
     t.string  "proprietary_company"
+    t.string  "room_status_nm"
   end
 
   create_table "items", :force => true do |t|
