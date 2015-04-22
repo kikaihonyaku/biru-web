@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150418213525) do
+ActiveRecord::Schema.define(:version => 20150422210628) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -284,6 +284,7 @@ ActiveRecord::Schema.define(:version => 20150418213525) do
     t.datetime "updated_at",                          :null => false
   end
 
+  add_index "owner_approaches", ["approach_kind_id"], :name => "index_owner_approaches_on_approach_kind_id"
   add_index "owner_approaches", ["biru_user_id"], :name => "index_owner_approaches_on_biru_user_id"
   add_index "owner_approaches", ["owner_id"], :name => "index_owner_approaches_on_owner_id"
 

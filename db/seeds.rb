@@ -24,6 +24,14 @@ def custom_parse(str)
 end
 
 
+# 数値になり得るか判定
+def integer_string?(str)
+  Integer(str)
+  true
+rescue ArgumentError
+  false
+end
+
 
 #------------------------------
 # 路線マスタ／駅マスタを登録します。
@@ -1700,16 +1708,28 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       imp.list_no = row[0]
       imp.biru_rank = row[2]
       
+      address_first = ""
+      if row[3] && row[3].length > 1
+        
+        # 住所１の末尾が数値の時は丁目を付ける
+        if integer_string?(row[3].strip[-1])
+          address_first = row[3].strip + "丁目"
+        else
+          address_first = row[3].strip
+        end
+          
+      end
+      
       if row[4].strip.length > 0
       	# 住所２が入っている時
-	      imp.building_address = (row[3] + ' ' + row[4]).strip
+	      imp.building_address = (address_first + ' ' + row[4]).strip
       	
    		elsif row[5].strip.length
    			# 地番が入っている時
-	      imp.building_address = (row[3] + ' ' + row[5]).strip
+	      imp.building_address = (address_first + ' ' + row[5]).strip
   		else
   			# 住所２も地番も入っていない時
-	      imp.building_address = (row[3]).strip
+	      imp.building_address = (address_first).strip
 			end
       
       imp.building_address = Moji.han_to_zen(imp.building_address)
@@ -1899,13 +1919,40 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 		  	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外
 		  	trust.delete_flg = false
 		  	
-				# 物件ランクの登録
-				if imp.biru_rank
-					rank = AttackState.find_by_code( Moji.han_to_zen(imp.biru_rank.upcase.encode('utf-8')).strip )
-					if rank
-						trust.attack_state_id = rank.id
-					end
+        ######################
+        # 見込みランクを設定
+        ######################
+				unless imp.biru_rank
+          after_rank = AttackState.find_by_code('D')
+        else
+					after_rank = AttackState.find_by_code( Moji.zen_to_han(imp.biru_rank.upcase.encode('utf-8')).strip )
+					unless after_rank
+						# after_rank = nil # ランクは入っているけど不明なときは何も設定しない
+            after_rank = AttackState.find_by_code('X')
+          end
 				end
+        
+        if after_rank
+          # 正常なランクが入っている時、アタック履歴を登録
+          month = "201504"
+          history = TrustAttackStateHistory.find_or_create_by_trust_id_and_month(trust.id, month)
+          history.trust_id = trust.id
+          history.month = month
+          history.attack_state_from_id = AttackState.find_by_code("X").id
+          history.attack_state_to_id = after_rank.id
+
+          history.room_num = 0
+          history.manage_type_id = trust.manage_type_id
+
+          # 自他区分を設定
+          history.trust_oneself = nil
+          history.save!
+          
+          # 委託テーブル側のステータスも更新
+          trust.attack_state_id = after_rank.id
+          
+        end
+        
 	  	end
 	  	
 	    begin
@@ -3136,7 +3183,7 @@ end
 #init_room_layout
 
 # 部屋状態登録
-init_room_status
+#init_room_status
 
 # アプローチ種別登録
 #init_approach_kind
@@ -3145,7 +3192,7 @@ init_room_status
 #init_attack_state
 
 # システムアップデート管理
-init_data_update
+#init_data_update
 
 # 社員マスタ登録
 # init_biru_user
@@ -3173,7 +3220,7 @@ init_data_update
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150120.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150320.csv"))
 
-regist_oneself(Rails.root.join( "tmp", "imp_data_20150419.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20150419.csv"))
 
 
 
@@ -3212,11 +3259,30 @@ regist_oneself(Rails.root.join( "tmp", "imp_data_20150419.csv"))
 ###########################
 # アタックリストの登録(2nd)
 ###########################
-# reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "attack2015_01_souka.csv")) # 松本
-# reg_attack_owner_building('6365', '草加新田営業所', Rails.root.join( "tmp", "attack2015_02_shinden.csv")) # 松本
-# reg_attack_owner_building('6464', '北千住営業所', Rails.root.join( "tmp", "attack2015_02_kitasenjyu.csv")) # 猪原
+# reg_attack_owner_building('5928', '草加営業所', Rails.root.join( "tmp", "アタックリスト20150422_01草加.csv"))
+# reg_attack_owner_building('5928', '草加新田営業所', Rails.root.join( "tmp", "アタックリスト20150422_02新田.csv"))
+# reg_attack_owner_building('5928', '北千住営業所', Rails.root.join( "tmp", "アタックリスト20150422_03北千住.csv"))
+# reg_attack_owner_building('5928', '南越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_04南越谷.csv"))
+# reg_attack_owner_building('5928', '越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_05越谷.csv"))
+# reg_attack_owner_building('5928', '北越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_06北越谷.csv"))
+# reg_attack_owner_building('5928', 'せんげん台営業所', Rails.root.join( "tmp", "アタックリスト20150422_07せんげん台.csv"))
+# reg_attack_owner_building('5928', '春日部営業所', Rails.root.join( "tmp", "アタックリスト20150422_08春日部.csv"))
+# reg_attack_owner_building('5928', '竹ノ塚営業所', Rails.root.join( "tmp", "アタックリスト20150422_09竹ノ塚.csv"))
+# reg_attack_owner_building('5928', '戸田公園営業所', Rails.root.join( "tmp", "アタックリスト20150422_11戸田公園.csv"))
+# reg_attack_owner_building('5928', '戸田営業所', Rails.root.join( "tmp", "アタックリスト20150422_12戸田.csv"))
+# reg_attack_owner_building('5928', '武蔵浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_13武蔵浦和.csv"))
+# reg_attack_owner_building('5928', '与野営業所', Rails.root.join( "tmp", "アタックリスト20150422_14与野.csv"))
+# reg_attack_owner_building('5928', '浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_15浦和.csv"))
+# reg_attack_owner_building('5928', '川口営業所', Rails.root.join( "tmp", "アタックリスト20150422_16川口.csv"))
+# reg_attack_owner_building('5928', '東浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_17東浦和.csv"))
+# reg_attack_owner_building('5928', '東川口営業所', Rails.root.join( "tmp", "アタックリスト20150422_18東川口.csv"))
+# reg_attack_owner_building('5928', '戸塚安行営業所', Rails.root.join( "tmp", "アタックリスト20150422_19戸塚安行.csv"))
+# reg_attack_owner_building('5928', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150422_21松戸.csv"))
+# reg_attack_owner_building('5928', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150422_22北松戸.csv"))
+# reg_attack_owner_building('5928', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150422_23南流山.csv"))
+# reg_attack_owner_building('5928', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150422_24柏.csv"))
 
-
+reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_06北越谷.csv"))
 
 
 ###########################

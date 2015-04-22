@@ -764,7 +764,7 @@ function getCoords(position) {
 		 ,{name:"owner_id", index:"owner_id", align:"right", classes:"no_class", hidden:true}
 		 ,{name:"shop_name",  index:"shop_name",  width:200,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_shop %>" }}
 		 
-		 ,{name:"attack_states_code", index:"attack_states_code", align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":all;S:ランクS;A:ランクA;B:ランクB;C:ランクC" }}
+		 ,{name:"attack_states_code", index:"attack_states_code", align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":all;S:S;A:A;B:B;C:C;D:D;X:不明" }}
 		 ,{name:"owner_dm_delivery", index:"owner_dm_delivery", width:80, align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":全て;○:可;×:不可" }}
 		 ,{name:"owner_code", index:"owner_code", width:200, align:"center", classes:"no_class"}
 		 ,{name:"owner_name", index:"owner_name", width:400, align:"left", classes:"no_class"}

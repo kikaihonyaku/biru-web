@@ -418,7 +418,7 @@ class PropertyController < ApplicationController
     # csvデータ作成
     data = ActiveRecord::Base.connection.select_all(get_biru_list_sql(params[:shop_list], true))
     
-    keys = ["building_code", "building_name", "shop_name", "owner_code", "owner_name", "manage_type_name", "build_type_name", "room_name", "room_status"]
+    keys = [ "shop_name", "building_code", "building_name", "manage_type_name", "build_type_name", "room_name", "room_status"]
     
     data.each do |row|
       keys.each do |key|
@@ -484,7 +484,6 @@ private
     strSql = strSql + ",MAX(case h.code when '25' then 1 else 0 end ) trust_mente_tyosui_seisou "
     strSql = strSql + ",MAX(case h.code when '45' then 1 else 0 end ) trust_mente_elevator_hosyu "
     strSql = strSql + ",MAX(case h.code when '48' then 1 else 0 end ) trust_mente_bouhan_camera "
-    
 
     strSql = strSql + ",SUM(case j.code when '10' then 1 else 0 end ) room_status_unrecognized "
     strSql = strSql + ",SUM(case j.code when '20' then 1 else 0 end ) room_status_owner_stop "
