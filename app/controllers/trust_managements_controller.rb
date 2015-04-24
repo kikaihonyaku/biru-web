@@ -6,7 +6,510 @@ require 'thinreports'
 class TrustManagementsController < ApplicationController
   
   before_filter :search_init, :except => ['trust_user_report']
+
+  # 受託行動レポート情報を取得します
+  def get_report_info(month, user)
+  
+    # 来月度を取得
+    tmp_month = Date.parse(month + "01", "YYYYMMDD").next_month
+    month_next = "%04d%02d"%[tmp_month.year, tmp_month.month]
+  
+    # 前月度を取得
+    tmp_month =Date.parse(month + "01", "YYYYMMDD").prev_month
+    month_prev = "%04d%02d"%[tmp_month.year, tmp_month.month]
+  
+    # 今月の集計期間を取得
+    start_date = Date.parse(Date.parse(month + "01").prev_month.strftime("%Y%m")+"21")
+    end_date= Date.parse(month + "20")
+  
+    # 当月の計画・実績データを取得
+    biru_user_monthly = BiruUserMonthly.find_by_biru_user_id_and_month(user.id, month)
+    unless biru_user_monthly
+      biru_user_monthly = BiruUserMonthly.new
+    end
+    biru_user_monthly.biru_user_id = user.id
+    biru_user_monthly.month = month
+  
+    # 来月の計画・実績データを取得
+    biru_user_monthly_next = BiruUserMonthly.find_by_biru_user_id_and_month(user.id, month_next)
+    unless biru_user_monthly_next
+      biru_user_monthly_next = BiruUserMonthly.new
+    end
+    biru_user_monthly_next.biru_user_id = user.id
+    biru_user_monthly_next.month = month_next
+  
+  
+    #####################################
+    # 当月に訪問した貸主を表示    
+    # DMアプローチした貸主を表示
+    # ＴＥＬアプローチした貸主を表示
+    #####################################
+    visit_owner_id_arr = []
+    visit_num = 0
+    visit_num_jsk = 0
+
+    dm_owner_id_arr = []
+    dm_num = 0
+    dm_num_jsk = 0
+
+    tel_owner_id_arr = []
+    tel_num = 0
+    tel_num_jsk = 0
+  
+    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020', '0030', '0035', '0040', '0045')").where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
+  	
+      case rec.code
+      when '0010', '0020' then
+        ########## 訪問・訪問面談 ###########
+      	visit_owner_id_arr << rec.owner_id
+        visit_num = visit_num + 1
     
+        # 面談できていた時
+        if rec.code == '0020'
+        	visit_num_jsk = visit_num_jsk + 1
+        end
+      
+      when '0030', '0035' then
+        ########## DM・DM反響 ###########
+        dm_owner_id_arr << rec.owner_id
+        dm_num = dm_num + 1
+
+        # ＤＭの「反響」だった時
+        if rec.code == '0035'
+        	dm_num_jsk = dm_num_jsk + 1
+        end
+      
+      when '0040', '0045' then
+        ########## TEL・TEL会話 ###########
+      	tel_owner_id_arr << rec.owner_id
+        tel_num = tel_num + 1
+  	
+      	# ＤＭの反響だった時
+        if rec.code == '0045'
+    			tel_num_jsk = tel_num_jsk + 1
+        end
+      else
+        # それ以外のとき
+      end
+    
+    end
+  
+
+
+
+    #####################################
+    # 成約した物件、見込みが高い物件を表示
+    #####################################
+    contract_num = 0
+    contract_num_jisya = 0
+
+    # 件数のカウント
+    rank_s = 0
+    rank_a = 0
+    rank_b = 0
+    rank_c = 0
+    rank_d = 0
+
+    buildings = []
+    order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", month).where("trusts.biru_user_id = ?", user.id).group("trusts.id").maximum("month")
+
+    order_hash.keys.each do |trust_id|
+
+      # trust_idにはidが、order_hash[trust_id]にはその月の最大月数が入っている
+      trust_attack_history = TrustAttackStateHistory.find_by_trust_id_and_month(trust_id, order_hash[trust_id])
+
+      # ↓見込みランクの絞り込みはクエリのwhere句の中でなく、集計結果に対して行う。
+      # where句でやるとそのランクがある中での最大をとってしまうので、仮にその後に別のランクが登録されていたら本来は必要ないのにそのレコードがとれてしまうから
+      case trust_attack_history.attack_state_to.code
+      when 'S', 'A', 'B'
+
+        if trust_attack_history.trust
+          biru = trust_attack_history.trust.building
+          biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
+          biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
+          buildings << biru
+        end
+      
+
+      when 'Z'
+        # 成約になった物件は、当月のみ表示対象
+        if trust_attack_history.month.to_s == month.to_s
+
+          biru = trust_attack_history.trust.building
+          biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
+          biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
+          buildings << biru
+
+          # 受託実績戸数を入力
+          contract_num = contract_num + trust_attack_history.room_num
+
+          if trust_attack_history.trust_oneself
+            contract_num_jisya = contract_num_jisya + trust_attack_history.room_num
+          end
+
+        end
+
+      else
+      end
+
+      case trust_attack_history.attack_state_to.code
+      when 'S' then
+      
+        rank_s = rank_s + 1
+      when 'A' then
+        rank_a = rank_a + 1
+      when 'B' then
+        rank_b = rank_b + 1
+      when 'C' then
+        rank_c = rank_c + 1
+      when 'D' then
+        rank_d = rank_d + 1
+      else
+
+      end
+
+
+    end
+  
+  
+    # #################################################
+    # # 当月の見込み件数を（ランクS、ランクA、ランクB）取得
+    # #################################################
+    # rank_s = 0
+    # rank_a = 0
+    # rank_b = 0
+    # rank_c = 0
+    # rank_d = 0
+    #
+    # sql = ""
+    # sql = sql + "SELECT f.trust_id, f.month, g.code "
+    # sql = sql + "FROM trust_attack_state_histories f INNER JOIN attack_states g on f.attack_state_to_id = g.id "
+    # sql = sql + "WHERE EXISTS ("
+    # sql = sql + " SELECT trust_id, max_month "
+    # sql = sql + " FROM ( "
+    # sql = sql + "   SELECT a.trust_id as trust_id, MAX(a.month) max_month "
+    # sql = sql + "   FROM trust_attack_state_histories a INNER JOIN trusts b ON a.trust_id = b.id "
+    # sql = sql + "   WHERE a.month <= " + month + " "
+    # sql = sql + "     AND b.biru_user_id = " + user.id.to_s + " "
+    # sql = sql + "     AND b.delete_flg = 'f' "
+    # sql = sql + "   GROUP BY a.trust_id "
+    # sql = sql + " ) x "
+    # sql = sql + " WHERE x.trust_id = f.trust_id "
+    # sql = sql + "   AND x.max_month = f.month "
+    # sql = sql + ") "
+    #
+    # ActiveRecord::Base.connection.select_all(sql).each do |rec|
+    #
+    #   case rec["code"]
+    #   when 'S' then
+    #     rank_s = rank_s + 1
+    #   when 'A' then
+    #     rank_a = rank_a + 1
+    #   when 'B' then
+    #     rank_b = rank_b + 1
+    #   when 'C' then
+    #     rank_c = rank_c + 1
+    #   when 'D' then
+    #     rank_d = rank_d + 1
+    #   else
+    #
+    #   end
+    #
+    # end
+    #
+    
+    
+    # 関数の戻り値として設定
+    result = {}
+    result[:month_next] = month_next
+    result[:month_prev] = month_prev
+    result[:start_date] = start_date
+    result[:end_date] = end_date
+    result[:biru_user_monthly] = biru_user_monthly
+    result[:biru_user_monthly_next] = biru_user_monthly_next
+    result[:visit_owner_id_arr] = visit_owner_id_arr
+    result[:visit_num] = visit_num
+    result[:visit_num_jsk] = visit_num_jsk
+    result[:dm_owner_id_arr] = dm_owner_id_arr
+    result[:dm_num] = dm_num
+    result[:dm_num_jsk] = dm_num_jsk
+    result[:tel_owner_id_arr] = tel_owner_id_arr
+    result[:tel_num] = tel_num
+    result[:tel_num_jsk] = tel_num_jsk
+    result[:contract_num] = contract_num
+    result[:contract_num_jsk] = contract_num_jisya
+    result[:buildings] = buildings
+
+    result[:rank_s] = rank_s
+    result[:rank_a] = rank_a
+    result[:rank_b] = rank_b
+    result[:rank_c] = rank_c
+    result[:rank_d] = rank_d
+  
+    return result
+  end  
+  
+
+  #def get_trust_data()
+  def get_trust_sql(object_user, rank_list, order_flg)
+  
+    # trustについているdelete_flg の　default_scopeの副作用で、biru_usersのLEFT_OUTER_JOINが効かなくなっている？（空白のものは出てこない・・）なのでそうであればINNER JOINでつないでしまう（2014/07/15）
+    #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").where("owners.code is null")
+    #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
+  
+    #trust_data = Trust.joins(:owner).joins("LEFT OUTER JOIN manage_types ON trusts.manage_type_id = manage_types.id").joins("LEFT OUTER JOIN buildings on trusts.building_id = buildings.id").joins("LEFT OUTER JOIN shops on buildings.shop_id = shops.id").joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
+  
+    # ユーザーが複数指定されているか判定
+    if object_user.kind_of?(BiruUser)
+      biru_user_id = object_user.id.to_s
+      arr_flg = false
+    else
+    
+      biru_user_ids = []
+      object_user.each do |biru|
+        biru_user_ids.push(biru.id)
+      end
+       
+    
+      arr_flg = true
+    end
+  
+    # 指定した列のハッシュだけで返す為に直接SQLを実行する
+    sql = ""
+    sql = sql + " SELECT trusts.id as trust_id "
+    sql = sql + " , trusts.biru_user_id as biru_user_id "
+    sql = sql + " , trusts.manage_type_id as trust_manage_type_id "
+    sql = sql + " , owners.id as owner_id "
+    sql = sql + " , owners.attack_code as owner_attack_code "
+    sql = sql + " , owners.name as owner_name "
+    sql = sql + " , owners.address as owner_address "
+    sql = sql + " , owners.memo as owner_memo "
+    sql = sql + " , owners.latitude as owner_latitude "
+    sql = sql + " , owners.longitude as owner_longitude "
+    sql = sql + " , owners.dm_delivery as owner_dm_delivery "
+    sql = sql + " , buildings.id as building_id "
+    sql = sql + " , buildings.attack_code as building_attack_code "
+    sql = sql + " , buildings.name as building_name "
+    sql = sql + " , buildings.address as building_address"
+    sql = sql + " , buildings.memo as building_memo "
+    sql = sql + " , buildings.latitude as building_latitude "
+    sql = sql + " , buildings.longitude as building_longitude "
+    sql = sql + " , buildings.proprietary_company as building_proprietary_company "
+    sql = sql + " , shops.id as shop_id "
+    sql = sql + " , shops.name as shop_name "
+    sql = sql + " , shops.name as shop_icon "
+    sql = sql + " , shops.latitude as shop_latitude "
+    sql = sql + " , shops.longitude as shop_longitude "
+    sql = sql + " , biru_users.name as biru_user_name "
+    sql = sql + " , attack_states.code as attack_states_code "
+    sql = sql + " , attack_states.name as attack_states_name "
+    sql = sql + " , SUM(case approaches.code when '0010' then 1 else 0 end) as visit_rusu "
+    sql = sql + " , SUM(case approaches.code when '0020' then 1 else 0 end) as visit_zai "
+    sql = sql + " , SUM(case approaches.code when '0030' then 1 else 0 end) as dm_send "
+    sql = sql + " , SUM(case approaches.code when '0035' then 1 else 0 end) as dm_res "
+    sql = sql + " , SUM(case approaches.code when '0040' then 1 else 0 end) as tel_call "
+    sql = sql + " , SUM(case approaches.code when '0045' then 1 else 0 end) as tel_speack "
+    sql = sql + " FROM trusts inner join owners on trusts.owner_id = owners.id "
+    sql = sql + " inner JOIN manage_types on trusts.manage_type_id = manage_types.id "
+    sql = sql + " inner JOIN buildings on trusts.building_id = buildings.id "
+    sql = sql + " inner JOIN shops on buildings.shop_id = shops.id "
+    sql = sql + " inner JOIN biru_users on trusts.biru_user_id = biru_users.id "
+    sql = sql + " left outer JOIN attack_states on trusts.attack_state_id = attack_states.id "
+    sql = sql + " left outer JOIN (  "
+    sql = sql + "  select  "
+    sql = sql + "      owner_approaches.owner_id"
+    sql = sql + "     ,owner_approaches.approach_date"
+    sql = sql + "     ,owner_approaches.content"
+    sql = sql + "     ,approach_kinds.code"
+    sql = sql + "     ,approach_kinds.name"
+    sql = sql + "  from owner_approaches inner join approach_kinds on owner_approaches.approach_kind_id = approach_kinds.id"
+    sql = sql + "  where owner_approaches.delete_flg = 'f'"
+  
+    # if arr_flg
+    #   sql = sql + "   and owner_approaches.biru_user_id In ( " + biru_user_ids.join(',') + ") "
+    # else
+    #   sql = sql + "   and owner_approaches.biru_user_id = " + biru_user_id + " "
+    # end
+  
+    sql = sql + "  ) approaches on owners.id = approaches.owner_id"
+    sql = sql + " WHERE owners.code is null "
+    sql = sql + "   AND trusts.delete_flg = 'f' "
+    sql = sql + "   AND owners.delete_flg = 'f' "
+    sql = sql + "   AND buildings.delete_flg = 'f' "
+  
+    # ランク指定がある場合、そのランクのみ表示
+    if rank_list.length > 0
+      sql = sql + " AND  attack_states.code IN (" + rank_list + ") "
+    end
+  
+  
+  #  # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
+  #  unless @biru_user.attack_all_search 
+  #    #trust_data = trust_data.where('trusts.biru_user_id = ?', @biru_user.id)
+  #    sql = sql + " AND trusts.biru_user_id = " + @biru_user.id.to_s
+  #  end
+
+    if arr_flg
+    	sql = sql + " AND trusts.biru_user_id In ( " + biru_user_ids.join(',') + ") "
+    else
+    	sql = sql + " AND trusts.biru_user_id = " + biru_user_id + " "
+    end
+
+    #----------------------------------#
+    # 検索条件が指定されている時の絞り込み
+    #----------------------------------#
+  
+    arr_exist = []
+    arr_exist.push(99999)
+    filter_exist_flg = false
+
+    arr_not_exist = []
+    arr_not_exist.push(99999)
+    filter_not_exist_flg = false
+    
+    # 訪問リレキのチェック
+    if @history_visit
+      
+      unless @history_visit[:all]
+      
+        # 訪問リレキで「すべて」以外が選択されているとき
+        # approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", Date.parse(@history_visit_from), Date.parse(@history_visit_to))
+    
+        # if @history_visit[:exist]
+        #   approaches.each do |approach|
+        #     arr_exist.push(approach.owner_id)
+        #   end
+        #   filter_exist_flg = true
+        #
+        # elsif @history_visit[:not_exist]
+        #   approaches.each do |approach|
+        #     arr_not_exist.push(approach.owner_id)
+        #   end
+        #   filter_not_exist_flg = true
+        # end
+    
+        if @history_visit[:exist]
+          kinds = ApproachKind.find_all_by_code(['0010', '0020'])
+      	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
+        end
+    
+      end
+      
+    end
+  
+  
+
+    # DMリレキのチェック
+    if @history_dm
+      
+      unless @history_dm[:all]
+    
+        # # DMリレキで「すべて」以外が選択されているとき
+        # approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030','0035')").where("approach_date between ? and ? ", Date.parse(@history_dm_from), Date.parse(@history_dm_to))
+        #
+        # if @history_dm[:exist]
+        #   approaches.each do |approach|
+        #     arr_exist.push(approach.owner_id)
+        #   end
+        #   filter_exist_flg = true
+        #
+        # elsif @history_dm[:not_exist]
+        #   approaches.each do |approach|
+        #     arr_not_exist.push(approach.owner_id)
+        #   end
+        #   filter_not_exist_flg = true
+        #
+        # end
+
+        if @history_dm[:exist]
+          kinds = ApproachKind.find_all_by_code(['0030','0035'])
+      	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
+        end
+    end
+
+    
+    end
+  
+    # TELリレキのチェック
+    if @history_tel
+      unless @history_tel[:all]
+    
+        # # TELリレキで「すべて」以外が選択されているとき
+        # approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040','0045')").where("approach_date between ? and ? ", Date.parse(@history_tel_from), Date.parse(@history_tel_to))
+        #
+        # if @history_tel[:exist]
+        #   approaches.each do |approach|
+        #     arr_exist.push(approach.owner_id)
+        #   end
+        #   filter_exist_flg = true
+        #
+        # elsif @history_tel[:not_exist]
+        #   approaches.each do |approach|
+        #     arr_not_exist.push(approach.owner_id)
+        #   end
+        #   filter_not_exist_flg = true
+        # end
+    
+        if @history_tel[:exist]
+      
+          kinds = ApproachKind.find_all_by_code(['0040','0045'])
+      	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
+        end
+      end
+      
+    end
+    
+  
+    # # 絞り込み条件が指定されていた時
+    # if filter_exist_flg
+    #     # trust_data = trust_data.where("owners.id in (?)", arr_exist)
+    #     sql = sql + " AND owners.id in (" + arr_exist.join(',') + ") "
+    # end
+    #
+    # if filter_not_exist_flg
+    #   # trust_data = trust_data.where("owners.id not in (?)", arr_not_exist)
+    #   sql = sql + "AND owners.id not in (" + arr_not_exist.join(',') + ") "
+    # end
+  
+  
+    sql = sql + " group by trusts.manage_type_id  "
+    sql = sql + " , owners.id  "
+    sql = sql + " , trusts.id  "
+    sql = sql + " , owners.attack_code  "
+    sql = sql + " , owners.name  "
+    sql = sql + " , owners.address  "
+    sql = sql + " , owners.memo  "
+    sql = sql + " , owners.latitude  "
+    sql = sql + " , owners.longitude  "
+    sql = sql + " , owners.dm_delivery  "
+    sql = sql + " , buildings.id  "
+    sql = sql + " , buildings.attack_code  "
+    sql = sql + " , buildings.name  "
+    sql = sql + " , buildings.address  "
+    sql = sql + " , buildings.memo  "
+    sql = sql + " , buildings.latitude  "
+    sql = sql + " , buildings.longitude  "
+    sql = sql + " , buildings.proprietary_company  "
+    sql = sql + " , shops.id  "
+    sql = sql + " , shops.name  "
+    sql = sql + " , shops.name  "
+    sql = sql + " , shops.latitude  "
+    sql = sql + " , shops.longitude  "
+    sql = sql + " , biru_users.name  "
+    sql = sql + " , attack_states.name  "  
+    sql = sql + " , attack_states.code  "  
+    sql = sql + " , trusts.biru_user_id  "  
+
+  	# 複数指定
+  	if order_flg
+      sql = sql + " ORDER BY buildings.id asc"
+    end
+
+    sql
+  end
+
+  
+  
   def index
     
     @month = ""
@@ -761,495 +1264,6 @@ def get_buildings_sql(object_user)
   sql = sql + "ORDER BY updated_at DESC "
 end
 
-#def get_trust_data()
-def get_trust_sql(object_user, rank_list, order_flg)
-  
-  # trustについているdelete_flg の　default_scopeの副作用で、biru_usersのLEFT_OUTER_JOINが効かなくなっている？（空白のものは出てこない・・）なのでそうであればINNER JOINでつないでしまう（2014/07/15）
-  #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").where("owners.code is null")
-  #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
-  
-  #trust_data = Trust.joins(:owner).joins("LEFT OUTER JOIN manage_types ON trusts.manage_type_id = manage_types.id").joins("LEFT OUTER JOIN buildings on trusts.building_id = buildings.id").joins("LEFT OUTER JOIN shops on buildings.shop_id = shops.id").joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").joins("LEFT OUTER JOIN attack_states on trusts.attack_state_id = attack_states.id").where("owners.code is null")
-  
-  # ユーザーが複数指定されているか判定
-  if object_user.kind_of?(BiruUser)
-    biru_user_id = object_user.id.to_s
-    arr_flg = false
-  else
-    
-    biru_user_ids = []
-    object_user.each do |biru|
-      biru_user_ids.push(biru.id)
-    end
-       
-    
-    arr_flg = true
-  end
-  
-  # 指定した列のハッシュだけで返す為に直接SQLを実行する
-  sql = ""
-  sql = sql + " SELECT trusts.id as trust_id "
-  sql = sql + " , trusts.biru_user_id as biru_user_id "
-  sql = sql + " , trusts.manage_type_id as trust_manage_type_id "
-  sql = sql + " , owners.id as owner_id "
-  sql = sql + " , owners.attack_code as owner_attack_code "
-  sql = sql + " , owners.name as owner_name "
-  sql = sql + " , owners.address as owner_address "
-  sql = sql + " , owners.memo as owner_memo "
-  sql = sql + " , owners.latitude as owner_latitude "
-  sql = sql + " , owners.longitude as owner_longitude "
-  sql = sql + " , owners.dm_delivery as owner_dm_delivery "
-  sql = sql + " , buildings.id as building_id "
-  sql = sql + " , buildings.attack_code as building_attack_code "
-  sql = sql + " , buildings.name as building_name "
-  sql = sql + " , buildings.address as building_address"
-  sql = sql + " , buildings.memo as building_memo "
-  sql = sql + " , buildings.latitude as building_latitude "
-  sql = sql + " , buildings.longitude as building_longitude "
-  sql = sql + " , buildings.proprietary_company as building_proprietary_company "
-  sql = sql + " , shops.id as shop_id "
-  sql = sql + " , shops.name as shop_name "
-  sql = sql + " , shops.name as shop_icon "
-  sql = sql + " , shops.latitude as shop_latitude "
-  sql = sql + " , shops.longitude as shop_longitude "
-  sql = sql + " , biru_users.name as biru_user_name "
-  sql = sql + " , attack_states.code as attack_states_code "
-  sql = sql + " , attack_states.name as attack_states_name "
-  sql = sql + " , SUM(case approaches.code when '0010' then 1 else 0 end) as visit_rusu "
-  sql = sql + " , SUM(case approaches.code when '0020' then 1 else 0 end) as visit_zai "
-  sql = sql + " , SUM(case approaches.code when '0030' then 1 else 0 end) as dm_send "
-  sql = sql + " , SUM(case approaches.code when '0035' then 1 else 0 end) as dm_res "
-  sql = sql + " , SUM(case approaches.code when '0040' then 1 else 0 end) as tel_call "
-  sql = sql + " , SUM(case approaches.code when '0045' then 1 else 0 end) as tel_speack "
-  sql = sql + " FROM trusts inner join owners on trusts.owner_id = owners.id "
-  sql = sql + " inner JOIN manage_types on trusts.manage_type_id = manage_types.id "
-  sql = sql + " inner JOIN buildings on trusts.building_id = buildings.id "
-  sql = sql + " inner JOIN shops on buildings.shop_id = shops.id "
-  sql = sql + " inner JOIN biru_users on trusts.biru_user_id = biru_users.id "
-  sql = sql + " left outer JOIN attack_states on trusts.attack_state_id = attack_states.id "
-  sql = sql + " left outer JOIN (  "
-  sql = sql + "  select  "
-  sql = sql + "      owner_approaches.owner_id"
-  sql = sql + "     ,owner_approaches.approach_date"
-  sql = sql + "     ,owner_approaches.content"
-  sql = sql + "     ,approach_kinds.code"
-  sql = sql + "     ,approach_kinds.name"
-  sql = sql + "  from owner_approaches inner join approach_kinds on owner_approaches.approach_kind_id = approach_kinds.id"
-  sql = sql + "  where owner_approaches.delete_flg = 'f'"
-  
-  # if arr_flg
-  #   sql = sql + "   and owner_approaches.biru_user_id In ( " + biru_user_ids.join(',') + ") "
-  # else
-  #   sql = sql + "   and owner_approaches.biru_user_id = " + biru_user_id + " "
-  # end
-  
-  sql = sql + "  ) approaches on owners.id = approaches.owner_id"
-  sql = sql + " WHERE owners.code is null "
-  sql = sql + "   AND trusts.delete_flg = 'f' "
-  sql = sql + "   AND owners.delete_flg = 'f' "
-  sql = sql + "   AND buildings.delete_flg = 'f' "
-  
-  # ランク指定がある場合、そのランクのみ表示
-  if rank_list.length > 0
-    sql = sql + " AND  attack_states.code IN (" + rank_list + ") "
-  end
-  
-  
-#  # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
-#  unless @biru_user.attack_all_search 
-#    #trust_data = trust_data.where('trusts.biru_user_id = ?', @biru_user.id)
-#    sql = sql + " AND trusts.biru_user_id = " + @biru_user.id.to_s
-#  end
-
-  if arr_flg
-  	sql = sql + " AND trusts.biru_user_id In ( " + biru_user_ids.join(',') + ") "
-  else
-  	sql = sql + " AND trusts.biru_user_id = " + biru_user_id + " "
-  end
-
-  #----------------------------------#
-  # 検索条件が指定されている時の絞り込み
-  #----------------------------------#
-  
-  arr_exist = []
-  arr_exist.push(99999)
-  filter_exist_flg = false
-
-  arr_not_exist = []
-  arr_not_exist.push(99999)
-  filter_not_exist_flg = false
-  
-  # 訪問リレキのチェック
-  unless @history_visit[:all]
-      
-    # 訪問リレキで「すべて」以外が選択されているとき
-    # approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020')").where("approach_date between ? and ? ", Date.parse(@history_visit_from), Date.parse(@history_visit_to))
-    
-    # if @history_visit[:exist]
-    #   approaches.each do |approach|
-    #     arr_exist.push(approach.owner_id)
-    #   end
-    #   filter_exist_flg = true
-    #
-    # elsif @history_visit[:not_exist]
-    #   approaches.each do |approach|
-    #     arr_not_exist.push(approach.owner_id)
-    #   end
-    #   filter_not_exist_flg = true
-    # end
-    
-    if @history_visit[:exist]
-      kinds = ApproachKind.find_all_by_code(['0010', '0020'])
-  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
-    end
-    
-  end
-  
-
-  # DMリレキのチェック
-  unless @history_dm[:all]
-    
-    # # DMリレキで「すべて」以外が選択されているとき
-    # approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0030','0035')").where("approach_date between ? and ? ", Date.parse(@history_dm_from), Date.parse(@history_dm_to))
-    #
-    # if @history_dm[:exist]
-    #   approaches.each do |approach|
-    #     arr_exist.push(approach.owner_id)
-    #   end
-    #   filter_exist_flg = true
-    #
-    # elsif @history_dm[:not_exist]
-    #   approaches.each do |approach|
-    #     arr_not_exist.push(approach.owner_id)
-    #   end
-    #   filter_not_exist_flg = true
-    #
-    # end
-
-    if @history_dm[:exist]
-      kinds = ApproachKind.find_all_by_code(['0030','0035'])
-  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
-    end
-
-    
-  end
-  
-  # TELリレキのチェック
-  unless @history_tel[:all]
-    
-    # # TELリレキで「すべて」以外が選択されているとき
-    # approaches = OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0040','0045')").where("approach_date between ? and ? ", Date.parse(@history_tel_from), Date.parse(@history_tel_to))
-    #
-    # if @history_tel[:exist]
-    #   approaches.each do |approach|
-    #     arr_exist.push(approach.owner_id)
-    #   end
-    #   filter_exist_flg = true
-    #
-    # elsif @history_tel[:not_exist]
-    #   approaches.each do |approach|
-    #     arr_not_exist.push(approach.owner_id)
-    #   end
-    #   filter_not_exist_flg = true
-    # end
-    
-    if @history_tel[:exist]
-      
-      kinds = ApproachKind.find_all_by_code(['0040','0045'])
-  	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
-    end
-    
-  end
-  
-  # # 絞り込み条件が指定されていた時
-  # if filter_exist_flg
-  #     # trust_data = trust_data.where("owners.id in (?)", arr_exist)
-  #     sql = sql + " AND owners.id in (" + arr_exist.join(',') + ") "
-  # end
-  #
-  # if filter_not_exist_flg
-  #   # trust_data = trust_data.where("owners.id not in (?)", arr_not_exist)
-  #   sql = sql + "AND owners.id not in (" + arr_not_exist.join(',') + ") "
-  # end
-  
-  
-  sql = sql + " group by trusts.manage_type_id  "
-  sql = sql + " , owners.id  "
-  sql = sql + " , trusts.id  "
-  sql = sql + " , owners.attack_code  "
-  sql = sql + " , owners.name  "
-  sql = sql + " , owners.address  "
-  sql = sql + " , owners.memo  "
-  sql = sql + " , owners.latitude  "
-  sql = sql + " , owners.longitude  "
-  sql = sql + " , owners.dm_delivery  "
-  sql = sql + " , buildings.id  "
-  sql = sql + " , buildings.attack_code  "
-  sql = sql + " , buildings.name  "
-  sql = sql + " , buildings.address  "
-  sql = sql + " , buildings.memo  "
-  sql = sql + " , buildings.latitude  "
-  sql = sql + " , buildings.longitude  "
-  sql = sql + " , buildings.proprietary_company  "
-  sql = sql + " , shops.id  "
-  sql = sql + " , shops.name  "
-  sql = sql + " , shops.name  "
-  sql = sql + " , shops.latitude  "
-  sql = sql + " , shops.longitude  "
-  sql = sql + " , biru_users.name  "
-  sql = sql + " , attack_states.name  "  
-  sql = sql + " , attack_states.code  "  
-  sql = sql + " , trusts.biru_user_id  "  
-
-	# 複数指定
-	if order_flg
-    sql = sql + " ORDER BY buildings.id asc"
-  end
-
-  sql
-end
-
-
-# 受託行動レポート情報を取得します
-def get_report_info(month, user)
-  
-  # 来月度を取得
-  tmp_month = Date.parse(month + "01", "YYYYMMDD").next_month
-  month_next = "%04d%02d"%[tmp_month.year, tmp_month.month]
-  
-  # 前月度を取得
-  tmp_month =Date.parse(month + "01", "YYYYMMDD").prev_month
-  month_prev = "%04d%02d"%[tmp_month.year, tmp_month.month]
-  
-  # 今月の集計期間を取得
-  start_date = Date.parse(Date.parse(month + "01").prev_month.strftime("%Y%m")+"21")
-  end_date= Date.parse(month + "20")
-  
-  # 当月の計画・実績データを取得
-  biru_user_monthly = BiruUserMonthly.find_by_biru_user_id_and_month(user.id, month)
-  unless biru_user_monthly
-    biru_user_monthly = BiruUserMonthly.new
-  end
-  biru_user_monthly.biru_user_id = user.id
-  biru_user_monthly.month = month
-  
-  # 来月の計画・実績データを取得
-  biru_user_monthly_next = BiruUserMonthly.find_by_biru_user_id_and_month(user.id, month_next)
-  unless biru_user_monthly_next
-    biru_user_monthly_next = BiruUserMonthly.new
-  end
-  biru_user_monthly_next.biru_user_id = user.id
-  biru_user_monthly_next.month = month_next
-  
-  
-  #####################################
-  # 当月に訪問した貸主を表示    
-  # DMアプローチした貸主を表示
-  # ＴＥＬアプローチした貸主を表示
-  #####################################
-  visit_owner_id_arr = []
-  visit_num = 0
-  visit_num_jsk = 0
-
-  dm_owner_id_arr = []
-  dm_num = 0
-  dm_num_jsk = 0
-
-  tel_owner_id_arr = []
-  tel_num = 0
-  tel_num_jsk = 0
-  
-  OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020', '0030', '0035', '0040', '0045')").where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
-  	
-    case rec.code
-    when '0010', '0020' then
-      ########## 訪問・訪問面談 ###########
-    	visit_owner_id_arr << rec.owner_id
-      visit_num = visit_num + 1
-    
-      # 面談できていた時
-      if rec.code == '0020'
-      	visit_num_jsk = visit_num_jsk + 1
-      end
-      
-    when '0030', '0035' then
-      ########## DM・DM反響 ###########
-      dm_owner_id_arr << rec.owner_id
-      dm_num = dm_num + 1
-
-      # ＤＭの「反響」だった時
-      if rec.code == '0035'
-      	dm_num_jsk = dm_num_jsk + 1
-      end
-      
-    when '0040', '0045' then
-      ########## TEL・TEL会話 ###########
-    	tel_owner_id_arr << rec.owner_id
-      tel_num = tel_num + 1
-  	
-    	# ＤＭの反響だった時
-      if rec.code == '0045'
-  			tel_num_jsk = tel_num_jsk + 1
-      end
-    else
-      # それ以外のとき
-    end
-    
-  end
-  
-
-
-
-  #####################################
-  # 成約した物件、見込みが高い物件を表示
-  #####################################
-  contract_num = 0
-  contract_num_jisya = 0
-
-  # 件数のカウント
-  rank_s = 0
-  rank_a = 0
-  rank_b = 0
-  rank_c = 0
-  rank_d = 0
-
-  buildings = []
-  order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", month).where("trusts.biru_user_id = ?", user.id).group("trusts.id").maximum("month")
-
-  order_hash.keys.each do |trust_id|
-
-    # trust_idにはidが、order_hash[trust_id]にはその月の最大月数が入っている
-    trust_attack_history = TrustAttackStateHistory.find_by_trust_id_and_month(trust_id, order_hash[trust_id])
-
-    # ↓見込みランクの絞り込みはクエリのwhere句の中でなく、集計結果に対して行う。
-    # where句でやるとそのランクがある中での最大をとってしまうので、仮にその後に別のランクが登録されていたら本来は必要ないのにそのレコードがとれてしまうから
-    case trust_attack_history.attack_state_to.code
-    when 'S', 'A', 'B'
-
-      if trust_attack_history.trust
-        biru = trust_attack_history.trust.building
-        biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
-        biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
-        buildings << biru
-      end
-      
-
-    when 'Z'
-      # 成約になった物件は、当月のみ表示対象
-      if trust_attack_history.month.to_s == month.to_s
-
-        biru = trust_attack_history.trust.building
-        biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
-        biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
-        buildings << biru
-
-        # 受託実績戸数を入力
-        contract_num = contract_num + trust_attack_history.room_num
-
-        if trust_attack_history.trust_oneself
-          contract_num_jisya = contract_num_jisya + trust_attack_history.room_num
-        end
-
-      end
-
-    else
-    end
-
-    case trust_attack_history.attack_state_to.code
-    when 'S' then
-      
-      rank_s = rank_s + 1
-    when 'A' then
-      rank_a = rank_a + 1
-    when 'B' then
-      rank_b = rank_b + 1
-    when 'C' then
-      rank_c = rank_c + 1
-    when 'D' then
-      rank_d = rank_d + 1
-    else
-
-    end
-
-
-  end
-  
-  
-  # #################################################
-  # # 当月の見込み件数を（ランクS、ランクA、ランクB）取得
-  # #################################################
-  # rank_s = 0
-  # rank_a = 0
-  # rank_b = 0
-  # rank_c = 0
-  # rank_d = 0
-  #
-  # sql = ""
-  # sql = sql + "SELECT f.trust_id, f.month, g.code "
-  # sql = sql + "FROM trust_attack_state_histories f INNER JOIN attack_states g on f.attack_state_to_id = g.id "
-  # sql = sql + "WHERE EXISTS ("
-  # sql = sql + " SELECT trust_id, max_month "
-  # sql = sql + " FROM ( "
-  # sql = sql + "   SELECT a.trust_id as trust_id, MAX(a.month) max_month "
-  # sql = sql + "   FROM trust_attack_state_histories a INNER JOIN trusts b ON a.trust_id = b.id "
-  # sql = sql + "   WHERE a.month <= " + month + " "
-  # sql = sql + "     AND b.biru_user_id = " + user.id.to_s + " "
-  # sql = sql + "     AND b.delete_flg = 'f' "
-  # sql = sql + "   GROUP BY a.trust_id "
-  # sql = sql + " ) x "
-  # sql = sql + " WHERE x.trust_id = f.trust_id "
-  # sql = sql + "   AND x.max_month = f.month "
-  # sql = sql + ") "
-  #
-  # ActiveRecord::Base.connection.select_all(sql).each do |rec|
-  #
-  #   case rec["code"]
-  #   when 'S' then
-  #     rank_s = rank_s + 1
-  #   when 'A' then
-  #     rank_a = rank_a + 1
-  #   when 'B' then
-  #     rank_b = rank_b + 1
-  #   when 'C' then
-  #     rank_c = rank_c + 1
-  #   when 'D' then
-  #     rank_d = rank_d + 1
-  #   else
-  #
-  #   end
-  #
-  # end
-  #
-    
-    
-  # 関数の戻り値として設定
-  result = {}
-  result[:month_next] = month_next
-  result[:month_prev] = month_prev
-  result[:start_date] = start_date
-  result[:end_date] = end_date
-  result[:biru_user_monthly] = biru_user_monthly
-  result[:biru_user_monthly_next] = biru_user_monthly_next
-  result[:visit_owner_id_arr] = visit_owner_id_arr
-  result[:visit_num] = visit_num
-  result[:visit_num_jsk] = visit_num_jsk
-  result[:dm_owner_id_arr] = dm_owner_id_arr
-  result[:dm_num] = dm_num
-  result[:dm_num_jsk] = dm_num_jsk
-  result[:tel_owner_id_arr] = tel_owner_id_arr
-  result[:tel_num] = tel_num
-  result[:tel_num_jsk] = tel_num_jsk
-  result[:contract_num] = contract_num
-  result[:contract_num_jsk] = contract_num_jisya
-  result[:buildings] = buildings
-
-  result[:rank_s] = rank_s
-  result[:rank_a] = rank_a
-  result[:rank_b] = rank_b
-  result[:rank_c] = rank_c
-  result[:rank_d] = rank_d
-  
-  return result
-end
 
 # 検索条件を初期化します。
 def search_init

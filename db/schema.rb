@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150422210628) do
+ActiveRecord::Schema.define(:version => 20150423202104) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -284,6 +284,7 @@ ActiveRecord::Schema.define(:version => 20150422210628) do
     t.datetime "updated_at",                          :null => false
   end
 
+  add_index "owner_approaches", ["approach_date"], :name => "index_owner_approaches_on_approach_date"
   add_index "owner_approaches", ["approach_kind_id"], :name => "index_owner_approaches_on_approach_kind_id"
   add_index "owner_approaches", ["biru_user_id"], :name => "index_owner_approaches_on_biru_user_id"
   add_index "owner_approaches", ["owner_id"], :name => "index_owner_approaches_on_owner_id"
@@ -511,6 +512,34 @@ ActiveRecord::Schema.define(:version => 20150422210628) do
     t.string   "summary_end_day"
     t.datetime "created_at",             :null => false
     t.datetime "updated_at",             :null => false
+  end
+
+  create_table "trust_attack_month_reports", :force => true do |t|
+    t.string   "month"
+    t.integer  "biru_user_id"
+    t.string   "biru_usr_name"
+    t.string   "trust_report_url"
+    t.string   "attack_list_url"
+    t.integer  "visit_plan"
+    t.integer  "visit_result"
+    t.integer  "visit_value"
+    t.integer  "dm_plan"
+    t.integer  "dm_result"
+    t.integer  "dm_value"
+    t.integer  "tel_plan"
+    t.integer  "tel_result"
+    t.integer  "tel_value"
+    t.integer  "trust_num"
+    t.integer  "rank_s"
+    t.integer  "rank_a"
+    t.integer  "rank_b"
+    t.integer  "rank_c"
+    t.integer  "rank_d"
+    t.integer  "rank_c_over"
+    t.integer  "rank_d_over"
+    t.integer  "rank_all"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
   end
 
   create_table "trust_attack_state_histories", :force => true do |t|

@@ -3159,6 +3159,49 @@ def biru_user_update
 	end
 end
 
+# 受託の月報を生成します
+def generate_trust_attack_month_report(month, trust_user)
+    
+  reoprt = TrustAttackMonthReport.find_or_create_by_month_and_biru_user_id(month, trust_user.id)
+  app_con = TrustManagementsController.new
+  result = app_con.get_report_info(month, trust_user)
+  
+  reoprt.month = month
+  reoprt.biru_user_id = trust_user.id
+  reoprt.biru_usr_name = trust_user.name
+  reoprt.trust_report_url = "trust_user_report?sid=" + trust_user.id.to_s
+  reoprt.attack_list_url = "owner_building_list?sid=" + trust_user.id.to_s
+  reoprt.visit_plan = result[:biru_user_monthly].trust_plan_visit
+  reoprt.visit_result = result[:visit_num]
+  reoprt.visit_value = result[:visit_num_jsk]
+  reoprt.dm_plan = result[:biru_user_monthly].trust_plan_dm
+  reoprt.dm_result = result[:dm_num]
+  reoprt.dm_value = result[:dm_num_jsk]
+  reoprt.tel_plan = result[:biru_user_monthly].trust_plan_tel
+  reoprt.tel_result = result[:tel_num]
+  reoprt.tel_value = result[:tel_num_jsk]
+  reoprt.trust_num = result[:contract_num]
+  reoprt.rank_s = result[:rank_s]
+  reoprt.rank_a = result[:rank_a]
+  reoprt.rank_b = result[:rank_b]
+  reoprt.rank_c = result[:rank_c]
+  reoprt.rank_d = result[:rank_d]
+  reoprt.rank_c_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c]
+  reoprt.rank_d_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c] + result[:rank_d]
+  
+  # 全件数を取得する
+  sql = ""
+  sql = sql + "SELECT count(*) as cnt "
+  sql = sql + "FROM (" + app_con.get_trust_sql(trust_user, "", false) + ") X "
+  sql = sql + "where biru_user_id = " + trust_user.id.to_s
+  ActiveRecord::Base.connection.select_all(sql).each do |all_cnt_rec|
+    reoprt.rank_all = all_cnt_rec['cnt']
+  end
+  
+  reoprt.save!
+
+end
+
 
 ########################
 # マスタ登録
@@ -3282,7 +3325,7 @@ end
 # reg_attack_owner_building('5928', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150422_23南流山.csv"))
 # reg_attack_owner_building('5928', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150422_24柏.csv"))
 
-reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_06北越谷.csv"))
+# reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_06北越谷.csv"))
 
 
 ###########################
@@ -3355,3 +3398,12 @@ reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", 
 # 管理受託巻き直し更新
 ############################
 # trust_rewinding_update
+
+############################
+# 受託レポート作成
+############################
+# generate_trust_attack_month_report('201504', BiruUser.find_by_code('5928'))
+generate_trust_attack_month_report('201505', BiruUser.find_by_code('5928'))
+
+generate_trust_attack_month_report('201505', BiruUser.find_by_code('6365'))
+
