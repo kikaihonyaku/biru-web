@@ -339,7 +339,7 @@ function createMarker_trust_report(opts, open_flg){
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000', :size=>"18x25")%></td>
-					<td style="text-align:center;">受託（他社）</td>
+					<td style="text-align:center;">他社受託（自社受託）</td>
 					<td style="text-align:center;"><%= if @biru_user_monthly.trust_plan_contract then @biru_user_monthly.trust_plan_contract else '-' end %></td>
 					<td style="text-align:center;"><%= @contract_num %>&nbsp;&nbsp;(<%= @contract_num_jisya %>)</td>
 					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_contract, @contract_num) %></td>

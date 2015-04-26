@@ -55,18 +55,27 @@ class TrustManagementsController < ApplicationController
     tel_owner_id_arr = []
     tel_num = 0
     tel_num_jsk = 0
+    
+    suggestion_owner_id_arr = []
+    suggestion_num = 0
   
     OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020', '0030', '0035', '0040', '0045')").where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
   	
       case rec.code
-      when '0010', '0020' then
-        ########## 訪問・訪問面談 ###########
+      when '0010', '0020', '0025' then
+        ########## 訪問・面談・提案 ###########
       	visit_owner_id_arr << rec.owner_id
         visit_num = visit_num + 1
     
         # 面談できていた時
-        if rec.code == '0020'
+        if rec.code == '0020' || rec.code == '0025' 
         	visit_num_jsk = visit_num_jsk + 1
+          
+          if rec.code == '0025'
+            # 提案もできていた時
+            suggestion_owner_id_arr << rec.owner_id
+            suggestion_num = suggestion_num + 1
+          end
         end
       
       when '0030', '0035' then
@@ -88,14 +97,12 @@ class TrustManagementsController < ApplicationController
         if rec.code == '0045'
     			tel_num_jsk = tel_num_jsk + 1
         end
+
       else
         # それ以外のとき
       end
     
     end
-  
-
-
 
     #####################################
     # 成約した物件、見込みが高い物件を表示
@@ -109,6 +116,10 @@ class TrustManagementsController < ApplicationController
     rank_b = 0
     rank_c = 0
     rank_d = 0
+    rank_w = 0
+    rank_x = 0
+    rank_y = 0
+    rank_z = 0
 
     buildings = []
     order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", month).where("trusts.biru_user_id = ?", user.id).group("trusts.id").maximum("month")
@@ -141,10 +152,10 @@ class TrustManagementsController < ApplicationController
           buildings << biru
 
           # 受託実績戸数を入力
-          contract_num = contract_num + trust_attack_history.room_num
-
           if trust_attack_history.trust_oneself
             contract_num_jisya = contract_num_jisya + trust_attack_history.room_num
+          else
+            contract_num = contract_num + trust_attack_history.room_num
           end
 
         end
@@ -154,7 +165,6 @@ class TrustManagementsController < ApplicationController
 
       case trust_attack_history.attack_state_to.code
       when 'S' then
-      
         rank_s = rank_s + 1
       when 'A' then
         rank_a = rank_a + 1
@@ -164,6 +174,14 @@ class TrustManagementsController < ApplicationController
         rank_c = rank_c + 1
       when 'D' then
         rank_d = rank_d + 1
+      when 'W' then
+        rank_w = rank_w + 1
+      when 'X' then
+        rank_x = rank_x + 1
+      when 'Y' then
+        rank_y = rank_y + 1
+      when 'Z' then
+        rank_z = rank_z + 1
       else
 
       end
@@ -236,6 +254,10 @@ class TrustManagementsController < ApplicationController
     result[:tel_owner_id_arr] = tel_owner_id_arr
     result[:tel_num] = tel_num
     result[:tel_num_jsk] = tel_num_jsk
+
+    result[:suggestion_owner_id_arr] = suggestion_owner_id_arr
+    result[:suggestion_num] = suggestion_num
+    
     result[:contract_num] = contract_num
     result[:contract_num_jsk] = contract_num_jisya
     result[:buildings] = buildings
@@ -245,7 +267,11 @@ class TrustManagementsController < ApplicationController
     result[:rank_b] = rank_b
     result[:rank_c] = rank_c
     result[:rank_d] = rank_d
-  
+    result[:rank_w] = rank_w
+    result[:rank_x] = rank_x
+    result[:rank_y] = rank_y
+    result[:rank_z] = rank_z
+    
     return result
   end  
   
@@ -303,35 +329,36 @@ class TrustManagementsController < ApplicationController
     sql = sql + " , biru_users.name as biru_user_name "
     sql = sql + " , attack_states.code as attack_states_code "
     sql = sql + " , attack_states.name as attack_states_name "
-    sql = sql + " , SUM(case approaches.code when '0010' then 1 else 0 end) as visit_rusu "
-    sql = sql + " , SUM(case approaches.code when '0020' then 1 else 0 end) as visit_zai "
-    sql = sql + " , SUM(case approaches.code when '0030' then 1 else 0 end) as dm_send "
-    sql = sql + " , SUM(case approaches.code when '0035' then 1 else 0 end) as dm_res "
-    sql = sql + " , SUM(case approaches.code when '0040' then 1 else 0 end) as tel_call "
-    sql = sql + " , SUM(case approaches.code when '0045' then 1 else 0 end) as tel_speack "
+    # 速度の問題で訪問履歴などの件数は取得しない delete 2015.04.24
+    # sql = sql + " , SUM(case approaches.code when '0010' then 1 else 0 end) as visit_rusu "
+    # sql = sql + " , SUM(case approaches.code when '0020' then 1 else 0 end) as visit_zai "
+    # sql = sql + " , SUM(case approaches.code when '0030' then 1 else 0 end) as dm_send "
+    # sql = sql + " , SUM(case approaches.code when '0035' then 1 else 0 end) as dm_res "
+    # sql = sql + " , SUM(case approaches.code when '0040' then 1 else 0 end) as tel_call "
+    # sql = sql + " , SUM(case approaches.code when '0045' then 1 else 0 end) as tel_speack "
     sql = sql + " FROM trusts inner join owners on trusts.owner_id = owners.id "
     sql = sql + " inner JOIN manage_types on trusts.manage_type_id = manage_types.id "
     sql = sql + " inner JOIN buildings on trusts.building_id = buildings.id "
     sql = sql + " inner JOIN shops on buildings.shop_id = shops.id "
     sql = sql + " inner JOIN biru_users on trusts.biru_user_id = biru_users.id "
     sql = sql + " left outer JOIN attack_states on trusts.attack_state_id = attack_states.id "
-    sql = sql + " left outer JOIN (  "
-    sql = sql + "  select  "
-    sql = sql + "      owner_approaches.owner_id"
-    sql = sql + "     ,owner_approaches.approach_date"
-    sql = sql + "     ,owner_approaches.content"
-    sql = sql + "     ,approach_kinds.code"
-    sql = sql + "     ,approach_kinds.name"
-    sql = sql + "  from owner_approaches inner join approach_kinds on owner_approaches.approach_kind_id = approach_kinds.id"
-    sql = sql + "  where owner_approaches.delete_flg = 'f'"
+    # sql = sql + " left outer JOIN (  "
+    # sql = sql + "  select  "
+    # sql = sql + "      owner_approaches.owner_id"
+    # sql = sql + "     ,owner_approaches.approach_date"
+    # sql = sql + "     ,owner_approaches.content"
+    # sql = sql + "     ,approach_kinds.code"
+    # sql = sql + "     ,approach_kinds.name"
+    # sql = sql + "  from owner_approaches inner join approach_kinds on owner_approaches.approach_kind_id = approach_kinds.id"
+    # sql = sql + "  where owner_approaches.delete_flg = 'f'"
   
-    # if arr_flg
-    #   sql = sql + "   and owner_approaches.biru_user_id In ( " + biru_user_ids.join(',') + ") "
-    # else
-    #   sql = sql + "   and owner_approaches.biru_user_id = " + biru_user_id + " "
-    # end
-  
-    sql = sql + "  ) approaches on owners.id = approaches.owner_id"
+    # # if arr_flg
+    # #   sql = sql + "   and owner_approaches.biru_user_id In ( " + biru_user_ids.join(',') + ") "
+    # # else
+    # #   sql = sql + "   and owner_approaches.biru_user_id = " + biru_user_id + " "
+    # # end
+    # #
+    #sql = sql + "  ) approaches on owners.id = approaches.owner_id"
     sql = sql + " WHERE owners.code is null "
     sql = sql + "   AND trusts.delete_flg = 'f' "
     sql = sql + "   AND owners.delete_flg = 'f' "
@@ -569,66 +596,78 @@ class TrustManagementsController < ApplicationController
       all_cnt_hash[BiruUser.find(all_cnt_rec['biru_user_id']).code] = all_cnt_rec['cnt']
     end
     
-    trust_user_hash.keys.each do |key|
-      
-    	rec = {}
-      trust_user = BiruUser.find_by_code(key)
-      if trust_user
+		trust_user_hash.keys.each do |key|
+		  
+			rec = {}
+			
+			# レポート表示用データ取得
+			exist_flg = false
+		  trust_user = BiruUser.find_by_code(key)
+		  if trust_user
+		  	# ワークデータで作成済みのデータを取得する
+		  	report = TrustAttackMonthReport.find_by_month_and_biru_user_id(@month, trust_user.id)
+		  	if report
+		  		exist_flg = true
+			  end
+			end
+		  
+		  if exist_flg
+		  	
+				rec['biru_user_id'] = report.biru_user_id.to_s
+				rec['biru_usr_name'] = report.biru_usr_name
+				rec['shop_name'] = trust_user_hash[key][:shop_name]
+				
+				rec['trust_report'] = report.trust_report_url
+				rec['attack_list'] = report.attack_list_url
+				rec['visit_plan'] = report.visit_plan
+				rec['visit_result'] = report.visit_result
+				rec['visit_value'] = report.visit_value
+				rec['dm_plan'] = report.dm_plan
+				rec['dm_result'] = report.dm_result
+				rec['dm_value'] = report.dm_value
+				rec['tel_plan'] = report.tel_plan
+				rec['tel_result'] = report.tel_result
+				rec['tel_value'] = report.tel_value
+				rec['trust_num'] = report.trust_num
+				rec['rank_s'] = report.rank_s
+				rec['rank_a'] = report.rank_a
+				rec['rank_b'] = report.rank_b
+				rec['rank_c'] = report.rank_c
+				rec['rank_d'] = report.rank_d
+		    rec['rank_all'] = report.rank_all
         
-        result = get_report_info(@month, trust_user)
+        
+				rec['rank_c_over'] = nz(report.rank_s) + nz(report.rank_a) + nz(report.rank_b) + nz(report.rank_c) 
+				rec['rank_d_over'] = nz(report.rank_s) + nz(report.rank_a) + nz(report.rank_b) + nz(report.rank_c) + nz(report.rank_d)
+		    rec['rank_etc'] = nz(report.rank_w) + nz(report.rank_x) + nz(report.rank_y) + nz(report.rank_z)
+        
 
-  			rec['biru_user_id'] = trust_user.id.to_s
-  			rec['biru_usr_name'] = trust_user.name
-
-  			rec['shop_name'] = trust_user_hash[key][:shop_name]
-  			
-  			rec['trust_report'] = "trust_user_report?sid=" + trust_user.id.to_s
-  			rec['attack_list'] = "owner_building_list?sid=" + trust_user.id.to_s
-  			rec['visit_plan'] = result[:biru_user_monthly].trust_plan_visit
-  			rec['visit_result'] = result[:visit_num]
-  			rec['visit_value'] = result[:visit_num_jsk]
-  			rec['dm_plan'] = result[:biru_user_monthly].trust_plan_dm
-  			rec['dm_result'] = result[:dm_num]
-  			rec['dm_value'] = result[:dm_num_jsk]
-  			rec['tel_plan'] = result[:biru_user_monthly].trust_plan_tel
-  			rec['tel_result'] = result[:tel_num]
-  			rec['tel_value'] = result[:tel_num_jsk]
-  			rec['trust_num'] = result[:contract_num]
-  			rec['rank_s'] = result[:rank_s]
-  			rec['rank_a'] = result[:rank_a]
-  			rec['rank_b'] = result[:rank_b]
-  			rec['rank_c'] = result[:rank_c]
-  			rec['rank_d'] = result[:rank_d]
-  			rec['rank_d_over'] = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c] + result[:rank_d]
-        
-        rec['rank_all'] = all_cnt_hash[key]
-        
-
-      else
-        
-  			rec['biru_user_id'] = 1.to_s
-  			rec['biru_usr_name'] = 'xxx'
-  			rec['trust_report'] = "trust_user_report?sid=" + 1.to_s
-  			rec['attack_list'] = "owner_building_list?sid=" + 1.to_s
-        # rec['visit_plan'] = 0
-        # rec['visit_result'] = 0
-        # rec['visit_value'] = 0
-        # rec['dm_plan'] = 0
-        # rec['dm_result'] = 0
-        # rec['dm_value'] = 0
-        # rec['tel_plan'] = 0
-        # rec['tel_result'] = 0
-        # rec['tel_value'] = 0
-        # rec['trust_num'] = 0
-        # rec['rank_s'] = 0
-        # rec['rank_a'] = 0
-        # rec['rank_b'] = 0
-        
-      end
+		  else
+		    
+				rec['biru_user_id'] = 1.to_s
+				rec['biru_usr_name'] = 'xxx'
+				rec['trust_report'] = "trust_user_report?sid=" + 1.to_s
+				rec['attack_list'] = "owner_building_list?sid=" + 1.to_s
+		    # rec['visit_plan'] = 0
+		    # rec['visit_result'] = 0
+		    # rec['visit_value'] = 0
+		    # rec['dm_plan'] = 0
+		    # rec['dm_result'] = 0
+		    # rec['dm_value'] = 0
+		    # rec['tel_plan'] = 0
+		    # rec['tel_result'] = 0
+		    # rec['tel_value'] = 0
+		    # rec['trust_num'] = 0
+		    # rec['rank_s'] = 0
+		    # rec['rank_a'] = 0
+		    # rec['rank_b'] = 0
+		    
+		  end
 
 			user_list.push(rec)
-      
-    end
+		  
+		end
+
     
     gon.data_list = user_list
 
@@ -686,7 +725,6 @@ class TrustManagementsController < ApplicationController
       owners = []
       owner_to_buildings = {}
       building_to_owners = {}
-      
       
       ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user, rank_arr, true)).each do |rec|
         
@@ -766,6 +804,13 @@ class TrustManagementsController < ApplicationController
       gon.building_to_owners = building_to_owners
       gon.manage_line_color  make_manage_line_list
       gon.all_shops = Shop.find(:all)
+      
+      
+      # ランク見込みオプション
+      @rank_searchoptions = ""
+      AttackState.all.each do |rank|
+        @rank_searchoptions = @rank_searchoptions + ";" + rank.code + ":" + rank.name 
+      end
       
       render 'owner_building_list'   
       

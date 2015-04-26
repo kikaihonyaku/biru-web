@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150423202104) do
+ActiveRecord::Schema.define(:version => 20150426031821) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string "name"
@@ -540,6 +540,13 @@ ActiveRecord::Schema.define(:version => 20150423202104) do
     t.integer  "rank_all"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
+    t.integer  "suggestion_num"
+    t.integer  "trust_plan"
+    t.integer  "trust_num_jisya"
+    t.integer  "rank_w"
+    t.integer  "rank_x"
+    t.integer  "rank_y"
+    t.integer  "rank_z"
   end
 
   create_table "trust_attack_state_histories", :force => true do |t|

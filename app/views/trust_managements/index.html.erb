@@ -20,8 +20,8 @@
 	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "' onclick='javascript:screen_block();' >" + nvl(cellValue) + "</a>";
 	}
 
-	function formatter_rank_d_over(cellValue, options, rowdata, action){
-	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=S,A,B,C,D' onclick='javascript:screen_block();'>" + nvl(cellValue) + "</a>";
+	function formatter_rank_c_over(cellValue, options, rowdata, action){
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=S,A,B,C' onclick='javascript:screen_block();'>" + nvl(cellValue) + "</a>";
 	}
 	
 	function formatter_rank_s(cellValue, options, rowdata, action){
@@ -43,30 +43,37 @@
 	function formatter_rank_d(cellValue, options, rowdata, action){
 	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=D' onclick='javascript:screen_block();'>" + nvl(cellValue) + "</a>";
 	}
+
+	function formatter_rank_etc(cellValue, options, rowdata, action){
+	    return "<a href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=W,X,Y,Z' onclick='javascript:screen_block();'>" + nvl(cellValue) + "</a>";
+	}
 	
 	// 委託契約リストを作成
 	function init_jqgrid_trust_manager(){
 		// 列名の定義
-		var col_names = ["biru_user_id", "担当者", "レポート", "アタックリスト","登録件数", "Ｄ以上", "Ｓ","Ａ","Ｂ","Ｃ","Ｄ","目標", "実績", "面談", "目標", "実績", "反響", "目標", "実績", "会話"];
+		var col_names = ["biru_user_id", "エリア", "担当者", "レポート", "アタックリスト","登録件数", "C以上", "Ｓ","Ａ","Ｂ","Ｃ","Ｄ", "Ｗ,Ｘ,Ｙ,Ｚ", "目標", "実績", "面談", "提案", "目標", "実績", "反響", "目標", "実績", "会話", "目標", "実績" ];
 	
 		// 列属性の定義
 		var col_model = [
 		  {name:"biru_user_id", index:"biru_user_id", align:"left",classes:"no_class", hidden:true}
+		 ,{name:"shop_name", index:"shop_name", width:200, align:"left", classes:"no_class"}
   		 ,{name:"biru_usr_name", index:"biru_usr_name", width:300, align:"left", classes:"no_class"}
  		 ,{name:"trust_report", index:"trust_report", width:200, align:"left", classes:"no_class", formatter: 'link', hidden:true}
  		 ,{name:"attack_list", index:"attack_list", width:200, align:"left", classes:"no_class", hidden:true}
 		 
- 		 ,{name:"rank_all", index:"rank_d_over", align:"right", classes:"no_class", formatter:formatter_rank_all}
- 		 ,{name:"rank_d_over", index:"rank_d_over", align:"right", classes:"no_class", formatter:formatter_rank_d_over}
+ 		 ,{name:"rank_all", index:"rank_all", align:"right", classes:"no_class", formatter:formatter_rank_all}
+ 		 ,{name:"rank_c_over", index:"rank_c_over", align:"right", classes:"no_class", formatter:formatter_rank_c_over}
  		 ,{name:"rank_s", index:"rank_s", align:"right", classes:"no_class", formatter:formatter_rank_s}
  		 ,{name:"rank_a", index:"rank_a", align:"right", classes:"no_class", formatter:formatter_rank_a}
  		 ,{name:"rank_b", index:"rank_b", align:"right", classes:"no_class", formatter:formatter_rank_b}
  		 ,{name:"rank_c", index:"rank_c", align:"right", classes:"no_class", formatter:formatter_rank_c}
  		 ,{name:"rank_d", index:"rank_d", align:"right", classes:"no_class", formatter:formatter_rank_d}
+ 		 ,{name:"rank_etc", index:"rank_etc", align:"right", classes:"no_class", formatter:formatter_rank_etc}
 		 
  		 ,{name:"visit_plan", index:"visit_plan", align:"right", classes:"no_class"}
  		 ,{name:"visit_result", index:"visit_result", align:"right", classes:"no_class"}
  		 ,{name:"visit_value", index:"visit_value", align:"right", classes:"no_class"}
+ 		 ,{name:"suggestion_num", index:"suggestion_num", align:"right", classes:"no_class"}
 
  		 ,{name:"dm_plan", index:"dm_plan", align:"right", classes:"no_class"}
  		 ,{name:"dm_result", index:"dm_result", align:"right", classes:"no_class"}
@@ -75,6 +82,8 @@
  		 ,{name:"tel_plan", index:"tel_plan", align:"right", classes:"no_class"}
  		 ,{name:"tel_result", index:"tel_result", align:"right", classes:"no_class"}
  		 ,{name:"tel_value", index:"tel_value", align:"right", classes:"no_class"}
+ 		 ,{name:"trust_plan", index:"trust_plan", align:"right", classes:"no_class"}
+ 		 ,{name:"trust_result", index:"trust_result", align:"right", classes:"no_class"}
 		 
 		];
 	
@@ -155,10 +164,11 @@
 	        table_div.jqGrid('setGroupHeaders', {
 	          useColSpanStyle: true,
 	          groupHeaders:[
-	            {startColumnName: 'rank_all', numberOfColumns: 7, titleText: '見込みランク'},
-	            {startColumnName: 'visit_plan', numberOfColumns: 3, titleText: '訪問'},
+	            {startColumnName: 'rank_all', numberOfColumns: 8, titleText: '見込みランク'},
+	            {startColumnName: 'visit_plan', numberOfColumns: 4, titleText: '訪問'},
 	            {startColumnName: 'dm_plan', numberOfColumns: 3, titleText: 'ダイレクトメール'},
 	            {startColumnName: 'tel_plan', numberOfColumns: 3, titleText: '電話アプローチ'},
+	            {startColumnName: 'trust_plan', numberOfColumns: 2, titleText: '受託'},
 	          ]
 	        });
 		});

@@ -756,7 +756,8 @@ function getCoords(position) {
 	function init_jqgrid_trust(){
 		// 列名の定義
 		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
-		var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "訪問(留守）", "訪問(在宅）", "DM(発送）", "DM(反響）", "電話(留守）", "電話(会話）", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者"];
+		//var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "訪問(留守）", "訪問(在宅）", "DM(発送）", "DM(反響）", "電話(留守）", "電話(会話）", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者"];
+		var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -764,19 +765,19 @@ function getCoords(position) {
 		 ,{name:"owner_id", index:"owner_id", align:"right", classes:"no_class", hidden:true}
 		 ,{name:"shop_name",  index:"shop_name",  width:200,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_shop %>" }}
 		 
-		 ,{name:"attack_states_code", index:"attack_states_code", align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":all;S:S;A:A;B:B;C:C;D:D;X:不明" }}
+		 ,{name:"attack_states_code", index:"attack_states_code", align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":<%= @rank_searchoptions %>" }}
 		 ,{name:"owner_dm_delivery", index:"owner_dm_delivery", width:80, align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":全て;○:可;×:不可" }}
 		 ,{name:"owner_code", index:"owner_code", width:200, align:"center", classes:"no_class"}
 		 ,{name:"owner_name", index:"owner_name", width:400, align:"left", classes:"no_class"}
 		 ,{name:"owner_address", index:"owner_address", width:300, align:"left", classes:"no_class"}
 		 ,{name:"owner_memo", index:"owner_memo", width:400, align:"left", classes:"no_class"}
 		 
-		 ,{name:"visit_rusu", index:"visit_rusu", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
-		 ,{name:"visit_zai", index:"visit_zai", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
-		 ,{name:"dm_send", index:"dm_send", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
-		 ,{name:"dm_res", index:"dm_res", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
-		 ,{name:"tel_call", index:"tel_call", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
-		 ,{name:"tel_speack", index:"tel_speack", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+//		 ,{name:"visit_rusu", index:"visit_rusu", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+//		 ,{name:"visit_zai", index:"visit_zai", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+//		 ,{name:"dm_send", index:"dm_send", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+//		 ,{name:"dm_res", index:"dm_res", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+//		 ,{name:"tel_call", index:"tel_call", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
+//		 ,{name:"tel_speack", index:"tel_speack", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
 
 		 ,{name:"building_id", index:"building_id", align:"right", classes:"no_class", hidden:true}
 		 
@@ -1019,48 +1020,18 @@ function getCoords(position) {
     <thead>
       <tr>
         <th style="text-align:center" >種別</th>
-        <th colspan="6" style="text-align:center;">ランク（Ｓ・Ａ・B・C・D・その他）</th>
+        <th style="text-align:center;">アイコン</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td style="vertical-align:middle"><input type="checkbox"  id="kind_kasi" checked="checked" onclick="icon_kind_kasi_click();">&nbsp;貸主</td>
         <td style="text-align:center">
-			<img src="/assets/marker_large_gold_S.png" />
-		</td>
-        <td style="text-align:center">
-			<img src="/assets/marker_large_green_A.png" />
-		</td>
-        <td style="text-align:center">
-			<img  src="/assets/marker_large_purple_B.png" />
-		</td>
-        <td style="text-align:center">
-			<img  src="/assets/marker_large_red_C.png" />
-		</td>
-        <td style="text-align:center">
-			<img  src="/assets/marker_large_blue_D.png" />
-		</td>
-        <td style="text-align:center">
 			<img  src="/assets/marker_large_white_Z.png" />
 		</td>
       </tr>
       <tr height="50">
         <td style="vertical-align:middle"><input type="checkbox"  id="kind_biru" checked="checked" onclick="icon_kind_biru_click();">&nbsp;物件</td>
-        <td style="text-align:center;vertical-align:middle;">
-			<img src="/assets/marker_orange.png" />
-		</td>
-        <td style="text-align:center;vertical-align:middle;">
-			<img src="/assets/marker_green.png" />
-		</td>
-        <td style="text-align:center;vertical-align:middle;">
-			<img  src="/assets/marker_purple.png" />
-		</td>
-        <td style="text-align:center;vertical-align:middle;">
-			<img  src="/assets/marker_red.png" />
-		</td>
-        <td style="text-align:center;vertical-align:middle;">
-			<img  src="/assets/marker_blue.png" />
-		</td>
         <td style="text-align:center;vertical-align:middle;">
 			<img  src="/assets/marker_white.png" />
 		</td>
@@ -1165,12 +1136,18 @@ function getCoords(position) {
 		
 		for(var i = 0 in arr){
 			
-			if(dm_owner_list == ""){
-				dm_owner_list = row_data[arr[i]-1].owner_id;
+			// ランクがD未満のものは出力対象として送らない
+			if(row_data[arr[i]-1].attack_states_code == 'S' || row_data[arr[i]-1].attack_states_code == 'A' || row_data[arr[i]-1].attack_states_code == 'B' || row_data[arr[i]-1].attack_states_code == 'C' || row_data[arr[i]-1].attack_states_code == 'D'){
+				
+				if(dm_owner_list == ""){
+					dm_owner_list = row_data[arr[i]-1].owner_id;
+				}
+				else{
+					dm_owner_list = dm_owner_list + ',' + row_data[arr[i]-1].owner_id;
+				}
+				
 			}
-			else{
-				dm_owner_list = dm_owner_list + ',' + row_data[arr[i]-1].owner_id;
-			}
+				
 		}
 		
 		document.tack_frm.dm_owner_list.value = dm_owner_list;
@@ -1191,13 +1168,13 @@ function getCoords(position) {
 		
 		// DM発行リレキに応じて出力
 		if(document.tack_frm.dm_history.value == 1){
-			if(window.confirm('ＤＭ発行リレキに登録します。よろしいですか？')){
+			if(window.confirm('ＤＭ発行リレキに登録します。よろしいですか？\n\n※DM出力フラグがOFF・またはランクがD未満は出力対象外です')){
 			}else{
 				return false;
 			}
 			
 		}else{
-			if(window.confirm('リレキに保存されません。よろしいですか？')){
+			if(window.confirm('リレキに保存されません。よろしいですか？\n\n※DM出力フラグがOFF・またはランクがD未満は出力対象外です')){
 			}else{
 				return false;
 			}

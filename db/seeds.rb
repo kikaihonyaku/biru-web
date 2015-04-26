@@ -500,14 +500,14 @@ end
 def init_approach_kind
   arr = []
   arr.push({:name=>'訪問(留守)', :code=>'0010'} )
-  arr.push({:name=>'訪問(在宅)', :code=>'0020'} )
+  arr.push({:name=>'訪問(面談)', :code=>'0020'} )
+  arr.push({:name=>'訪問(提案)', :code=>'0025'} )
   arr.push({:name=>'ＤＭ(発送)', :code=>'0030'} )
   arr.push({:name=>'ＤＭ(反響)', :code=>'0035'} )
   arr.push({:name=>'電話(留守)', :code=>'0040'} )
   arr.push({:name=>'電話(会話)', :code=>'0045'} )
   arr.push({:name=>'メモ(通常)', :code=>'0050'} )
   arr.push({:name=>'メモ(移行)', :code=>'0055'} )
-  arr.push({:name=>'提案(通常)', :code=>'0060'} )
   
   arr.each do |obj|
     app =  ApproachKind.find_or_create_by_code(obj[:code])
@@ -522,14 +522,15 @@ end
 # アタックステータス
 def init_attack_state
   arr = []
-  arr.push({:code=>'S', :name=>'S:契約日決定',:disp_order=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
-  arr.push({:code=>'A', :name=>'A:契約予定で提案中',:disp_order=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
-  arr.push({:code=>'B', :name=>'B:提案書は提出可',:disp_order=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
-  arr.push({:code=>'C', :name=>'C:権者に物件ヒアリング',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
-  arr.push({:code=>'D', :name=>'D:見込みとして追客対象',:disp_order=>'5', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
-  arr.push({:code=>'X', :name=>'X:未設定',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
-  arr.push({:code=>'Y', :name=>'Y:不成立',:disp_order=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
-  arr.push({:code=>'Z', :name=>'Z:成約済',:disp_order=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
+  arr.push({:code=>'S', :name=>'S：契約日決定',:disp_order=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
+  arr.push({:code=>'A', :name=>'A：契約予定で提案中',:disp_order=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
+  arr.push({:code=>'B', :name=>'B：提案書は提出可',:disp_order=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
+  arr.push({:code=>'C', :name=>'C：権者に物件ヒアリング',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
+  arr.push({:code=>'D', :name=>'D：見込みとして追客対象',:disp_order=>'5', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
+  arr.push({:code=>'W', :name=>'W：要警戒',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=W|00FF00|000000'})
+  arr.push({:code=>'X', :name=>'X：未設定',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
+  arr.push({:code=>'Y', :name=>'Y：不成立',:disp_order=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
+  arr.push({:code=>'Z', :name=>'Z：成約済',:disp_order=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
 
   arr.each do |obj|
     attack_state = AttackState.find_or_create_by_code(obj[:code])
@@ -1922,7 +1923,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
         ######################
         # 見込みランクを設定
         ######################
-				unless imp.biru_rank
+				if imp.biru_rank == nil || imp.biru_rank.strip.length == 0
           after_rank = AttackState.find_by_code('D')
         else
 					after_rank = AttackState.find_by_code( Moji.zen_to_han(imp.biru_rank.upcase.encode('utf-8')).strip )
@@ -3180,6 +3181,8 @@ def generate_trust_attack_month_report(month, trust_user)
   reoprt.tel_plan = result[:biru_user_monthly].trust_plan_tel
   reoprt.tel_result = result[:tel_num]
   reoprt.tel_value = result[:tel_num_jsk]
+  reoprt.suggestion_num = result[:suggestion_num]
+  reoprt.trust_plan = result[:trust_plan_contract]
   reoprt.trust_num = result[:contract_num]
   reoprt.rank_s = result[:rank_s]
   reoprt.rank_a = result[:rank_a]
@@ -3188,6 +3191,13 @@ def generate_trust_attack_month_report(month, trust_user)
   reoprt.rank_d = result[:rank_d]
   reoprt.rank_c_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c]
   reoprt.rank_d_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c] + result[:rank_d]
+  
+  
+  reoprt.trust_num_jisya = result[:contract_num_jisya]
+  reoprt.rank_w = result[:rank_w]
+  reoprt.rank_x = result[:rank_x]
+  reoprt.rank_y = result[:rank_y]
+  reoprt.rank_z = result[:rank_z]
   
   # 全件数を取得する
   sql = ""
@@ -3229,10 +3239,10 @@ end
 #init_room_status
 
 # アプローチ種別登録
-#init_approach_kind
+init_approach_kind
 
 # アタックステータス登録
-#init_attack_state
+init_attack_state
 
 # システムアップデート管理
 #init_data_update
@@ -3263,7 +3273,7 @@ end
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150120.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150320.csv"))
 
-# regist_oneself(Rails.root.join( "tmp", "imp_data_20150419.csv"))
+#regist_oneself(Rails.root.join( "tmp", "imp_data_20150419.csv"))
 
 
 
@@ -3302,30 +3312,45 @@ end
 ###########################
 # アタックリストの登録(2nd)
 ###########################
-# reg_attack_owner_building('5928', '草加営業所', Rails.root.join( "tmp", "アタックリスト20150422_01草加.csv"))
-# reg_attack_owner_building('5928', '草加新田営業所', Rails.root.join( "tmp", "アタックリスト20150422_02新田.csv"))
-# reg_attack_owner_building('5928', '北千住営業所', Rails.root.join( "tmp", "アタックリスト20150422_03北千住.csv"))
-# reg_attack_owner_building('5928', '南越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_04南越谷.csv"))
-# reg_attack_owner_building('5928', '越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_05越谷.csv"))
-# reg_attack_owner_building('5928', '北越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_06北越谷.csv"))
-# reg_attack_owner_building('5928', 'せんげん台営業所', Rails.root.join( "tmp", "アタックリスト20150422_07せんげん台.csv"))
-# reg_attack_owner_building('5928', '春日部営業所', Rails.root.join( "tmp", "アタックリスト20150422_08春日部.csv"))
-# reg_attack_owner_building('5928', '竹ノ塚営業所', Rails.root.join( "tmp", "アタックリスト20150422_09竹ノ塚.csv"))
-# reg_attack_owner_building('5928', '戸田公園営業所', Rails.root.join( "tmp", "アタックリスト20150422_11戸田公園.csv"))
-# reg_attack_owner_building('5928', '戸田営業所', Rails.root.join( "tmp", "アタックリスト20150422_12戸田.csv"))
-# reg_attack_owner_building('5928', '武蔵浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_13武蔵浦和.csv"))
-# reg_attack_owner_building('5928', '与野営業所', Rails.root.join( "tmp", "アタックリスト20150422_14与野.csv"))
-# reg_attack_owner_building('5928', '浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_15浦和.csv"))
-# reg_attack_owner_building('5928', '川口営業所', Rails.root.join( "tmp", "アタックリスト20150422_16川口.csv"))
-# reg_attack_owner_building('5928', '東浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_17東浦和.csv"))
-# reg_attack_owner_building('5928', '東川口営業所', Rails.root.join( "tmp", "アタックリスト20150422_18東川口.csv"))
-# reg_attack_owner_building('5928', '戸塚安行営業所', Rails.root.join( "tmp", "アタックリスト20150422_19戸塚安行.csv"))
-# reg_attack_owner_building('5928', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150422_21松戸.csv"))
-# reg_attack_owner_building('5928', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150422_22北松戸.csv"))
-# reg_attack_owner_building('5928', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150422_23南流山.csv"))
-# reg_attack_owner_building('5928', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150422_24柏.csv"))
+# 松本
+#reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "アタックリスト20150422_01草加.csv"))
+#reg_attack_owner_building('6365', '北千住営業所', Rails.root.join( "tmp", "アタックリスト20150422_03北千住.csv"))
+#reg_attack_owner_building('6365', '竹ノ塚営業所', Rails.root.join( "tmp", "アタックリスト20150422_09竹ノ塚.csv"))
 
+# 猪原
+# reg_attack_owner_building('6464', '草加新田営業所', Rails.root.join( "tmp", "アタックリスト20150422_02新田.csv"))
+# reg_attack_owner_building('6464', '南越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_04南越谷.csv"))
+
+# 赤坂
+# reg_attack_owner_building('6425', '越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_05越谷.csv"))
 # reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_06北越谷.csv"))
+
+# 池ノ谷
+# reg_attack_owner_building('7811', 'せんげん台営業所', Rails.root.join( "tmp", "アタックリスト20150422_07せんげん台.csv"))
+# reg_attack_owner_building('7811', '春日部営業所', Rails.root.join( "tmp", "アタックリスト20150422_08春日部.csv"))
+
+# 宮川
+# reg_attack_owner_building('5313', '戸田公園営業所', Rails.root.join( "tmp", "アタックリスト20150422_11戸田公園.csv"))
+# reg_attack_owner_building('5313', '戸田営業所', Rails.root.join( "tmp", "アタックリスト20150422_12戸田.csv"))
+# reg_attack_owner_building('5313', '武蔵浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_13武蔵浦和.csv"))
+# reg_attack_owner_building('5313', '与野営業所', Rails.root.join( "tmp", "アタックリスト20150422_14与野.csv"))
+# reg_attack_owner_building('5928', '浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_15浦和.csv"))
+# 
+# # 斉藤
+# reg_attack_owner_building('5518', '川口営業所', Rails.root.join( "tmp", "アタックリスト20150422_16川口.csv"))
+# reg_attack_owner_building('5518', '東浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_17東浦和.csv"))
+# reg_attack_owner_building('5518', '東川口営業所', Rails.root.join( "tmp", "アタックリスト20150422_18東川口.csv"))
+# reg_attack_owner_building('5518', '戸塚安行営業所', Rails.root.join( "tmp", "アタックリスト20150422_19戸塚安行.csv"))
+# 
+# # 市橋
+# reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150422_21松戸.csv"))
+# reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150422_22北松戸.csv"))
+# reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150422_23南流山.csv"))
+# reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150422_24柏.csv"))
+# 
+
+# 柴田
+#reg_attack_owner_building('5928', '草加新田営業所', Rails.root.join( "tmp", "アタックリスト20150422_02新田.csv"))
 
 
 ###########################
@@ -3359,6 +3384,7 @@ end
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201501.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201502.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201503.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201504.csv"))
 
 ###########################
 # 業績分析(空室)
@@ -3378,6 +3404,8 @@ end
 #regist_vacant_room("201501", Rails.root.join( "tmp", "vacant_201501.csv"))
 #regist_vacant_room("201502", Rails.root.join( "tmp", "vacant_201502.csv"))
 #regist_vacant_room("201503", Rails.root.join( "tmp", "vacant_201503.csv"))
+# regist_vacant_room("201504", Rails.root.join( "tmp", "vacant_201504.csv"))
+
 
 ###########################
 # 賃貸借契約登録
@@ -3402,8 +3430,12 @@ end
 ############################
 # 受託レポート作成
 ############################
-# generate_trust_attack_month_report('201504', BiruUser.find_by_code('5928'))
-generate_trust_attack_month_report('201505', BiruUser.find_by_code('5928'))
+#generate_trust_attack_month_report('201505', BiruUser.find_by_code('6365'))
+#generate_trust_attack_month_report('201505', BiruUser.find_by_code('6464'))
+#generate_trust_attack_month_report('201505', BiruUser.find_by_code('6425'))
+#generate_trust_attack_month_report('201505', BiruUser.find_by_code('7811'))
+#generate_trust_attack_month_report('201505', BiruUser.find_by_code('5313'))
+#generate_trust_attack_month_report('201505', BiruUser.find_by_code('5518'))
+#generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
 
 generate_trust_attack_month_report('201505', BiruUser.find_by_code('6365'))
-

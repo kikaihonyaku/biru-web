@@ -36,11 +36,23 @@ class ApplicationController < ActionController::Base
     return conv_code(user_id + '_' + address + '_' + name )
   end
   
+  # nilの時は0を返す
+  def nz(value)
+    result = nil
+    if value
+      result = value
+    else
+      result = 0
+    end
+    
+    return result
+  end
+  
   protected
   def change_charset_to_sjis
     response.body = NKF::nkf('-Ws', response.body)
     headers["Content-Type"] = "text/html; charset=Shift_JIS"
-  end  
+  end
   
   private
 
