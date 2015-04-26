@@ -743,6 +743,10 @@ function getCoords(position) {
 	    $(window).bind('resize', function () {
 	        $('#building_table').setGridWidth($(window).width() - 40 )
 	                    .setGridHeight($(window).height() * 0.4 - 50);
+						
+	        $('#building_pager').setGridWidth($(window).width() - 40 )
+	                    .setGridHeight($(window).height() * 0.4 - 50);
+						
 	    }).trigger('resize');
 	 }	
 </script>
