@@ -193,14 +193,13 @@
 
 <div style="padding:10px 80px 10px 80px;">
 	
-  <h2>管理受託　活動報告</h2>
-  
 	<div id="div_dummy_02" style="width:100%;height:90%;">
 		
-		<div style="padding-bottom:5px;">
+		<div><h2>管理受託　活動報告</h2></div>
+		<div style="padding-bottom:5px">
 			<%= form_tag({:action => :index}, {:name => 'yyyymm', :onchange=>'javascript:screen_block();'}) do %>
 				<%= select_tag(:month, options_for_select(@calender, @month),  :onchange=>"javascript:dropsort();") %>
-				<span style="padding-left:100px;">最終更新日：<%= "@data_update.update_datetime" %></span>
+				<span style="padding-left:100px;text-align:right">最終更新日：<%= "xxxx年xx月xx日" %></span>
 			<% end %>
 		</div>
 
