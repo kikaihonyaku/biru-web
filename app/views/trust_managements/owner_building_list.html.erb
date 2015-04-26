@@ -757,7 +757,7 @@ function getCoords(position) {
 		// 列名の定義
 		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
 		//var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "訪問(留守）", "訪問(在宅）", "DM(発送）", "DM(反響）", "電話(留守）", "電話(会話）", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者"];
-		var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者"];
+		var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "住所", "電話", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -770,6 +770,7 @@ function getCoords(position) {
 		 ,{name:"owner_code", index:"owner_code", width:200, align:"center", classes:"no_class"}
 		 ,{name:"owner_name", index:"owner_name", width:400, align:"left", classes:"no_class"}
 		 ,{name:"owner_address", index:"owner_address", width:300, align:"left", classes:"no_class"}
+		 ,{name:"owner_tel", index:"owner_tel", width:300, align:"left", classes:"no_class"}
 		 ,{name:"owner_memo", index:"owner_memo", width:400, align:"left", classes:"no_class"}
 		 
 //		 ,{name:"visit_rusu", index:"visit_rusu", width:200, align:"center", classes:"no_class", searchoptions:{ sopt:['ge']}}
@@ -807,8 +808,8 @@ function getCoords(position) {
 			
 			rec['owner_name'] = trust_manage.owner_name
 			rec['owner_address'] = trust_manage.owner_address
+			rec['owner_tel'] = trust_manage.owner_tel
 			rec['owner_memo'] = trust_manage.owner_memo
-
 
 			rec['visit_rusu'] = trust_manage.visit_rusu
 			rec['visit_zai'] = trust_manage.visit_zai
