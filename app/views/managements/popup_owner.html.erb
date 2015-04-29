@@ -121,7 +121,7 @@
 											<div style="margin-bottom:5px;">&nbsp;</div>
 											<div>契約戸数：<%= text_field_tag :room_num, 0 , :size=>"2" %>&nbsp;戸</div>
 											<div>管理方式：<%= collection_select :history, :manage_type, ManageType.all, :id, :name, :include_blank => true %></div>
-											<div>受託自他：<%= radio_button :history, :oneself, 'yourself' %>&nbsp;他社&nbsp;&nbsp;<%= radio_button :history, :oneself, 'oneself' %>&nbsp;自社</div>
+											<div>受託自他：<%= radio_button :history, :oneself, 'yourself', {:checked => true } %>&nbsp;他社&nbsp;&nbsp;<%= radio_button :history, :oneself, 'oneself' %>&nbsp;自社</div>
 										</div>
 			       
 							      </div>

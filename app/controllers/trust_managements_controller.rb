@@ -44,60 +44,72 @@ class TrustManagementsController < ApplicationController
     # DMアプローチした貸主を表示
     # ＴＥＬアプローチした貸主を表示
     #####################################
-    visit_owner_id_arr = []
-    visit_num = 0
-    visit_num_jsk = 0
-
-    dm_owner_id_arr = []
-    dm_num = 0
-    dm_num_jsk = 0
-
-    tel_owner_id_arr = []
-    tel_num = 0
-    tel_num_jsk = 0
+    visit_num_all = 0
+    visit_num_meet = 0
+    visit_num_suggestion = 0
     
-    suggestion_owner_id_arr = []
-    suggestion_num = 0
+    visit_owners_absence = []
+    visit_owners_meet = []
+    visit_owners_suggestion = []
+    
+    dm_num_send = 0
+    dm_num_recv = 0
+    dm_owners_send = []
+    dm_owners_recv = []
+
+    tel_num_call = 0
+    tel_num_talk = 0
+    tel_owners_call = []
+    tel_owners_talk = []
   
     OwnerApproach.joins(:approach_kind).where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
   	
       case rec.code
       when '0010', '0020', '0025' then
         ########## 訪問・面談・提案 ###########
-      	visit_owner_id_arr << rec.owner_id
-        visit_num = visit_num + 1
-    
-        # 面談できていた時
-        if rec.code == '0020' || rec.code == '0025' 
-        	visit_num_jsk = visit_num_jsk + 1
-          
-          if rec.code == '0025'
-            # 提案もできていた時
-            suggestion_owner_id_arr << rec.owner_id
-            suggestion_num = suggestion_num + 1
-          end
+        if rec.code == '0010'
+          # 留守
+          visit_num_all = visit_num_all + 1
+          visit_owners_absence << rec.owner_id
+        elsif rec.code == '0020'
+          # 面談
+          visit_num_all = visit_num_all + 1
+        	visit_num_meet = visit_num_meet + 1
+          visit_owners_meet << rec.owner_id # 在宅
+        elsif rec.code == '0025'
+          # 提案
+          visit_num_all = visit_num_all + 1
+        	visit_num_meet = visit_num_meet + 1
+          visit_num_suggestion = visit_num_suggestion + 1
+          visit_owners_suggestion << rec.owner_id # 提案
         end
       
       when '0030', '0035' then
         ########## DM・DM反響 ###########
-        dm_owner_id_arr << rec.owner_id
-        dm_num = dm_num + 1
-
-        # ＤＭの「反響」だった時
-        if rec.code == '0035'
-        	dm_num_jsk = dm_num_jsk + 1
+        if rec.code == '0030'
+          # DM送付
+          dm_num_send = dm_num_send + 1
+          dm_owners_send << rec.owner_id
+        elsif rec.code == '0035'
+          # DM反響
+          dm_num_recv = dm_num_recv + 1
+          dm_owners_recv << rec.owner_id
         end
-      
+              
       when '0040', '0045' then
         ########## TEL・TEL会話 ###########
-      	tel_owner_id_arr << rec.owner_id
-        tel_num = tel_num + 1
+        tel_num_call = tel_num_call + 1
   	
       	# ＤＭの反響だった時
-        if rec.code == '0045'
-    			tel_num_jsk = tel_num_jsk + 1
+        if rec.code == '0040'
+    			tel_num_call = tel_num_call + 1
+          tel_owners_call << rec.owner_id
+        elsif rec.code == '0045'
+    			tel_num_call = tel_num_call + 1
+    			tel_num_talk = tel_num_talk + 1
+          tel_owners_talk << rec.owner_id
         end
-
+        
       else
         # それ以外のとき
       end
@@ -107,8 +119,8 @@ class TrustManagementsController < ApplicationController
     #####################################
     # 成約した物件、見込みが高い物件を表示
     #####################################
-    contract_num = 0
-    contract_num_jisya = 0
+    trust_num = 0
+    trust_num_oneself = 0
 
     # 件数のカウント
     rank_s = 0
@@ -120,10 +132,16 @@ class TrustManagementsController < ApplicationController
     rank_x = 0
     rank_y = 0
     rank_z = 0
+    
+    rank_s_trusts = []
+    rank_a_trusts = []
+    rank_b_trusts = []
+    rank_c_trusts = []
+    rank_z_trusts = []
+    
 
     buildings = []
     order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", month).where("trusts.biru_user_id = ?", user.id).group("trusts.id").maximum("month")
-
     order_hash.keys.each do |trust_id|
 
       # trust_idにはidが、order_hash[trust_id]にはその月の最大月数が入っている
@@ -144,18 +162,21 @@ class TrustManagementsController < ApplicationController
 
       when 'Z'
         # 成約になった物件は、当月のみ表示対象
+        p 'いいい' + trust_num.to_s
+        
         if trust_attack_history.month.to_s == month.to_s
-
+          
           biru = trust_attack_history.trust.building
           biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
           biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
           buildings << biru
 
           # 受託実績戸数を入力
-          if trust_attack_history.trust_oneself
-            contract_num_jisya = contract_num_jisya + trust_attack_history.room_num
+          if trust_attack_history.trust_oneself == true
+            
+            trust_num_oneself = trust_num_oneself + trust_attack_history.room_num
           else
-            contract_num = contract_num + trust_attack_history.room_num
+            trust_num = trust_num + trust_attack_history.room_num
           end
 
         end
@@ -166,12 +187,16 @@ class TrustManagementsController < ApplicationController
       case trust_attack_history.attack_state_to.code
       when 'S' then
         rank_s = rank_s + 1
+        rank_s_trusts << trust_id
       when 'A' then
         rank_a = rank_a + 1
+        rank_a_trusts << trust_id
       when 'B' then
         rank_b = rank_b + 1
+        rank_b_trusts << trust_id
       when 'C' then
         rank_c = rank_c + 1
+        rank_c_trusts << trust_id
       when 'D' then
         rank_d = rank_d + 1
       when 'W' then
@@ -182,60 +207,11 @@ class TrustManagementsController < ApplicationController
         rank_y = rank_y + 1
       when 'Z' then
         rank_z = rank_z + 1
+        rank_z_trusts << trust_id
       else
 
       end
-
-
     end
-  
-  
-    # #################################################
-    # # 当月の見込み件数を（ランクS、ランクA、ランクB）取得
-    # #################################################
-    # rank_s = 0
-    # rank_a = 0
-    # rank_b = 0
-    # rank_c = 0
-    # rank_d = 0
-    #
-    # sql = ""
-    # sql = sql + "SELECT f.trust_id, f.month, g.code "
-    # sql = sql + "FROM trust_attack_state_histories f INNER JOIN attack_states g on f.attack_state_to_id = g.id "
-    # sql = sql + "WHERE EXISTS ("
-    # sql = sql + " SELECT trust_id, max_month "
-    # sql = sql + " FROM ( "
-    # sql = sql + "   SELECT a.trust_id as trust_id, MAX(a.month) max_month "
-    # sql = sql + "   FROM trust_attack_state_histories a INNER JOIN trusts b ON a.trust_id = b.id "
-    # sql = sql + "   WHERE a.month <= " + month + " "
-    # sql = sql + "     AND b.biru_user_id = " + user.id.to_s + " "
-    # sql = sql + "     AND b.delete_flg = 'f' "
-    # sql = sql + "   GROUP BY a.trust_id "
-    # sql = sql + " ) x "
-    # sql = sql + " WHERE x.trust_id = f.trust_id "
-    # sql = sql + "   AND x.max_month = f.month "
-    # sql = sql + ") "
-    #
-    # ActiveRecord::Base.connection.select_all(sql).each do |rec|
-    #
-    #   case rec["code"]
-    #   when 'S' then
-    #     rank_s = rank_s + 1
-    #   when 'A' then
-    #     rank_a = rank_a + 1
-    #   when 'B' then
-    #     rank_b = rank_b + 1
-    #   when 'C' then
-    #     rank_c = rank_c + 1
-    #   when 'D' then
-    #     rank_d = rank_d + 1
-    #   else
-    #
-    #   end
-    #
-    # end
-    #
-    
     
     # 関数の戻り値として設定
     result = {}
@@ -245,22 +221,26 @@ class TrustManagementsController < ApplicationController
     result[:end_date] = end_date
     result[:biru_user_monthly] = biru_user_monthly
     result[:biru_user_monthly_next] = biru_user_monthly_next
-    result[:visit_owner_id_arr] = visit_owner_id_arr
-    result[:visit_num] = visit_num
-    result[:visit_num_jsk] = visit_num_jsk
-    result[:dm_owner_id_arr] = dm_owner_id_arr
-    result[:dm_num] = dm_num
-    result[:dm_num_jsk] = dm_num_jsk
-    result[:tel_owner_id_arr] = tel_owner_id_arr
-    result[:tel_num] = tel_num
-    result[:tel_num_jsk] = tel_num_jsk
-
-    result[:suggestion_owner_id_arr] = suggestion_owner_id_arr
-    result[:suggestion_num] = suggestion_num
     
-    result[:contract_num] = contract_num
-    result[:contract_num_jsk] = contract_num_jisya
-    result[:buildings] = buildings
+    result[:visit_num_all] = visit_num_all
+    result[:visit_num_meet] = visit_num_meet
+    result[:visit_num_suggestion] = visit_num_suggestion
+    result[:visit_owners_absence] = visit_owners_absence
+    result[:visit_owners_meet] = visit_owners_meet
+    result[:visit_owners_suggestion] = visit_owners_suggestion
+    
+    result[:dm_num_send] = dm_num_send
+    result[:dm_num_recv] = dm_num_recv
+    result[:dm_owners_send] = dm_owners_send
+    result[:dm_owners_recv] = dm_owners_recv
+    
+    result[:tel_num_call] = tel_num_call
+    result[:tel_num_talk] = tel_num_talk
+    result[:tel_owners_call] = tel_owners_call
+    result[:tel_owners_talk] = tel_owners_talk
+    
+    result[:trust_num] = trust_num
+    result[:trust_num_oneself] = trust_num_oneself
 
     result[:rank_s] = rank_s
     result[:rank_a] = rank_a
@@ -271,6 +251,12 @@ class TrustManagementsController < ApplicationController
     result[:rank_x] = rank_x
     result[:rank_y] = rank_y
     result[:rank_z] = rank_z
+
+    result[:rank_s_trusts] = rank_s_trusts
+    result[:rank_a_trusts] = rank_a_trusts
+    result[:rank_b_trusts] = rank_b_trusts
+    result[:rank_c_trusts] = rank_c_trusts
+    result[:rank_z_trusts] = rank_z_trusts
     
     return result
   end  
@@ -621,23 +607,27 @@ class TrustManagementsController < ApplicationController
 				
 				rec['trust_report'] = report.trust_report_url
 				rec['attack_list'] = report.attack_list_url
+        
 				rec['visit_plan'] = report.visit_plan
-				rec['visit_result'] = report.visit_result
-				rec['visit_value'] = report.visit_value
+				rec['visit_num_all'] = report.visit_num_all
+				rec['visit_num_meet'] = report.visit_num_meet
 				rec['dm_plan'] = report.dm_plan
-				rec['dm_result'] = report.dm_result
-				rec['dm_value'] = report.dm_value
+				rec['dm_num_send'] = report.dm_num_send
+				rec['dm_num_recv'] = report.dm_num_recv
 				rec['tel_plan'] = report.tel_plan
-				rec['tel_result'] = report.tel_result
-				rec['tel_value'] = report.tel_value
+				rec['tel_num_call'] = report.tel_num_call
+				rec['tel_num_talk'] = report.tel_num_talk
+        rec['trust_plan'] = report.trust_plan
 				rec['trust_num'] = report.trust_num
+		    rec['suggestion_plan'] = report.suggestion_plan
+		    rec['suggestion_num'] = report.suggestion_num
+        
 				rec['rank_s'] = report.rank_s
 				rec['rank_a'] = report.rank_a
 				rec['rank_b'] = report.rank_b
 				rec['rank_c'] = report.rank_c
 				rec['rank_d'] = report.rank_d
 		    rec['rank_all'] = report.rank_all
-		    rec['suggestion_num'] = report.suggestion_num
         
         
         

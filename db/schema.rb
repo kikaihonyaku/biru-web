@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150429020645) do
+ActiveRecord::Schema.define(:version => 20150429080525) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -522,14 +522,8 @@ ActiveRecord::Schema.define(:version => 20150429020645) do
     t.string   "trust_report_url"
     t.string   "attack_list_url"
     t.integer  "visit_plan"
-    t.integer  "visit_result"
-    t.integer  "visit_value"
     t.integer  "dm_plan"
-    t.integer  "dm_result"
-    t.integer  "dm_value"
     t.integer  "tel_plan"
-    t.integer  "tel_result"
-    t.integer  "tel_value"
     t.integer  "trust_num"
     t.integer  "rank_s"
     t.integer  "rank_a"
@@ -539,15 +533,34 @@ ActiveRecord::Schema.define(:version => 20150429020645) do
     t.integer  "rank_c_over"
     t.integer  "rank_d_over"
     t.integer  "rank_all"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
-    t.integer  "suggestion_num"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
     t.integer  "trust_plan"
     t.integer  "trust_num_jisya"
     t.integer  "rank_w"
     t.integer  "rank_x"
     t.integer  "rank_y"
     t.integer  "rank_z"
+    t.integer  "visit_num_all"
+    t.integer  "visit_num_meet"
+    t.integer  "dm_num_send"
+    t.integer  "dm_num_recv"
+    t.integer  "tel_num_call"
+    t.integer  "tel_num_talk"
+    t.integer  "suggestion_plan"
+    t.integer  "suggestion_num"
+    t.text     "visit_owners_absence"
+    t.text     "visit_owners_meet"
+    t.text     "visit_owners_suggestion"
+    t.text     "dm_owners_send"
+    t.text     "dm_owners_recv"
+    t.text     "tel_owners_call"
+    t.text     "tel_owners_talk"
+    t.text     "rank_s_trusts"
+    t.text     "rank_a_trusts"
+    t.text     "rank_b_trusts"
+    t.text     "rank_c_trusts"
+    t.text     "rank_z_trusts"
   end
 
   create_table "trust_attack_state_histories", :force => true do |t|

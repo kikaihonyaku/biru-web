@@ -246,10 +246,10 @@ class ManagementsController < ApplicationController
     history.manage_type_id = params[:history][:manage_type]
     
     # 自他区分を設定
-    if params[:history][:oneself]
-      history.trust_oneself = true
-    elsif params[:history][:yourself]
+    if params[:history][:oneself] == 'yourself'
       history.trust_oneself = false
+    elsif params[:history][:oneself]  == 'oneself'
+      history.trust_oneself = true
     else
       history.trust_oneself = nil
     end

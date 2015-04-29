@@ -3164,41 +3164,61 @@ end
 # 受託の月報を生成します
 def generate_trust_attack_month_report(month, trust_user)
     
-  reoprt = TrustAttackMonthReport.find_or_create_by_month_and_biru_user_id(month, trust_user.id)
+  report = TrustAttackMonthReport.find_or_create_by_month_and_biru_user_id(month, trust_user.id)
   app_con = TrustManagementsController.new
   result = app_con.get_report_info(month, trust_user)
   
-  reoprt.month = month
-  reoprt.biru_user_id = trust_user.id
-  reoprt.biru_usr_name = trust_user.name
-  reoprt.trust_report_url = "trust_user_report?sid=" + trust_user.id.to_s
-  reoprt.attack_list_url = "owner_building_list?sid=" + trust_user.id.to_s
-  reoprt.visit_plan = result[:biru_user_monthly].trust_plan_visit
-  reoprt.visit_result = result[:visit_num]
-  reoprt.visit_value = result[:visit_num_jsk]
-  reoprt.dm_plan = result[:biru_user_monthly].trust_plan_dm
-  reoprt.dm_result = result[:dm_num]
-  reoprt.dm_value = result[:dm_num_jsk]
-  reoprt.tel_plan = result[:biru_user_monthly].trust_plan_tel
-  reoprt.tel_result = result[:tel_num]
-  reoprt.tel_value = result[:tel_num_jsk]
-  reoprt.suggestion_num = result[:suggestion_num]
-  reoprt.trust_plan = result[:trust_plan_contract]
-  reoprt.trust_num = result[:contract_num]
-  reoprt.rank_s = result[:rank_s]
-  reoprt.rank_a = result[:rank_a]
-  reoprt.rank_b = result[:rank_b]
-  reoprt.rank_c = result[:rank_c]
-  reoprt.rank_d = result[:rank_d]
-  reoprt.rank_c_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c]
-  reoprt.rank_d_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c] + result[:rank_d]
+  report.month = month
+  report.biru_user_id = trust_user.id
+  report.biru_usr_name = trust_user.name
+  report.trust_report_url = "trust_user_report?sid=" + trust_user.id.to_s
+  report.attack_list_url = "owner_building_list?sid=" + trust_user.id.to_s
   
+  report.visit_plan = result[:biru_user_monthly].trust_plan_visit
+  report.visit_num_all = result[:visit_num_all]
+  report.visit_num_meet = result[:visit_num_meet]
   
-  reoprt.trust_num_jisya = result[:contract_num_jisya]
-  reoprt.rank_w = result[:rank_w]
-  reoprt.rank_x = result[:rank_x]
-  reoprt.rank_y = result[:rank_y]
-  reoprt.rank_z = result[:rank_z]
+  report.dm_plan = result[:biru_user_monthly].trust_plan_dm
+  report.dm_num_send = result[:dm_num_send]
+  report.dm_num_recv = result[:dm_num_recv]
+  
+  report.tel_plan = result[:biru_user_monthly].trust_plan_tel
+  report.tel_num_call = result[:tel_num_call]
+  report.tel_num_talk = result[:tel_num_talk]
+  
+#  report.suggestion_plan = result[:biru_user_monthly].trust_plan_suggestion
+  report.suggestion_num = result[:visit_num_suggestion]
+  report.trust_plan = result[:trust_plan_contract]
+  report.trust_num = result[:trust_num]
+  report.trust_num_jisya = result[:trust_num_oneself]
+
+  report.rank_s = result[:rank_s]
+  report.rank_a = result[:rank_a]
+  report.rank_b = result[:rank_b]
+  report.rank_c = result[:rank_c]
+  report.rank_d = result[:rank_d]
+  report.rank_c_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c]
+  report.rank_d_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c] + result[:rank_d]
+  
+  report.rank_w = result[:rank_w]
+  report.rank_x = result[:rank_x]
+  report.rank_y = result[:rank_y]
+  report.rank_z = result[:rank_z]
+  
+  # ID一覧の設定
+  report.visit_owners_absence = result[:visit_owners_absence].join(',')
+  report.visit_owners_meet = result[:visit_owners_meet].join(',')
+  report.visit_owners_suggestion = result[:visit_owners_suggestion].join(',')
+  report.dm_owners_send = result[:dm_owners_send].join(',')
+  report.dm_owners_recv = result[:dm_owners_recv].join(',')
+  report.tel_owners_call = result[:tel_owners_call].join(',')
+  report.tel_owners_talk = result[:tel_owners_talk].join(',')
+  
+  report.rank_s_trusts = result[:rank_s_trusts].join(',')
+  report.rank_a_trusts = result[:rank_a_trusts].join(',')
+  report.rank_b_trusts = result[:rank_b_trusts].join(',')
+  report.rank_c_trusts = result[:rank_c_trusts].join(',')
+  report.rank_z_trusts = result[:rank_z_trusts].join(',')
   
   # 全件数を取得する
   sql = ""
@@ -3206,10 +3226,10 @@ def generate_trust_attack_month_report(month, trust_user)
   sql = sql + "FROM (" + app_con.get_trust_sql(trust_user, "", false) + ") X "
   sql = sql + "where biru_user_id = " + trust_user.id.to_s
   ActiveRecord::Base.connection.select_all(sql).each do |all_cnt_rec|
-    reoprt.rank_all = all_cnt_rec['cnt']
+    report.rank_all = all_cnt_rec['cnt']
   end
   
-  reoprt.save!
+  report.save!
 
 end
 
@@ -3439,4 +3459,4 @@ init_approach_kind
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5518'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
 
-# generate_trust_attack_month_report('201505', BiruUser.find_by_code('6365'))
+generate_trust_attack_month_report('201505', BiruUser.find_by_code('6365'))

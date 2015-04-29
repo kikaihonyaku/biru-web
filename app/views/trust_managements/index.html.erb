@@ -51,7 +51,7 @@
 	// 委託契約リストを作成
 	function init_jqgrid_trust_manager(){
 		// 列名の定義
-		var col_names = ["biru_user_id", "エリア", "担当者", "レポート", "アタックリスト","登録件数", "C以上", "Ｓ","Ａ","Ｂ","Ｃ","Ｄ", "Ｗ,Ｘ,Ｙ,Ｚ", "目標", "実績", "面談", "提案", "目標", "実績", "反響", "目標", "実績", "会話", "目標", "実績" ];
+		var col_names = ["biru_user_id", "エリア", "担当者", "レポート", "アタックリスト","登録件数", "C以上", "Ｓ","Ａ","Ｂ","Ｃ","Ｄ", "Ｗ,Ｘ,Ｙ,Ｚ", "目標", "実績", "面談", "目標", "実績", "反響", "目標", "実績", "会話", "目標", "実績" , "目標", "実績" ];
 	
 		// 列属性の定義
 		var col_model = [
@@ -71,19 +71,23 @@
  		 ,{name:"rank_etc", index:"rank_etc", align:"right", classes:"no_class", formatter:formatter_rank_etc}
 		 
  		 ,{name:"visit_plan", index:"visit_plan", align:"right", classes:"no_class"}
- 		 ,{name:"visit_result", index:"visit_result", align:"right", classes:"no_class"}
- 		 ,{name:"visit_value", index:"visit_value", align:"right", classes:"no_class"}
- 		 ,{name:"suggestion_num", index:"suggestion_num", align:"right", classes:"no_class"}
+ 		 ,{name:"visit_num_all", index:"visit_num_all", align:"right", classes:"no_class"}
+ 		 ,{name:"visit_num_meet", index:"visit_num_meet", align:"right", classes:"no_class"}
 
  		 ,{name:"dm_plan", index:"dm_plan", align:"right", classes:"no_class"}
- 		 ,{name:"dm_result", index:"dm_result", align:"right", classes:"no_class"}
- 		 ,{name:"dm_value", index:"dm_value", align:"right", classes:"no_class"}
+ 		 ,{name:"dm_num_send", index:"dm_num_send", align:"right", classes:"no_class"}
+ 		 ,{name:"dm_num_recv", index:"dm_num_recv", align:"right", classes:"no_class"}
 
  		 ,{name:"tel_plan", index:"tel_plan", align:"right", classes:"no_class"}
- 		 ,{name:"tel_result", index:"tel_result", align:"right", classes:"no_class"}
- 		 ,{name:"tel_value", index:"tel_value", align:"right", classes:"no_class"}
+ 		 ,{name:"tel_num_call", index:"tel_num_call", align:"right", classes:"no_class"}
+ 		 ,{name:"tel_num_talk", index:"tel_num_talk", align:"right", classes:"no_class"}
+		 
+		 
+ 		 ,{name:"suggestion_plan", index:"suggestion_plan", align:"right", classes:"no_class"}
+ 		 ,{name:"suggestion_num", index:"suggestion_num", align:"right", classes:"no_class"}
+		 
  		 ,{name:"trust_plan", index:"trust_plan", align:"right", classes:"no_class"}
- 		 ,{name:"trust_result", index:"trust_result", align:"right", classes:"no_class"}
+ 		 ,{name:"trust_num", index:"trust_num", align:"right", classes:"no_class"}
 		 
 		];
 	
@@ -165,9 +169,10 @@
 	          useColSpanStyle: true,
 	          groupHeaders:[
 	            {startColumnName: 'rank_all', numberOfColumns: 8, titleText: '見込みランク'},
-	            {startColumnName: 'visit_plan', numberOfColumns: 4, titleText: '訪問'},
+	            {startColumnName: 'visit_plan', numberOfColumns: 3, titleText: '訪問'},
 	            {startColumnName: 'dm_plan', numberOfColumns: 3, titleText: 'ダイレクトメール'},
 	            {startColumnName: 'tel_plan', numberOfColumns: 3, titleText: '電話アプローチ'},
+	            {startColumnName: 'suggestion_plan', numberOfColumns: 2, titleText: '提案'},
 	            {startColumnName: 'trust_plan', numberOfColumns: 2, titleText: '受託'},
 	          ]
 	        });
