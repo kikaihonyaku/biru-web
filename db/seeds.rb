@@ -3239,10 +3239,10 @@ end
 #init_room_status
 
 # アプローチ種別登録
-init_approach_kind
+# init_approach_kind
 
 # アタックステータス登録
-init_attack_state
+# init_attack_state
 
 # システムアップデート管理
 #init_data_update

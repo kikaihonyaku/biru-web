@@ -59,7 +59,7 @@ class TrustManagementsController < ApplicationController
     suggestion_owner_id_arr = []
     suggestion_num = 0
   
-    OwnerApproach.joins(:approach_kind).where("approach_kinds.code IN ('0010', '0020', '0030', '0035', '0040', '0045')").where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
+    OwnerApproach.joins(:approach_kind).where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
   	
       case rec.code
       when '0010', '0020', '0025' then
@@ -637,6 +637,8 @@ class TrustManagementsController < ApplicationController
 				rec['rank_c'] = report.rank_c
 				rec['rank_d'] = report.rank_d
 		    rec['rank_all'] = report.rank_all
+		    rec['suggestion_num'] = report.suggestion_num
+        
         
         
 				rec['rank_c_over'] = nz(report.rank_s) + nz(report.rank_a) + nz(report.rank_b) + nz(report.rank_c) 
