@@ -499,20 +499,21 @@ end
 # アプローチ種別を登録
 def init_approach_kind
   arr = []
-  arr.push({:name=>'訪問(留守)', :code=>'0010'} )
-  arr.push({:name=>'訪問(面談)', :code=>'0020'} )
-  arr.push({:name=>'訪問(提案)', :code=>'0025'} )
-  arr.push({:name=>'ＤＭ(発送)', :code=>'0030'} )
-  arr.push({:name=>'ＤＭ(反響)', :code=>'0035'} )
-  arr.push({:name=>'電話(留守)', :code=>'0040'} )
-  arr.push({:name=>'電話(会話)', :code=>'0045'} )
-  arr.push({:name=>'メモ(通常)', :code=>'0050'} )
-  arr.push({:name=>'メモ(移行)', :code=>'0055'} )
+  arr.push({:name=>'訪問(留守)', :code=>'0010', :sequence=>10 } )
+  arr.push({:name=>'訪問(面談)', :code=>'0020', :sequence=>20 } )
+  arr.push({:name=>'訪問(提案)', :code=>'0025', :sequence=>30 } )
+  arr.push({:name=>'ＤＭ(発送)', :code=>'0030', :sequence=>40 } )
+  arr.push({:name=>'ＤＭ(反響)', :code=>'0035', :sequence=>50 } )
+  arr.push({:name=>'電話(留守)', :code=>'0040', :sequence=>60 } )
+  arr.push({:name=>'電話(会話)', :code=>'0045', :sequence=>70 } )
+  arr.push({:name=>'メモ(通常)', :code=>'0050', :sequence=>80 } )
+  arr.push({:name=>'メモ(移行)', :code=>'0055', :sequence=>90 } )
   
   arr.each do |obj|
     app =  ApproachKind.find_or_create_by_code(obj[:code])
     app.name = obj[:name]
     app.code = obj[:code]
+    app.sequence = obj[:sequence]
     app.save!
     p app
   end
@@ -3239,7 +3240,7 @@ end
 #init_room_status
 
 # アプローチ種別登録
-# init_approach_kind
+init_approach_kind
 
 # アタックステータス登録
 # init_attack_state
@@ -3438,4 +3439,4 @@ end
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5518'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
 
-generate_trust_attack_month_report('201505', BiruUser.find_by_code('6365'))
+# generate_trust_attack_month_report('201505', BiruUser.find_by_code('6365'))

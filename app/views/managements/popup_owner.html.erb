@@ -170,7 +170,7 @@
 			<table>
 				<tr>
 					<td><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:120px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
-					<td><%= f.input :approach_kind_id, label: '種別', collection: ApproachKind.find(:all), prompt: "--", :input_html => {:style=>'width:100px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
+					<td><%= f.input :approach_kind_id, label: '種別', collection: ApproachKind.order(:sequence), prompt: "--", :input_html => {:style=>'width:100px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
 					<td><%= f.input :content, label: '内容', placeholder: 'アプローチ内容をいれてください', :input_html => {:class => 'input-large', :style=>'width:200px;vertical-align:botto'} %></td>
 					<td><%= f.submit '登録', :class => 'btn-primary', :style=>'margin-bottom:20px;margin-left:20px;' %></td>
 				</tr>
