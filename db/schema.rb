@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150429080525) do
+ActiveRecord::Schema.define(:version => 20150502080138) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -309,7 +309,6 @@ ActiveRecord::Schema.define(:version => 20150429080525) do
   create_table "owners", :force => true do |t|
     t.string   "code"
     t.string   "name"
-    t.string   "kana"
     t.string   "address"
     t.float    "latitude"
     t.float    "longitude"
@@ -326,6 +325,7 @@ ActiveRecord::Schema.define(:version => 20150429080525) do
     t.boolean  "dm_delivery",     :default => true
     t.integer  "biru_user_id"
     t.string   "hash_key"
+    t.string   "kana"
   end
 
   add_index "owners", ["biru_user_id"], :name => "index_owners_on_biru_user_id"
@@ -515,6 +515,16 @@ ActiveRecord::Schema.define(:version => 20150429080525) do
     t.datetime "created_at",             :null => false
     t.datetime "updated_at",             :null => false
   end
+
+  create_table "trust_attack_month_report_actions", :force => true do |t|
+    t.integer  "trust_attack_month_report_id"
+    t.integer  "owner_approach_id"
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+  end
+
+  add_index "trust_attack_month_report_actions", ["owner_approach_id"], :name => ":trust_attack_month_report_owner_approach_pk"
+  add_index "trust_attack_month_report_actions", ["trust_attack_month_report_id"], :name => ":trust_attack_month_report_id_pk"
 
   create_table "trust_attack_month_reports", :force => true do |t|
     t.string   "month"

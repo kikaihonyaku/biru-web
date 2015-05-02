@@ -36,211 +36,181 @@ function initialize(){
 	/**********************************/
 	// 訪問リレキ・DMリレキ・TELリレキを表示
 	/**********************************/
-	// 訪問リレキ
-    visit_owner_arr = {}; // varを外してグローバル化
-    for(var i in gon.visit_owner){
-      pos = new google.maps.LatLng(gon.visit_owner[i].latitude, gon.visit_owner[i].longitude);
-      bounds.extend(pos);
-
-      visit_owner_arr[gon.visit_owner[i].id] = createMarker_trust_report({
-        position : pos
-        ,map : mapCanvas
-        ,icon : "/assets/marker_blue.png"
-        ,html : '<div style="font-size:5px;"><a href="javascript:win_owner(' + gon.visit_owner[i].id + ');">' + gon.visit_owner[i].name + '</a></div>'
-        ,visible : true
-	  　,draggable: true
-      }, false);
-    }
-
-	// DMリレキ
-    dm_owner_arr = {}; // varを外してグローバル化
-    for(var i in gon.dm_owner){
-      pos = new google.maps.LatLng(gon.dm_owner[i].latitude, gon.dm_owner[i].longitude);
-      bounds.extend(pos);
-
-      dm_owner_arr[gon.dm_owner[i].id] = createMarker_trust_report({
-        position : pos
-        ,map : mapCanvas
-        ,icon : "/assets/marker_green.png"
-        ,html : '<div style="font-size:5px;"><a href="javascript:win_owner(' + gon.dm_owner[i].id + ');">' + gon.dm_owner[i].name + '</a></div>'
-        ,visible : true
-	  　,draggable: true
-      }, false);
-    }
-
-	// TELリレキ
-    tel_owner_arr = {}; // varを外してグローバル化
-    for(var i in gon.tel_owner){
-      pos = new google.maps.LatLng(gon.tel_owner[i].latitude, gon.tel_owner[i].longitude);
-      bounds.extend(pos);
-
-      tel_owner_arr[gon.tel_owner[i].id] = createMarker_trust_report({
-        position : pos
-        ,map : mapCanvas
-        ,icon : "/assets/marker_orange.png"
-        ,html : '<div style="font-size:5px;"><a href="javascript:win_owner(' + gon.tel_owner[i].id + ');">' + gon.tel_owner[i].name + '</a></div>'
-        ,visible : true
-	  　,draggable: true
-      }, false);
-    }
-
-	/******************************/
-	// 見込みランクの高いものを表示
-	/******************************/
-
-    /* 営業所IDを添字、営業所CODEを値に変換用配列を作成します。 */
-    for(var i in gon.all_shops){
-      convert_shop[gon.all_shops[i].id] = parseInt(gon.all_shops[i].code);
-    }
-	
-    /* 建物オブジェクトを作成 */
-    build_arr = {}; // グローバル
-    kyori_text = ""
-    var pos;
-    var idx = 0;
-    var biru_latlngs = [];
-    var populations = [];
-
-    var building_to_owners = gon.rank_building_to_owners
-    var buildings = gon.rank_buildings
-    for(var i in buildings){
-        pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
-
-        <% if @search_type == 2 # 貸主の時、初期状態で非表示%>
-          var build_disp = false
-        <% else %>
-          var build_disp = true
-          bounds.extend(pos);
-        <% end %>
-
-        var shop_code = convert_shop[buildings[i].shop_id];
-
-        build_arr[buildings[i].id] = createMarker_trust_report({
-          position : pos
-          ,map : mapCanvas
-          ,icon : buildings[i].tmp_build_type_icon
-          ,manage_icon : buildings[i].tmp_manage_type_icon
-          ,build_type_icon : buildings[i].tmp_build_type_icon
-          ,shadow : '/assets/marker_shadow.png'
-          ,html : info_msg_biru_trust_report(buildings[i], building_to_owners[buildings[i].id])
-          ,visible : build_disp
-		  ,draggable: true
-        }, true);
-
-        /* 戸数別のヒートマップを作る為のオブジェクト */
-        populations.push({
-          location : pos
-          ,weight : buildings[i].room_num
-        })
-
-        biru_latlngs[idx] = pos;
-        idx = idx + 1;
-    }
-
-    /* 貸主オブジェクトを作成 */
     owner_arr = {}; // varを外してグローバル化
-    var owners = gon.rank_owners
-    var owner_to_buildings = gon.rank_owner_to_buildings
-    var owner_icon;
-    var owner_disp;
+    for(var i in gon.approach_owners){
+      pos = new google.maps.LatLng(gon.approach_owners[i].latitude, gon.approach_owners[i].longitude);
+      bounds.extend(pos);
 
-    for(var i in owners){
-      pos = new google.maps.LatLng(owners[i].latitude, owners[i].longitude);
-
-      <% if @search_type == 1 # 建物検索の時、初期状態で非表示%>
-        owner_disp = false
-      <% else %>
-        owner_disp = true
-        bounds.extend(pos);
-      <% end %>
-
-      // 貸主かどうかでアタックを決める。
-      if( owners[i].code == null){
-        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
-      } else {
-        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
-      }
-
-      owner_arr[owners[i].id] = createMarker_trust_report({
+      owner_arr[gon.approach_owners[i].id] = createMarker_trust_report({
         position : pos
         ,map : mapCanvas
-        ,icon : owner_icon
-        ,html : info_msg_owner(owners[i], owner_to_buildings[owners[i].id])
-        ,visible : owner_disp
+        ,icon : gon.approach_owners[i].icon
+        ,html : '<div style="font-size:5px;"><a href="javascript:win_owner(' + gon.approach_owners[i].id + ');">' + gon.approach_owners[i].name + '</a></div>'
+        ,visible : true
 	  　,draggable: true
       }, false);
     }
 
-    /* 委託契約CDのラインを引く */
-    trust_arr = {}; // varを外してグローバル化
-    var trusts = gon.rank_trusts
-    for(var i in trusts){
 
-      // 貸主マスタ・建物マスタに委託で指定した貸主CD・建物CDが存在することを確認
-      if ( !owner_arr[trusts[i].owner_id] ){
-          continue;
-      }
-
-      if ( !build_arr[trusts[i].building_id]){
-          continue;
-      }
-
-      trust_arr[trusts[i].id] = new google.maps.Polyline({
-         map : mapCanvas
-        ,path : [owner_arr[trusts[i].owner_id].position, build_arr[trusts[i].building_id].position]
-        ,strokeColor: gon.rank_manage_line_color[trusts[i].manage_type_id]
-        ,strokeOpacity:0.5
-        ,strokeWeight:3
-        ,zIndex:1
-      });
-
-      // 初期状態は非表示
-      trust_arr[trusts[i].id].set("visible", false);
-
-      // ダブルクリック時のイベント登録
-      trust_ev = trust_arr[trusts[i].id]
-      owner_ev = owner_arr[trusts[i].owner_id]
-      build_ev = build_arr[trusts[i].building_id]
-
-      // クリックした時のオブジェクトを保存するために、イベントは関数呼び出しで登録する。
-      create_relation_listener(trust_ev, owner_ev, build_ev)
-    }
-
-    /* 駅情報を表示する */
-    station_arr = {}; // varを消してグローバル化
-    station_circle01_arr = {}; // varを消してグローバル化
-    station_circle02_arr = {}; // varを消してグローバル化
-    var distination = new google.maps.MVCArray();
-    var distination_arr = [];
-
-    var stations = gon.stations
-    for(var i in stations){
-
-      pos = new google.maps.LatLng(stations[i].latitude, stations[i].longitude);
-    //  bounds.extend(pos);
-      
-//        station_arr[stations[i].id] = createMarker_trust_report({
-//          position : pos
-//          ,map : mapCanvas
-//          ,animation: google.maps.Animation.DROP
-//         ,info_msg : stations[i].name
-//        });
-
-      /* 営業所の円を作成 */
-      station_circle01_arr[stations[i].id] = create_circle(1000, mapCanvas, pos);
-      station_circle02_arr[stations[i].id] = create_circle(2000, mapCanvas, pos);
-
-      /* 距離を測る対象を設定 */
-//      distination.push({name:stations[i].name, latLng:[stations[i].latitude,stations[i].longitude]});
-//      distination_arr.push(pos);
-    }
+//
+//
+// 	/******************************/
+// 	// 見込みランクの高いものを表示
+// 	/******************************/
+//
+//     /* 営業所IDを添字、営業所CODEを値に変換用配列を作成します。 */
+//     for(var i in gon.all_shops){
+//       convert_shop[gon.all_shops[i].id] = parseInt(gon.all_shops[i].code);
+//     }
+//
+//     /* 建物オブジェクトを作成 */
+//     build_arr = {}; // グローバル
+//     kyori_text = ""
+//     var pos;
+//     var idx = 0;
+//     var biru_latlngs = [];
+//     var populations = [];
+//
+//     var building_to_owners = gon.rank_building_to_owners
+//     var buildings = gon.rank_buildings
+//     for(var i in buildings){
+//         pos = new google.maps.LatLng(buildings[i].latitude, buildings[i].longitude);
+//
+//         <%# if @search_type == 2 # 貸主の時、初期状態で非表示%>
+//           var build_disp = false
+//         <%# else %>
+//           var build_disp = true
+//           bounds.extend(pos);
+//         <%# end %>
+//
+//         var shop_code = convert_shop[buildings[i].shop_id];
+//
+//         build_arr[buildings[i].id] = createMarker_trust_report({
+//           position : pos
+//           ,map : mapCanvas
+//           ,icon : buildings[i].tmp_build_type_icon
+//           ,manage_icon : buildings[i].tmp_manage_type_icon
+//           ,build_type_icon : buildings[i].tmp_build_type_icon
+//           ,shadow : '/assets/marker_shadow.png'
+//           ,html : info_msg_biru_trust_report(buildings[i], building_to_owners[buildings[i].id])
+//           ,visible : build_disp
+// 		  ,draggable: true
+//         }, true);
+//
+//         /* 戸数別のヒートマップを作る為のオブジェクト */
+//         populations.push({
+//           location : pos
+//           ,weight : buildings[i].room_num
+//         })
+//
+//         biru_latlngs[idx] = pos;
+//         idx = idx + 1;
+//     }
+//
+//     /* 貸主オブジェクトを作成 */
+//     owner_arr = {}; // varを外してグローバル化
+//     var owners = gon.rank_owners
+//     var owner_to_buildings = gon.rank_owner_to_buildings
+//     var owner_icon;
+//     var owner_disp;
+//
+//     for(var i in owners){
+//       pos = new google.maps.LatLng(owners[i].latitude, owners[i].longitude);
+//
+//       <%# if @search_type == 1 # 建物検索の時、初期状態で非表示%>
+//         owner_disp = false
+//       <%# else %>
+//         owner_disp = true
+//         bounds.extend(pos);
+//       <%# end %>
+//
+//       // 貸主かどうかでアタックを決める。
+//       if( owners[i].code == null){
+//         owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
+//       } else {
+//         owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
+//       }
+//
+//       owner_arr[owners[i].id] = createMarker_trust_report({
+//         position : pos
+//         ,map : mapCanvas
+//         ,icon : owner_icon
+//         ,html : info_msg_owner(owners[i], owner_to_buildings[owners[i].id])
+//         ,visible : owner_disp
+// 	  　,draggable: true
+//       }, false);
+//     }
+//
+//     /* 委託契約CDのラインを引く */
+//     trust_arr = {}; // varを外してグローバル化
+//     var trusts = gon.rank_trusts
+//     for(var i in trusts){
+//
+//       // 貸主マスタ・建物マスタに委託で指定した貸主CD・建物CDが存在することを確認
+//       if ( !owner_arr[trusts[i].owner_id] ){
+//           continue;
+//       }
+//
+//       if ( !build_arr[trusts[i].building_id]){
+//           continue;
+//       }
+//
+//       trust_arr[trusts[i].id] = new google.maps.Polyline({
+//          map : mapCanvas
+//         ,path : [owner_arr[trusts[i].owner_id].position, build_arr[trusts[i].building_id].position]
+//         ,strokeColor: gon.rank_manage_line_color[trusts[i].manage_type_id]
+//         ,strokeOpacity:0.5
+//         ,strokeWeight:3
+//         ,zIndex:1
+//       });
+//
+//       // 初期状態は非表示
+//       trust_arr[trusts[i].id].set("visible", false);
+//
+//       // ダブルクリック時のイベント登録
+//       trust_ev = trust_arr[trusts[i].id]
+//       owner_ev = owner_arr[trusts[i].owner_id]
+//       build_ev = build_arr[trusts[i].building_id]
+//
+//       // クリックした時のオブジェクトを保存するために、イベントは関数呼び出しで登録する。
+//       create_relation_listener(trust_ev, owner_ev, build_ev)
+//     }
+//
+//     /* 駅情報を表示する */
+//     station_arr = {}; // varを消してグローバル化
+//     station_circle01_arr = {}; // varを消してグローバル化
+//     station_circle02_arr = {}; // varを消してグローバル化
+//     var distination = new google.maps.MVCArray();
+//     var distination_arr = [];
+//
+//     var stations = gon.stations
+//     for(var i in stations){
+//
+//       pos = new google.maps.LatLng(stations[i].latitude, stations[i].longitude);
+//     //  bounds.extend(pos);
+//
+// //        station_arr[stations[i].id] = createMarker_trust_report({
+// //          position : pos
+// //          ,map : mapCanvas
+// //          ,animation: google.maps.Animation.DROP
+// //         ,info_msg : stations[i].name
+// //        });
+//
+//       /* 営業所の円を作成 */
+//       station_circle01_arr[stations[i].id] = create_circle(1000, mapCanvas, pos);
+//       station_circle02_arr[stations[i].id] = create_circle(2000, mapCanvas, pos);
+//
+//       /* 距離を測る対象を設定 */
+// //      distination.push({name:stations[i].name, latLng:[stations[i].latitude,stations[i].longitude]});
+// //      distination_arr.push(pos);
+//    }
 
     mapCanvas.fitBounds(bounds);
 	
 	// 営業所の半径1KMを色づけ
-    for(var item in station_circle01_arr){
-      station_circle01_arr[item].set("visible", true);
-    };	
+    // for(var item in station_circle01_arr){
+    //   station_circle01_arr[item].set("visible", true);
+    // };
 
 }  // end initialize
 
@@ -293,9 +263,96 @@ function createMarker_trust_report(opts, open_flg){
   return marker;
 }
 
-
-
 </script>
+
+
+
+<script type="text/javascript">
+
+	var notice_disp;
+	notice_disp = false;
+
+	// 一覧を表示します。
+	init_data_jqgrid();
+	
+	// 絞り込みテーブルを作成します。
+	//init_search_jqgrid();
+	
+	function init_data_jqgrid(){
+		// 列名の定義
+ 		var grid_name = [
+			  "貸主ID",
+			  "アプローチ種別",
+			  "貸主名",
+			  "アプローチ日",
+			  "内容",
+		];
+		
+		
+		// 列属性の定義
+		var grid_model = [
+		  {name:"owner_id",  index:"owner_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+   		 , {name:"approach_kind",  index:"approach_kind",  width:50,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_approach_kinds %>" }}
+  		 , {name:"owner_name",  index:"owner_name",  width:70,  align:"center",  classes:"no_class"}
+  		 , {name:"approach_date",  index:"approach_date",  width:50,  align:"center",  classes:"no_class"}
+  		 , {name:"approach_content",  index:"approach_content",   align:"left",  classes:"no_class"}
+		];
+
+		// その他の設定
+		var jqgrid_opt = {
+			 table_name:'building_table'
+			, fotter_name:'building_pager'
+			, div_name:'div_dummy_02'
+			, event_type:30
+			, shrinkFit:true
+			, multiselect:false
+		};
+		
+		$(function(){
+			jqgrid_create(grid_name,  grid_model,  gon.grid_data,  jqgrid_opt);
+			
+			jQuery("#building_table").navGrid('#building_pager',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager',{
+			        caption:"地図に反映", position:"last", onClickButton: function(){
+						 
+						// 建物非表示
+						for(var item in owner_arr){
+						    owner_arr[item].set("visible", false);
+						 };
+						 
+						 //var bounds = new google.maps.LatLngBounds();
+						 var table_div = $('#building_table');
+						 var row_data = table_div.getRowData();
+						 
+						 for(var j in  row_data){
+							
+							 owner = owner_arr[row_data[j].owner_id];
+							 if(owner != null){
+	 							 owner.set("visible", true);
+								 
+							 }
+							 
+						 }
+						 
+					 }
+				 });
+				 
+				 
+		});
+		
+		// resize
+	    $(window).bind('resize', function () {
+	        $('#building_table').setGridWidth($(window).width() - 40 )
+	                    .setGridHeight($(window).height() * 0.4 - 50);
+						
+	        $('#building_pager').setGridWidth($(window).width() - 40 )
+	                    .setGridHeight($(window).height() * 0.4 - 50);
+						
+	    }).trigger('resize');
+	 }	
+</script>
+
+
+
 <% end %>
 <div style="padding-left:20px;">
 	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:150px;"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %></span></h3>
@@ -338,7 +395,7 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= disp_growth_rate(@report.tel_plan, @report.tel_num_call) %></td>
 				</tr>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_red.png') %></td>
 					<td style="text-align:center;">提案</td>
 					<td style="text-align:center;"><%= if @report.suggestion_plan then @report.suggestion_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.suggestion_num %></td>
@@ -388,31 +445,10 @@ function createMarker_trust_report(opts, open_flg){
 	
 	
 	
-	<div style="clear:both;padding-top:20px;">
-		
-		<table class="table table-bordered" style="width:800px;">
-			<thead>
-				<tr class="active">
-					<td style="font-weight:bold"></td>
-					<td style="font-weight:bold">見込ランク</td>
-					<td style="font-weight:bold">建物</td>
-					<td style="font-weight:bold">貸主</td>
-					<td style="font-weight:bold">メモ</td>
-				</tr>
-			</thead>
-			<tbody>
-				<% @buildings.each do |biru| %>
-				<tr>
-				    <%# ats = AttackState.find_by_code(biru.tmp_manage_type_icon) %>
-					<td style="text-align:center"><%#= image_tag(ats.icon, :size=>"18x25") %></td>
-					<td><%#= ats.name %></td>
-					<td><%= raw("<a href=""javascript:win_building(" + biru.id.to_s + ");"">" + biru.name + "</a>") %></td>
-					<td><%= raw("<a href=""javascript:win_owner(" + biru.trusts[0].owner.id.to_s + ");"">" + biru.trusts[0].owner.name + "</a>") %></td>
-					<td><%= biru.memo %></td>
-				</tr>
-				<% end %>
-			</tbody>
-		</table>
+	<div id="div_dummy_02" style="clear:both;width:40%;height:400px;padding-top:5px;">
+		<h4>今月度の行動詳細</h4>
+		<table id="building_table"></table>
+		<div id = "building_pager"></div>
 	</div>
 </div>
 

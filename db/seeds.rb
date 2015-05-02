@@ -3165,73 +3165,9 @@ end
 # 受託の月報を生成します
 def generate_trust_attack_month_report(month, trust_user)
     
-  report = TrustAttackMonthReport.find_or_create_by_month_and_biru_user_id(month, trust_user.id)
   app_con = TrustManagementsController.new
-  result = app_con.get_report_info(month, trust_user)
+  app_con.generate_report_info(month, trust_user)
   
-  report.month = month
-  report.biru_user_id = trust_user.id
-  report.biru_usr_name = trust_user.name
-  report.trust_report_url = "trust_user_report?sid=" + trust_user.id.to_s
-  report.attack_list_url = "owner_building_list?sid=" + trust_user.id.to_s
-  
-  report.visit_plan = result[:biru_user_monthly].trust_plan_visit
-  report.visit_num_all = result[:visit_num_all]
-  report.visit_num_meet = result[:visit_num_meet]
-  
-  report.dm_plan = result[:biru_user_monthly].trust_plan_dm
-  report.dm_num_send = result[:dm_num_send]
-  report.dm_num_recv = result[:dm_num_recv]
-  
-  report.tel_plan = result[:biru_user_monthly].trust_plan_tel
-  report.tel_num_call = result[:tel_num_call]
-  report.tel_num_talk = result[:tel_num_talk]
-  
-#  report.suggestion_plan = result[:biru_user_monthly].trust_plan_suggestion
-  report.suggestion_num = result[:visit_num_suggestion]
-  report.trust_plan = result[:trust_plan_contract]
-  report.trust_num = result[:trust_num]
-  report.trust_num_jisya = result[:trust_num_oneself]
-
-  report.rank_s = result[:rank_s]
-  report.rank_a = result[:rank_a]
-  report.rank_b = result[:rank_b]
-  report.rank_c = result[:rank_c]
-  report.rank_d = result[:rank_d]
-  report.rank_c_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c]
-  report.rank_d_over = result[:rank_s] + result[:rank_a] + result[:rank_b] + result[:rank_c] + result[:rank_d]
-  
-  report.rank_w = result[:rank_w]
-  report.rank_x = result[:rank_x]
-  report.rank_y = result[:rank_y]
-  report.rank_z = result[:rank_z]
-  
-  # ID一覧の設定
-  report.visit_owners_absence = result[:visit_owners_absence].join(',')
-  report.visit_owners_meet = result[:visit_owners_meet].join(',')
-  report.visit_owners_suggestion = result[:visit_owners_suggestion].join(',')
-  report.dm_owners_send = result[:dm_owners_send].join(',')
-  report.dm_owners_recv = result[:dm_owners_recv].join(',')
-  report.tel_owners_call = result[:tel_owners_call].join(',')
-  report.tel_owners_talk = result[:tel_owners_talk].join(',')
-  
-  report.rank_s_trusts = result[:rank_s_trusts].join(',')
-  report.rank_a_trusts = result[:rank_a_trusts].join(',')
-  report.rank_b_trusts = result[:rank_b_trusts].join(',')
-  report.rank_c_trusts = result[:rank_c_trusts].join(',')
-  report.rank_z_trusts = result[:rank_z_trusts].join(',')
-  
-  # 全件数を取得する
-  sql = ""
-  sql = sql + "SELECT count(*) as cnt "
-  sql = sql + "FROM (" + app_con.get_trust_sql(trust_user, "", false) + ") X "
-  sql = sql + "where biru_user_id = " + trust_user.id.to_s
-  ActiveRecord::Base.connection.select_all(sql).each do |all_cnt_rec|
-    report.rank_all = all_cnt_rec['cnt']
-  end
-  
-  report.save!
-
 end
 
 
@@ -3370,10 +3306,10 @@ init_approach_kind
 # reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150422_23南流山.csv"))
 # reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150422_24柏.csv"))
 
-reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_21松戸.csv"))
-reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_22北松戸.csv"))
-reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150502_23南流山.csv"))
-reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150501_24柏.csv"))
+# reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_21松戸.csv"))
+# reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_22北松戸.csv"))
+# reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150502_23南流山.csv"))
+# reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150501_24柏.csv"))
  
 
 # 柴田

@@ -7,8 +7,8 @@ class TrustManagementsController < ApplicationController
   
   before_filter :search_init, :except => ['trust_user_report']
 
-  # 受託行動レポート情報を取得します
-  def get_report_info(month, user)
+  # 受託行動レポート情報を生成します
+  def generate_report_info(month, user)
   
     # 来月度を取得
     tmp_month = Date.parse(month + "01", "YYYYMMDD").next_month
@@ -38,6 +38,10 @@ class TrustManagementsController < ApplicationController
     biru_user_monthly_next.biru_user_id = user.id
     biru_user_monthly_next.month = month_next
     
+    
+    # 登録用のデータ
+    report = TrustAttackMonthReport.find_or_create_by_month_and_biru_user_id(month, user.id)
+    
     #####################################
     # 当月に訪問した貸主を表示    
     # DMアプローチした貸主を表示
@@ -60,9 +64,23 @@ class TrustManagementsController < ApplicationController
     tel_num_talk = 0
     tel_owners_call = []
     tel_owners_talk = []
-  
-    OwnerApproach.joins(:approach_kind).where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).group("owner_approaches.owner_id, approach_kinds.code").select("owner_approaches.owner_id, approach_kinds.code").each do |rec|
+    
+    # 履歴情報の初期化
+    TrustAttackMonthReportAction.delete_all(['trust_attack_month_report_id = ? ', report.id])
+    OwnerApproach.joins(:approach_kind).where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).select("owner_approaches.owner_id, approach_kinds.code, owner_approaches.id as approach_id").each do |rec|
   	
+      attack_action = TrustAttackMonthReportAction.new
+      attack_action.trust_attack_month_report_id = report.id
+      attack_action.owner_approach_id = rec.approach_id
+      
+      # attack_action.biru_user_id = user.id
+      # attack_action.month = month
+      # attack_action.owner_id = rec.owner
+      # attack_action.content = rec.content
+      # attack_action.approach_date = rec.approach_date
+      # attack_action.approach_kind_id = rec.approach_kind_id
+      attack_action.save!
+      
       case rec.code
       when '0010', '0020', '0025' then
         ########## 訪問・面談・提案 ###########
@@ -211,52 +229,72 @@ class TrustManagementsController < ApplicationController
       end
     end
     
-    # 関数の戻り値として設定
-    result = {}
-    result[:month_next] = month_next
-    result[:month_prev] = month_prev
-    result[:start_date] = start_date
-    result[:end_date] = end_date
-    result[:biru_user_monthly] = biru_user_monthly
-    result[:biru_user_monthly_next] = biru_user_monthly_next
-    
-    result[:visit_num_all] = visit_num_all
-    result[:visit_num_meet] = visit_num_meet
-    result[:visit_num_suggestion] = visit_num_suggestion
-    result[:visit_owners_absence] = visit_owners_absence
-    result[:visit_owners_meet] = visit_owners_meet
-    result[:visit_owners_suggestion] = visit_owners_suggestion
-    
-    result[:dm_num_send] = dm_num_send
-    result[:dm_num_recv] = dm_num_recv
-    result[:dm_owners_send] = dm_owners_send
-    result[:dm_owners_recv] = dm_owners_recv
-    
-    result[:tel_num_call] = tel_num_call
-    result[:tel_num_talk] = tel_num_talk
-    result[:tel_owners_call] = tel_owners_call
-    result[:tel_owners_talk] = tel_owners_talk
-    
-    result[:trust_num] = trust_num
-    result[:trust_num_oneself] = trust_num_oneself
+    #########################
+    # レポートデータの保存
+    #########################
+    report.month = month
+    report.biru_user_id = user.id
+    report.biru_usr_name = user.name
+    report.trust_report_url = "trust_user_report?sid=" + user.id.to_s
+    report.attack_list_url = "owner_building_list?sid=" + user.id.to_s
+  
+    report.visit_plan = biru_user_monthly.trust_plan_visit
+    report.visit_num_all = visit_num_all
+    report.visit_num_meet = visit_num_meet
+  
+    report.dm_plan = biru_user_monthly.trust_plan_dm
+    report.dm_num_send = dm_num_send
+    report.dm_num_recv = dm_num_recv
+  
+    report.tel_plan = biru_user_monthly.trust_plan_tel
+    report.tel_num_call = tel_num_call
+    report.tel_num_talk = tel_num_talk
+  
+  #  report.suggestion_plan = biru_user_monthly.trust_plan_suggestion
+    report.suggestion_num = visit_num_suggestion
+    report.trust_plan = biru_user_monthly.trust_plan_contract
+    report.trust_num = trust_num
+    report.trust_num_jisya = trust_num_oneself
 
-    result[:rank_s] = rank_s
-    result[:rank_a] = rank_a
-    result[:rank_b] = rank_b
-    result[:rank_c] = rank_c
-    result[:rank_d] = rank_d
-    result[:rank_w] = rank_w
-    result[:rank_x] = rank_x
-    result[:rank_y] = rank_y
-    result[:rank_z] = rank_z
+    report.rank_s = rank_s
+    report.rank_a = rank_a
+    report.rank_b = rank_b
+    report.rank_c = rank_c
+    report.rank_d = rank_d
+    report.rank_c_over = rank_s + rank_a + rank_b + rank_c
+    report.rank_d_over = rank_s + rank_a + rank_b + rank_c + rank_d
+  
+    report.rank_w = rank_w
+    report.rank_x = rank_x
+    report.rank_y = rank_y
+    report.rank_z = rank_z
+  
+    # ID一覧の設定
+    report.visit_owners_absence = visit_owners_absence.join(',')
+    report.visit_owners_meet = visit_owners_meet.join(',')
+    report.visit_owners_suggestion = visit_owners_suggestion.join(',')
+    report.dm_owners_send = dm_owners_send.join(',')
+    report.dm_owners_recv = dm_owners_recv.join(',')
+    report.tel_owners_call = tel_owners_call.join(',')
+    report.tel_owners_talk = tel_owners_talk.join(',')
+  
+    report.rank_s_trusts = rank_s_trusts.join(',')
+    report.rank_a_trusts = rank_a_trusts.join(',')
+    report.rank_b_trusts = rank_b_trusts.join(',')
+    report.rank_c_trusts = rank_c_trusts.join(',')
+    report.rank_z_trusts = rank_z_trusts.join(',')
+  
+    # 全件数を取得する
+    sql = ""
+    sql = sql + "SELECT count(*) as cnt "
+    sql = sql + "FROM (" + get_trust_sql(user, "", false) + ") X "
+    sql = sql + "where biru_user_id = " + user.id.to_s
+    ActiveRecord::Base.connection.select_all(sql).each do |all_cnt_rec|
+      report.rank_all = all_cnt_rec['cnt']
+    end
+  
+    report.save!
 
-    result[:rank_s_trusts] = rank_s_trusts
-    result[:rank_a_trusts] = rank_a_trusts
-    result[:rank_b_trusts] = rank_b_trusts
-    result[:rank_c_trusts] = rank_c_trusts
-    result[:rank_z_trusts] = rank_z_trusts
-    
-    return result
   end  
   
 
@@ -1042,8 +1080,62 @@ class TrustManagementsController < ApplicationController
 
    gon.stations = stations
    
+   ######################
+   # 行動内訳履歴を表示
+   ######################
+   grid_data = []
+   approach_owners = []
+   check_owner = {}
+   
+   @report.trust_attack_month_report_actions.each do |action_rec|
+     
+     owner_approach = action_rec.owner_approach
+     owner_rec = owner_approach.owner
+     
+     case owner_approach.approach_kind.code
+     when '0010', '0020' # 訪問
+       icon = '/assets/marker_blue.png'
+     when '0030', '0035' # ＤＭ
+       icon = '/assets/marker_green.png'
+     when '0040', '0045' # 電話
+       icon = '/assets/marker_orange.png'
+     when '0025' # 提案
+       icon = '/assets/marker_red.png'
+     else
+       icon = '/assets/marker_gray.png'
+     end
+     
+     # 地図へ表示するアイコンの情報
+     approach_owner = {
+         :id=>owner_rec.id, :name=>owner_rec.name, :latitude=>owner_rec.latitude, :longitude=>owner_rec.longitude, :icon=>icon
+     }
+     
+     unless check_owner[approach_owner[:id]]
+       approach_owners.push(approach_owner)
+       check_owner[approach_owner[:id]] = true
+     end     
+     
+     # jqgridに表示する一覧の情報
+     row_data = {}
+     row_data[:owner_id] = owner_approach.owner_id
+     row_data[:approach_kind] = owner_approach.approach_kind.name
+     row_data[:approach_date] = owner_approach.approach_date
+     row_data[:approach_content] = owner_approach.content
+     row_data[:owner_code] = owner_approach.owner.code
+     row_data[:owner_name] = owner_approach.owner.name
+     row_data[:owner_address] = owner_approach.owner.address
+
+     grid_data.push(row_data)
+   end
+   
+   gon.grid_data = grid_data
+   gon.approach_owners = approach_owners
+   
    # layoutでヘッダを非表示
    @header_hidden = true
+   
+   # コンボボックス
+   @combo_approach_kinds = jqgrid_combo_approach_kind
   end  
   
   def biru_user_trust_update

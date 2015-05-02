@@ -334,6 +334,15 @@ class ApplicationController < ActionController::Base
     result
   end
 
+  # jqgridのアプローチ種別のリストを返す
+  def jqgrid_combo_approach_kind
+    result = ":"
+    ApproachKind.order(:sequence).each do |obj|
+      result = result + ";" + obj.name + ":" + obj.name
+    end
+    result
+  end
+
   
 
 end
