@@ -48,17 +48,20 @@
 	    return "<div style='text-align:center;'><a style='text-decoration: underline' href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "&rank=W,X,Y,Z' onclick='javascript:screen_block();'>" + nvl(cellValue) + "</a></div>";
 	}
 	
+	function formatter_report(cellValue, options, rowdata, action){
+		return "<a style='text-decoration: underline' href='javascript:win_trust_report(" + rowdata.biru_user_id + ");'>" + cellValue + "</a>"
+	}
+	
 	// 委託契約リストを作成
 	function init_jqgrid_trust_manager(){
 		// 列名の定義
-		var col_names = ["biru_user_id", "エリア", "担当者", "レポート", "アタックリスト","登録件数", "C以上", "Ｓ","Ａ","Ｂ","Ｃ","Ｄ", "Ｗ,Ｘ,Ｙ,Ｚ", "目標", "実績", "面談", "目標", "実績", "反響", "目標", "実績", "会話", "目標", "実績" , "目標", "実績" ];
+		var col_names = ["biru_user_id", "エリア", "担当者", "アタックリスト","登録件数", "C以上", "Ｓ","Ａ","Ｂ","Ｃ","Ｄ", "Ｗ,Ｘ,Ｙ,Ｚ", "目標", "実績", "面談", "目標", "実績", "反響", "目標", "実績", "会話", "目標", "実績" , "目標", "実績" ];
 	
 		// 列属性の定義
 		var col_model = [
 		  {name:"biru_user_id", index:"biru_user_id", align:"left",classes:"no_class", hidden:true}
 		 ,{name:"shop_name", index:"shop_name", width:200, align:"left", classes:"no_class"}
-  		 ,{name:"biru_usr_name", index:"biru_usr_name", width:300, align:"left", classes:"no_class"}
- 		 ,{name:"trust_report", index:"trust_report", width:200, align:"left", classes:"no_class", formatter: 'link', hidden:true}
+  		 ,{name:"biru_usr_name", index:"biru_usr_name", width:300, align:"left", classes:"no_class", formatter:formatter_report}
  		 ,{name:"attack_list", index:"attack_list", width:200, align:"left", classes:"no_class", hidden:true}
 		 
  		 ,{name:"rank_all", index:"rank_all", align:"right", classes:"no_class", formatter:formatter_rank_all}

@@ -299,11 +299,11 @@ function createMarker_trust_report(opts, open_flg){
 <% end %>
 <div style="padding-left:20px;">
 	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:150px;"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %></span></h3>
-	<div style="border-width:3px; border-style:solid; border-color:silver;width:800px;float:left;margin-right:20px;">
+	<div style="border-width:3px; border-style:solid; border-color:silver;width:800px;float:left;margin-right:20px;float:left">
 		<div id="map_canvas" style="width:100%;height:500px;border-color:blue"></div>
 	</div>
 	
-	<div style="float:left;margin-bottom:20px;margin-right:20px;">
+	<div style="float:left;margin-bottom:0px;margin-right:20px;">
 		<h4>今月度の行動</h4>
 		<table class="table table-bordered" style="width:500px;">
 			<thead>
@@ -319,30 +319,37 @@ function createMarker_trust_report(opts, open_flg){
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
 					<td style="text-align:center;">訪問（うち在宅）</td>
-					<td style="text-align:center;"><%= if @biru_user_monthly.trust_plan_visit then @biru_user_monthly.trust_plan_visit else '-' end %></td>
-					<td style="text-align:center;"><%= @visit_num %>&nbsp;&nbsp;(<%= @visit_num_jsk %>)</td>
-					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_visit, @visit_num) %></td>
+					<td style="text-align:center;"><%= if @report.visit_plan then @report.visit_plan else '-' end %></td>
+					<td style="text-align:center;"><%= @report.visit_num_all %>&nbsp;&nbsp;(<%= @report.visit_num_meet %>)</td>
+					<td style="text-align:center;"><%= disp_growth_rate(@report.visit_plan, @report.visit_num_all) %></td>
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_green.png') %></td>
 					<td style="text-align:center;">ＤＭ（うち反響）</td>
-					<td style="text-align:center;"><%= if @biru_user_monthly.trust_plan_dm then @biru_user_monthly.trust_plan_dm else '-' end %></td>
-					<td style="text-align:center;"><%= @dm_num %>&nbsp;&nbsp;(<%= @dm_num_jsk %>)</td>
-					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_dm, @dm_num) %></td>
+					<td style="text-align:center;"><%= if @report.dm_plan then @report.dm_plan else '-' end %></td>
+					<td style="text-align:center;"><%= @report.visit_num_all %>&nbsp;&nbsp;(<%= @report.visit_num_meet %>)</td>
+					<td style="text-align:center;"><%= disp_growth_rate(@report.dm_plan, @report.visit_num_all) %></td>
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
 					<td style="text-align:center;">ＴＥＬ（うち応対）</td>
-					<td style="text-align:center;"><%= if @biru_user_monthly.trust_plan_tel then @biru_user_monthly.trust_plan_tel else '-' end %></td>
-					<td style="text-align:center;"><%= @tel_num %>&nbsp;&nbsp;(<%= @tel_num_jsk %>)</td>
-					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_tel, @tel_num) %></td>
+					<td style="text-align:center;"><%= if @report.tel_plan then @report.tel_plan else '-' end %></td>
+					<td style="text-align:center;"><%= @report.tel_num_call %>&nbsp;&nbsp;(<%= @report.tel_num_talk %>)</td>
+					<td style="text-align:center;"><%= disp_growth_rate(@report.tel_plan, @report.tel_num_call) %></td>
+				</tr>
+				<tr>
+					<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
+					<td style="text-align:center;">提案</td>
+					<td style="text-align:center;"><%= if @report.suggestion_plan then @report.suggestion_plan else '-' end %></td>
+					<td style="text-align:center;"><%= @report.suggestion_num %></td>
+					<td style="text-align:center;"><%= disp_growth_rate(@report.suggestion_plan, @report.suggestion_num) %></td>
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000', :size=>"18x25")%></td>
 					<td style="text-align:center;">他社受託（自社受託）</td>
-					<td style="text-align:center;"><%= if @biru_user_monthly.trust_plan_contract then @biru_user_monthly.trust_plan_contract else '-' end %></td>
-					<td style="text-align:center;"><%= @contract_num %>&nbsp;&nbsp;(<%= @contract_num_jisya %>)</td>
-					<td style="text-align:center;"><%= disp_growth_rate(@biru_user_monthly.trust_plan_contract, @contract_num) %></td>
+					<td style="text-align:center;"><%= if @report.trust_plan then @report.trust_plan else '-' end %></td>
+					<td style="text-align:center;"><%= @report.trust_num %>&nbsp;&nbsp;(<%= @report.trust_num_jisya %>)</td>
+					<td style="text-align:center;"><%= disp_growth_rate(@report.trust_plan, @report.trust_num) %></td>
 				</tr>
 			</tbody>
 		</table>
@@ -396,9 +403,9 @@ function createMarker_trust_report(opts, open_flg){
 			<tbody>
 				<% @buildings.each do |biru| %>
 				<tr>
-				    <% ats = AttackState.find_by_code(biru.tmp_manage_type_icon) %>
-					<td style="text-align:center"><%= image_tag(ats.icon, :size=>"18x25") %></td>
-					<td><%= ats.name %></td>
+				    <%# ats = AttackState.find_by_code(biru.tmp_manage_type_icon) %>
+					<td style="text-align:center"><%#= image_tag(ats.icon, :size=>"18x25") %></td>
+					<td><%#= ats.name %></td>
 					<td><%= raw("<a href=""javascript:win_building(" + biru.id.to_s + ");"">" + biru.name + "</a>") %></td>
 					<td><%= raw("<a href=""javascript:win_owner(" + biru.trusts[0].owner.id.to_s + ");"">" + biru.trusts[0].owner.name + "</a>") %></td>
 					<td><%= biru.memo %></td>
@@ -423,7 +430,7 @@ function createMarker_trust_report(opts, open_flg){
       <div class="modal-body">
 		  	
 			<%= f.input :id, :as => :hidden, :input_html => {:value => @biru_user_monthly_next.id } %>
-			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user_monthly.biru_user_id } %>
+			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @report.biru_user_id } %>
 			<%= f.input :month, :as => :hidden, :input_html => {:value => @month_next} %>
 			
 		  	<%= f.input :trust_plan_visit, :label=>'訪問件数' %>

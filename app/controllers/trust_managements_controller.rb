@@ -37,8 +37,7 @@ class TrustManagementsController < ApplicationController
     end
     biru_user_monthly_next.biru_user_id = user.id
     biru_user_monthly_next.month = month_next
-  
-  
+    
     #####################################
     # 当月に訪問した貸主を表示    
     # DMアプローチした貸主を表示
@@ -162,7 +161,6 @@ class TrustManagementsController < ApplicationController
 
       when 'Z'
         # 成約になった物件は、当月のみ表示対象
-        p 'いいい' + trust_num.to_s
         
         if trust_attack_history.month.to_s == month.to_s
           
@@ -947,6 +945,14 @@ class TrustManagementsController < ApplicationController
       @month = get_cur_month
     end
     
+    # 来月度を取得
+    tmp_month = Date.parse(@month + "01", "YYYYMMDD").next_month
+    @month_next = "%04d%02d"%[tmp_month.year, tmp_month.month]
+  
+    # 前月度を取得
+    tmp_month =Date.parse(@month + "01", "YYYYMMDD").prev_month
+    @month_prev = "%04d%02d"%[tmp_month.year, tmp_month.month]
+    
     # ユーザー情報取得
     @biru_trust_user = BiruUser.find(params[:sid])
     
@@ -957,47 +963,32 @@ class TrustManagementsController < ApplicationController
     end
     
     # レポート情報の取得
-    result = get_report_info(@month, @biru_trust_user)
+    #result = get_report_info(@month, @biru_trust_user)
+    @report = TrustAttackMonthReport.find_by_month_and_biru_user_id(@month, @biru_trust_user.id)
+    
+    # 来月の計画・実績データを取得
+    @biru_user_monthly_next = BiruUserMonthly.find_by_biru_user_id_and_month(@biru_trust_user.id, @month_next)
+    unless @biru_user_monthly_next
+      @biru_user_monthly_next = BiruUserMonthly.new
+    end
+    @biru_user_monthly_next.biru_user_id = @biru_trust_user.id
+    @biru_user_monthly_next.month = @month_next
 
-    @month_next = result[:month_next]
-    @month_prev = result[:month_prev]
-    @start_date = result[:start_date]
-    @end_date = result[:end_date]
-    @biru_user_monthly = result[:biru_user_monthly]
-    @biru_user_monthly_next = result[:biru_user_monthly_next]
-    @visit_owner_id_arr = result[:visit_owner_id_arr]
-    @visit_num = result[:visit_num]
-    @visit_num_jsk = result[:visit_num_jsk]
-    @dm_owner_id_arr = result[:dm_owner_id_arr]
-    @dm_num = result[:dm_num]
-    @dm_num_jsk = result[:dm_num_jsk]
-    @tel_owner_id_arr = result[:tel_owner_id_arr]
-    @tel_num = result[:tel_num]
-    @tel_num_jsk = result[:tel_num_jsk]
-    @tel_num = result[:contract_num]
-    @tel_num_jsk = result[:contract_num_jsk]
-    @buildings = result[:buildings]
+    @visit_owner_id_arr = @report.visit_owners_absence
+    @dm_owner_id_arr = @report.dm_owners_send
+    @tel_owner_id_arr = @report.tel_owners_call
+    #@buildings = result[:buildings]
+    
+    @buildings = []
+    Trust.where("id in (" + @report.rank_b_trusts + ")").each do |trust|
+      @buildings << trust.building
+    end
     
     # 物件情報の取得
     gon.visit_owner = Owner.find_all_by_id(@visit_owner_id_arr)
     gon.dm_owner = Owner.find_all_by_id(@dm_owner_id_arr)
     gon.tel_owner =  Owner.find_all_by_id(@tel_owner_id_arr)
 
-    #####################################
-    # 見込みランクが高い物件を表示   
-    #####################################
-    # Building.joins(:trusts => :attack_state).where("buildings.code is null").where("trusts.biru_user_id = ?", @biru_trust_user.id).order("attack_states.disp_order").each do |biru|
-    #
-    #   case biru.trusts[0].attack_state.code
-    #   when 'S', 'A', 'B'
-    #     biru.tmp_manage_type_icon = biru.trusts[0].attack_state.code
-    #     biru.tmp_build_type_icon = biru.trusts[0].attack_state.icon
-    #     @buildings << biru
-    #   else
-    #     # 表示対象の見込みランク以外は表示しない
-    #   end
-    # end
-    
     @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(@buildings)
     @manage_line_color = make_manage_line_list
     
@@ -1013,7 +1004,7 @@ class TrustManagementsController < ApplicationController
     gon.all_shops = Shop.find(:all)
     @search_type = 1
     
-    # Hashの追加
+    # 駅の追加
     station_arr = []
     station_arr.push(["1","15"]) # 草加
     station_arr.push(["1","17"]) # 新田
@@ -1035,29 +1026,6 @@ class TrustManagementsController < ApplicationController
     station_arr.push(["8","3"])  # 北松戸
     station_arr.push(["2","18"]) # 南流山
     station_arr.push(["3","13"]) # 柏
-
-    # 駅 
-#    stations = []
-#    stations << Station.find_by_line_code_and_code("1","15") # 草加
-#    stations << Station.find_by_line_code_and_code("1","17") # 新田
-#    stations << Station.find_by_line_code_and_code("1","8" ) # 北千住
-#    stations << Station.find_by_line_code_and_code("1","19") # 新越谷
-#    stations << Station.find_by_line_code_and_code("2","14") # 南越谷
-#    stations << Station.find_by_line_code_and_code("1","20") # 越谷
-#    stations << Station.find_by_line_code_and_code("1","21") # 北越谷
-#    stations << Station.find_by_line_code_and_code("1","23") # せんげん台
-#    stations << Station.find_by_line_code_and_code("1","26") # 春日部
-#    stations << Station.find_by_line_code_and_code("6","6") # 戸田公園
-#    stations << Station.find_by_line_code_and_code("7","6") # 戸田
-#    stations << Station.find_by_line_code_and_code("11","5") # 与野
-#    stations << Station.find_by_line_code_and_code("9","5") # 浦和
-#    stations << Station.find_by_line_code_and_code("5","5") # 川口
-#    stations << Station.find_by_line_code_and_code("2","12") # 東浦和
-#    stations << Station.find_by_line_code_and_code("2","13") # 東川口
-#    stations << Station.find_by_line_code_and_code("7","3") # 松戸
-#    stations << Station.find_by_line_code_and_code("8","3") # 北松戸
-#    stations << Station.find_by_line_code_and_code("2","18") # 南流山
-#    stations << Station.find_by_line_code_and_code("3","13") # 柏
 
 		stations = []
 		station_arr.each do | station_pair |
