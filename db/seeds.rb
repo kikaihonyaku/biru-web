@@ -1815,6 +1815,7 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 			owner = Owner.unscoped.find_or_create_by_hash_key(imp.owner_hash)
       owner.hash_key = imp.owner_hash
 			owner.name = imp.owner_nm
+      owner.kana = imp.owner_kana
 			owner.address = imp.owner_address
 			owner.postcode = imp.owner_postcode
 			owner.honorific_title = imp.owner_honorific_title
@@ -3368,7 +3369,12 @@ init_approach_kind
 # reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150422_22北松戸.csv"))
 # reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150422_23南流山.csv"))
 # reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150422_24柏.csv"))
-# 
+
+#reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150430_21松戸.csv"))
+#reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150430_22北松戸.csv"))
+#reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150430_23南流山.csv"))
+reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150430_24柏.csv"))
+ 
 
 # 柴田
 #reg_attack_owner_building('5928', '草加新田営業所', Rails.root.join( "tmp", "アタックリスト20150422_02新田.csv"))
@@ -3457,6 +3463,6 @@ init_approach_kind
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('7811'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5313'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5518'))
-#generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
+p "a"
+generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
 
-generate_trust_attack_month_report('201505', BiruUser.find_by_code('6365'))

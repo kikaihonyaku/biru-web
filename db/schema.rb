@@ -309,6 +309,7 @@ ActiveRecord::Schema.define(:version => 20150429080525) do
   create_table "owners", :force => true do |t|
     t.string   "code"
     t.string   "name"
+    t.string   "kana"
     t.string   "address"
     t.float    "latitude"
     t.float    "longitude"
