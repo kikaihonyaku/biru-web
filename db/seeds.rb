@@ -3370,10 +3370,10 @@ init_approach_kind
 # reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150422_23南流山.csv"))
 # reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150422_24柏.csv"))
 
-#reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150430_21松戸.csv"))
-#reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150430_22北松戸.csv"))
-#reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150430_23南流山.csv"))
-reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150430_24柏.csv"))
+reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_21松戸.csv"))
+reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_22北松戸.csv"))
+reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150502_23南流山.csv"))
+reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150501_24柏.csv"))
  
 
 # 柴田
