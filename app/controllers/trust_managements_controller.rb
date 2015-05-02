@@ -1002,7 +1002,7 @@ class TrustManagementsController < ApplicationController
     
     # レポート情報の取得
     #result = get_report_info(@month, @biru_trust_user)
-    @report = TrustAttackMonthReport.find_by_month_and_biru_user_id(@month, @biru_trust_user.id)
+    @report = TrustAttackMonthReport.find_or_create_by_month_and_biru_user_id(@month, @biru_trust_user.id)
     
     # 来月の計画・実績データを取得
     @biru_user_monthly_next = BiruUserMonthly.find_by_biru_user_id_and_month(@biru_trust_user.id, @month_next)
@@ -1012,73 +1012,73 @@ class TrustManagementsController < ApplicationController
     @biru_user_monthly_next.biru_user_id = @biru_trust_user.id
     @biru_user_monthly_next.month = @month_next
 
-    @visit_owner_id_arr = @report.visit_owners_absence
-    @dm_owner_id_arr = @report.dm_owners_send
-    @tel_owner_id_arr = @report.tel_owners_call
-    #@buildings = result[:buildings]
-    
-    @buildings = []
-    Trust.where("id in (" + @report.rank_b_trusts + ")").each do |trust|
-      @buildings << trust.building
-    end
-    
-    # 物件情報の取得
-    gon.visit_owner = Owner.find_all_by_id(@visit_owner_id_arr)
-    gon.dm_owner = Owner.find_all_by_id(@dm_owner_id_arr)
-    gon.tel_owner =  Owner.find_all_by_id(@tel_owner_id_arr)
-
-    @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(@buildings)
-    @manage_line_color = make_manage_line_list
-    
-    # ランクが設定されている物件を表示
-    gon.rank_buildings = @buildings
-    gon.rank_owners = @owners # 関連する貸主
-    gon.rank_trusts = @trusts # 関連する委託契約
-    gon.rank_shops = @shops    # 関連する営業所
-    gon.rank_owner_to_buildings = @owner_to_buildings # 建物と貸主をひもづける情報
-    gon.rank_building_to_owners = @building_to_owners
-    gon.rank_manage_line_color = @manage_line_color
-    
-    gon.all_shops = Shop.find(:all)
-    @search_type = 1
-    
-    # 駅の追加
-    station_arr = []
-    station_arr.push(["1","15"]) # 草加
-    station_arr.push(["1","17"]) # 新田
-    station_arr.push(["1","8" ]) # 北千住
-    station_arr.push(["1","19"]) # 新越谷
-    station_arr.push(["2","14"]) # 南越谷
-    station_arr.push(["1","20"]) # 越谷
-    station_arr.push(["1","21"]) # 北越谷
-    station_arr.push(["1","23"]) # せんげん台
-    station_arr.push(["1","26"]) # 春日部
-    station_arr.push(["6","6"])  # 戸田公園
-    station_arr.push(["7","6"])  # 戸田
-    station_arr.push(["11","5"]) # 与野
-    station_arr.push(["9","5"])  # 浦和
-    station_arr.push(["5","5"])  # 川口
-    station_arr.push(["2","12"]) # 東浦和
-    station_arr.push(["2","13"]) # 東川口
-    station_arr.push(["7","3"])  # 松戸
-    station_arr.push(["8","3"])  # 北松戸
-    station_arr.push(["2","18"]) # 南流山
-    station_arr.push(["3","13"]) # 柏
-
-		stations = []
-		station_arr.each do | station_pair |
-			station = Station.find_by_line_code_and_code(station_pair[0], station_pair[1])
-			
-      # if station
-      #   p "駅あり"
-      #       else
-      #   p "駅なし"
-      # end
-      #
-			stations << station if station
-		end
-
-   gon.stations = stations
+    #     @visit_owner_id_arr = @report.visit_owners_absence
+    #     @dm_owner_id_arr = @report.dm_owners_send
+    #     @tel_owner_id_arr = @report.tel_owners_call
+    #     #@buildings = result[:buildings]
+    #
+    #     @buildings = []
+    #     Trust.where("id in (" + @report.rank_b_trusts + ")").each do |trust|
+    #       @buildings << trust.building
+    #     end
+    #
+    #     # 物件情報の取得
+    #     gon.visit_owner = Owner.find_all_by_id(@visit_owner_id_arr)
+    #     gon.dm_owner = Owner.find_all_by_id(@dm_owner_id_arr)
+    #     gon.tel_owner =  Owner.find_all_by_id(@tel_owner_id_arr)
+    #
+    #     @shops, @owners, @trusts, @owner_to_buildings, @building_to_owners = get_building_info(@buildings)
+    #     @manage_line_color = make_manage_line_list
+    #
+    #     # ランクが設定されている物件を表示
+    #     gon.rank_buildings = @buildings
+    #     gon.rank_owners = @owners # 関連する貸主
+    #     gon.rank_trusts = @trusts # 関連する委託契約
+    #     gon.rank_shops = @shops    # 関連する営業所
+    #     gon.rank_owner_to_buildings = @owner_to_buildings # 建物と貸主をひもづける情報
+    #     gon.rank_building_to_owners = @building_to_owners
+    #     gon.rank_manage_line_color = @manage_line_color
+    #
+    #     gon.all_shops = Shop.find(:all)
+    #     @search_type = 1
+    #
+    #     # 駅の追加
+    #     station_arr = []
+    #     station_arr.push(["1","15"]) # 草加
+    #     station_arr.push(["1","17"]) # 新田
+    #     station_arr.push(["1","8" ]) # 北千住
+    #     station_arr.push(["1","19"]) # 新越谷
+    #     station_arr.push(["2","14"]) # 南越谷
+    #     station_arr.push(["1","20"]) # 越谷
+    #     station_arr.push(["1","21"]) # 北越谷
+    #     station_arr.push(["1","23"]) # せんげん台
+    #     station_arr.push(["1","26"]) # 春日部
+    #     station_arr.push(["6","6"])  # 戸田公園
+    #     station_arr.push(["7","6"])  # 戸田
+    #     station_arr.push(["11","5"]) # 与野
+    #     station_arr.push(["9","5"])  # 浦和
+    #     station_arr.push(["5","5"])  # 川口
+    #     station_arr.push(["2","12"]) # 東浦和
+    #     station_arr.push(["2","13"]) # 東川口
+    #     station_arr.push(["7","3"])  # 松戸
+    #     station_arr.push(["8","3"])  # 北松戸
+    #     station_arr.push(["2","18"]) # 南流山
+    #     station_arr.push(["3","13"]) # 柏
+    #
+    # stations = []
+    # station_arr.each do | station_pair |
+    #   station = Station.find_by_line_code_and_code(station_pair[0], station_pair[1])
+    #
+    #       # if station
+    #       #   p "駅あり"
+    #       #       else
+    #       #   p "駅なし"
+    #       # end
+    #       #
+    #   stations << station if station
+    # end
+    #
+    #    gon.stations = stations
    
    ######################
    # 行動内訳履歴を表示
@@ -1088,10 +1088,10 @@ class TrustManagementsController < ApplicationController
    check_owner = {}
    
    @report.trust_attack_month_report_actions.each do |action_rec|
-     
+   
      owner_approach = action_rec.owner_approach
      owner_rec = owner_approach.owner
-     
+   
      case owner_approach.approach_kind.code
      when '0010', '0020' # 訪問
        icon = '/assets/marker_blue.png'
@@ -1104,17 +1104,17 @@ class TrustManagementsController < ApplicationController
      else
        icon = '/assets/marker_gray.png'
      end
-     
+   
      # 地図へ表示するアイコンの情報
      approach_owner = {
          :id=>owner_rec.id, :name=>owner_rec.name, :latitude=>owner_rec.latitude, :longitude=>owner_rec.longitude, :icon=>icon
      }
-     
+   
      unless check_owner[approach_owner[:id]]
        approach_owners.push(approach_owner)
        check_owner[approach_owner[:id]] = true
      end     
-     
+   
      # jqgridに表示する一覧の情報
      row_data = {}
      row_data[:owner_id] = owner_approach.owner_id
