@@ -51,19 +51,11 @@ class TrustManagementsController < ApplicationController
     visit_num_meet = 0
     visit_num_suggestion = 0
     
-    visit_owners_absence = []
-    visit_owners_meet = []
-    visit_owners_suggestion = []
-    
     dm_num_send = 0
     dm_num_recv = 0
-    dm_owners_send = []
-    dm_owners_recv = []
 
     tel_num_call = 0
     tel_num_talk = 0
-    tel_owners_call = []
-    tel_owners_talk = []
     
     # 履歴情報の初期化
     TrustAttackMonthReportAction.delete_all(['trust_attack_month_report_id = ? ', report.id])
@@ -87,18 +79,15 @@ class TrustManagementsController < ApplicationController
         if rec.code == '0010'
           # 留守
           visit_num_all = visit_num_all + 1
-          visit_owners_absence << rec.owner_id
         elsif rec.code == '0020'
           # 面談
           visit_num_all = visit_num_all + 1
         	visit_num_meet = visit_num_meet + 1
-          visit_owners_meet << rec.owner_id # 在宅
         elsif rec.code == '0025'
           # 提案
           visit_num_all = visit_num_all + 1
         	visit_num_meet = visit_num_meet + 1
           visit_num_suggestion = visit_num_suggestion + 1
-          visit_owners_suggestion << rec.owner_id # 提案
         end
       
       when '0030', '0035' then
@@ -106,11 +95,9 @@ class TrustManagementsController < ApplicationController
         if rec.code == '0030'
           # DM送付
           dm_num_send = dm_num_send + 1
-          dm_owners_send << rec.owner_id
         elsif rec.code == '0035'
           # DM反響
           dm_num_recv = dm_num_recv + 1
-          dm_owners_recv << rec.owner_id
         end
               
       when '0040', '0045' then
@@ -120,11 +107,9 @@ class TrustManagementsController < ApplicationController
       	# ＤＭの反響だった時
         if rec.code == '0040'
     			tel_num_call = tel_num_call + 1
-          tel_owners_call << rec.owner_id
         elsif rec.code == '0045'
     			tel_num_call = tel_num_call + 1
     			tel_num_talk = tel_num_talk + 1
-          tel_owners_talk << rec.owner_id
         end
         
       else
@@ -270,19 +255,19 @@ class TrustManagementsController < ApplicationController
     report.rank_z = rank_z
   
     # ID一覧の設定
-    report.visit_owners_absence = visit_owners_absence.join(',')
-    report.visit_owners_meet = visit_owners_meet.join(',')
-    report.visit_owners_suggestion = visit_owners_suggestion.join(',')
-    report.dm_owners_send = dm_owners_send.join(',')
-    report.dm_owners_recv = dm_owners_recv.join(',')
-    report.tel_owners_call = tel_owners_call.join(',')
-    report.tel_owners_talk = tel_owners_talk.join(',')
-  
-    report.rank_s_trusts = rank_s_trusts.join(',')
-    report.rank_a_trusts = rank_a_trusts.join(',')
-    report.rank_b_trusts = rank_b_trusts.join(',')
-    report.rank_c_trusts = rank_c_trusts.join(',')
-    report.rank_z_trusts = rank_z_trusts.join(',')
+    # report.visit_owners_absence = visit_owners_absence.join(',')
+    # report.visit_owners_meet = visit_owners_meet.join(',')
+    # report.visit_owners_suggestion = visit_owners_suggestion.join(',')
+    # report.dm_owners_send = dm_owners_send.join(',')
+    # report.dm_owners_recv = dm_owners_recv.join(',')
+    # report.tel_owners_call = tel_owners_call.join(',')
+    # report.tel_owners_talk = tel_owners_talk.join(',')
+    #
+    # report.rank_s_trusts = rank_s_trusts.join(',')
+    # report.rank_a_trusts = rank_a_trusts.join(',')
+    # report.rank_b_trusts = rank_b_trusts.join(',')
+    # report.rank_c_trusts = rank_c_trusts.join(',')
+    # report.rank_z_trusts = rank_z_trusts.join(',')
   
     # 全件数を取得する
     sql = ""
@@ -1115,17 +1100,21 @@ class TrustManagementsController < ApplicationController
        check_owner[approach_owner[:id]] = true
      end     
    
-     # jqgridに表示する一覧の情報
-     row_data = {}
-     row_data[:owner_id] = owner_approach.owner_id
-     row_data[:approach_kind] = owner_approach.approach_kind.name
-     row_data[:approach_date] = owner_approach.approach_date
-     row_data[:approach_content] = owner_approach.content
-     row_data[:owner_code] = owner_approach.owner.code
-     row_data[:owner_name] = owner_approach.owner.name
-     row_data[:owner_address] = owner_approach.owner.address
+     # アプローチ種別が面談・電話会話・DM反響・提案の時のみ行動詳細に表示
+     case owner_approach.approach_kind.code
+     when '0020', '0035', '0045', '0025'
+       # jqgridに表示する一覧の情報(訪問の面談・提案・TELの応答のみ表示。それ以外は対象外)
+       row_data = {}
+       row_data[:owner_id] = owner_approach.owner_id
+       row_data[:approach_kind] = owner_approach.approach_kind.name
+       row_data[:approach_date] = owner_approach.approach_date
+       row_data[:approach_content] = owner_approach.content
+       row_data[:owner_code] = owner_approach.owner.code
+       row_data[:owner_name] = owner_approach.owner.name
+       row_data[:owner_address] = owner_approach.owner.address
 
-     grid_data.push(row_data)
+       grid_data.push(row_data)
+     end
    end
    
    gon.grid_data = grid_data
@@ -1134,8 +1123,14 @@ class TrustManagementsController < ApplicationController
    # layoutでヘッダを非表示
    @header_hidden = true
    
-   # コンボボックス
-   @combo_approach_kinds = jqgrid_combo_approach_kind
+   # 一覧をしぼったコンボボックスの表示
+   result = ":"
+   ApproachKind.where("code in ('0020', '0035', '0045', '0025')").order(:sequence).each do |obj|
+     result = result + ";" + obj.name + ":" + obj.name
+   end
+   result
+      
+   @combo_approach_kinds = result
   end  
   
   def biru_user_trust_update

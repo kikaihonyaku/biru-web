@@ -311,8 +311,22 @@ function createMarker_trust_report(opts, open_flg){
 		$(function(){
 			jqgrid_create(grid_name,  grid_model,  gon.grid_data,  jqgrid_opt);
 			
+			// 非表示を解除
+ 			jQuery("#building_table").navGrid('#building_pager',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager',{
+ 			        caption:"", position:"first", onClickButton: function(){
+					 
+ 						// 建物非表示を解除
+ 						for(var item in owner_arr){
+ 						    owner_arr[item].set("visible", true);
+ 						 };
+					 
+ 					 }
+ 				 });
+				 
+			
+			// フィルタにあるものだけ絞り込み
 			jQuery("#building_table").navGrid('#building_pager',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager',{
-			        caption:"地図に反映", position:"last", onClickButton: function(){
+			        caption:"", position:"first", onClickButton: function(){
 						 
 						// 建物非表示
 						for(var item in owner_arr){
@@ -335,6 +349,8 @@ function createMarker_trust_report(opts, open_flg){
 						 
 					 }
 				 });
+				 
+				 
 				 
 				 
 		});
@@ -384,7 +400,7 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= image_tag('marker_green.png') %></td>
 					<td style="text-align:center;">ＤＭ（うち反響）</td>
 					<td style="text-align:center;"><%= if @report.dm_plan then @report.dm_plan else '-' end %></td>
-					<td style="text-align:center;"><%= @report.visit_num_all %>&nbsp;&nbsp;(<%= @report.visit_num_meet %>)</td>
+					<td style="text-align:center;"><%= @report.dm_num_send %>&nbsp;&nbsp;(<%= @report.dm_num_recv %>)</td>
 					<td style="text-align:center;"><%= disp_growth_rate(@report.dm_plan, @report.visit_num_all) %></td>
 				</tr>
 				<tr>
