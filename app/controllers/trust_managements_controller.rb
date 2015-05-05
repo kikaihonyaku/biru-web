@@ -201,6 +201,7 @@ class TrustManagementsController < ApplicationController
       end
     end
     
+    
     #########################
     # レポートデータの保存
     #########################
@@ -222,7 +223,7 @@ class TrustManagementsController < ApplicationController
     report.tel_num_call = tel_num_call
     report.tel_num_talk = tel_num_talk
   
-  #  report.suggestion_plan = biru_user_monthly.trust_plan_suggestion
+    report.suggestion_plan = biru_user_monthly.trust_plan_suggestion
     report.suggestion_num = visit_num_suggestion
     report.trust_plan = biru_user_monthly.trust_plan_contract
     report.trust_num = trust_num

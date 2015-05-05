@@ -528,7 +528,7 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= if @report.suggestion_plan then @report.suggestion_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.suggestion_num %></td>
 					<td style="text-align:center;"><%= disp_growth_rate(@report.suggestion_plan, @report.suggestion_num) %></td>
-					<td style="text-align:center;">-</td>
+					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_suggestion then @biru_user_monthly_next.trust_plan_suggestion else '-' end %></td>
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000', :size=>"18x25")%></td>
@@ -598,7 +598,7 @@ function createMarker_trust_report(opts, open_flg){
 				<div id = "building_pager_approach"></div>
 			</div>
 			<div id="div_dummy_rank" style="width:45%;height:400px;float:left;">
-				<h4>今月度時点の見込み状況</h4>
+				<h4>今月のランクC以上　または　ランクが変動したもの</h4>
 				<table id="building_table_rank"></table>
 				<div id = "building_pager_rank"></div>
 			</div>
@@ -627,6 +627,7 @@ function createMarker_trust_report(opts, open_flg){
 		  	<%= f.input :trust_plan_visit, :label=>'訪問件数' %>
 		  	<%= f.input :trust_plan_dm, :label=>'ＤＭ発送件数' %>
 		  	<%= f.input :trust_plan_tel, :label=>'電話アプローチ件数' %>
+		  	<%= f.input :trust_plan_suggestion, :label=>'提案件数' %>
 		  	<%= f.input :trust_plan_contract, :label=>'受託戸数' %>
 
 			<%#= f.input :id, :as => :hidden, :input_html => {:value => @trust.id } %>

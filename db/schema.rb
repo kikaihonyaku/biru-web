@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150505073245) do
+ActiveRecord::Schema.define(:version => 20150505141458) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -35,9 +35,10 @@ ActiveRecord::Schema.define(:version => 20150505073245) do
     t.integer  "trust_plan_visit"
     t.integer  "trust_plan_dm"
     t.integer  "trust_plan_tel"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
     t.integer  "trust_plan_contract"
+    t.integer  "trust_plan_suggestion"
   end
 
   add_index "biru_user_monthlies", ["biru_user_id"], :name => "index_biru_user_monthlies_on_biru_user_id"
