@@ -1126,7 +1126,7 @@ class TrustManagementsController < ApplicationController
    
      # 地図へ表示するアイコンの情報
      rank_building = {
-         :id=>rank_rec.building_id, :name=>rank_rec.building_name, :latitude=>rank_rec.building_latitude, :longitude=>rank_rec.building_longitude, :icon=>icon
+         :id=>rank_rec.building_id, :name=>rank_rec.building_name, :latitude=>rank_rec.building_latitude, :longitude=>rank_rec.building_longitude, :icon=>icon, :owner_id=>rank_rec.owner_id
      }
    
      unless check_building[rank_building[:id]]
@@ -1153,6 +1153,8 @@ class TrustManagementsController < ApplicationController
      row_data[:change_month] = rank_rec.change_month
      row_data[:building_id] = rank_rec.building_id
      row_data[:building_name] = rank_rec.building_name
+     row_data[:owner_id] = rank_rec.owner_id
+     
      
      grid_data_rank.push(row_data)
    end
@@ -1576,6 +1578,7 @@ def report_rank_regist(month_report, trust_attack_history)
   attack_rank = TrustAttackMonthReportRank.unscoped.find_or_create_by_trust_attack_month_report_id_and_trust_id(month_report.id, trust_attack_history.trust_id)
   attack_rank.trust_attack_month_report_id = month_report.id
   attack_rank.trust_id = trust_attack_history.trust_id
+  attack_rank.owner_id = trust_attack_history.trust.owner.id
   attack_rank.change_month = trust_attack_history.month
   
 
@@ -1597,7 +1600,7 @@ def report_rank_regist(month_report, trust_attack_history)
     
   end
   
-  attack_rank.change_status = AttackState.compare_rank(trust_attack_history.attack_state_from, trust_attack_history.attack_state_to)
+  attack_rank.change_status = AttackState.compare_rank(attack_rank.attack_state_last_month, attack_rank.attack_state_this_month)
   
   building = trust_attack_history.trust.building
 

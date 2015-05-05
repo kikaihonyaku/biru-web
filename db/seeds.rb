@@ -3402,6 +3402,6 @@ init_attack_state
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5518'))
 p "a"
 generate_trust_attack_month_report('201504', BiruUser.find_by_code('4917'))
-#generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
-#generate_trust_attack_month_report('201506', BiruUser.find_by_code('4917'))
+generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
+generate_trust_attack_month_report('201506', BiruUser.find_by_code('4917'))
 

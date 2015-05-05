@@ -546,6 +546,7 @@ ActiveRecord::Schema.define(:version => 20150505073245) do
     t.integer  "change_status"
     t.string   "change_month"
     t.integer  "trust_id"
+    t.integer  "owner_id"
     t.integer  "building_id"
     t.string   "building_name"
     t.float    "building_latitude"
