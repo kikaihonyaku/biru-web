@@ -272,15 +272,28 @@ function createMarker_trust_report(opts, open_flg){
 	var notice_disp;
 	notice_disp = false;
 
-	// 一覧を表示します。
-	init_data_jqgrid();
+	// 行動履歴一覧を表示します。
+	init_data_jqgrid_approach();
 	
-	// 絞り込みテーブルを作成します。
-	//init_search_jqgrid();
+	// ランク一覧を表示します。
+	init_data_jqgrid_rank();
 	
-	function init_data_jqgrid(){
+	
+	
+	// resize
+    $(window).bind('resize', function () {
+        $('#building_table_approach').setGridWidth($(window).width() * 0.45 )
+        $('#building_pager_approach').setGridWidth($(window).width() * 0.45 )
+
+        $('#building_table_rank').setGridWidth($(window).width() * 0.45 )
+        $('#building_pager_rank').setGridWidth($(window).width() * 0.45 )
+					
+    }).trigger('resize');
+	
+
+	function init_data_jqgrid_approach(){
 		// 列名の定義
- 		var grid_name = [
+ 		var grid_name_approach = [
 			  "貸主ID",
 			  "アプローチ種別",
 			  "貸主名",
@@ -290,29 +303,29 @@ function createMarker_trust_report(opts, open_flg){
 		
 		
 		// 列属性の定義
-		var grid_model = [
+		var grid_model_approach = [
 		  {name:"owner_id",  index:"owner_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
    		 , {name:"approach_kind",  index:"approach_kind",  width:50,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_approach_kinds %>" }}
   		 , {name:"owner_name",  index:"owner_name",  width:70,  align:"center",  classes:"no_class"}
   		 , {name:"approach_date",  index:"approach_date",  width:50,  align:"center",  classes:"no_class"}
-  		 , {name:"approach_content",  index:"approach_content",   align:"left",  classes:"no_class"}
+  		 , {name:"approach_content",  index:"approach_content",  width:100,   align:"left",  classes:"no_class"}
 		];
 
 		// その他の設定
-		var jqgrid_opt = {
-			 table_name:'building_table'
-			, fotter_name:'building_pager'
-			, div_name:'div_dummy_02'
+		var jqgrid_opt_approach = {
+			 table_name:'building_table_approach'
+			, fotter_name:'building_pager_approach'
+			, div_name:'div_dummy_approach'
 			, event_type:30
 			, shrinkFit:true
 			, multiselect:false
 		};
 		
 		$(function(){
-			jqgrid_create(grid_name,  grid_model,  gon.grid_data,  jqgrid_opt);
+			jqgrid_create(grid_name_approach,  grid_model_approach,  gon.grid_data_approach,  jqgrid_opt_approach);
 			
 			// 非表示を解除
- 			jQuery("#building_table").navGrid('#building_pager',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager',{
+ 			jQuery("#building_table_approach").navGrid('#building_pager_approach',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_approach',{
  			        caption:"", position:"first", onClickButton: function(){
 					 
  						// 建物非表示を解除
@@ -325,7 +338,7 @@ function createMarker_trust_report(opts, open_flg){
 				 
 			
 			// フィルタにあるものだけ絞り込み
-			jQuery("#building_table").navGrid('#building_pager',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager',{
+			jQuery("#building_table_approach").navGrid('#building_pager_approach',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_approach',{
 			        caption:"", position:"first", onClickButton: function(){
 						 
 						// 建物非表示
@@ -334,7 +347,7 @@ function createMarker_trust_report(opts, open_flg){
 						 };
 						 
 						 //var bounds = new google.maps.LatLngBounds();
-						 var table_div = $('#building_table');
+						 var table_div = $('#building_table_approach');
 						 var row_data = table_div.getRowData();
 						 
 						 for(var j in  row_data){
@@ -349,22 +362,85 @@ function createMarker_trust_report(opts, open_flg){
 						 
 					 }
 				 });
-				 
-				 
-				 
-				 
 		});
+	 }
+	 
+
+ 	function init_data_jqgrid_rank(){
+ 		// 列名の定義
+  		var grid_name_rank = [
+ 			  "建物ID",
+ 			  "先月ランク",
+ 			  "今月ランク",
+ 			  "変更",
+			  "最終変更月",
+ 			  "物件名",
+ 		];
 		
-		// resize
-	    $(window).bind('resize', function () {
-	        $('#building_table').setGridWidth($(window).width() - 40 )
-	                    .setGridHeight($(window).height() * 0.4 - 50);
-						
-	        $('#building_pager').setGridWidth($(window).width() - 40 )
-	                    .setGridHeight($(window).height() * 0.4 - 50);
-						
-	    }).trigger('resize');
-	 }	
+ 		// 列属性の定義
+ 		var grid_model_rank = [
+ 		  {name:"building_id",  index:"building_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+    		 , {name:"attack_state_last_month",  index:"attack_state_last_month",  width:20,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_rank %>" }}
+    		 , {name:"attack_state_this_month",  index:"attack_state_this_month",  width:20,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_rank %>" }}
+   		 , {name:"change_status",  index:"change_status",  width:40,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= ":;ランクアップ:ランクアップ;変更なし:変更なし;ランクダウン:ランクダウン;不明:不明" %>" }}
+ 	   	, {name:"change_month",  index:"change_month",  width:40,  align:"left",  classes:"no_class"}
+   		 , {name:"building_name",  index:"building_name",  width:100,  align:"left",  classes:"no_class"}
+ 		];
+
+ 		// その他の設定
+ 		var jqgrid_opt_rank = {
+ 			 table_name:'building_table_rank'
+ 			, fotter_name:'building_pager_rank'
+ 			, div_name:'div_dummy_rank'
+ 			, event_type:30
+ 			, shrinkFit:true
+ 			, multiselect:false
+ 		};
+		
+ 		$(function(){
+ 			jqgrid_create(grid_name_rank,  grid_model_rank,  gon.grid_data_rank,  jqgrid_opt_rank);
+			
+ 			// 非表示を解除
+  			jQuery("#building_table_rank").navGrid('#building_pager_rank',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_rank',{
+  			        caption:"", position:"first", onClickButton: function(){
+					 
+  						// 建物非表示を解除
+  						for(var item in owner_arr){
+  						    owner_arr[item].set("visible", true);
+  						 };
+					 
+  					 }
+  				 });
+				 
+			
+ 			// フィルタにあるものだけ絞り込み
+ 			jQuery("#building_table_rank").navGrid('#building_pager_rank',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_rank',{
+ 			        caption:"", position:"first", onClickButton: function(){
+						 
+ 						// 建物非表示
+ 						for(var item in owner_arr){
+ 						    owner_arr[item].set("visible", false);
+ 						 };
+						 
+ 						 //var bounds = new google.maps.LatLngBounds();
+ 						 var table_div = $('#building_table_rank');
+ 						 var row_data = table_div.getRowData();
+						 
+ 						 for(var j in  row_data){
+							
+ 							 owner = owner_arr[row_data[j].owner_id];
+ 							 if(owner != null){
+ 	 							 owner.set("visible", true);
+								 
+ 							 }
+							 
+ 						 }
+						 
+ 					 }
+ 				 });
+ 		});
+ 	 }	
+	 
 </script>
 
 
@@ -372,20 +448,20 @@ function createMarker_trust_report(opts, open_flg){
 <% end %>
 <div style="padding-left:20px;">
 	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:150px;"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %></span></h3>
-	<div style="border-width:3px; border-style:solid; border-color:silver;width:800px;float:left;margin-right:20px;float:left">
+	<div style="border-width:3px; border-style:solid; border-color:silver;width:800px;float:left;margin-right:20px;float:left;margin-bottom:20px;">
 		<div id="map_canvas" style="width:100%;height:500px;border-color:blue"></div>
 	</div>
 	
 	<div style="float:left;margin-bottom:0px;margin-right:20px;">
-		<h4>今月度の行動</h4>
 		<table class="table table-bordered" style="width:500px;">
 			<thead>
 				<tr class="active">
 					<td style="font-weight:bold"></td>
-					<td style="font-weight:bold;text-align:center">種別</td>
+					<td style="font-weight:bold;text-align:center">今月度の行動</td>
 					<td style="font-weight:bold;text-align:center">計画</td>
 					<td style="font-weight:bold;text-align:center">実績</td>
 					<td style="font-weight:bold;text-align:center">達成率</td>
+					<td style="font-weight:bold;text-align:center"><a data-toggle="modal" href="#myModal"  >翌月度の計画</a></td>
 				</tr>
 			</thead>
 			<tbody>
@@ -395,6 +471,8 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= if @report.visit_plan then @report.visit_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.visit_num_all %>&nbsp;&nbsp;(<%= @report.visit_num_meet %>)</td>
 					<td style="text-align:center;"><%= disp_growth_rate(@report.visit_plan, @report.visit_num_all) %></td>
+					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_visit then @biru_user_monthly_next.trust_plan_visit else '-' end %></td>
+					
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_green.png') %></td>
@@ -402,6 +480,8 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= if @report.dm_plan then @report.dm_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.dm_num_send %>&nbsp;&nbsp;(<%= @report.dm_num_recv %>)</td>
 					<td style="text-align:center;"><%= disp_growth_rate(@report.dm_plan, @report.visit_num_all) %></td>
+					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_dm then @biru_user_monthly_next.trust_plan_dm else '-' end %></td>
+					
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
@@ -409,6 +489,8 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= if @report.tel_plan then @report.tel_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.tel_num_call %>&nbsp;&nbsp;(<%= @report.tel_num_talk %>)</td>
 					<td style="text-align:center;"><%= disp_growth_rate(@report.tel_plan, @report.tel_num_call) %></td>
+					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_tel then @biru_user_monthly_next.trust_plan_tel else '-' end %></td>
+					
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_red.png') %></td>
@@ -416,6 +498,7 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= if @report.suggestion_plan then @report.suggestion_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.suggestion_num %></td>
 					<td style="text-align:center;"><%= disp_growth_rate(@report.suggestion_plan, @report.suggestion_num) %></td>
+					<td style="text-align:center;">-</td>
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000', :size=>"18x25")%></td>
@@ -423,6 +506,7 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= if @report.trust_plan then @report.trust_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.trust_num %>&nbsp;&nbsp;(<%= @report.trust_num_jisya %>)</td>
 					<td style="text-align:center;"><%= disp_growth_rate(@report.trust_plan, @report.trust_num) %></td>
+					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_contract then @biru_user_monthly_next.trust_plan_contract else '-' end %></td>
 				</tr>
 			</tbody>
 		</table>
@@ -430,42 +514,65 @@ function createMarker_trust_report(opts, open_flg){
 	
 
 	<div style="float:left;">
-		<h4>翌月度の計画（<a data-toggle="modal" href="#myModal"  >編集</a>）</h4>
-		<table class="table table-bordered" style="width:270px;">
+		<table class="table table-bordered" style="width:500px;">
 			<thead>
 				<tr class="active">
-					<td style="font-weight:bold;text-align:center">種別</td>
-					<td style="font-weight:bold;text-align:center">計画</td>
+					<td style="font-weight:bold"></td>
+					<td style="font-weight:bold;text-align:center">見込みランク</td>
+					<td style="font-weight:bold;text-align:center">件数</td>
+					<td style="font-weight:bold;text-align:center">前月度からの増減</td>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td style="text-align:center;">訪問</td>
-					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_visit then @biru_user_monthly_next.trust_plan_visit else '-' end %></td>
+					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:left;">S：契約日決定</td>
+					<td style="text-align:center;"><%= @report.rank_s %></td>
+					<td style="text-align:center;">+20</td>
 				</tr>
 				<tr>
-					<td style="text-align:center;">ＤＭ</td>
-					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_dm then @biru_user_monthly_next.trust_plan_dm else '-' end %></td>
+					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:left;">A：契約予定で提案中</td>
+					<td style="text-align:center;"><%= @report.rank_a %></td>
+					<td style="text-align:center;">+20</td>
 				</tr>
 				<tr>
-					<td style="text-align:center;">ＴＥＬ</td>
-					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_tel then @biru_user_monthly_next.trust_plan_tel else '-' end %></td>
+					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:left;">B：提案書は提出可</td>
+					<td style="text-align:center;"><%= @report.rank_b %></td>
+					<td style="text-align:center;">+20</td>
 				</tr>
 				<tr>
-					<td style="text-align:center;">受託（他社）</td>
-					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_contract then @biru_user_monthly_next.trust_plan_contract else '-' end %></td>
+					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:left;">C：権者に物件ヒアリング</td>
+					<td style="text-align:center;"><%= @report.rank_c %></td>
+					<td style="text-align:center;">+20</td>
+				</tr>
+				<tr>
+					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:left;">Z：成約済</td>
+					<td style="text-align:center;"><%= @report.rank_z %></td>
+					<td style="text-align:center;">+20</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
 	
 	
-	
-	<div id="div_dummy_02" style="clear:both;width:40%;height:400px;padding-top:5px;">
-		<h4>今月度の行動詳細</h4>
-		<table id="building_table"></table>
-		<div id = "building_pager"></div>
+	<div style="clear:both">
+			<div id="div_dummy_approach" style="width:45%;height:400px;float:left;margin-right:20px;">
+				<h4>今月度の行動詳細</h4>
+				<table id="building_table_approach"></table>
+				<div id = "building_pager_approach"></div>
+			</div>
+			<div id="div_dummy_rank" style="width:45%;height:400px;float:left;">
+				<h4>今月度の見込み状況</h4>
+				<table id="building_table_rank"></table>
+				<div id = "building_pager_rank"></div>
+			</div>
+			
 	</div>
+	
 </div>
 
 <!-- モーダルダイアログ -->

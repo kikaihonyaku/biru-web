@@ -306,16 +306,6 @@ class ApplicationController < ActionController::Base
     result
   end
   
-
-  # jqgridの営業所リストを返す
-  def jqgrid_combo_shop
-    result = ":"
-    Shop.order(:group_id,  :area_id).each do |obj|
-      result = result + ";" + obj.name + ":" + obj.name
-    end
-    result
-  end
-
   # jqgridの建物種別のリストを返す
   def jqgrid_combo_build_type
     result = ":"
@@ -339,6 +329,14 @@ class ApplicationController < ActionController::Base
     result = ":"
     ApproachKind.order(:sequence).each do |obj|
       result = result + ";" + obj.name + ":" + obj.name
+    end
+    result
+  end
+
+  def jqgrid_combo_rank
+    result = ":"
+    AttackState.all.each do |obj|
+      result = result + ";" + obj.code + ":" + obj.name
     end
     result
   end

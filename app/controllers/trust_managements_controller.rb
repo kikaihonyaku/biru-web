@@ -135,14 +135,7 @@ class TrustManagementsController < ApplicationController
     rank_y = 0
     rank_z = 0
     
-    rank_s_trusts = []
-    rank_a_trusts = []
-    rank_b_trusts = []
-    rank_c_trusts = []
-    rank_z_trusts = []
-    
-
-    buildings = []
+    TrustAttackMonthReportRank.unscoped.where('trust_attack_month_report_id = ? ', report.id).update_all(:delete_flg=>true)
     order_hash = TrustAttackStateHistory.joins(:trust).joins(:attack_state_to).where("month <= ?", month).where("trusts.biru_user_id = ?", user.id).group("trusts.id").maximum("month")
     order_hash.keys.each do |trust_id|
 
@@ -152,52 +145,26 @@ class TrustManagementsController < ApplicationController
       # ↓見込みランクの絞り込みはクエリのwhere句の中でなく、集計結果に対して行う。
       # where句でやるとそのランクがある中での最大をとってしまうので、仮にその後に別のランクが登録されていたら本来は必要ないのにそのレコードがとれてしまうから
       case trust_attack_history.attack_state_to.code
-      when 'S', 'A', 'B'
-
-        if trust_attack_history.trust
-          biru = trust_attack_history.trust.building
-          biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
-          biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
-          buildings << biru
-        end
-      
-
-      when 'Z'
-        # 成約になった物件は、当月のみ表示対象
-        
-        if trust_attack_history.month.to_s == month.to_s
-          
-          biru = trust_attack_history.trust.building
-          biru.tmp_manage_type_icon = trust_attack_history.attack_state_to.code
-          biru.tmp_build_type_icon = trust_attack_history.attack_state_to.icon
-          buildings << biru
-
-          # 受託実績戸数を入力
-          if trust_attack_history.trust_oneself == true
-            
-            trust_num_oneself = trust_num_oneself + trust_attack_history.room_num
-          else
-            trust_num = trust_num + trust_attack_history.room_num
-          end
-
-        end
-
+      when 'S', 'A', 'B', 'C', 'Z'
+        # 見込みランクがS・A・B・C・Zのいずれかの時はランク出力対象として保存
+        report_rank_regist(report, trust_attack_history)
       else
+        # 上記のランク以外でも、今月度にランクの変更があったものは出力対象として保存する。
+        if trust_attack_history.month.to_s == month.to_s
+          report_rank_regist(report, trust_attack_history)
+        end
+        
       end
-
+      
       case trust_attack_history.attack_state_to.code
       when 'S' then
         rank_s = rank_s + 1
-        rank_s_trusts << trust_id
       when 'A' then
         rank_a = rank_a + 1
-        rank_a_trusts << trust_id
       when 'B' then
         rank_b = rank_b + 1
-        rank_b_trusts << trust_id
       when 'C' then
         rank_c = rank_c + 1
-        rank_c_trusts << trust_id
       when 'D' then
         rank_d = rank_d + 1
       when 'W' then
@@ -208,7 +175,17 @@ class TrustManagementsController < ApplicationController
         rank_y = rank_y + 1
       when 'Z' then
         rank_z = rank_z + 1
-        rank_z_trusts << trust_id
+        
+        # 成約になった物件は、当月のみ集計対象
+        if trust_attack_history.month.to_s == month.to_s
+          # 受託実績戸数を入力
+          if trust_attack_history.trust_oneself == true
+            trust_num_oneself = trust_num_oneself + trust_attack_history.room_num
+          else
+            trust_num = trust_num + trust_attack_history.room_num
+          end
+        end
+        
       else
 
       end
@@ -253,21 +230,6 @@ class TrustManagementsController < ApplicationController
     report.rank_x = rank_x
     report.rank_y = rank_y
     report.rank_z = rank_z
-  
-    # ID一覧の設定
-    # report.visit_owners_absence = visit_owners_absence.join(',')
-    # report.visit_owners_meet = visit_owners_meet.join(',')
-    # report.visit_owners_suggestion = visit_owners_suggestion.join(',')
-    # report.dm_owners_send = dm_owners_send.join(',')
-    # report.dm_owners_recv = dm_owners_recv.join(',')
-    # report.tel_owners_call = tel_owners_call.join(',')
-    # report.tel_owners_talk = tel_owners_talk.join(',')
-    #
-    # report.rank_s_trusts = rank_s_trusts.join(',')
-    # report.rank_a_trusts = rank_a_trusts.join(',')
-    # report.rank_b_trusts = rank_b_trusts.join(',')
-    # report.rank_c_trusts = rank_c_trusts.join(',')
-    # report.rank_z_trusts = rank_z_trusts.join(',')
   
     # 全件数を取得する
     sql = ""
@@ -986,7 +948,6 @@ class TrustManagementsController < ApplicationController
     end
     
     # レポート情報の取得
-    #result = get_report_info(@month, @biru_trust_user)
     @report = TrustAttackMonthReport.find_or_create_by_month_and_biru_user_id(@month, @biru_trust_user.id)
     
     # 来月の計画・実績データを取得
@@ -1068,7 +1029,7 @@ class TrustManagementsController < ApplicationController
    ######################
    # 行動内訳履歴を表示
    ######################
-   grid_data = []
+   grid_data_approach = []
    approach_owners = []
    check_owner = {}
    
@@ -1113,15 +1074,12 @@ class TrustManagementsController < ApplicationController
        row_data[:owner_name] = owner_approach.owner.name
        row_data[:owner_address] = owner_approach.owner.address
 
-       grid_data.push(row_data)
+       grid_data_approach.push(row_data)
      end
    end
    
-   gon.grid_data = grid_data
+   gon.grid_data_approach = grid_data_approach
    gon.approach_owners = approach_owners
-   
-   # layoutでヘッダを非表示
-   @header_hidden = true
    
    # 一覧をしぼったコンボボックスの表示
    result = ":"
@@ -1131,6 +1089,43 @@ class TrustManagementsController < ApplicationController
    result
       
    @combo_approach_kinds = result
+   
+   
+   
+   ######################
+   # ランクデータを表示
+   ######################
+   grid_data_rank = []
+   @report.trust_attack_month_report_ranks.each do |rank_rec|
+     
+     row_data = {}
+     row_data[:attack_state_last_month] = rank_rec.attack_state_last_month.code
+     row_data[:attack_state_this_month] = rank_rec.attack_state_this_month.code
+     
+     case rank_rec.change_status
+     when 0
+       row_data[:change_status] = "変更なし"
+     when 1
+       row_data[:change_status] = "ランクダウン"
+     when 2
+       row_data[:change_status] = "ランクアップ"
+     else
+       row_data[:change_status] = "不明"
+     end
+       
+     row_data[:change_month] = rank_rec.change_month
+     row_data[:building_id] = rank_rec.building_id
+     row_data[:building_name] = rank_rec.building_name
+     
+     grid_data_rank.push(row_data)
+   end
+   gon.grid_data_rank = grid_data_rank
+   
+   @combo_rank = jqgrid_combo_rank
+   
+   # layoutでヘッダを非表示
+   @header_hidden = true
+   
   end  
   
   def biru_user_trust_update
@@ -1533,6 +1528,50 @@ def check_report_auth(login_user, access_user)
   return true if login_user.attack_all_search == true
   
   return false
+end 
+
+
+# 受託月報の見込み物件登録用
+def report_rank_regist(month_report, trust_attack_history)
+	
+  attack_rank = TrustAttackMonthReportRank.unscoped.find_or_create_by_trust_attack_month_report_id_and_trust_id(month_report.id, trust_attack_history.trust_id)
+  attack_rank.trust_attack_month_report_id = month_report.id
+  attack_rank.trust_id = trust_attack_history.trust_id
+  attack_rank.change_month = trust_attack_history.month
+  
+
+  attack_rank.attack_state_this_month_id = trust_attack_history.attack_state_to.id
+  
+  # 先月のランクを取得する。(存在しない時は、最新のランクと変わっていないということなので今月時点の最新ランクを設定する)
+  last_month = (Date.strptime(month_report.month + "01", "%Y%m%d") << 1).strftime("%Y%m")
+  last_month_state = TrustAttackStateHistory.find_by_trust_id_and_month(trust_attack_history.trust_id, last_month)
+  if last_month_state
+    attack_rank.attack_state_last_month_id = last_month_state.attack_state_to.id
+  else
+    
+    # もし過去のランクが１件も存在しなければ、当初は未設定ということ。そうでなければそれ以降の変更がないということで今月時点の最新ランクを設定する
+    if TrustAttackStateHistory.where("trust_id = " + trust_attack_history.trust_id.to_s + " and month < '" + last_month + "'").count == 0
+      attack_rank.attack_state_last_month_id = AttackState.find_by_code("X").id
+    else
+      attack_rank.attack_state_last_month_id = trust_attack_history.attack_state_to.id
+    end
+    
+  end
+  
+  attack_rank.change_status = AttackState.compare_rank(trust_attack_history.attack_state_from, trust_attack_history.attack_state_to)
+  
+  building = trust_attack_history.trust.building
+
+  attack_rank.building_id = building.id
+  attack_rank.building_name = building.name
+  
+  attack_rank.building_latitude = building.latitude
+  attack_rank.building_longitude = building.longitude
+  
+  attack_rank.delete_flg = false
+
+  attack_rank.save!
+
 end
 
 end

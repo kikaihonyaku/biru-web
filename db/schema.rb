@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150502080138) do
+ActiveRecord::Schema.define(:version => 20150504102613) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(:version => 20150502080138) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.string   "icon"
+    t.integer  "score"
   end
 
   create_table "biru_user_monthlies", :force => true do |t|
@@ -526,6 +527,25 @@ ActiveRecord::Schema.define(:version => 20150502080138) do
   add_index "trust_attack_month_report_actions", ["owner_approach_id"], :name => ":trust_attack_month_report_owner_approach_pk"
   add_index "trust_attack_month_report_actions", ["trust_attack_month_report_id"], :name => ":trust_attack_month_report_id_pk"
 
+  create_table "trust_attack_month_report_ranks", :force => true do |t|
+    t.integer  "trust_attack_month_report_id"
+    t.integer  "attack_state_last_month_id"
+    t.integer  "attack_state_this_month_id"
+    t.integer  "change_status"
+    t.string   "change_month"
+    t.integer  "trust_id"
+    t.integer  "building_id"
+    t.string   "building_name"
+    t.float    "building_latitude"
+    t.float    "building_longitude"
+    t.boolean  "delete_flg",                   :default => false
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
+  end
+
+  add_index "trust_attack_month_report_ranks", ["building_id"], :name => "index_trust_attack_month_report_ranks_on_building_id"
+  add_index "trust_attack_month_report_ranks", ["trust_attack_month_report_id"], :name => "trsut_attack_report_rank_report_id"
+
   create_table "trust_attack_month_reports", :force => true do |t|
     t.string   "month"
     t.integer  "biru_user_id"
@@ -544,8 +564,8 @@ ActiveRecord::Schema.define(:version => 20150502080138) do
     t.integer  "rank_c_over"
     t.integer  "rank_d_over"
     t.integer  "rank_all"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
     t.integer  "trust_plan"
     t.integer  "trust_num_jisya"
     t.integer  "rank_w"
@@ -560,18 +580,6 @@ ActiveRecord::Schema.define(:version => 20150502080138) do
     t.integer  "tel_num_talk"
     t.integer  "suggestion_plan"
     t.integer  "suggestion_num"
-    t.text     "visit_owners_absence"
-    t.text     "visit_owners_meet"
-    t.text     "visit_owners_suggestion"
-    t.text     "dm_owners_send"
-    t.text     "dm_owners_recv"
-    t.text     "tel_owners_call"
-    t.text     "tel_owners_talk"
-    t.text     "rank_s_trusts"
-    t.text     "rank_a_trusts"
-    t.text     "rank_b_trusts"
-    t.text     "rank_c_trusts"
-    t.text     "rank_z_trusts"
   end
 
   create_table "trust_attack_state_histories", :force => true do |t|

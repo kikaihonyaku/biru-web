@@ -523,21 +523,22 @@ end
 # アタックステータス
 def init_attack_state
   arr = []
-  arr.push({:code=>'S', :name=>'S：契約日決定',:disp_order=>'1', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
-  arr.push({:code=>'A', :name=>'A：契約予定で提案中',:disp_order=>'2', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
-  arr.push({:code=>'B', :name=>'B：提案書は提出可',:disp_order=>'3', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
-  arr.push({:code=>'C', :name=>'C：権者に物件ヒアリング',:disp_order=>'4', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
-  arr.push({:code=>'D', :name=>'D：見込みとして追客対象',:disp_order=>'5', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
-  arr.push({:code=>'W', :name=>'W：要警戒',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=W|00FF00|000000'})
-  arr.push({:code=>'X', :name=>'X：未設定',:disp_order=>'6', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
-  arr.push({:code=>'Y', :name=>'Y：不成立',:disp_order=>'7', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
-  arr.push({:code=>'Z', :name=>'Z：成約済',:disp_order=>'8', :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
+  arr.push({:code=>'S', :name=>'S：契約日決定',:disp_order=>'1', :score=>90, :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|FFFF00|000000'})
+  arr.push({:code=>'A', :name=>'A：契約予定で提案中',:disp_order=>'2', :score=>80, :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=A|00FF00|000000'})
+  arr.push({:code=>'B', :name=>'B：提案書は提出可',:disp_order=>'3', :score=>70, :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=B|00FFFF|000000'})
+  arr.push({:code=>'C', :name=>'C：権者に物件ヒアリング',:disp_order=>'4', :score=>60, :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=C|00FF00|000000'})
+  arr.push({:code=>'D', :name=>'D：見込みとして追客対象',:disp_order=>'5', :score=>50, :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=D|00FF00|000000'})
+  arr.push({:code=>'W', :name=>'W：要警戒',:disp_order=>'6', :score=>40, :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=W|00FF00|000000'})
+  arr.push({:code=>'X', :name=>'X：未設定',:disp_order=>'6', :score=>0, :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|00FF00|000000'})
+  arr.push({:code=>'Y', :name=>'Y：不成立',:disp_order=>'7', :score=>0, :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Y|00FF00|000000'})
+  arr.push({:code=>'Z', :name=>'Z：成約済',:disp_order=>'8', :score=>100, :icon=>'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000'})
 
   arr.each do |obj|
     attack_state = AttackState.find_or_create_by_code(obj[:code])
     attack_state.code = obj[:code]
     attack_state.name = obj[:name]
     attack_state.disp_order = obj[:disp_order]
+    attack_state.score = obj[:score]
     attack_state.icon = obj[:icon]
     attack_state.save!
     p attack_state
@@ -3200,7 +3201,7 @@ end
 init_approach_kind
 
 # アタックステータス登録
-# init_attack_state
+init_attack_state
 
 # システムアップデート管理
 #init_data_update
@@ -3400,5 +3401,5 @@ init_approach_kind
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5313'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5518'))
 p "a"
-generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
+generate_trust_attack_month_report('201504', BiruUser.find_by_code('4917'))
 
