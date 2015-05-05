@@ -466,7 +466,7 @@ function createMarker_trust_report(opts, open_flg){
 			</thead>
 			<tbody>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_btn_blue.png') %></td>
 					<td style="text-align:center;">訪問（うち在宅）</td>
 					<td style="text-align:center;"><%= if @report.visit_plan then @report.visit_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.visit_num_all %>&nbsp;&nbsp;(<%= @report.visit_num_meet %>)</td>
@@ -475,7 +475,7 @@ function createMarker_trust_report(opts, open_flg){
 					
 				</tr>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_green.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_btn_green.png') %></td>
 					<td style="text-align:center;">ＤＭ（うち反響）</td>
 					<td style="text-align:center;"><%= if @report.dm_plan then @report.dm_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.dm_num_send %>&nbsp;&nbsp;(<%= @report.dm_num_recv %>)</td>
@@ -484,7 +484,7 @@ function createMarker_trust_report(opts, open_flg){
 					
 				</tr>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_btn_orange.png') %></td>
 					<td style="text-align:center;">ＴＥＬ（うち応対）</td>
 					<td style="text-align:center;"><%= if @report.tel_plan then @report.tel_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.tel_num_call %>&nbsp;&nbsp;(<%= @report.tel_num_talk %>)</td>
@@ -493,7 +493,7 @@ function createMarker_trust_report(opts, open_flg){
 					
 				</tr>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_red.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_btn_red.png') %></td>
 					<td style="text-align:center;">提案</td>
 					<td style="text-align:center;"><%= if @report.suggestion_plan then @report.suggestion_plan else '-' end %></td>
 					<td style="text-align:center;"><%= @report.suggestion_num %></td>
@@ -523,33 +523,35 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="font-weight:bold;text-align:center">前月度からの増減</td>
 				</tr>
 			</thead>
+			
+
 			<tbody>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
 					<td style="text-align:left;">S：契約日決定</td>
 					<td style="text-align:center;"><%= @report.rank_s %></td>
 					<td style="text-align:center;">+20</td>
 				</tr>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_green.png') %></td>
 					<td style="text-align:left;">A：契約予定で提案中</td>
 					<td style="text-align:center;"><%= @report.rank_a %></td>
 					<td style="text-align:center;">+20</td>
 				</tr>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_purple.png') %></td>
 					<td style="text-align:left;">B：提案書は提出可</td>
 					<td style="text-align:center;"><%= @report.rank_b %></td>
 					<td style="text-align:center;">+20</td>
 				</tr>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_red.png') %></td>
 					<td style="text-align:left;">C：権者に物件ヒアリング</td>
 					<td style="text-align:center;"><%= @report.rank_c %></td>
 					<td style="text-align:center;">+20</td>
 				</tr>
 				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_blue.png') %></td>
+					<td style="text-align:center;"><%= image_tag('marker_white.png') %></td>
 					<td style="text-align:left;">Z：成約済</td>
 					<td style="text-align:center;"><%= @report.rank_z %></td>
 					<td style="text-align:center;">+20</td>

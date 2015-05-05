@@ -58,19 +58,29 @@ class TrustManagementsController < ApplicationController
     tel_num_talk = 0
     
     # 履歴情報の初期化
-    TrustAttackMonthReportAction.delete_all(['trust_attack_month_report_id = ? ', report.id])
-    OwnerApproach.joins(:approach_kind).where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).select("owner_approaches.owner_id, approach_kinds.code, owner_approaches.id as approach_id").each do |rec|
+    TrustAttackMonthReportAction.unscoped.where('trust_attack_month_report_id = ? ', report.id).update_all(:delete_flg=>true)
+    OwnerApproach.joins(:approach_kind).where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", user.id).select("owner_approaches.owner_id, approach_kinds.code, approach_kinds.name, owner_approaches.id as approach_id").each do |rec|
   	
-      attack_action = TrustAttackMonthReportAction.new
+      attack_action = TrustAttackMonthReportAction.unscoped.find_or_create_by_trust_attack_month_report_id_and_owner_approach_id(report.id, rec.approach_id)
       attack_action.trust_attack_month_report_id = report.id
       attack_action.owner_approach_id = rec.approach_id
       
-      # attack_action.biru_user_id = user.id
-      # attack_action.month = month
-      # attack_action.owner_id = rec.owner
-      # attack_action.content = rec.content
-      # attack_action.approach_date = rec.approach_date
-      # attack_action.approach_kind_id = rec.approach_kind_id
+      attack_action.owner_id = rec.owner.id
+      attack_action.owner_code = rec.owner.code
+      attack_action.owner_name = rec.owner.name
+      attack_action.owner_address = rec.owner.address
+      attack_action.owner_latitude = rec.owner.latitude
+      attack_action.owner_longitude = rec.owner.longitude
+      
+      
+      owner_approach = OwnerApproach.find(rec.approach_id)
+      attack_action.content = owner_approach.content
+      attack_action.approach_date = owner_approach.approach_date
+      attack_action.approach_kind_id = owner_approach.approach_kind_id
+      attack_action.approach_kind_code = rec.code
+      attack_action.approach_kind_name = rec.name
+      
+      attack_action.delete_flg = false
       attack_action.save!
       
       case rec.code
@@ -1035,25 +1045,23 @@ class TrustManagementsController < ApplicationController
    
    @report.trust_attack_month_report_actions.each do |action_rec|
    
-     owner_approach = action_rec.owner_approach
-     owner_rec = owner_approach.owner
    
-     case owner_approach.approach_kind.code
+     case action_rec.approach_kind_code
      when '0010', '0020' # 訪問
-       icon = '/assets/marker_blue.png'
+       icon = '/assets/marker_btn_blue.png'
      when '0030', '0035' # ＤＭ
-       icon = '/assets/marker_green.png'
+       icon = '/assets/marker_btn_green.png'
      when '0040', '0045' # 電話
-       icon = '/assets/marker_orange.png'
+       icon = '/assets/marker_btn_orange.png'
      when '0025' # 提案
-       icon = '/assets/marker_red.png'
+       icon = '/assets/marker_btn_red.png'
      else
        icon = '/assets/marker_gray.png'
      end
    
      # 地図へ表示するアイコンの情報
      approach_owner = {
-         :id=>owner_rec.id, :name=>owner_rec.name, :latitude=>owner_rec.latitude, :longitude=>owner_rec.longitude, :icon=>icon
+         :id=>action_rec.owner_id, :name=>action_rec.owner_name, :latitude=>action_rec.owner_latitude, :longitude=>action_rec.owner_longitude, :icon=>icon
      }
    
      unless check_owner[approach_owner[:id]]
@@ -1062,17 +1070,17 @@ class TrustManagementsController < ApplicationController
      end     
    
      # アプローチ種別が面談・電話会話・DM反響・提案の時のみ行動詳細に表示
-     case owner_approach.approach_kind.code
+     case action_rec.approach_kind_code
      when '0020', '0035', '0045', '0025'
        # jqgridに表示する一覧の情報(訪問の面談・提案・TELの応答のみ表示。それ以外は対象外)
        row_data = {}
-       row_data[:owner_id] = owner_approach.owner_id
-       row_data[:approach_kind] = owner_approach.approach_kind.name
-       row_data[:approach_date] = owner_approach.approach_date
-       row_data[:approach_content] = owner_approach.content
-       row_data[:owner_code] = owner_approach.owner.code
-       row_data[:owner_name] = owner_approach.owner.name
-       row_data[:owner_address] = owner_approach.owner.address
+       row_data[:owner_id] = action_rec.owner_id
+       row_data[:approach_kind] = action_rec.approach_kind_name
+       row_data[:approach_date] = action_rec.approach_date
+       row_data[:approach_content] = action_rec.content
+       row_data[:owner_code] = action_rec.owner_code
+       row_data[:owner_name] = action_rec.owner_name
+       row_data[:owner_address] = action_rec.owner_address
 
        grid_data_approach.push(row_data)
      end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150504102613) do
+ActiveRecord::Schema.define(:version => 20150505073245) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -520,8 +520,20 @@ ActiveRecord::Schema.define(:version => 20150504102613) do
   create_table "trust_attack_month_report_actions", :force => true do |t|
     t.integer  "trust_attack_month_report_id"
     t.integer  "owner_approach_id"
-    t.datetime "created_at",                   :null => false
-    t.datetime "updated_at",                   :null => false
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
+    t.integer  "owner_id"
+    t.string   "owner_code"
+    t.string   "owner_name"
+    t.string   "owner_address"
+    t.float    "owner_latitude"
+    t.float    "owner_longitude"
+    t.string   "content"
+    t.date     "approach_date"
+    t.integer  "approach_kind_id"
+    t.string   "approach_kind_code"
+    t.string   "approach_kind_name"
+    t.boolean  "delete_flg",                   :default => false
   end
 
   add_index "trust_attack_month_report_actions", ["owner_approach_id"], :name => ":trust_attack_month_report_owner_approach_pk"
