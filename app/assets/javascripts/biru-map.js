@@ -854,7 +854,7 @@ function win_picture(id){
 }
 
 function win_trust_report(user_id){
-    window.open('/trust_managements/trust_user_report?sid=' + user_id   , "", "width=1500,height=1500,resizable=yes,scrollbars=yes");
+    window.open('/trust_managements/trust_user_report?sid=' + user_id   , "", "width=1500,height=1100,resizable=yes,scrollbars=yes");
 }
 
 function win_attack_list_maintenance(user_id){

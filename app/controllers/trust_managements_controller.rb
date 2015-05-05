@@ -1104,7 +1104,36 @@ class TrustManagementsController < ApplicationController
    # ランクデータを表示
    ######################
    grid_data_rank = []
+   rank_buildings = []
+   check_building = {}
+   
    @report.trust_attack_month_report_ranks.each do |rank_rec|
+     
+     case rank_rec.attack_state_this_month.code
+     when 'S'
+       icon = '/assets/marker_orange.png'
+     when 'A'
+       icon = '/assets/marker_green.png'
+     when 'B'
+       icon = '/assets/marker_purple.png'
+     when 'C'
+       icon = '/assets/marker_red.png'
+     when 'Z'
+       icon = '/assets/marker_white.png'
+     else
+       icon = '/assets/marker_gray.png'
+     end
+   
+     # 地図へ表示するアイコンの情報
+     rank_building = {
+         :id=>rank_rec.building_id, :name=>rank_rec.building_name, :latitude=>rank_rec.building_latitude, :longitude=>rank_rec.building_longitude, :icon=>icon
+     }
+   
+     unless check_building[rank_building[:id]]
+       rank_buildings.push(rank_building)
+       check_building[rank_building[:id]] = true
+     end     
+     
      
      row_data = {}
      row_data[:attack_state_last_month] = rank_rec.attack_state_last_month.code
@@ -1128,6 +1157,8 @@ class TrustManagementsController < ApplicationController
      grid_data_rank.push(row_data)
    end
    gon.grid_data_rank = grid_data_rank
+   gon.rank_buildings = rank_buildings
+   
    
    @combo_rank = jqgrid_combo_rank
    
