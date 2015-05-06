@@ -358,10 +358,15 @@ function createMarker_trust_report(opts, open_flg){
  			jQuery("#building_table_approach").navGrid('#building_pager_approach',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_approach',{
  			        caption:"", position:"first", onClickButton: function(){
 					 
- 						// 建物非表示を解除
+ 						// マーカー非表示を解除
  						for(var item in owner_arr){
  						    owner_arr[item].set("visible", true);
  						 };
+						 
+   						for(var item in build_arr){
+   						    build_arr[item].set("visible", true);
+   						 };
+ 						 
 					 
  					 }
  				 });
@@ -371,9 +376,13 @@ function createMarker_trust_report(opts, open_flg){
 			jQuery("#building_table_approach").navGrid('#building_pager_approach',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_approach',{
 			        caption:"", position:"first", onClickButton: function(){
 						 
-						// 建物非表示
+						// マーカー非表示
 						for(var item in owner_arr){
 						    owner_arr[item].set("visible", false);
+						 };
+						 
+						for(var item in build_arr){
+						    build_arr[item].set("visible", false);
 						 };
 						 
 						 //var bounds = new google.maps.LatLngBounds();
@@ -434,10 +443,14 @@ function createMarker_trust_report(opts, open_flg){
   			jQuery("#building_table_rank").navGrid('#building_pager_rank',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_rank',{
   			        caption:"", position:"first", onClickButton: function(){
 					 
-  						// 建物非表示を解除
-  						for(var item in build_arr){
-  						    build_arr[item].set("visible", true);
-  						 };
+						// マーカー非表示を解除
+						for(var item in owner_arr){
+						    owner_arr[item].set("visible", true);
+						 };
+						 
+						for(var item in build_arr){
+						    build_arr[item].set("visible", true);
+						 };
 					 
   					 }
   				 });
@@ -447,10 +460,14 @@ function createMarker_trust_report(opts, open_flg){
  			jQuery("#building_table_rank").navGrid('#building_pager_rank',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_rank',{
  			        caption:"", position:"first", onClickButton: function(){
 						 
- 						// 建物非表示
- 						for(var item in build_arr){
- 						    build_arr[item].set("visible", false);
- 						 };
+						// マーカー非表示
+						for(var item in owner_arr){
+						    owner_arr[item].set("visible", false);
+						 };
+						 
+						for(var item in build_arr){
+						    build_arr[item].set("visible", false);
+						 };
 						 
  						 //var bounds = new google.maps.LatLngBounds();
  						 var table_div = $('#building_table_rank');
