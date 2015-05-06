@@ -34,7 +34,7 @@ private
      return '0%' if result == 0
      
      # それ以外
-     return "%10.2f"%(result.to_f / plan.to_f * 100.to_f ) + "%"
+     return (result.to_f / plan.to_f * 100.to_f ).round(1).to_s + "%"
      
    end
 end
