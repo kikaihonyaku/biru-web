@@ -288,6 +288,7 @@ class TrustManagementsController < ApplicationController
     sql = sql + " , owners.id as owner_id "
     sql = sql + " , owners.attack_code as owner_attack_code "
     sql = sql + " , owners.name as owner_name "
+    sql = sql + " , owners.kana as owner_kana "
     sql = sql + " , owners.address as owner_address "
     sql = sql + " , owners.memo as owner_memo "
     sql = sql + " , owners.latitude as owner_latitude "
@@ -485,6 +486,7 @@ class TrustManagementsController < ApplicationController
     sql = sql + " , trusts.id  "
     sql = sql + " , owners.attack_code  "
     sql = sql + " , owners.name  "
+    sql = sql + " , owners.kana  "
     sql = sql + " , owners.address  "
     sql = sql + " , owners.memo  "
     sql = sql + " , owners.latitude  "
@@ -540,31 +542,14 @@ class TrustManagementsController < ApplicationController
     
     # 受託担当者のリスト
     trust_user_hash = {} 
-    trust_user_hash['6365'] = {:name=>'松本', :shop_name => '草加'}
-    trust_user_hash['6487'] = {:name=>'氏家', :shop_name => '草加新田'}
-    trust_user_hash['5952'] = {:name=>'山口', :shop_name => '北千住'}
-    
-    trust_user_hash['6464'] = {:name=>'猪原', :shop_name => '南越谷'}
-    trust_user_hash['6406'] = {:name=>'末吉', :shop_name => '越谷'}
-    trust_user_hash['6425'] = {:name=>'赤坂', :shop_name => '北越谷'}
-#    trust_user_hash['xxxx'] = {:name=>'xxx', :shop_name => '春日部'}
-
-    trust_user_hash['5684'] = {:name=>'帰山', :shop_name => 'せんげん台'}
-
-    trust_user_hash['6461'] = {:name=>'中野', :shop_name => '戸田公園'}
-    trust_user_hash['7844'] = {:name=>'辻', :shop_name => '戸田'}
-#    trust_user_hash['xxxx'] = {:name=>'xxx', :shop_name => '武蔵浦和'}
-
-    trust_user_hash['6338'] = {:name=>'鈴木', :shop_name => '川口'}
-    trust_user_hash['5313'] = {:name=>'宮川', :shop_name => '与野'}
-
-#    trust_user_hash['xxx'] = {:name=>'xxx', :shop_name => '浦和'}
-
-    trust_user_hash['5473'] = {:name=>'小泉', :shop_name => '東浦和'}
-    trust_user_hash['5841'] = {:name=>'下地', :shop_name => '戸塚安行'}
-    trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '千葉支店'}
-    trust_user_hash['5928'] = {:name=>'柴田', :shop_name => 'テスト'}
-    trust_user_hash['5000'] = {:name=>'東武北エリア', :shop_name => 'テスト'}
+		trust_user_hash['6365'] = {:name=>'松本', :shop_name => '東武南(A)'}
+		trust_user_hash['6464'] = {:name=>'猪原', :shop_name => '東武南(B)'}
+		trust_user_hash['6425'] = {:name=>'赤坂', :shop_name => '東武北(A)'}
+		trust_user_hash['7811'] = {:name=>'池ノ谷', :shop_name => '東武北(B)'}
+		trust_user_hash['5313'] = {:name=>'宮川', :shop_name => 'さいたま中央'}
+		trust_user_hash['5518'] = {:name=>'齋藤', :shop_name => 'さいたま東'}
+		trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '千葉支店'}
+		trust_user_hash['5928'] = {:name=>'柴田', :shop_name => 'テスト'}
 
     # ユーザーを取得
     biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
@@ -1110,6 +1095,12 @@ class TrustManagementsController < ApplicationController
    
    @report.trust_attack_month_report_ranks.each do |rank_rec|
      
+     unless rank_rec.attack_state_this_month
+     	 p 'trust_attack_month_report_ranks: ' + rank_rec.id.to_s
+     	 next 
+     end
+     
+     
      case rank_rec.attack_state_this_month.code
      when 'S'
        icon = '/assets/marker_orange.png'
@@ -1577,12 +1568,17 @@ end
 def report_rank_regist(month_report, trust_attack_history)
 	
   attack_rank = TrustAttackMonthReportRank.unscoped.find_or_create_by_trust_attack_month_report_id_and_trust_id(month_report.id, trust_attack_history.trust_id)
+  
+  # trustの削除フラグがONになっていることもあるので、その場合はスキップする。
+  unless trust_attack_history.trust
+  	p 'report_rank_regist error: trust_attack_history_id :' + trust_attack_history.id.to_s  + ' 委託ID:' + trust_attack_history.trust_id.to_s 
+  	return
+  end
+  
   attack_rank.trust_attack_month_report_id = month_report.id
   attack_rank.trust_id = trust_attack_history.trust_id
   attack_rank.owner_id = trust_attack_history.trust.owner.id
   attack_rank.change_month = trust_attack_history.month
-  
-
   attack_rank.attack_state_this_month_id = trust_attack_history.attack_state_to.id
   
   # 先月のランクを取得する。(存在しない時は、最新のランクと変わっていないということなので今月時点の最新ランクを設定する)
@@ -1612,7 +1608,6 @@ def report_rank_regist(month_report, trust_attack_history)
   attack_rank.building_longitude = building.longitude
   
   attack_rank.delete_flg = false
-
   attack_rank.save!
 
 end

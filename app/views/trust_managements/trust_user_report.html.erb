@@ -45,7 +45,7 @@ function initialize(){
         position : pos
         ,map : mapCanvas
         ,icon : gon.approach_owners[i].icon
-        ,html : '<div style="font-size:5px;"><a href="javascript:win_owner(' + gon.approach_owners[i].id + ');">' + gon.approach_owners[i].name + '</a></div>'
+        ,html : '<div style="font-size:10px;"><a href="javascript:win_owner(' + gon.approach_owners[i].id + ');">' + gon.approach_owners[i].name + '</a></div>'
         ,visible : true
 	  　,draggable: true
       }, false);
@@ -72,7 +72,7 @@ function initialize(){
           position : pos
           ,map : mapCanvas
           ,icon : buildings[i].icon
-		  ,html : '<div style="font-size:5px;"><a href="javascript:win_owner(' + gon.rank_buildings[i].owner_id + ');">' + gon.rank_buildings[i].name + '</a></div>'
+		  ,html : '<div style="font-size:10px;"><a href="javascript:win_owner(' + gon.rank_buildings[i].owner_id + ');">' + gon.rank_buildings[i].name + '</a></div>'
           ,visible : true
 		  ,draggable: true
         }, false);
@@ -478,8 +478,8 @@ function createMarker_trust_report(opts, open_flg){
 <% end %>
 <div style="padding-left:20px;">
 	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:150px;"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %></span></h3>
-	<div style="border-width:3px; border-style:solid; border-color:silver;width:800px;float:left;margin-right:20px;float:left;margin-bottom:20px;">
-		<div id="map_canvas" style="width:100%;height:500px;border-color:blue"></div>
+	<div style="border-width:3px; border-style:solid; border-color:silver;width:600px;float:left;margin-right:20px;float:left;margin-bottom:20px;">
+		<div id="map_canvas" style="width:100%;height:470px;border-color:blue"></div>
 	</div>
 	
 	<div style="float:left;margin-bottom:0px;margin-right:20px;">
@@ -592,12 +592,12 @@ function createMarker_trust_report(opts, open_flg){
 	
 	
 	<div style="clear:both">
-			<div id="div_dummy_approach" style="width:45%;height:400px;float:left;margin-right:20px;">
+			<div id="div_dummy_approach" style="width:45%;height:250px;float:left;margin-right:20px;">
 				<h4>今月度の行動詳細</h4>
 				<table id="building_table_approach"></table>
 				<div id = "building_pager_approach"></div>
 			</div>
-			<div id="div_dummy_rank" style="width:45%;height:400px;float:left;">
+			<div id="div_dummy_rank" style="width:45%;height:250px;float:left;">
 				<h4>今月のランクC以上　または　ランクが変動したもの</h4>
 				<table id="building_table_rank"></table>
 				<div id = "building_pager_rank"></div>
