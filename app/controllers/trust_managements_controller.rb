@@ -655,7 +655,7 @@ class TrustManagementsController < ApplicationController
 		  
 		end
 
-    
+    @data_update = TrustAttackMonthReportUpdateHistory.find_by_month(@month)
     gon.data_list = user_list
 
   end
@@ -1169,6 +1169,7 @@ class TrustManagementsController < ApplicationController
    
    
    @combo_rank = jqgrid_combo_rank
+   @data_update = TrustAttackMonthReportUpdateHistory.find_by_month(@month)
    
    # layoutでヘッダを非表示
    @header_hidden = true

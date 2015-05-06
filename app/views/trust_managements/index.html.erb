@@ -207,13 +207,19 @@
 		<div style="padding-bottom:5px">
 			<%= form_tag({:action => :index}, {:name => 'yyyymm', :onchange=>'javascript:screen_block();'}) do %>
 				<%= select_tag(:month, options_for_select(@calender, @month),  :onchange=>"javascript:dropsort();") %>
-				<span style="padding-left:100px;text-align:right">最終更新日：<%= "xxxx年xx月xx日" %></span>
+				<span style="padding-left:100px;text-align:right">最終更新日：<%= @data_update.update_datetime if @data_update %></span>
 			<% end %>
 		</div>
 
 		<table id="building_table"></table>
 		<div id = "building_pager"></div>
-		<div style="padding-top:10px;">※見込みランクの件数をクリックすると詳細画面へ遷移します。詳細画面は月指定に関係なく最新の見込みランクが表示されます。<br/>※担当者名をクリックすると月次活動報告画面が表示されます</div>
+		<div style="padding-top:10px;">
+			<ul>
+				<li>見込みランクの件数をクリックすると詳細画面へ遷移します。詳細画面は月指定に関係なく最新の見込みランクが表示されます。</li>
+				<li style="color:blue">1000件以上の物件を表示すると表示に時間がかかります。なるべく「登録件数」でなく「ランクC以上」を使用してください。</li>
+				<li>担当者名をクリックすると月次活動報告画面が表示されます</li>
+			</ul>
+		</div>
 	</div>
 	
 	<div class="table-responsive panel panel-default" style="margin-top:20px;width:300px;float:left">

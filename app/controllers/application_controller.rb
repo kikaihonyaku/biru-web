@@ -36,6 +36,22 @@ class ApplicationController < ActionController::Base
     return conv_code(user_id + '_' + address + '_' + name )
   end
   
+  # カレントの月度を返す(offsetは集計期間をずらす)
+  def get_cur_month(offset=0)
+    
+    # 当月の月を出す。
+    if Date.today.day > 20 + offset
+      # 翌月
+      cur_date = Date.today.next_month
+    else
+      # 当月
+      cur_date = Date.today
+    end 
+    
+     month = "%04d%02d"%[cur_date.year.to_s, cur_date.month.to_s]
+    
+  end
+  
   # nilの時は0を返す
   def nz(value)
     result = nil
@@ -279,22 +295,6 @@ class ApplicationController < ActionController::Base
       # それ以外だったら当月
       cur_date.strftime("%Y%m")
     end
-  end
-  
-  # カレントの月度を返す
-  def get_cur_month
-    
-    # 当月の月を出す。
-    if Date.today.day > 20
-      # 翌月
-      cur_date = Date.today.next_month
-    else
-      # 当月
-      cur_date = Date.today
-    end 
-    
-     month = "%04d%02d"%[cur_date.year.to_s, cur_date.month.to_s]
-    
   end
   
   # jqgridの営業所リストを返す

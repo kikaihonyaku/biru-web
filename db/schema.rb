@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150506135522) do
+ActiveRecord::Schema.define(:version => 20150506205600) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -559,6 +559,14 @@ ActiveRecord::Schema.define(:version => 20150506135522) do
 
   add_index "trust_attack_month_report_ranks", ["building_id"], :name => "index_trust_attack_month_report_ranks_on_building_id"
   add_index "trust_attack_month_report_ranks", ["trust_attack_month_report_id"], :name => "trsut_attack_report_rank_report_id"
+
+  create_table "trust_attack_month_report_update_histories", :force => true do |t|
+    t.string   "month"
+    t.datetime "start_datetime"
+    t.datetime "update_datetime"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
 
   create_table "trust_attack_month_reports", :force => true do |t|
     t.string   "month"
