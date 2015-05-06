@@ -37,7 +37,7 @@ class TrustManagementsController < ApplicationController
     end
     biru_user_monthly_next.biru_user_id = user.id
     biru_user_monthly_next.month = month_next
-    
+
     
     # 登録用のデータ
     report = TrustAttackMonthReport.find_or_create_by_month_and_biru_user_id(month, user.id)
@@ -250,7 +250,21 @@ class TrustManagementsController < ApplicationController
     ActiveRecord::Base.connection.select_all(sql).each do |all_cnt_rec|
       report.rank_all = all_cnt_rec['cnt']
     end
-  
+    
+    ##########################
+    # 先月からのランク増減を保存
+    ##########################
+    report_prev = TrustAttackMonthReport.find_or_initialize_by_month_and_biru_user_id(month_prev, user.id)    
+    report.fluctuate_s =  report.rank_s - nz(report_prev.rank_s)
+    report.fluctuate_a =  report.rank_a - nz(report_prev.rank_a)
+    report.fluctuate_b =  report.rank_b - nz(report_prev.rank_b)
+    report.fluctuate_c =  report.rank_c - nz(report_prev.rank_c)
+    report.fluctuate_d =  report.rank_d - nz(report_prev.rank_d)
+    report.fluctuate_w =  report.rank_w - nz(report_prev.rank_w)
+    report.fluctuate_x =  report.rank_x - nz(report_prev.rank_x)
+    report.fluctuate_y =  report.rank_y - nz(report_prev.rank_y)
+    report.fluctuate_z =  report.rank_z - nz(report_prev.rank_z)
+    
     report.save!
 
   end  

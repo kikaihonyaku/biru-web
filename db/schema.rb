@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150505141458) do
+ActiveRecord::Schema.define(:version => 20150506135522) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -594,6 +594,15 @@ ActiveRecord::Schema.define(:version => 20150505141458) do
     t.integer  "tel_num_talk"
     t.integer  "suggestion_plan"
     t.integer  "suggestion_num"
+    t.integer  "fluctuate_s"
+    t.integer  "fluctuate_a"
+    t.integer  "fluctuate_b"
+    t.integer  "fluctuate_c"
+    t.integer  "fluctuate_d"
+    t.integer  "fluctuate_w"
+    t.integer  "fluctuate_x"
+    t.integer  "fluctuate_y"
+    t.integer  "fluctuate_z"
   end
 
   create_table "trust_attack_state_histories", :force => true do |t|

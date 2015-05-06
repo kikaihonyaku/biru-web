@@ -3198,10 +3198,10 @@ end
 #init_room_status
 
 # アプローチ種別登録
-init_approach_kind
+#init_approach_kind
 
 # アタックステータス登録
-init_attack_state
+#init_attack_state
 
 # システムアップデート管理
 #init_data_update
@@ -3400,7 +3400,7 @@ init_attack_state
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('7811'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5313'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5518'))
-p "a"
+p "generate_trust_attack_month_report start"
 #generate_trust_attack_month_report('201504', BiruUser.find_by_code('4917'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
 generate_trust_attack_month_report('201506', BiruUser.find_by_code('4917'))

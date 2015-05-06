@@ -560,31 +560,31 @@ function createMarker_trust_report(opts, open_flg){
 					<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
 					<td style="text-align:left;">S：契約日決定</td>
 					<td style="text-align:center;"><%= @report.rank_s %></td>
-					<td style="text-align:center;">+20</td>
+					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_s) %></td>
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_green.png') %></td>
 					<td style="text-align:left;">A：契約予定で提案中</td>
 					<td style="text-align:center;"><%= @report.rank_a %></td>
-					<td style="text-align:center;">+20</td>
+					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_a) %></td>
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_purple.png') %></td>
 					<td style="text-align:left;">B：提案書は提出可</td>
 					<td style="text-align:center;"><%= @report.rank_b %></td>
-					<td style="text-align:center;">+20</td>
+					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_b) %></td>
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_red.png') %></td>
 					<td style="text-align:left;">C：権者に物件ヒアリング</td>
 					<td style="text-align:center;"><%= @report.rank_c %></td>
-					<td style="text-align:center;">+20</td>
+					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_c) %></td>
 				</tr>
 				<tr>
 					<td style="text-align:center;"><%= image_tag('marker_white.png') %></td>
 					<td style="text-align:left;">Z：成約済</td>
 					<td style="text-align:center;"><%= @report.rank_z %></td>
-					<td style="text-align:center;">+20</td>
+					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_z) %></td>
 				</tr>
 			</tbody>
 		</table>
@@ -593,7 +593,7 @@ function createMarker_trust_report(opts, open_flg){
 	
 	<div style="clear:both">
 			<div id="div_dummy_approach" style="width:45%;height:250px;float:left;margin-right:20px;">
-				<h4>今月度の行動詳細</h4>
+				<h4>今月度の行動詳細（面談・提案・DM反響・TEL会話）</h4>
 				<table id="building_table_approach"></table>
 				<div id = "building_pager_approach"></div>
 			</div>
