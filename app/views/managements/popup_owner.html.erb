@@ -117,7 +117,7 @@
 										
 										<label>変更後ランク＜<%= @cur_month %>＞</label>
 										<div>
-											<%= f.input :attack_state_id, collection: AttackState.all, :label=>false %>
+											<%= f.input :attack_state_id, collection: AttackState.order(:disp_order), :label=>false %>
 											<div style="margin-bottom:5px;">&nbsp;</div>
 											<div>契約戸数：<%= text_field_tag :room_num, 0 , :size=>"2" %>&nbsp;戸</div>
 											<div>管理方式：<%= collection_select :history, :manage_type, ManageType.all, :id, :name, :include_blank => true %></div>
