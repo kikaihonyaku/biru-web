@@ -12,30 +12,6 @@ require 'rexml/document'
 
 namespace :biruweb do
 	
-	task :renters_update_test => :environment  do
-		
-	    batch_cd = Time.now.strftime('%Y%m%d%H%M%S')
-	    
-	    @data_update = DataUpdateTime.find_by_code("310")
-	    @data_update.start_datetime = Time.now
-	    @data_update.update_datetime = nil
-	    @data_update.biru_user_id = 1
-	    @data_update.save!
-
-			# レンターズデータを取得
-	    #renters_work_data(batch_cd)
-	    
-	    # レンターズデータを反映
-	    #renters_reflect(batch_cd)
-	    renters_reflect("20141113010010")
-
-	    @data_update.update_datetime = Time.now
-	    @data_update.save!
-	    
-	    P "開始:" + @data_update.start_datetime.to_s + " 終了:" + @data_update.update_datetime.to_s
-	end
-		  
-	
 	task :renters_update => :environment  do
 		
 	    batch_cd = Time.now.strftime('%Y%m%d%H%M%S')

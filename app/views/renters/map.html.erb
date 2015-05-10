@@ -190,7 +190,7 @@ function htmlEscape(str) {
 	
 	function init_renters_jqgrid(){
 		// 列名の定義
- 		var grid_name = ["renters_room_id",  "building_id",  "営業所",  "建物名",  "部屋",  "空室状況", "入居区分", "住所",  "room_code", "備考1","備考2","備考3","備考4","備考5","備考6","備考7","備考8", "合計(20)",  "間取り(1)",  "外観(2)",  "内観(9)",  "外観その他(2)",  "周辺(6)", "間取図", "外観", "キッチン", "トイレ", "バス", "居室", "洗面所", "玄関", "設備", "その他", "エントランス", "共用設備", "植栽", "駐車場", "その他", "配置図", "周辺"];
+ 		var grid_name = ["renters_room_id",  "building_id",  "営業所",  "建物名",  "部屋",  "空室状況", "入居区分", "住所",  "room_code", "備考1","備考2","備考3","備考4","備考5","備考6","備考7","備考8", "合計(20)",  "間取り(1)",  "外観(2)",  "内観(9)",  "外観その他(2)",  "周辺(6)", "間取図", "外観", "キッチン", "トイレ", "バス", "居室", "洗面所", "玄関", "景色", "設備", "その他", "エントランス", "共用設備", "植栽", "駐車場", "その他", "配置図", "周辺"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -211,30 +211,32 @@ function htmlEscape(str) {
 		 , {name:"notice_f",  index:"notice_f",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
 		 , {name:"notice_g",  index:"notice_g",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
 		 , {name:"notice_h",  index:"notice_h",  width:250,  align:"left",  classes:"no_class",frozen:true, hidden:true}
-		 , {name:"suumo_sum",  index:"suumo_sum",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"suumo_madori",  index:"suumo_madori",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"suumo_gaikan",  index:"suumo_gaikan",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"suumo_naikan",  index:"suumo_naikan",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"suumo_gaikan_etc",  index:"suumo_gaikan_etc",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"suumo_syuuhen",  index:"suumo_syuuhen",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
+		 , {name:"suumo_sum",  index:"suumo_sum",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"suumo_madori",  index:"suumo_madori",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"suumo_gaikan",  index:"suumo_gaikan",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"suumo_naikan",  index:"suumo_naikan",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"suumo_gaikan_etc",  index:"suumo_gaikan_etc",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"suumo_syuuhen",  index:"suumo_syuuhen",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
 		 
-		 , {name:"madori_renters_madori",  index:"madori_renters_madori",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"gaikan_renters_gaikan",  index:"gaikan_renters_gaikan",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"naikan_renters_kitchen",  index:"naikan_renters_kitchen",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"naikan_renters_toilet",  index:"naikan_renters_toilet",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"naikan_renters_bus",  index:"naikan_renters_bus",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"naikan_renters_living",  index:"naikan_renters_living",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"naikan_renters_washroom",  index:"naikan_renters_washroom",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"naikan_renters_porch",  index:"naikan_renters_porch",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"naikan_renters_equipment",  index:"naikan_renters_equipment",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"naikan_renters_etc",  index:"naikan_renters_etc",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"gaikan_etc_renters_entrance",  index:"gaikan_etc_renters_entrance",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"gaikan_etc_renters_common_utility",  index:"gaikan_etc_renters_common_utility",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"gaikan_etc_renters_raising_trees",  index:"gaikan_etc_renters_raising_trees",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"gaikan_etc_renters_parking",  index:"gaikan_etc_renters_parking",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"gaikan_etc_renters_etc",  index:"gaikan_etc_renters_etc",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"gaikan_etc_renters_layout",  index:"gaikan_etc_renters_layout",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
-		 , {name:"syuuhen_renters_syuuhen",  index:"syuuhen_renters_syuuhen",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['le']}}
+		 , {name:"madori_renters_madori",  index:"madori_renters_madori",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"gaikan_renters_gaikan",  index:"gaikan_renters_gaikan",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"naikan_renters_kitchen",  index:"naikan_renters_kitchen",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"naikan_renters_toilet",  index:"naikan_renters_toilet",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"naikan_renters_bus",  index:"naikan_renters_bus",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"naikan_renters_living",  index:"naikan_renters_living",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"naikan_renters_washroom",  index:"naikan_renters_washroom",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"naikan_renters_porch",  index:"naikan_renters_porch",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"naikan_renters_scenery",  index:"naikan_renters_scenery",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 
+		 , {name:"naikan_renters_equipment",  index:"naikan_renters_equipment",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"naikan_renters_etc",  index:"naikan_renters_etc",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"gaikan_etc_renters_entrance",  index:"gaikan_etc_renters_entrance",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"gaikan_etc_renters_common_utility",  index:"gaikan_etc_renters_common_utility",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"gaikan_etc_renters_raising_trees",  index:"gaikan_etc_renters_raising_trees",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"gaikan_etc_renters_parking",  index:"gaikan_etc_renters_parking",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"gaikan_etc_renters_etc",  index:"gaikan_etc_renters_etc",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"gaikan_etc_renters_layout",  index:"gaikan_etc_renters_layout",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
+		 , {name:"syuuhen_renters_syuuhen",  index:"syuuhen_renters_syuuhen",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
 		];
 		
 		// データの作成
@@ -434,7 +436,7 @@ function htmlEscape(str) {
  	            {startColumnName: 'suumo_sum', numberOfColumns: 6, titleText: '<em>SUUMO掲載枚数</em>'},
  	            {startColumnName: 'madori_renters_madori', numberOfColumns: 1, titleText: '<em>間取り</em>'},
  	            {startColumnName: 'gaikan_renters_gaikan', numberOfColumns: 1, titleText: '<em>外観</em>'},
- 	            {startColumnName: 'naikan_renters_kitchen', numberOfColumns: 8, titleText: '<em>内観</em>'},
+ 	            {startColumnName: 'naikan_renters_kitchen', numberOfColumns: 9, titleText: '<em>内観</em>'},
  	            {startColumnName: 'gaikan_etc_renters_entrance', numberOfColumns: 6, titleText: '<em>外観その他</em>'},
  	            {startColumnName: 'syuuhen_renters_syuuhen', numberOfColumns: 1, titleText: '<em>周辺</em>'},
  	            {startColumnName: 'notice_a', numberOfColumns: 8, titleText: '<em>備考</em>'},
