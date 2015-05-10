@@ -101,6 +101,14 @@ class ManagementsController < ApplicationController
     get_popup_owner_info(params[:id])
     @cur_month = get_month(Date.today)
     
+    dt_base = Date.parse(@cur_month + '01', "YYYYMMDD").months_ago(3)
+    
+		@calender = []
+    5.times{
+      @calender.push([dt_base.strftime("%Y/%m"), dt_base.strftime("%Y%m") ])
+      dt_base = dt_base.next_month
+    }
+    
     # 建物とアタックの状況を取得
     @biru_and_state = []
     @owner.trusts.each do |trust|
@@ -115,7 +123,6 @@ class ManagementsController < ApplicationController
           before_attack_state = AttackState.find_by_code("X")
         end
 
-
         # 現時点で最新のアタック状況を取得
         current_max_month =  TrustAttackStateHistory.where("trust_id = ?", trust.id ).maximum("month")
         if current_max_month
@@ -126,17 +133,33 @@ class ManagementsController < ApplicationController
           current_attack_state = AttackState.find_by_code("X")
         end
         
+        # 現在月で契約情報が登録されていたらそれも取得する。
+        this_month_trust = {
+          :room_num=>0,
+          :manage_type_id=>0,
+          :trust_oneself=>false
+        }
+        
+        this_month_history = TrustAttackStateHistory.where("month = ?", @cur_month).where("trust_id = ?", trust.id).first
+        if this_month_history 
+          this_month_trust[:room_num] = this_month_history.room_num
+          this_month_trust[:manage_type_id] = this_month_history.manage_type_id
+          this_month_trust[:trust_oneself] = this_month_history.trust_oneself
+        end
+        
         # 建物、先月以前のアタック状況、最新のアタック状況を設定
-        @biru_and_state.push([trust, trust.building, before_attack_state, current_attack_state])
+        @biru_and_state.push([trust, trust.building, before_attack_state, current_attack_state, this_month_trust])
       end
     end
+    
+    
       
     render :layout => 'popup'
   end
 
   # オーナー情報の登録をポップアップから行います。
   def popup_owner_update
-      
+    
     @owner = Owner.find(params[:id])
     if @owner.update_attributes(params[:owner])
     end
@@ -235,9 +258,12 @@ class ManagementsController < ApplicationController
   end
   
   def pri_trust_attack_update
+    
+    @trust = Trust.find(params[:trust][:id])
+    
     # 指定された年月のbefore/afterの登録を行う
-    history = TrustAttackStateHistory.find_or_create_by_trust_id_and_month(params[:trust][:id], params[:month])
-    history.trust_id = params[:trust][:id]
+    history = TrustAttackStateHistory.find_or_create_by_trust_id_and_month(@trust.id, params[:month])
+    history.trust_id = @trust.id
     history.month = params[:month]
     history.attack_state_from_id = params[:before_attack_state_id]
     history.attack_state_to_id = params[:trust][:attack_state_id]
@@ -254,12 +280,13 @@ class ManagementsController < ApplicationController
       history.trust_oneself = nil
     end
     
-    
     history.save!
     
-    
-    @trust = Trust.find(params[:trust][:id])
-    @trust.update_attributes(params[:trust])
+    # 指定された年月が登録済み履歴の中で最新だった時、委託のランクも更新
+    max_month =  TrustAttackStateHistory.where("trust_id = ?", @trust.id ).maximum("month")
+    if params[:month] == max_month.to_s
+      @trust.update_attributes(params[:trust])
+    end
   end
 
   def index

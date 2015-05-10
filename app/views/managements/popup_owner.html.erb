@@ -4,7 +4,7 @@
 	<tr>
 		<td style="vertical-align:top;padding-left:20px;">
 			<div style="border-width:3px; border-style:solid; border-color:silver;">
-			  <div id="pop_map_canvas" style="width: 480px;height:350px;"></div>
+			  <div id="pop_map_canvas" style="width: 600px;height:470px;"></div>
 			</div>
 			
 		</td>
@@ -60,6 +60,7 @@
 						  <% building = biru_and_state[1] %>
 						  <% attack_state_before = biru_and_state[2] %>
 						  <% attack_state_current = biru_and_state[3] %>
+						  <% this_month_trust = biru_and_state[4] %>
 						  
 					        <tr>
 					          <td><a href="javascript:win_building(<%= building.id %>);"><%= building.name %></a></td>
@@ -80,6 +81,19 @@
 							  
 					        </tr>
 							
+							
+							<script type="text/javascript">
+								function rank_disp(disp_id, obj){
+									if(obj.options[obj.selectedIndex].value == <%= AttackState.find_by_code('Z').id.to_s %>){
+										// 成約済みを選択時、契約戸数等の入力欄を表示
+										document.getElementById(disp_id).style.display = "";
+									}else{
+										// 成約済み以外を選択時、契約戸数等の入力欄を非表示
+										document.getElementById(disp_id).style.display = "none";
+									}
+								}
+							</script>
+							
 							<!-- ランクアップ編集画面（モーダルダイアログ ） -->
 							<div class="modal fade" id="myModal_<%=  building.id.to_s %>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_<%=  building.id.to_s %>" aria-hidden="true">
 							  <div class="modal-dialog">
@@ -95,7 +109,7 @@
 									  
 										<%= f.input :id, :as => :hidden, :input_html => {:value => trust.id.to_s } %>
 										<%= hidden_field_tag 'before_attack_state_id', attack_state_before.id %>
-										<%= hidden_field_tag 'month', @cur_month %>
+										<%#= hidden_field_tag 'month', @cur_month %>
 										
 										<% histories = TrustAttackStateHistory.where("trust_id = ?", trust.id ).order("month asc") %>
 										<div style="margin-bottom:20px;">
@@ -107,21 +121,41 @@
 													<div>
 														<%= history.month.to_s + ' ' + history.attack_state_to.name %>
 														<% if history.attack_state_to.code == 'Z' %>
-															＜ <%= history.room_num.to_s + '戸 ' %>　＞
+															
+															<% 
+															 msg = ""
+															 if history.manage_type
+															   msg = msg + history.manage_type.name 
+															 end
+															 
+															 if history.trust_oneself
+  															   msg = msg + " 自社"
+															 else
+    														   msg = msg + " 他社"
+															 end
+															 
+															 msg = msg + " " + history.room_num.to_s + "戸"
+															%>
+															＜ <%= msg %>　＞
 														<% end %>
 													</div>
 												<% end %>
 											<% end %>
 										</div>
 										
-										
-										<label>変更後ランク＜<%= @cur_month %>＞</label>
+										<label>変更後ランク&nbsp;<%= select_tag(:month, options_for_select(@calender, @cur_month)) %></label>
 										<div>
-											<%= f.input :attack_state_id, collection: AttackState.order(:disp_order), :label=>false %>
-											<div style="margin-bottom:5px;">&nbsp;</div>
-											<div>契約戸数：<%= text_field_tag :room_num, 0 , :size=>"2" %>&nbsp;戸</div>
-											<div>管理方式：<%= collection_select :history, :manage_type, ManageType.all, :id, :name, :include_blank => true %></div>
-											<div>受託自他：<%= radio_button :history, :oneself, 'yourself', {:checked => true } %>&nbsp;他社&nbsp;&nbsp;<%= radio_button :history, :oneself, 'oneself' %>&nbsp;自社</div>
+											<%= f.input :attack_state_id, collection: AttackState.order(:disp_order), :label=>false, :input_html => {:onchange => "javascript:rank_disp('rank_disp_id_#{trust.id.to_s}', this);"}  %>
+											<div id="rank_disp_id_<%= trust.id.to_s %>" style="display:none">
+												<div style="margin-bottom:5px;">&nbsp;</div>
+												<div>契約戸数：<%= text_field_tag :room_num, this_month_trust[:room_num], :size=>"2" %>&nbsp;戸</div>
+												<div>管理方式：<%= collection_select :history, :manage_type, ManageType.all, :id, :name, :include_blank => true, :selected=>  this_month_trust[:manage_type_id] %></div>
+												<% if this_month_trust[:trust_oneself] %>
+													<div>受託自他：<%= radio_button :history, :oneself, 'yourself' %>&nbsp;他社&nbsp;&nbsp;<%= radio_button :history, :oneself, 'oneself', {:checked => true }  %>&nbsp;自社</div>
+												<% else %>
+													<div>受託自他：<%= radio_button :history, :oneself, 'yourself', {:checked => true } %>&nbsp;他社&nbsp;&nbsp;<%= radio_button :history, :oneself, 'oneself' %>&nbsp;自社</div>
+												<% end %>
+											</div>
 										</div>
 			       
 							      </div>
@@ -179,7 +213,7 @@
 			<%#= f.input :approach_date, label: '日付', as: :datepicker %>
 		<% end %>
 
-		<div style="padding-left:20px;padding-right:20px;margin-top:20px;width:850px;">
+		<div style="padding-left:20px;padding-right:20px;margin-top:20px;width:950px;">
 			<%= grid(@owner_approaches) do |g|
 		 		g.column name: '' do |obj| link_to('削除',{:controller=>'managements', :action=>'owner_approach_delete', :id=>obj.id.to_s, :owner_id=>@owner.id.to_s}, :confirm => "削除します。よろしいですか？") end
 		 		g.column name: 'アプローチ日' do |obj| obj.approach_date if obj.approach_date end

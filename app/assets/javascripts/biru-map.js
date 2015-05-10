@@ -838,7 +838,7 @@ function init_map(user_id, search_bar_disp_flg){
 }
 
 function win_owner(id) {
-  window.open('/managements/popup_owner/' + id   , "", "width=1200,height=1000,resizable=yes,scrollbars=yes");
+  window.open('/managements/popup_owner/' + id   , "", "width=1500,height=1000,resizable=yes,scrollbars=yes");
 }
 
 function win_building(id){
