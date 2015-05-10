@@ -14,7 +14,7 @@
 				<table class="table table-bordered">
 					<thead>
 						<tr class="active">
-							<td colspan="2" style="font-weight:bold">貸主基本情報（<a href="" onClick="javascript:alert('この機能はまだ使えません');return false;" >編集</a>）</td>
+							<td colspan="2" style="font-weight:bold">貸主基本情報（<a data-toggle="modal" href="#modal-owner-update"  >編集</a>）</td>
 						</tr>
 					</thead>
 					<tbody>
@@ -26,6 +26,10 @@
 								<td style="text-align:right;font-size:12px;">見込み貸主CD</td>
 								<td><%= @owner.attack_code %></td>
 							<% end%>
+						</tr>
+						<tr>
+							<td style="text-align:right;">カナ</td>
+							<td><%= @owner.kana %></td>
 						</tr>
 						<tr>
 							<td style="text-align:right;">名前</td>
@@ -226,6 +230,34 @@
 		</div>
 		
 	</div>
+
+<!-- モーダルダイアログ -->
+<div class="modal fade" id="modal-owner-update" tabindex="-1" role="dialog" aria-labelledby="modal-owner-update-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">貸主更新</h4>
+      </div>
+
+	<%= simple_form_for :owner, :url=>{:action => :popup_owner_update, :id=>@owner.id} do |f| %>
+		<div class="modal-body">
+			<%= f.input :name, label: '貸主名',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :kana, label: 'カナ',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :honorific_title, label: '敬称',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :postcode, label: '郵便番号',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :address, label: '住所',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :tel, label: '電話番号',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+		</div>
+		<div class="modal-footer">
+			<%= f.submit '更新', :class=>"btn btn-default", :style=>"margin:0" %>
+		</div>
+	<% end %>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 

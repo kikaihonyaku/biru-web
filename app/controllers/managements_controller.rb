@@ -161,6 +161,8 @@ class ManagementsController < ApplicationController
   def popup_owner_update
     
     @owner = Owner.find(params[:id])
+    @owner.gmaps = false # 住所の設定をさせる為に設定
+    
     if @owner.update_attributes(params[:owner])
     end
 

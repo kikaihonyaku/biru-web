@@ -272,6 +272,7 @@
 		<div class="modal-body">
 			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_trust_user.id } %>
 			<%= f.input :name, label: '貸主名',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :kana, label: 'カナ',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
 			<%= f.input :honorific_title, label: '敬称',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
 			<%= f.input :postcode, label: '郵便番号',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
 			<%= f.input :address, label: '住所',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
