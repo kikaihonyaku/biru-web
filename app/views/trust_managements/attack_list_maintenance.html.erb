@@ -225,6 +225,11 @@
 	
 </div>
 
+<div style="margin-bottom:10px;margin-left:20px">
+	<a data-toggle="modal" href="#modal-owner-new" class="btn btn-info btn-large">貸主新規登録</a>
+	<a data-toggle="modal" href="#modal-building-new" class="btn btn-info btn-large">建物新規登録</a>
+</div>
+
 <div id="owner_div" style="float:left;width:50%;height:40%;padding:0px 10px 10px 10px;margin-top:0px;">
 	<table id="owner_table"></table>
 	<div id = "owner_pager"></div>
@@ -234,6 +239,7 @@
 	<table id="building_table"></table>
 	<div id = "building_pager"></div>
 </div>
+
 
 <div style="clear:both;text-align:center;padding-top:20px;">
 	<%= form_tag( {:action=>'attack_list_add'}, {:name=>'create_trust_form'}) do %>
@@ -251,8 +257,6 @@
 </div>
 
 <div style="padding-left:10px;padding-top:10px;">
-	<a data-toggle="modal" href="#modal-owner-new" class="btn btn-info btn-large">貸主新規登録</a>
-	<a data-toggle="modal" href="#modal-building-new" class="btn btn-info btn-large">建物新規登録</a>
 	<%= button_tag '委託契約との紐付けを解除', {:class=>'btn', :onClick=>'javascript:alert("この機能はまだ未実装です");return false;'} %>
 </div>
 
