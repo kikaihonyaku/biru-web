@@ -21,12 +21,24 @@ namespace :biruweb do
 	    @data_update.update_datetime = nil
 	    @data_update.biru_user_id = 1
 	    @data_update.save!
+      
 
-			# レンターズデータを取得
-	    renters_work_data(batch_cd)
-	    
-	    # レンターズデータを反映
-	    renters_reflect(batch_cd)
+  	  # 不要データを削除
+  	  WorkRentersRoom.destroy_all
+  	  WorkRentersRoomPicture.destroy_all
+      
+      # ワークデータの取得
+	    renters_work_data("A#{batch_cd}", false) # 通常
+	    renters_work_data("B#{batch_cd}", true)  # 先物
+
+      # ワークデータが無事取得できたら初期化
+  	  RentersBuilding.update_all("delete_flg = 1") # SQLServerは1
+  	  RentersRoom.update_all("delete_flg = 1") # SQLServerは1
+  	  RentersRoomPicture.update_all("delete_flg = 1") # SQLServerは1
+
+			# レンターズデータへ反映
+	    renters_reflect("A#{batch_cd}", false) # 通常
+	    renters_reflect("B#{batch_cd}", true)  # 先物
 
 	    @data_update.update_datetime = Time.now
 	    @data_update.save!
@@ -34,20 +46,25 @@ namespace :biruweb do
 	    p "開始:" + @data_update.start_datetime.to_s + " 終了:" + @data_update.update_datetime.to_s
 	end
 		  
-	# ワークデータを作成します
-	def renters_work_data(batch_cd)
+	# ワークデータを作成します(sakimono_flg false=通常、true:先物)
+	def renters_work_data(batch_cd, sakimono_flg)
 		
 	  get_cnt = 50
 	  start_idx = 1
 	  
-	  # 不要データを削除
-	  WorkRentersRoom.destroy_all
-	  WorkRentersRoomPicture.destroy_all
-	  
+    if sakimono_flg
+      mode = "&torihiki_mode=5,6"
+    else
+      mode = "&torihiki_mode=1,2,3,4"
+    end
+    
 	  loop do
 	    
 	    # url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&count=#{get_cnt.to_s}&start=#{start_idx.to_s}&vacant_div=3,4&torihiki_mode=1,2,3,4")
-	    url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&count=#{get_cnt.to_s}&start=#{start_idx.to_s}&vacant_div=3,4")
+	    #url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&count=#{get_cnt.to_s}&start=#{start_idx.to_s}&vacant_div=3,4")
+
+	    url = URI.parse("http://api.rentersnet.jp/room/?key=136MAyXy&count=#{get_cnt.to_s}&start=#{start_idx.to_s}&vacant_div=3,4#{mode}")
+      
 	    xml = open(url).read
 	    doc = REXML::Document.new(xml)
 	    
@@ -196,12 +213,9 @@ namespace :biruweb do
 
 
 	# レンターズデータを本番に反映する
-	def renters_reflect(batch_cd)
-	  
-	  RentersBuilding.update_all("delete_flg = 1") # SQLServerは1
-	  RentersRoom.update_all("delete_flg = 1") # SQLServerは1
-	  RentersRoomPicture.update_all("delete_flg = 1") # SQLServerは1
-	  
+  # (sakimono_flg false=通常、true:先物)
+	def renters_reflect(batch_cd, sakimono_flg)
+	  	  
 	  chk_building_code = ""
 	  
 	  building = nil
@@ -273,11 +287,7 @@ namespace :biruweb do
       room.notice_e = work_room.notice_e
       room.notice_f = work_room.notice_f
       room.torihiki_mode = work_room.torihiki_mode
-      if room.torihiki_mode == '仲介'
-        room.torihiki_mode_sakimono = true
-      else
-        room.torihiki_mode_sakimono = false
-      end
+      room.torihiki_mode_sakimono = sakimono_flg
 	    
       room.notice_g = work_room.notice_g
       room.notice_h = work_room.notice_h
