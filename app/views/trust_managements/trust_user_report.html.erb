@@ -25,7 +25,7 @@
 	<style type="text/css" media="screen">
 	<!--
 		.report-list-width{
-			width:45%;
+			width:50%;
 		}
 		
 	-->
@@ -518,12 +518,12 @@ function createMarker_trust_report(opts, open_flg){
 
 <% end %>
 <div style="padding-left:20px;">
-	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:150px;"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最終更新日：<%= @data_update.update_datetime if @data_update %></span></h3>
+	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:150px;">最終更新日：<%= @data_update.update_datetime if @data_update %></span><span style="font-size:15px;margin-left:200px;" class="print-none"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %></span></h3>
 	<div style="border-width:3px; border-style:solid; border-color:silver;width:40%;float:left;margin-right:20px;float:left;margin-bottom:20px;" class="print-none">
 		<div id="map_canvas" style="width:100%;height:470px;border-color:blue"></div>
 	</div>
 	
-	<div style="float:left;margin-bottom:0px;margin-right:20px;width:50%">
+	<div style="float:left;margin-bottom:0px;margin-right:20px;" class="report-list-width">
 		
 		<div>
 			<table class="table table-bordered">
@@ -586,7 +586,7 @@ function createMarker_trust_report(opts, open_flg){
 		</div>
 	
 
-		<div style="float:left;">
+		<div style="float:left;" class="report-list-width">
 			<table class="table table-bordered">
 				<thead>
 					<tr class="active">
@@ -635,13 +635,13 @@ function createMarker_trust_report(opts, open_flg){
 			
 	</div>
 
-	<div style="clear:both">
-			<div id="div_dummy_approach" style="height:250px;float:left;" class="report-list-width">
+	<div style="clear:both" class="print-none">
+			<div id="div_dummy_approach" style="height:250px;float:left;width:45%">
 				<h4>今月度の行動詳細（面談・提案・DM反響・TEL会話）</h4>
 				<table id="building_table_approach"></table>
 				<div id = "building_pager_approach"></div>
 			</div>
-			<div id="div_dummy_rank" style="height:250px;float:left;margin-left:20px;" class="report-list-width">
+			<div id="div_dummy_rank" style="height:250px;float:left;margin-left:20px;width:45%">
 				<h4>今月のランクC以上　または　ランクが変動したもの</h4>
 				<table id="building_table_rank"></table>
 				<div id = "building_pager_rank"></div>
