@@ -1,14 +1,19 @@
-  <legend style="padding:20px;padding-botom:10px;"><%= @owner.name %></legend>
+  <legend style="padding:20px;padding-botom:10px;">
+	  <%= @owner.name + " " + @owner.honorific_title %>
+	  <% if @owner.biru_user %>
+		  &nbsp;&nbsp;<span style="font-size:medium;text-aling:right">（担当：<%= @owner.biru_user.name %>）</span>
+	  <% end %>
+  </legend>
   
 <table>
 	<tr>
 		<td style="vertical-align:top;padding-left:20px;">
 			<div style="border-width:3px; border-style:solid; border-color:silver;">
-			  <div id="pop_map_canvas" style="width: 600px;height:470px;"></div>
+			  <div id="pop_map_canvas" style="width:500px;height:470px;"></div>
 			</div>
 			
 		</td>
-		<td style="vertical-align:top;padding-left:20px;padding-right:20px;">
+		<td style="vertical-align:top;padding-left:20px;padding-right:20px;" >
 
 			<div class="table-responsive panel panel-default">
 				<table class="table table-bordered">
@@ -68,7 +73,7 @@
 						  
 					        <tr>
 					          <td><a href="javascript:win_building(<%= building.id %>);"><%= building.name %></a></td>
-					          <td><%= building.address %></td>
+					          <td><%= building.address.truncate(12) %></td>
 							  
 							  <% if building.shop %>
 							  	<td><%= building.shop.name %></td>
@@ -78,7 +83,7 @@
 							  
 							  <!--  ここでは現時点で最新の見込み状態を表示する -->
 							  <% if attack_state_current %>
-							  	<td><a data-toggle="modal" href="#myModal_<%= building.id.to_s %>"  ><%= attack_state_current.name %></a></td>
+							  	<td><a data-toggle="modal" href="#myModal_<%= building.id.to_s %>"  ><%= attack_state_current.name.truncate(10) %></a></td>
 							  <% else %>
 							  	<td><a data-toggle="modal" href="#myModal_<%= building.id.to_s %>"  >未設定</a></td>
 							  <% end %>
@@ -190,7 +195,7 @@
 			</div>
 			
 			<div style="padding-top:10px;text-align:center;float:left;">
-				<%= f.submit '更新', :class=>"btn btn-primary" %>
+				<%= f.submit '更新', :class=>"btn btn-primary print-none" %>
 			</div>
 			
 			<% end %>
@@ -201,25 +206,28 @@
 
 	<div style="clear:both;margin-top:50px;">
 
-		<%= simple_form_for :owner_approach, :url=>{:controller => :managements, :action => :owner_approach_regist}  do |f| %>
-			<%= f.input :owner_id, :as => :hidden, :input_html => {:value => @owner.id } %>
-			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
+		<div class="print-none">
+			
+			<%= simple_form_for :owner_approach, :url=>{:controller => :managements, :action => :owner_approach_regist}  do |f| %>
+				<%= f.input :owner_id, :as => :hidden, :input_html => {:value => @owner.id } %>
+				<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
 	
-			<table>
-				<tr>
-					<td><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:120px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
-					<td><%= f.input :approach_kind_id, label: '種別', collection: ApproachKind.order(:sequence), prompt: "--", :input_html => {:style=>'width:100px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
-					<td><%= f.input :content, label: '内容', placeholder: 'アプローチ内容をいれてください', :input_html => {:class => 'input-large', :style=>'width:200px;vertical-align:botto'} %></td>
-					<td><%= f.submit '登録', :class => 'btn-primary', :style=>'margin-bottom:20px;margin-left:20px;' %></td>
-				</tr>
-			</table>
+				<table>
+					<tr>
+						<td><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:120px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
+						<td><%= f.input :approach_kind_id, label: '種別', collection: ApproachKind.order(:sequence), prompt: "--", :input_html => {:style=>'width:100px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
+						<td><%= f.input :content, label: '内容', placeholder: 'アプローチ内容をいれてください', :input_html => {:class => 'input-large', :style=>'width:200px;vertical-align:botto'} %></td>
+						<td><%= f.submit '登録', :class => 'btn-primary', :style=>'margin-bottom:20px;margin-left:20px;' %></td>
+					</tr>
+				</table>
 		
-			<%#= f.input :approach_date, label: '日付', as: :datepicker %>
-		<% end %>
+				<%#= f.input :approach_date, label: '日付', as: :datepicker %>
+			<% end %>
+		</div>
 
 		<div style="padding-left:20px;padding-right:20px;margin-top:20px;width:950px;">
 			<%= grid(@owner_approaches) do |g|
-		 		g.column name: '' do |obj| link_to('削除',{:controller=>'managements', :action=>'owner_approach_delete', :id=>obj.id.to_s, :owner_id=>@owner.id.to_s}, :confirm => "削除します。よろしいですか？") end
+		 		g.column name: '' do |obj| link_to('削除',{:controller=>'managements', :action=>'owner_approach_delete', :id=>obj.id.to_s, :owner_id=>@owner.id.to_s}, :confirm => "削除します。よろしいですか？", :class=>'print-none') end
 		 		g.column name: 'アプローチ日' do |obj| obj.approach_date if obj.approach_date end
 				g.column name: '種別' do |obj| obj.approach_kind.name if obj.approach_kind end
 				g.column name: '内容' do |obj| obj.content if obj.content end

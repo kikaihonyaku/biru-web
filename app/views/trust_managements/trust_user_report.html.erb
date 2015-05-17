@@ -1,12 +1,36 @@
 <% content_for :header do %>
-  <style type="text/css">
+  <style type="text/css" media="all">
 	
 	a{
 	  text-decoration:underline;	
 	}
-	
+
   </style>
   
+	<style type="text/css" media="print">
+	<!--
+		.print-none{
+			display:none;
+		}
+		
+		.report-list-width{
+				width:80%;
+		}
+		
+		
+	-->
+	</style>  
+  
+
+	<style type="text/css" media="screen">
+	<!--
+		.report-list-width{
+			width:45%;
+		}
+		
+	-->
+	</style>
+	  
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3&language=ja&libraries=visualization"></script>
 <script type="text/javascript">
 
@@ -495,126 +519,129 @@ function createMarker_trust_report(opts, open_flg){
 <% end %>
 <div style="padding-left:20px;">
 	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:150px;"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最終更新日：<%= @data_update.update_datetime if @data_update %></span></h3>
-	<div style="border-width:3px; border-style:solid; border-color:silver;width:600px;float:left;margin-right:20px;float:left;margin-bottom:20px;">
+	<div style="border-width:3px; border-style:solid; border-color:silver;width:40%;float:left;margin-right:20px;float:left;margin-bottom:20px;" class="print-none">
 		<div id="map_canvas" style="width:100%;height:470px;border-color:blue"></div>
 	</div>
 	
-	<div style="float:left;margin-bottom:0px;margin-right:20px;">
-		<table class="table table-bordered" style="width:500px;">
-			<thead>
-				<tr class="active">
-					<td style="font-weight:bold"></td>
-					<td style="font-weight:bold;text-align:center">今月度の行動</td>
-					<td style="font-weight:bold;text-align:center">計画</td>
-					<td style="font-weight:bold;text-align:center">実績</td>
-					<td style="font-weight:bold;text-align:center">達成率</td>
-					<td style="font-weight:bold;text-align:center"><a data-toggle="modal" href="#myModal"  >翌月度の計画</a></td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_btn_blue.png') %></td>
-					<td style="text-align:center;">訪問（うち在宅）</td>
-					<td style="text-align:center;"><%= if @report.visit_plan then @report.visit_plan else '-' end %></td>
-					<td style="text-align:center;"><%= @report.visit_num_all %>&nbsp;&nbsp;(<%= @report.visit_num_meet %>)</td>
-					<td style="text-align:center;"><%= disp_growth_rate(@report.visit_plan, @report.visit_num_all) %></td>
-					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_visit then @biru_user_monthly_next.trust_plan_visit else '-' end %></td>
+	<div style="float:left;margin-bottom:0px;margin-right:20px;width:50%">
+		
+		<div>
+			<table class="table table-bordered">
+				<thead>
+					<tr class="active">
+						<td style="font-weight:bold"></td>
+						<td style="font-weight:bold;text-align:center">今月度の行動</td>
+						<td style="font-weight:bold;text-align:center">計画</td>
+						<td style="font-weight:bold;text-align:center">実績</td>
+						<td style="font-weight:bold;text-align:center">達成率</td>
+						<td style="font-weight:bold;text-align:center"><a data-toggle="modal" href="#myModal"  >翌月度の計画</a></td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('marker_btn_blue.png') %></td>
+						<td style="text-align:center;">訪問（うち在宅）</td>
+						<td style="text-align:center;"><%= if @report.visit_plan then @report.visit_plan else '-' end %></td>
+						<td style="text-align:center;"><%= @report.visit_num_all %>&nbsp;&nbsp;(<%= @report.visit_num_meet %>)</td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.visit_plan, @report.visit_num_all) %></td>
+						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_visit then @biru_user_monthly_next.trust_plan_visit else '-' end %></td>
 					
-				</tr>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_btn_green.png') %></td>
-					<td style="text-align:center;">ＤＭ（うち反響）</td>
-					<td style="text-align:center;"><%= if @report.dm_plan then @report.dm_plan else '-' end %></td>
-					<td style="text-align:center;"><%= @report.dm_num_send %>&nbsp;&nbsp;(<%= @report.dm_num_recv %>)</td>
-					<td style="text-align:center;"><%= disp_growth_rate(@report.dm_plan, @report.visit_num_all) %></td>
-					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_dm then @biru_user_monthly_next.trust_plan_dm else '-' end %></td>
+					</tr>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('marker_btn_green.png') %></td>
+						<td style="text-align:center;">ＤＭ（うち反響）</td>
+						<td style="text-align:center;"><%= if @report.dm_plan then @report.dm_plan else '-' end %></td>
+						<td style="text-align:center;"><%= @report.dm_num_send %>&nbsp;&nbsp;(<%= @report.dm_num_recv %>)</td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.dm_plan, @report.visit_num_all) %></td>
+						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_dm then @biru_user_monthly_next.trust_plan_dm else '-' end %></td>
 					
-				</tr>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_btn_orange.png') %></td>
-					<td style="text-align:center;">ＴＥＬ（うち応対）</td>
-					<td style="text-align:center;"><%= if @report.tel_plan then @report.tel_plan else '-' end %></td>
-					<td style="text-align:center;"><%= @report.tel_num_call %>&nbsp;&nbsp;(<%= @report.tel_num_talk %>)</td>
-					<td style="text-align:center;"><%= disp_growth_rate(@report.tel_plan, @report.tel_num_call) %></td>
-					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_tel then @biru_user_monthly_next.trust_plan_tel else '-' end %></td>
+					</tr>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('marker_btn_orange.png') %></td>
+						<td style="text-align:center;">ＴＥＬ（うち応対）</td>
+						<td style="text-align:center;"><%= if @report.tel_plan then @report.tel_plan else '-' end %></td>
+						<td style="text-align:center;"><%= @report.tel_num_call %>&nbsp;&nbsp;(<%= @report.tel_num_talk %>)</td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.tel_plan, @report.tel_num_call) %></td>
+						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_tel then @biru_user_monthly_next.trust_plan_tel else '-' end %></td>
 					
-				</tr>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_btn_red.png') %></td>
-					<td style="text-align:center;">提案</td>
-					<td style="text-align:center;"><%= if @report.suggestion_plan then @report.suggestion_plan else '-' end %></td>
-					<td style="text-align:center;"><%= @report.suggestion_num %></td>
-					<td style="text-align:center;"><%= disp_growth_rate(@report.suggestion_plan, @report.suggestion_num) %></td>
-					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_suggestion then @biru_user_monthly_next.trust_plan_suggestion else '-' end %></td>
-				</tr>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000', :size=>"18x25")%></td>
-					<td style="text-align:center;">他社受託（自社受託）</td>
-					<td style="text-align:center;"><%= if @report.trust_plan then @report.trust_plan else '-' end %></td>
-					<td style="text-align:center;"><%= @report.trust_num %>&nbsp;&nbsp;(<%= @report.trust_num_jisya %>)</td>
-					<td style="text-align:center;"><%= disp_growth_rate(@report.trust_plan, @report.trust_num) %></td>
-					<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_contract then @biru_user_monthly_next.trust_plan_contract else '-' end %></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+					</tr>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('marker_btn_red.png') %></td>
+						<td style="text-align:center;">提案</td>
+						<td style="text-align:center;"><%= if @report.suggestion_plan then @report.suggestion_plan else '-' end %></td>
+						<td style="text-align:center;"><%= @report.suggestion_num %></td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.suggestion_plan, @report.suggestion_num) %></td>
+						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_suggestion then @biru_user_monthly_next.trust_plan_suggestion else '-' end %></td>
+					</tr>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Z|00FF00|000000', :size=>"18x25")%></td>
+						<td style="text-align:center;">他社受託（自社受託）</td>
+						<td style="text-align:center;"><%= if @report.trust_plan then @report.trust_plan else '-' end %></td>
+						<td style="text-align:center;"><%= @report.trust_num %>&nbsp;&nbsp;(<%= @report.trust_num_jisya %>)</td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.trust_plan, @report.trust_num) %></td>
+						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_contract then @biru_user_monthly_next.trust_plan_contract else '-' end %></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	
 
-	<div style="float:left;">
-		<table class="table table-bordered" style="width:500px;">
-			<thead>
-				<tr class="active">
-					<td style="font-weight:bold"></td>
-					<td style="font-weight:bold;text-align:center">見込みランク</td>
-					<td style="font-weight:bold;text-align:center">件数</td>
-					<td style="font-weight:bold;text-align:center">前月度からの増減</td>
-				</tr>
-			</thead>
+		<div style="float:left;">
+			<table class="table table-bordered">
+				<thead>
+					<tr class="active">
+						<td style="font-weight:bold"></td>
+						<td style="font-weight:bold;text-align:center">見込みランク</td>
+						<td style="font-weight:bold;text-align:center">件数</td>
+						<td style="font-weight:bold;text-align:center">前月度からの増減</td>
+					</tr>
+				</thead>
 			
 
-			<tbody>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
-					<td style="text-align:left;">S：契約日決定</td>
-					<td style="text-align:center;"><%= @report.rank_s %></td>
-					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_s) %></td>
-				</tr>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_green.png') %></td>
-					<td style="text-align:left;">A：契約予定で提案中</td>
-					<td style="text-align:center;"><%= @report.rank_a %></td>
-					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_a) %></td>
-				</tr>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_purple.png') %></td>
-					<td style="text-align:left;">B：提案書は提出可</td>
-					<td style="text-align:center;"><%= @report.rank_b %></td>
-					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_b) %></td>
-				</tr>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_red.png') %></td>
-					<td style="text-align:left;">C：権者に物件ヒアリング</td>
-					<td style="text-align:center;"><%= @report.rank_c %></td>
-					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_c) %></td>
-				</tr>
-				<tr>
-					<td style="text-align:center;"><%= image_tag('marker_white.png') %></td>
-					<td style="text-align:left;">Z：成約済</td>
-					<td style="text-align:center;"><%= @report.rank_z %></td>
-					<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_z) %></td>
-				</tr>
-			</tbody>
-		</table>
+				<tbody>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('marker_orange.png') %></td>
+						<td style="text-align:left;">S：契約日決定</td>
+						<td style="text-align:center;"><%= @report.rank_s %></td>
+						<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_s) %></td>
+					</tr>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('marker_green.png') %></td>
+						<td style="text-align:left;">A：契約予定で提案中</td>
+						<td style="text-align:center;"><%= @report.rank_a %></td>
+						<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_a) %></td>
+					</tr>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('marker_purple.png') %></td>
+						<td style="text-align:left;">B：提案書は提出可</td>
+						<td style="text-align:center;"><%= @report.rank_b %></td>
+						<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_b) %></td>
+					</tr>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('marker_red.png') %></td>
+						<td style="text-align:left;">C：権者に物件ヒアリング</td>
+						<td style="text-align:center;"><%= @report.rank_c %></td>
+						<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_c) %></td>
+					</tr>
+					<tr>
+						<td style="text-align:center;"><%= image_tag('marker_white.png') %></td>
+						<td style="text-align:left;">Z：成約済</td>
+						<td style="text-align:center;"><%= @report.rank_z %></td>
+						<td style="text-align:center;"><%= fluctuate_disp(@report.fluctuate_z) %></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+			
 	</div>
-	
-	
+
 	<div style="clear:both">
-			<div id="div_dummy_approach" style="width:45%;height:250px;float:left;margin-right:20px;">
+			<div id="div_dummy_approach" style="height:250px;float:left;" class="report-list-width">
 				<h4>今月度の行動詳細（面談・提案・DM反響・TEL会話）</h4>
 				<table id="building_table_approach"></table>
 				<div id = "building_pager_approach"></div>
 			</div>
-			<div id="div_dummy_rank" style="width:45%;height:250px;float:left;">
+			<div id="div_dummy_rank" style="height:250px;float:left;margin-left:20px;" class="report-list-width">
 				<h4>今月のランクC以上　または　ランクが変動したもの</h4>
 				<table id="building_table_rank"></table>
 				<div id = "building_pager_rank"></div>

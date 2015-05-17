@@ -13,6 +13,16 @@
     <![endif]-->
 
     <%= stylesheet_link_tag "application", :media => "all" %>
+	
+	<style type="text/css" media="print">
+	<!--
+		.print-none{
+			display:none;
+		}
+		
+	-->
+	</style>
+
 
     <!-- For third-generation iPad with high-resolution Retina display: -->
     <!-- Size should be 144 x 144 pixels -->
@@ -161,7 +171,7 @@
           position : pos
           ,map : mapCanvas
 		  ,html : owner.name 
-		  ,icon : '/assets/owner.png'
+		  ,icon : '/assets/blue-dot.png'
 		  ,draggable: true
         });
 		
@@ -175,7 +185,7 @@
 	          position : pos
 	          ,map : mapCanvas
 			  ,html : building.name 
-			  ,icon : '/assets/building.gif'
+			  ,icon : '/assets/arrowSmall80.png'
 			  ,draggable: true
 	        });
 		});
