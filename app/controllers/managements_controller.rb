@@ -200,7 +200,7 @@ class ManagementsController < ApplicationController
   def get_popup_owner_info(id)
     @owner = Owner.find(id)
     gon.owner = @owner
-    @owner_approaches = initialize_grid(OwnerApproach.joins(:owner).includes(:biru_user, :approach_kind).where(:owner_id => @owner) )
+    @owner_approaches = initialize_grid(OwnerApproach.joins(:owner).includes(:biru_user, :approach_kind).where(:owner_id => @owner).order("approach_date desc") )
     
     if @owner.trusts
       buildings = []
