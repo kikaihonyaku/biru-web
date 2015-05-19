@@ -1,4 +1,5 @@
 #-*- encoding:utf-8 -*- 
+require 'csv'
 
 # 建物管理を表示するコントローラ
 class BiruServiceController < ApplicationController
@@ -10,8 +11,10 @@ class BiruServiceController < ApplicationController
   end
   
   def index
-    # 管理物件、巡回清掃、定期メンテ、在宅清掃が入っている一覧表を営業所別に作成
     
+    @data_update = DataUpdateTime.find_by_code("110")
+    
+    # 管理物件、巡回清掃、定期メンテ、在宅清掃が入っている一覧表を営業所別に作成
     data_list = []
     arr_tobu = []
     arr_saitama = []
@@ -258,17 +261,17 @@ class BiruServiceController < ApplicationController
     ##########################
     # 取得する営業所の絞り込み
     ##########################
-    shop_where = ""
+    @shop_where = ""
     if params[:stcd]
       params[:stcd].split(",").each do |store_code|
         # 数字になり得るのなら引数として採用
         if store_code.strip =~ /\A-?\d+(.\d+)?\Z/
           
-          unless shop_where.length == 0
-            shop_where = shop_where + ","
+          unless @shop_where.length == 0
+            @shop_where = @shop_where + ","
           end
         
-          shop_where = shop_where + store_code
+          @shop_where = @shop_where + store_code
           
         end
         
@@ -294,7 +297,7 @@ class BiruServiceController < ApplicationController
           
     grid_data = []
     
-    ActiveRecord::Base.connection.select_all(get_biru_list_sql(shop_where)).each do |rec|
+    ActiveRecord::Base.connection.select_all(get_biru_list_sql(@shop_where)).each do |rec|
       
       ####################
       # 地図で使う物件情報
@@ -312,7 +315,7 @@ class BiruServiceController < ApplicationController
         :shop_code=>rec["shop_code"],
         
         :trust_mente_junkai_seisou=>rec["trust_mente_junkai_seisou"],
-        :trust_mente_kyusui_setubi=>rec["trust_mente_kyusui_setubi"],
+        :trust_mente_kyusui_setubi=>rec["trust_mente_kyusui_setubi"], 
         :trust_mente_tyosui_seisou=>rec["trust_mente_tyosui_seisou"],
         :trust_mente_elevator_hosyu=>rec["trust_mente_elevator_hosyu"],
         :trust_mente_bouhan_camera=>rec["trust_mente_bouhan_camera"],
@@ -394,11 +397,48 @@ class BiruServiceController < ApplicationController
     gon.building_to_owners = building_to_owners
     
     gon.grid_data = grid_data
+
+    # 一覧のコンボボックス
+    @combo_shop = jqgrid_combo_shop
+    @combo_build_type = jqgrid_combo_build_type
+    @combo_manage_type = jqgrid_combo_manage_type
     
   end
   
+  
+  # ファイル出力（CSV出力）
+  def csv_out
+    str = ""
+    
+    # params[:data].keys.each do |key|
+    #   str = str + params[:data][key].values.join(',')
+    #   str = str + "\n"
+    # end
+
+    # csvデータ作成
+    data = ActiveRecord::Base.connection.select_all(get_biru_list_sql(params[:shop_list]))
+    
+    keys = [ "shop_name", "building_code", "building_name", "manage_type_name", "build_type_name"]
+    
+    data.each do |row|
+      keys.each do |key|
+        str = str + row[key].to_s + ","
+      end
+      str = str + "\n"
+    end
+    
+    send_data str, :filename=>'output_buildings.csv'
+  end
+  
+  
+  
 private
   # 自社管理（B以上）の物件を戸数単位で営業所別に表示する
+  # アパート・マンションのみ
+  # １棟管理のみ（＝戸数が4戸以上）
+  # 150平米以上
+  
+  # room_flg : 部屋単位の出力をする
   def get_biru_list_sql(shop_list)
     
     strSql = ""
@@ -456,7 +496,7 @@ private
     strSql = strSql + "where 1 = 1  "
     strSql = strSql + "and c.code in ( " + shop_list + ") " if shop_list.length > 0
     strSql = strSql + "and a.delete_flg = 'f' "
-    strSql = strSql + "and b.delete_flg = 'f'  "
+    strSql = strSql + "and b.delete_flg = 'f' "
     strSql = strSql + "and d.delete_flg = 'f' "
     strSql = strSql + "and e.code in (3,4,5,6,9, 7,8,10) "
     strSql = strSql + "group by a.id "
@@ -488,8 +528,6 @@ private
     strSql = strSql + " ,a.free_num"
     strSql = strSql + " ,a.biru_age"
     strSql = strSql + " "
-    strSql = strSql + " "
-    strSql = strSql + "     "
     
     return strSql
   end
@@ -514,7 +552,6 @@ private
     strSql = strSql + ",sum(room_cnt) as shop_room_cnt "
     strSql = strSql + "FROM (" + get_biru_list_sql('') + ") X "
     strSql = strSql + "GROUP BY shop_id, shop_name, shop_code "
-    
     
     return strSql
   end

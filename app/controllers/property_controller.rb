@@ -434,9 +434,6 @@ class PropertyController < ApplicationController
   
 private
   # 自社管理（B以上）の物件を戸数単位で営業所別に表示する
-  # アパート・マンションのみ
-  # １棟管理のみ（＝戸数が4戸以上）
-  # 150平米以上
   
   # room_flg : 部屋単位の出力をする
   def get_biru_list_sql(shop_list, room_flg = false)
