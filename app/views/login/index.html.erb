@@ -94,9 +94,11 @@ input[type=&quot;password&quot;] {
     <p class="pass"><%= password_field_tag(:password, '', { :size => 20 }) %></p>
 <p style="color: Red"><%= @error %></p>
     <%= hidden_field_tag :referer, flash[:referer] %>
-    <p class="submit"><%= submit_tag 'login' %></p>
-<% end %>
+    <p class="submit">
+<%= submit_tag 'login' %></p>
 
+<div style="color: Blue">賃貸管理システムへログインする時に使っている<br/>社員番号・パスワードを入力してください。</div>
+<% end %>
 
 
 </div>

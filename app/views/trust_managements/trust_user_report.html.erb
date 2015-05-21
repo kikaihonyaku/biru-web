@@ -518,7 +518,7 @@ function createMarker_trust_report(opts, open_flg){
 
 <% end %>
 <div style="padding-left:20px;">
-	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:150px;">最終更新日：<%= @data_update.update_datetime if @data_update %></span><span style="font-size:15px;margin-left:200px;" class="print-none"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %></span></h3>
+	<h3><%=  '管理受託月報 ' + @month[0,4] + '年' + @month[4,2] + '月度（' + @biru_trust_user.name + "さん）" %><span style="font-size:15px;margin-left:120px;">最終更新日：<%= @data_update.update_datetime if @data_update %></span><span style="font-size:15px;margin-left:50px;" class="print-none"><%= link_to "＜＜前月", {:action=>'trust_user_report', :month=>@month_prev, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "翌月＞＞", {:action=>'trust_user_report', :month=>@month_next, :sid=>@biru_trust_user.id.to_s }, :style=>"text-decoration:none;" %></span></h3>
 	<div style="border-width:3px; border-style:solid; border-color:silver;width:40%;float:left;margin-right:20px;float:left;margin-bottom:20px;" class="print-none">
 		<div id="map_canvas" style="width:100%;height:470px;border-color:blue"></div>
 	</div>

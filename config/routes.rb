@@ -105,7 +105,7 @@ BiruWeb::Application.routes.draw do
   get "login/logout", :as => :logout
   
 
-#  get "managements/popup_owner/:id", :as => :popup_owner
+#  get "managements/popup_owner/:id" => 'managements#popup_owner', :as =>:popup_owner
   get "/recruitments/search_around", :as =>:search_around
 
   match "managements/bulk_search_file", :as => :bulk_search_file
