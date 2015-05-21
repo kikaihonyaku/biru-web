@@ -853,8 +853,8 @@ function win_picture(id){
   window.open('/renters/pictures?id=' + id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes");
 }
 
-function win_trust_report(user_id){
-    window.open('/trust_managements/trust_user_report?sid=' + user_id   , "", "width=1500,height=1100,resizable=yes,scrollbars=yes");
+function win_trust_report(user_id, month){
+    window.open('/trust_managements/trust_user_report?sid=' + user_id + '&month=' + month , "", "width=1500,height=1100,resizable=yes,scrollbars=yes");
 }
 
 function win_attack_list_maintenance(user_id){
