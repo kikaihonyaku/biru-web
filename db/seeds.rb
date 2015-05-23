@@ -3171,6 +3171,13 @@ def generate_trust_attack_month_report(month, trust_user)
   
 end
 
+# 管理戸数の一覧表を生成します。
+def generate_property_report
+  app_con = PropertyController.new
+  app_con.generate_prpperty_report
+  
+end
+
 
 ########################
 # マスタ登録
@@ -3201,7 +3208,7 @@ end
 #init_approach_kind
 
 # アタックステータス登録
-init_attack_state
+# init_attack_state
 
 # システムアップデート管理
 #init_data_update
@@ -3404,3 +3411,8 @@ init_attack_state
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
 #generate_trust_attack_month_report('201506', BiruUser.find_by_code('4917'))
 
+
+#############################
+# 管理戸数一覧表の作成
+#############################
+generate_property_report

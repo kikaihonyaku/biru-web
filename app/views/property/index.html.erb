@@ -9,8 +9,8 @@
 	var disp_biru_type;
 	disp_biru_type = false;
 
-	var disp_biru_mentenance;
-	disp_biru_mentenance = false;
+	var disp_biru_building_kind;
+	disp_biru_building_kind = false;
 
 	
 	init_jqgrid();
@@ -29,6 +29,42 @@
 			 "戸建て",
 			 "その他",
 			 "管理戸数",
+			"1R〜1LDK",
+			"2K〜2LDK",
+			"3K〜3LDK",
+			"4K〜4LDK",
+			"その他",
+			"1R〜1LDK",
+			"2K〜2LDK",
+			"3K〜3LDK",
+			"4K〜4LDK",
+			"その他",
+			"1R〜1LDK",
+			"2K〜2LDK",
+			"3K〜3LDK",
+			"4K〜4LDK",
+			"その他",
+			"1R〜1LDK",
+			"2K〜2LDK",
+			"3K〜3LDK",
+			"4K〜4LDK",
+			"その他",
+			"1R〜1LDK",
+			"2K〜2LDK",
+			"3K〜3LDK",
+			"4K〜4LDK",
+			"その他",
+			"1R〜1LDK",
+			"2K〜2LDK",
+			"3K〜3LDK",
+			"4K〜4LDK",
+			"その他",
+			"1R〜1LDK",
+			"2K〜2LDK",
+			"3K〜3LDK",
+			"4K〜4LDK",
+			"その他",
+			
 			 "リンク",
 		];
 	
@@ -44,8 +80,50 @@
 		 ,{name:"biru_type_kdt_cnt", index:"biru_type_kdt_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:false}
 		 ,{name:"biru_type_etc_cnt", index:"biru_type_etc_cnt", align:"center", width:100,classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:false}
 		 
-
 		 ,{name:"room_cnt", index:"room_cnt", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
+
+		 ,{name:"room_type_17010_1", index:"room_type_17010_1", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17010_2", index:"room_type_17010_2", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17010_3", index:"room_type_17010_3", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17010_4", index:"room_type_17010_4", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17010_9", index:"room_type_17010_9", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+
+		 ,{name:"room_type_17015_1", index:"room_type_17015_1", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17015_2", index:"room_type_17015_2", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17015_3", index:"room_type_17015_3", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17015_4", index:"room_type_17015_4", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17015_9", index:"room_type_17015_9", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+
+		 ,{name:"room_type_17020_1", index:"room_type_17020_1", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17020_2", index:"room_type_17020_2", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17020_3", index:"room_type_17020_3", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17020_4", index:"room_type_17020_4", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17020_9", index:"room_type_17020_9", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+
+		 ,{name:"room_type_17025_1", index:"room_type_17025_1", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17025_2", index:"room_type_17025_2", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17025_3", index:"room_type_17025_3", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17025_4", index:"room_type_17025_4", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17025_9", index:"room_type_17025_9", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+
+		 ,{name:"room_type_17030_1", index:"room_type_17030_1", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17030_2", index:"room_type_17030_2", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17030_3", index:"room_type_17030_3", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17030_4", index:"room_type_17030_4", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17030_9", index:"room_type_17030_9", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+
+		 ,{name:"room_type_17035_1", index:"room_type_17035_1", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17035_2", index:"room_type_17035_2", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17035_3", index:"room_type_17035_3", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17035_4", index:"room_type_17035_4", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17035_9", index:"room_type_17035_9", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+
+		 ,{name:"room_type_17099_1", index:"room_type_17099_1", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17099_2", index:"room_type_17099_2", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17099_3", index:"room_type_17099_3", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17099_4", index:"room_type_17099_4", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 ,{name:"room_type_17099_9", index:"room_type_17099_9", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0, hidden:true}', hidden:true}
+		 
  		 ,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", hidden:true}
 		];
 	
@@ -129,45 +207,142 @@
 // 			 });
 //
 //
-//  			table_div.navGrid('#building_pager', {
-//  			        edit:false, add:false, del:false, search:false
-//  			      }).navButtonAdd('#building_pager', {
-//  			        caption:"建物メンテ",  position:"last",  onClickButton: function(){
-//
-// 						if( disp_biru_mentenance == false ){
-//							
-// 	   						 table_div.jqGrid('showCol',"trust_mente_junkai_seisou_cnt");
-// 	   						 table_div.jqGrid('showCol',"trust_mente_kyusui_setubi_cnt");
-// 	   						 table_div.jqGrid('showCol',"trust_mente_tyosui_seisou_cnt");
-// 	   						 table_div.jqGrid('showCol',"trust_mente_elevator_hosyu_cnt");
-// 	   						 table_div.jqGrid('showCol',"trust_mente_bouhan_camera_cnt");
-// 		 					 table_div.trigger("reloadGrid");
-//							 
-// 							 disp_biru_mentenance = true;
-// 						}else{
-//							
-// 	   						 table_div.jqGrid('hideCol',"trust_mente_junkai_seisou_cnt");
-// 	   						 table_div.jqGrid('hideCol',"trust_mente_kyusui_setubi_cnt");
-// 	   						 table_div.jqGrid('hideCol',"trust_mente_tyosui_seisou_cnt");
-// 	   						 table_div.jqGrid('hideCol',"trust_mente_elevator_hosyu_cnt");
-// 	   						 table_div.jqGrid('hideCol',"trust_mente_bouhan_camera_cnt");
-// 		 					 table_div.trigger("reloadGrid");
-//							 
-// 							disp_biru_mentenance = false;
-// 						}
-//						
-//  					 }
-//  			 });
-//
+ 			table_div.navGrid('#building_pager', {
+ 			        edit:false, add:false, del:false, search:false
+ 			      }).navButtonAdd('#building_pager', {
+ 			        caption:"建物種別ごとの間取り",  position:"last",  onClickButton: function(){
+
+						if( disp_biru_building_kind == false ){
+
+	   						 table_div.jqGrid('showCol',"room_type_17010_1");
+	   						 table_div.jqGrid('showCol',"room_type_17010_2");
+	   						 table_div.jqGrid('showCol',"room_type_17010_3");
+	   						 table_div.jqGrid('showCol',"room_type_17010_4");
+	   						 table_div.jqGrid('showCol',"room_type_17010_9");
+
+	   						 table_div.jqGrid('showCol',"room_type_17015_1");
+	   						 table_div.jqGrid('showCol',"room_type_17015_2");
+	   						 table_div.jqGrid('showCol',"room_type_17015_3");
+	   						 table_div.jqGrid('showCol',"room_type_17015_4");
+	   						 table_div.jqGrid('showCol',"room_type_17015_9");
+
+	   						 table_div.jqGrid('showCol',"room_type_17020_1");
+	   						 table_div.jqGrid('showCol',"room_type_17020_2");
+	   						 table_div.jqGrid('showCol',"room_type_17020_3");
+	   						 table_div.jqGrid('showCol',"room_type_17020_4");
+	   						 table_div.jqGrid('showCol',"room_type_17020_9");
+
+	   						 table_div.jqGrid('showCol',"room_type_17025_1");
+	   						 table_div.jqGrid('showCol',"room_type_17025_2");
+	   						 table_div.jqGrid('showCol',"room_type_17025_3");
+	   						 table_div.jqGrid('showCol',"room_type_17025_4");
+	   						 table_div.jqGrid('showCol',"room_type_17025_9");
+
+	   						 table_div.jqGrid('showCol',"room_type_17030_1");
+	   						 table_div.jqGrid('showCol',"room_type_17030_2");
+	   						 table_div.jqGrid('showCol',"room_type_17030_3");
+	   						 table_div.jqGrid('showCol',"room_type_17030_4");
+	   						 table_div.jqGrid('showCol',"room_type_17030_9");
+
+	   						 table_div.jqGrid('showCol',"room_type_17035_1");
+	   						 table_div.jqGrid('showCol',"room_type_17035_2");
+	   						 table_div.jqGrid('showCol',"room_type_17035_3");
+	   						 table_div.jqGrid('showCol',"room_type_17035_4");
+	   						 table_div.jqGrid('showCol',"room_type_17035_9");
+
+	   						 table_div.jqGrid('showCol',"room_type_17099_1");
+	   						 table_div.jqGrid('showCol',"room_type_17099_2");
+	   						 table_div.jqGrid('showCol',"room_type_17099_3");
+	   						 table_div.jqGrid('showCol',"room_type_17099_4");
+	   						 table_div.jqGrid('showCol',"room_type_17099_9");
+		 					 table_div.trigger("reloadGrid");
+
+							 disp_biru_building_kind = true;
+						}else{
+	   						 table_div.jqGrid('hideCol',"room_type_17010_1");
+	   						 table_div.jqGrid('hideCol',"room_type_17010_2");
+	   						 table_div.jqGrid('hideCol',"room_type_17010_3");
+	   						 table_div.jqGrid('hideCol',"room_type_17010_4");
+	   						 table_div.jqGrid('hideCol',"room_type_17010_9");
+
+	   						 table_div.jqGrid('hideCol',"room_type_17015_1");
+	   						 table_div.jqGrid('hideCol',"room_type_17015_2");
+	   						 table_div.jqGrid('hideCol',"room_type_17015_3");
+	   						 table_div.jqGrid('hideCol',"room_type_17015_4");
+	   						 table_div.jqGrid('hideCol',"room_type_17015_9");
+
+	   						 table_div.jqGrid('hideCol',"room_type_17020_1");
+	   						 table_div.jqGrid('hideCol',"room_type_17020_2");
+	   						 table_div.jqGrid('hideCol',"room_type_17020_3");
+	   						 table_div.jqGrid('hideCol',"room_type_17020_4");
+	   						 table_div.jqGrid('hideCol',"room_type_17020_9");
+
+	   						 table_div.jqGrid('hideCol',"room_type_17025_1");
+	   						 table_div.jqGrid('hideCol',"room_type_17025_2");
+	   						 table_div.jqGrid('hideCol',"room_type_17025_3");
+	   						 table_div.jqGrid('hideCol',"room_type_17025_4");
+	   						 table_div.jqGrid('hideCol',"room_type_17025_9");
+
+	   						 table_div.jqGrid('hideCol',"room_type_17030_1");
+	   						 table_div.jqGrid('hideCol',"room_type_17030_2");
+	   						 table_div.jqGrid('hideCol',"room_type_17030_3");
+	   						 table_div.jqGrid('hideCol',"room_type_17030_4");
+	   						 table_div.jqGrid('hideCol',"room_type_17030_9");
+
+	   						 table_div.jqGrid('hideCol',"room_type_17035_1");
+	   						 table_div.jqGrid('hideCol',"room_type_17035_2");
+	   						 table_div.jqGrid('hideCol',"room_type_17035_3");
+	   						 table_div.jqGrid('hideCol',"room_type_17035_4");
+	   						 table_div.jqGrid('hideCol',"room_type_17035_9");
+
+	   						 table_div.jqGrid('hideCol',"room_type_17099_1");
+	   						 table_div.jqGrid('hideCol',"room_type_17099_2");
+	   						 table_div.jqGrid('hideCol',"room_type_17099_3");
+	   						 table_div.jqGrid('hideCol',"room_type_17099_4");
+	   						 table_div.jqGrid('hideCol',"room_type_17099_9");
+						 
+		 					 table_div.trigger("reloadGrid");
+
+							disp_biru_building_kind = false;
+						}
+						
+						
+					    $(window).bind('resize', function () {
+					        $('#building_table').setGridWidth($(window).width() - 200 )
+
+					        $('#building_pager').setGridWidth($(window).width() - 200 )
+					
+					
+					    }).trigger('resize');
+ 					 }
+ 			 });
+
 			 			
  	        table_div.jqGrid('setGroupHeaders', {
  	          useColSpanStyle: true,
  	          groupHeaders:[
  	            {startColumnName: 'biru_type_mn_cnt', numberOfColumns: 5, titleText: '<em>棟数内訳</em>'},
+ 	            {startColumnName: 'room_type_17010_1', numberOfColumns: 5, titleText: '<em>戸数：マンション</em>'},
+ 	            {startColumnName: 'room_type_17015_1', numberOfColumns: 5, titleText: '<em>戸数：分譲マンション</em>'},
+ 	            {startColumnName: 'room_type_17020_1', numberOfColumns: 5, titleText: '<em>戸数：アパート</em>'},
+ 	            {startColumnName: 'room_type_17025_1', numberOfColumns: 5, titleText: '<em>戸数：一戸建貸家</em>'},
+ 	            {startColumnName: 'room_type_17030_1', numberOfColumns: 5, titleText: '<em>戸数：テラスハウス</em>'},
+ 	            {startColumnName: 'room_type_17035_1', numberOfColumns: 5, titleText: '<em>戸数：メゾネット</em>'},
+ 	            {startColumnName: 'room_type_17099_1', numberOfColumns: 5, titleText: '<em>戸数：その他</em>'},
 // 	            {startColumnName: 'trust_mente_junkai_seisou_cnt', numberOfColumns: 5, titleText: '<em>建物メンテナンス</em>'},
 				
  	          ]
- 	        });			
+ 	        });
+			
+		    $(window).bind('resize', function () {
+		        $('#building_table').setGridWidth($(window).width() - 200 )
+
+		        $('#building_pager').setGridWidth($(window).width() - 200 )
+					
+					
+		    }).trigger('resize');
+	
+			
 			
 		});
 
