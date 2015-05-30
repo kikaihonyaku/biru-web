@@ -556,7 +556,8 @@ def init_data_update
   arr.push({:code=>'210', :name=>'月次データ（売上日報・経営数値）'})
   arr.push({:code=>'220', :name=>'月次データ（来店客数）'})
   arr.push({:code=>'230', :name=>'空き日数'})
-  arr.push({:code=>'310', :name=>'レンターズ'})
+  arr.push({:code=>'310', :name=>'レンターズ自社'})
+  arr.push({:code=>'315', :name=>'レンターズ他社'})
   arr.push({:code=>'320', :name=>'スーモ'})
   arr.push({:code=>'500', :name=>'受託巻き直し'})
 
@@ -3204,7 +3205,7 @@ end
 init_attack_state
 
 # システムアップデート管理
-#init_data_update
+init_data_update
 
 # 社員マスタ登録
 # init_biru_user

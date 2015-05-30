@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150530013419) do
+ActiveRecord::Schema.define(:version => 20150530064234) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -114,6 +114,7 @@ ActiveRecord::Schema.define(:version => 20150530013419) do
     t.integer  "biru_user_id"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+    t.date     "next_start_date"
   end
 
   add_index "data_update_times", ["biru_user_id"], :name => "index_data_update_times_on_biru_user_id"

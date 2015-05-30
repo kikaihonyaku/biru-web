@@ -14,37 +14,72 @@ namespace :biruweb do
 	
 	task :renters_update => :environment  do
 		
-	    batch_cd = Time.now.strftime('%Y%m%d%H%M%S')
-	    
-	    @data_update = DataUpdateTime.find_by_code("310")
-	    @data_update.start_datetime = Time.now
-	    @data_update.update_datetime = nil
-	    @data_update.biru_user_id = 1
-	    @data_update.save!
-      
-
-  	  # 不要データを削除
-  	  WorkRentersRoom.destroy_all
-  	  WorkRentersRoomPicture.destroy_all
-      
-      # ワークデータの取得
-	    renters_work_data("A#{batch_cd}", false) # 通常
-	    renters_work_data("B#{batch_cd}", true)  # 先物
-
-      # ワークデータが無事取得できたら初期化
-  	  RentersBuilding.update_all("delete_flg = 1") # SQLServerは1
-  	  RentersRoom.update_all("delete_flg = 1") # SQLServerは1
-  	  RentersRoomPicture.update_all("delete_flg = 1") # SQLServerは1
-
-			# レンターズデータへ反映
-	    renters_reflect("A#{batch_cd}", false) # 通常
-	    renters_reflect("B#{batch_cd}", true)  # 先物
-
-	    @data_update.update_datetime = Time.now
-	    @data_update.save!
-	    
-	    p "開始:" + @data_update.start_datetime.to_s + " 終了:" + @data_update.update_datetime.to_s
+    renters_update_exec(false)
+    renters_update_exec(true)
 	end
+  
+  # 自社のレンターズアップデート
+  def renters_update_exec(sakimono)
+    
+    if sakimono
+      # 他社の時
+      @data_update = DataUpdateTime.find_by_code("315")
+      sakimono_flg = "'t'"
+      next_start_date = Date.today.next_week(:wednesday) # 翌水曜日
+      
+    else
+      # 自社の時
+      @data_update = DataUpdateTime.find_by_code("310")
+      sakimono_flg = "'f'"
+      next_start_date = Date.today.next_week(:tuesday) # 翌火曜日
+    end
+    
+    # 次回実行日が未来だったら実行しない（空白だったら即時実行）
+    if @data_update.next_start_date 
+      if @data_update.next_start_date > Date.today
+        p "実行日が未来のためスキップ:" + @data_update.next_start_date.to_s 
+        return -1
+      end
+    end
+    
+    
+    # 実行日を設定
+    batch_cd = Time.now.strftime('%Y%m%d%H%M%S')
+    @data_update.start_datetime = Time.now
+    @data_update.update_datetime = nil
+    @data_update.next_start_date = nil # 一度次回実行日を初期化
+    @data_update.biru_user_id = 1
+    @data_update.save!
+
+    # 不要データを削除
+    WorkRentersRoom.destroy_all
+    WorkRentersRoomPicture.destroy_all
+    p '不要データ削除完了'
+
+    # ワークデータの取得
+    renters_work_data("B#{batch_cd}", sakimono)
+    p 'ワークデータ取得完了'
+
+    # ワークデータが無事取得できたら初期化
+	  RentersBuilding.unscoped.joins(:renters_rooms).where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't'") # SQLServerは1
+	  RentersRoom.unscoped.where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't'") # SQLServerは1
+	  RentersRoomPicture.unscoped.joins(:renters_room).where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't'") # SQLServerは1
+    p '初期化完了'
+
+		# レンターズデータへ反映
+    renters_reflect("B#{batch_cd}", sakimono)
+    p 'データ反映完了'
+
+    # 次回実行日の反映
+    @data_update.update_datetime = Time.now
+    @data_update.next_start_date = next_start_date
+    
+    @data_update.save!
+    
+    p "開始:" + @data_update.start_datetime.to_s + " 終了:" + @data_update.update_datetime.to_s
+
+  end
+  
 		  
 	# ワークデータを作成します(sakimono_flg false=通常、true:先物)
 	def renters_work_data(batch_cd, sakimono_flg)
@@ -72,6 +107,8 @@ namespace :biruweb do
 	    ret_status = doc.elements['results/results_returned']
 	    break unless ret_status
 	    break if ret_status.text == "0"
+      
+      break if start_idx > 50 
 
 	    # 次の取得の準備
 	    start_idx = start_idx + get_cnt

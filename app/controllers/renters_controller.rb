@@ -7,7 +7,6 @@ class RentersController < ApplicationController
   respond_to :html, :json
   
   def index
-    @data_update = DataUpdateTime.find_by_code("310")
     @batch_list = WorkRentersRoom.group(:batch_cd).select(:batch_cd).order("batch_cd desc")
     
     # 先物物件か確認する
@@ -16,6 +15,9 @@ class RentersController < ApplicationController
     if params[:sakimono] == 'sakimono'
       @sakimono_flg = true
       sakimono_params = '&sakimono=true'
+      @data_update = DataUpdateTime.find_by_code("315")
+    else
+      @data_update = DataUpdateTime.find_by_code("310")
     end
 
     # 営業所
