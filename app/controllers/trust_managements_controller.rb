@@ -157,13 +157,12 @@ class TrustManagementsController < ApplicationController
       case trust_attack_history.attack_state_to.code
       when 'S', 'A', 'B', 'C', 'Z'
         # 見込みランクがS・A・B・C・Zのいずれかの時はランク出力対象として保存
-        report_rank_regist(report, trust_attack_history)
+        report_rank_regist(report, trust_attack_history, start_date, end_date)
       else
         # 上記のランク以外でも、今月度にランクの変更があったものは出力対象として保存する。
         if trust_attack_history.month.to_s == month.to_s
-          report_rank_regist(report, trust_attack_history)
+          report_rank_regist(report, trust_attack_history, start_date, end_date)
         end
-        
       end
       
       case trust_attack_history.attack_state_to.code
@@ -1161,6 +1160,7 @@ class TrustManagementsController < ApplicationController
      row_data[:building_name] = rank_rec.building_name
      row_data[:owner_id] = rank_rec.owner_id
      
+     row_data[:approach_cnt] = rank_rec.approach_cnt
      
      grid_data_rank.push(row_data)
    end
@@ -1580,7 +1580,7 @@ end
 
 
 # 受託月報の見込み物件登録用
-def report_rank_regist(month_report, trust_attack_history)
+def report_rank_regist(month_report, trust_attack_history, start_date, end_date)
 	
   attack_rank = TrustAttackMonthReportRank.unscoped.find_or_create_by_trust_attack_month_report_id_and_trust_id(month_report.id, trust_attack_history.trust_id)
   
@@ -1621,6 +1621,11 @@ def report_rank_regist(month_report, trust_attack_history)
   
   attack_rank.building_latitude = building.latitude
   attack_rank.building_longitude = building.longitude
+  
+  # 当月にその見込み物件オーナーにアプローチした件数をカウント(DM除く)
+   attack_rank.approach_cnt =  OwnerApproach.joins(:approach_kind).where("owner_approaches.owner_id = " + attack_rank.owner_id.to_s ).where("approach_date between ? and ? ", start_date, end_date).where("biru_user_id = ?", month_report.biru_user_id).where("approach_kinds.code in ('0010', '0020', '0025', '0040', '0045')").count
+   
+  
   
   attack_rank.delete_flg = false
   attack_rank.save!

@@ -12,7 +12,7 @@ namespace :biruweb do
 		
     # カレント月を表示
     app = ApplicationController.new
-    month = app.get_cur_month(3)
+    month = app.get_cur_month
     @data_update = TrustAttackMonthReportUpdateHistory.find_or_create_by_month(month)
     
 	  # 登録開始日の保存

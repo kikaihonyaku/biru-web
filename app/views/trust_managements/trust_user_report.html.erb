@@ -438,6 +438,7 @@ function createMarker_trust_report(opts, open_flg){
  			  "変更",
 			  "最終変更月",
  			  "物件名",
+			  "今月アプローチ件数",
  		];
 		
  		// 列属性の定義
@@ -448,6 +449,7 @@ function createMarker_trust_report(opts, open_flg){
    		 , {name:"change_status",  index:"change_status",  width:40,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= ":;ランクアップ:ランクアップ;変更なし:変更なし;ランクダウン:ランクダウン;不明:不明" %>" }}
  	   	, {name:"change_month",  index:"change_month",  width:40,  align:"left",  classes:"no_class"}
    		 , {name:"building_name",  index:"building_name",  width:100,  align:"left",  classes:"no_class"}
+   		 , {name:"approach_cnt",  index:"approach_cnt",  width:20,  align:"right",  classes:"no_class"}
  		];
 
  		// その他の設定
