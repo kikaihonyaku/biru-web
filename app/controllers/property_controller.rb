@@ -3,267 +3,6 @@ require 'csv'
 
 # 資産(建物）を表示するコントローラ
 class PropertyController < ApplicationController
-  
-  # 一覧表の生成を行います。
-  def generate_prpperty_report
-    
-    #  集計テーブルの削除
-    PropertyReport.delete_all
-    
-    #################
-    # 集計データの作成
-    #################
-
-    
-    # 営業所単位でレコードの取得(棟数別)
-    ActiveRecord::Base.connection.select_all(get_shop_list_sql).each do |rec|
-      
-      report = PropertyReport.find_or_create_by_shop_code(rec['shop_code'])
-      report.shop_code = rec['shop_code']
-      report.building_cnt = rec['building_cnt']
-      report.room_cnt = rec['shop_room_cnt']
-      report.biru_type_mn_cnt = rec['biru_type_mn_cnt']
-      
-      report.biru_type_bm_cnt = rec['biru_type_bm_cnt']
-      report.biru_type_ap_cnt = rec['biru_type_ap_cnt']
-      report.biru_type_kdt_cnt = rec['biru_type_kdt_cnt']
-      report.biru_type_etc_cnt = rec['biru_type_etc_cnt']
-
-      report.trust_mente_junkai_seisou_cnt = rec['trust_mente_junkai_seisou_cnt']
-      report.trust_mente_kyusui_setubi_cnt = rec['trust_mente_kyusui_setubi_cnt']
-      report.trust_mente_tyosui_seisou_cnt = rec['trust_mente_tyosui_seisou_cnt']
-      report.trust_mente_elevator_hosyu_cnt = rec['trust_mente_elevator_hosyu_cnt']
-      report.trust_mente_bouhan_camera_cnt = rec['trust_mente_bouhan_camera_cnt']
-            
-      report.save!
-      
-    end
-    
-    # 営業所単位でレコードの設定(建物種別ごとの間取り別戸数)
-    ActiveRecord::Base.connection.select_all(get_biru_list_sql([], true)).each do |rec|
-      
-      report = PropertyReport.find_or_create_by_shop_code(rec['shop_code'])
-      
-      ####################
-      # 部屋種別ごとの間取り
-      ####################
-      case rec['room_type_code']
-      when '17010' # マンション
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.room_type_17010_1 = report.room_type_17010_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.room_type_17010_2 = report.room_type_17010_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.room_type_17010_3 = report.room_type_17010_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.room_type_17010_4 = report.room_type_17010_4 + 1
-        else
-          report.room_type_17010_9 = report.room_type_17010_9 + 1
-        end
-          
-      when '17015' # 分譲マンション
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.room_type_17015_1 = report.room_type_17015_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.room_type_17015_2 = report.room_type_17015_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.room_type_17015_3 = report.room_type_17015_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.room_type_17015_4 = report.room_type_17015_4 + 1
-        else
-          report.room_type_17015_9 = report.room_type_17015_9 + 1
-        end
-        
-      when '17020' # アパート
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.room_type_17020_1 = report.room_type_17020_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.room_type_17020_2 = report.room_type_17020_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.room_type_17020_3 = report.room_type_17020_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.room_type_17020_4 = report.room_type_17020_4 + 1
-        else
-          report.room_type_17020_9 = report.room_type_17020_9 + 1
-        end
-        
-      when '17025' # 一戸建貸家
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.room_type_17025_1 = report.room_type_17025_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.room_type_17025_2 = report.room_type_17025_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.room_type_17025_3 = report.room_type_17025_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.room_type_17025_4 = report.room_type_17025_4 + 1
-        else
-          report.room_type_17025_9 = report.room_type_17025_9 + 1
-        end
-        
-      when '17030' # テラスハウス
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.room_type_17030_1 = report.room_type_17030_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.room_type_17030_2 = report.room_type_17030_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.room_type_17030_3 = report.room_type_17030_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.room_type_17030_4 = report.room_type_17030_4 + 1
-        else
-          report.room_type_17030_9 = report.room_type_17030_9 + 1
-        end
-        
-      when '17035' # メゾネット
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.room_type_17035_1 = report.room_type_17035_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.room_type_17035_2 = report.room_type_17035_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.room_type_17035_3 = report.room_type_17035_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.room_type_17035_4 = report.room_type_17035_4 + 1
-        else
-          report.room_type_17035_9 = report.room_type_17035_9 + 1
-        end
-      else # その他
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.room_type_17099_1 = report.room_type_17099_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.room_type_17099_2 = report.room_type_17099_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.room_type_17099_3 = report.room_type_17099_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.room_type_17099_4 = report.room_type_17099_4 + 1
-        else
-          report.room_type_17099_9 = report.room_type_17099_9 + 1
-        end
-      end
-      
-        
-      ####################
-      # 築年数ごとの間取り
-      ####################
-      case rec['biru_age']
-      when 0..5
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.biru_age_0005_1 = report.biru_age_0005_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.biru_age_0005_2 = report.biru_age_0005_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.biru_age_0005_3 = report.biru_age_0005_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.biru_age_0005_4 = report.biru_age_0005_4 + 1
-        else
-          report.biru_age_0005_9 = report.biru_age_0005_9 + 1
-        end
-        
-      when 6..10
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.biru_age_0610_1 = report.biru_age_0610_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.biru_age_0610_2 = report.biru_age_0610_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.biru_age_0610_3 = report.biru_age_0610_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.biru_age_0610_4 = report.biru_age_0610_4 + 1
-        else
-          report.biru_age_0610_9 = report.biru_age_0610_9 + 1
-        end
-        
-      when 11..15
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.biru_age_1115_1 = report.biru_age_1115_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.biru_age_1115_2 = report.biru_age_1115_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.biru_age_1115_3 = report.biru_age_1115_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.biru_age_1115_4 = report.biru_age_1115_4 + 1
-        else
-          report.biru_age_1115_9 = report.biru_age_1115_9 + 1
-        end
-      when 16..20
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.biru_age_1620_1 = report.biru_age_1620_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.biru_age_1620_2 = report.biru_age_1620_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.biru_age_1620_3 = report.biru_age_1620_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.biru_age_1620_4 = report.biru_age_1620_4 + 1
-        else
-          report.biru_age_1620_9 = report.biru_age_1620_9 + 1
-        end
-      when 21..25
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.biru_age_2125_1 = report.biru_age_2125_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.biru_age_2125_2 = report.biru_age_2125_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.biru_age_2125_3 = report.biru_age_2125_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.biru_age_2125_4 = report.biru_age_2125_4 + 1
-        else
-          report.biru_age_2125_9 = report.biru_age_2125_9 + 1
-        end
-      when 26..30
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.biru_age_2630_1 = report.biru_age_2630_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.biru_age_2630_2 = report.biru_age_2630_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.biru_age_2630_3 = report.biru_age_2630_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.biru_age_2630_4 = report.biru_age_2630_4 + 1
-        else
-          report.biru_age_2630_9 = report.biru_age_2630_9 + 1
-        end
-      when 31..35
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.biru_age_3135_1 = report.biru_age_3135_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.biru_age_3135_2 = report.biru_age_3135_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.biru_age_3135_3 = report.biru_age_3135_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.biru_age_3135_4 = report.biru_age_3135_4 + 1
-        else
-          report.biru_age_3135_9 = report.biru_age_3135_9 + 1
-        end
-      else
-        case rec['room_layout_code']
-        when '18100', '18105', '18110', '18120', '18125' # 1R〜1LDK
-          report.biru_age_9999_1 = report.biru_age_9999_1 + 1
-        when '18200', '18205', '18210', '18215', '18220' # 2k〜2LDK
-          report.biru_age_9999_2 = report.biru_age_9999_2 + 1
-        when '18300', '18305', '18310', '18311', '18315', '18320' # 3k〜3LDK
-          report.biru_age_9999_3 = report.biru_age_9999_3 + 1
-        when '18400', '18405', '18410', '18415', '18420' # 4k〜4LDK
-          report.biru_age_9999_4 = report.biru_age_9999_4 + 1
-        else
-          report.biru_age_9999_9 = report.biru_age_9999_9 + 1
-        end
-      end
-      
-      report.save!
-      
-    end
-    
-  end
 
   # 物件種別のiconを変更する時のコントローラ
   def change_biru_icon
@@ -304,27 +43,25 @@ class PropertyController < ApplicationController
       end
       
       data_list.push({
-        :shop_code => shop.code, :shop_name => shop.name, :group_name => group_name ,:url => 'map?stcd=' + shop.code, :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0,:room_type_17010_1 =>0,:room_type_17010_2 =>0,:room_type_17010_3 =>0,:room_type_17010_4 =>0,:room_type_17010_9 =>0,:room_type_17015_1 =>0,:room_type_17015_2 =>0,:room_type_17015_3 =>0,:room_type_17015_4 =>0,:room_type_17015_9 =>0,:room_type_17020_1 =>0,:room_type_17020_2 =>0,:room_type_17020_3 =>0,:room_type_17020_4 =>0,:room_type_17020_9 =>0,:room_type_17025_1 =>0,:room_type_17025_2 =>0,:room_type_17025_3 =>0,:room_type_17025_4 =>0,:room_type_17025_9 =>0,:room_type_17030_1 =>0,:room_type_17030_2 =>0,:room_type_17030_3 =>0,:room_type_17030_4 =>0,:room_type_17030_9 =>0,:room_type_17035_1 =>0,:room_type_17035_2 =>0,:room_type_17035_3 =>0,:room_type_17035_4 =>0,:room_type_17035_9 =>0,:room_type_17099_1 =>0,:room_type_17099_2 =>0,:room_type_17099_3 =>0,:room_type_17099_4 =>0,:room_type_17099_9 =>0,:biru_age_0005_1 =>0,:biru_age_0005_2 =>0,:biru_age_0005_3 =>0,:biru_age_0005_4 =>0,:biru_age_0005_9 =>0,:biru_age_0610_1 =>0,:biru_age_0610_2 =>0,:biru_age_0610_3 =>0,:biru_age_0610_4 =>0,:biru_age_0610_9 =>0,:biru_age_1115_1 =>0,:biru_age_1115_2 =>0,:biru_age_1115_3 =>0,:biru_age_1115_4 =>0,:biru_age_1115_9 =>0,:biru_age_1620_1 =>0,:biru_age_1620_2 =>0,:biru_age_1620_3 =>0,:biru_age_1620_4 =>0,:biru_age_1620_9 =>0,:biru_age_2125_1 =>0,:biru_age_2125_2 =>0,:biru_age_2125_3 =>0,:biru_age_2125_4 =>0,:biru_age_2125_9 =>0,:biru_age_2630_1 =>0,:biru_age_2630_2 =>0,:biru_age_2630_3 =>0,:biru_age_2630_4 =>0,:biru_age_2630_9 =>0,:biru_age_3135_1 =>0,:biru_age_3135_2 =>0,:biru_age_3135_3 =>0,:biru_age_3135_4 =>0,:biru_age_3135_9 =>0,:biru_age_9999_1 =>0,:biru_age_9999_2 =>0,:biru_age_9999_3 =>0,:biru_age_9999_4 =>0,:biru_age_9999_9 =>0
+        :shop_code => shop.code, :shop_name => shop.name, :group_name => group_name ,:url => 'map?stcd=' + shop.code, :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0
       })
     end
     
-    data_list.push({ :shop_code => '100', :shop_name => '東武支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_tobu.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0,:room_type_17010_1 =>0,:room_type_17010_2 =>0,:room_type_17010_3 =>0,:room_type_17010_4 =>0,:room_type_17010_9 =>0,:room_type_17015_1 =>0,:room_type_17015_2 =>0,:room_type_17015_3 =>0,:room_type_17015_4 =>0,:room_type_17015_9 =>0,:room_type_17020_1 =>0,:room_type_17020_2 =>0,:room_type_17020_3 =>0,:room_type_17020_4 =>0,:room_type_17020_9 =>0,:room_type_17025_1 =>0,:room_type_17025_2 =>0,:room_type_17025_3 =>0,:room_type_17025_4 =>0,:room_type_17025_9 =>0,:room_type_17030_1 =>0,:room_type_17030_2 =>0,:room_type_17030_3 =>0,:room_type_17030_4 =>0,:room_type_17030_9 =>0,:room_type_17035_1 =>0,:room_type_17035_2 =>0,:room_type_17035_3 =>0,:room_type_17035_4 =>0,:room_type_17035_9 =>0,:room_type_17099_1 =>0,:room_type_17099_2 =>0,:room_type_17099_3 =>0,:room_type_17099_4 =>0,:room_type_17099_9 =>0,:biru_age_0005_1 =>0,:biru_age_0005_2 =>0,:biru_age_0005_3 =>0,:biru_age_0005_4 =>0,:biru_age_0005_9 =>0,:biru_age_0610_1 =>0,:biru_age_0610_2 =>0,:biru_age_0610_3 =>0,:biru_age_0610_4 =>0,:biru_age_0610_9 =>0,:biru_age_1115_1 =>0,:biru_age_1115_2 =>0,:biru_age_1115_3 =>0,:biru_age_1115_4 =>0,:biru_age_1115_9 =>0,:biru_age_1620_1 =>0,:biru_age_1620_2 =>0,:biru_age_1620_3 =>0,:biru_age_1620_4 =>0,:biru_age_1620_9 =>0,:biru_age_2125_1 =>0,:biru_age_2125_2 =>0,:biru_age_2125_3 =>0,:biru_age_2125_4 =>0,:biru_age_2125_9 =>0,:biru_age_2630_1 =>0,:biru_age_2630_2 =>0,:biru_age_2630_3 =>0,:biru_age_2630_4 =>0,:biru_age_2630_9 =>0,:biru_age_3135_1 =>0,:biru_age_3135_2 =>0,:biru_age_3135_3 =>0,:biru_age_3135_4 =>0,:biru_age_3135_9 =>0,:biru_age_9999_1 =>0,:biru_age_9999_2 =>0,:biru_age_9999_3 =>0,:biru_age_9999_4 =>0,:biru_age_9999_9 =>0})
-    data_list.push({ :shop_code => '200', :shop_name => 'さいたま支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_saitama.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0,:room_type_17010_1 =>0,:room_type_17010_2 =>0,:room_type_17010_3 =>0,:room_type_17010_4 =>0,:room_type_17010_9 =>0,:room_type_17015_1 =>0,:room_type_17015_2 =>0,:room_type_17015_3 =>0,:room_type_17015_4 =>0,:room_type_17015_9 =>0,:room_type_17020_1 =>0,:room_type_17020_2 =>0,:room_type_17020_3 =>0,:room_type_17020_4 =>0,:room_type_17020_9 =>0,:room_type_17025_1 =>0,:room_type_17025_2 =>0,:room_type_17025_3 =>0,:room_type_17025_4 =>0,:room_type_17025_9 =>0,:room_type_17030_1 =>0,:room_type_17030_2 =>0,:room_type_17030_3 =>0,:room_type_17030_4 =>0,:room_type_17030_9 =>0,:room_type_17035_1 =>0,:room_type_17035_2 =>0,:room_type_17035_3 =>0,:room_type_17035_4 =>0,:room_type_17035_9 =>0,:room_type_17099_1 =>0,:room_type_17099_2 =>0,:room_type_17099_3 =>0,:room_type_17099_4 =>0,:room_type_17099_9 =>0,:biru_age_0005_1 =>0,:biru_age_0005_2 =>0,:biru_age_0005_3 =>0,:biru_age_0005_4 =>0,:biru_age_0005_9 =>0,:biru_age_0610_1 =>0,:biru_age_0610_2 =>0,:biru_age_0610_3 =>0,:biru_age_0610_4 =>0,:biru_age_0610_9 =>0,:biru_age_1115_1 =>0,:biru_age_1115_2 =>0,:biru_age_1115_3 =>0,:biru_age_1115_4 =>0,:biru_age_1115_9 =>0,:biru_age_1620_1 =>0,:biru_age_1620_2 =>0,:biru_age_1620_3 =>0,:biru_age_1620_4 =>0,:biru_age_1620_9 =>0,:biru_age_2125_1 =>0,:biru_age_2125_2 =>0,:biru_age_2125_3 =>0,:biru_age_2125_4 =>0,:biru_age_2125_9 =>0,:biru_age_2630_1 =>0,:biru_age_2630_2 =>0,:biru_age_2630_3 =>0,:biru_age_2630_4 =>0,:biru_age_2630_9 =>0,:biru_age_3135_1 =>0,:biru_age_3135_2 =>0,:biru_age_3135_3 =>0,:biru_age_3135_4 =>0,:biru_age_3135_9 =>0,:biru_age_9999_1 =>0,:biru_age_9999_2 =>0,:biru_age_9999_3 =>0,:biru_age_9999_4 =>0,:biru_age_9999_9 =>0 })
-    data_list.push({ :shop_code => '300', :shop_name => '千葉支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_chiba.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0,:room_type_17010_1 =>0,:room_type_17010_2 =>0,:room_type_17010_3 =>0,:room_type_17010_4 =>0,:room_type_17010_9 =>0,:room_type_17015_1 =>0,:room_type_17015_2 =>0,:room_type_17015_3 =>0,:room_type_17015_4 =>0,:room_type_17015_9 =>0,:room_type_17020_1 =>0,:room_type_17020_2 =>0,:room_type_17020_3 =>0,:room_type_17020_4 =>0,:room_type_17020_9 =>0,:room_type_17025_1 =>0,:room_type_17025_2 =>0,:room_type_17025_3 =>0,:room_type_17025_4 =>0,:room_type_17025_9 =>0,:room_type_17030_1 =>0,:room_type_17030_2 =>0,:room_type_17030_3 =>0,:room_type_17030_4 =>0,:room_type_17030_9 =>0,:room_type_17035_1 =>0,:room_type_17035_2 =>0,:room_type_17035_3 =>0,:room_type_17035_4 =>0,:room_type_17035_9 =>0,:room_type_17099_1 =>0,:room_type_17099_2 =>0,:room_type_17099_3 =>0,:room_type_17099_4 =>0,:room_type_17099_9 =>0,:biru_age_0005_1 =>0,:biru_age_0005_2 =>0,:biru_age_0005_3 =>0,:biru_age_0005_4 =>0,:biru_age_0005_9 =>0,:biru_age_0610_1 =>0,:biru_age_0610_2 =>0,:biru_age_0610_3 =>0,:biru_age_0610_4 =>0,:biru_age_0610_9 =>0,:biru_age_1115_1 =>0,:biru_age_1115_2 =>0,:biru_age_1115_3 =>0,:biru_age_1115_4 =>0,:biru_age_1115_9 =>0,:biru_age_1620_1 =>0,:biru_age_1620_2 =>0,:biru_age_1620_3 =>0,:biru_age_1620_4 =>0,:biru_age_1620_9 =>0,:biru_age_2125_1 =>0,:biru_age_2125_2 =>0,:biru_age_2125_3 =>0,:biru_age_2125_4 =>0,:biru_age_2125_9 =>0,:biru_age_2630_1 =>0,:biru_age_2630_2 =>0,:biru_age_2630_3 =>0,:biru_age_2630_4 =>0,:biru_age_2630_9 =>0,:biru_age_3135_1 =>0,:biru_age_3135_2 =>0,:biru_age_3135_3 =>0,:biru_age_3135_4 =>0,:biru_age_3135_9 =>0,:biru_age_9999_1 =>0,:biru_age_9999_2 =>0,:biru_age_9999_3 =>0,:biru_age_9999_4 =>0,:biru_age_9999_9 =>0})
-    data_list.push({ :shop_code => '900', :shop_name => 'ビル全体', :group_name => '99その他' ,:url => 'map', :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0,:room_type_17010_1 =>0,:room_type_17010_2 =>0,:room_type_17010_3 =>0,:room_type_17010_4 =>0,:room_type_17010_9 =>0,:room_type_17015_1 =>0,:room_type_17015_2 =>0,:room_type_17015_3 =>0,:room_type_17015_4 =>0,:room_type_17015_9 =>0,:room_type_17020_1 =>0,:room_type_17020_2 =>0,:room_type_17020_3 =>0,:room_type_17020_4 =>0,:room_type_17020_9 =>0,:room_type_17025_1 =>0,:room_type_17025_2 =>0,:room_type_17025_3 =>0,:room_type_17025_4 =>0,:room_type_17025_9 =>0,:room_type_17030_1 =>0,:room_type_17030_2 =>0,:room_type_17030_3 =>0,:room_type_17030_4 =>0,:room_type_17030_9 =>0,:room_type_17035_1 =>0,:room_type_17035_2 =>0,:room_type_17035_3 =>0,:room_type_17035_4 =>0,:room_type_17035_9 =>0,:room_type_17099_1 =>0,:room_type_17099_2 =>0,:room_type_17099_3 =>0,:room_type_17099_4 =>0,:room_type_17099_9 =>0,:biru_age_0005_1 =>0,:biru_age_0005_2 =>0,:biru_age_0005_3 =>0,:biru_age_0005_4 =>0,:biru_age_0005_9 =>0,:biru_age_0610_1 =>0,:biru_age_0610_2 =>0,:biru_age_0610_3 =>0,:biru_age_0610_4 =>0,:biru_age_0610_9 =>0,:biru_age_1115_1 =>0,:biru_age_1115_2 =>0,:biru_age_1115_3 =>0,:biru_age_1115_4 =>0,:biru_age_1115_9 =>0,:biru_age_1620_1 =>0,:biru_age_1620_2 =>0,:biru_age_1620_3 =>0,:biru_age_1620_4 =>0,:biru_age_1620_9 =>0,:biru_age_2125_1 =>0,:biru_age_2125_2 =>0,:biru_age_2125_3 =>0,:biru_age_2125_4 =>0,:biru_age_2125_9 =>0,:biru_age_2630_1 =>0,:biru_age_2630_2 =>0,:biru_age_2630_3 =>0,:biru_age_2630_4 =>0,:biru_age_2630_9 =>0,:biru_age_3135_1 =>0,:biru_age_3135_2 =>0,:biru_age_3135_3 =>0,:biru_age_3135_4 =>0,:biru_age_3135_9 =>0,:biru_age_9999_1 =>0,:biru_age_9999_2 =>0,:biru_age_9999_3 =>0,:biru_age_9999_4 =>0,:biru_age_9999_9 =>0})
+    data_list.push({ :shop_code => '100', :shop_name => '東武支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_tobu.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
+    data_list.push({ :shop_code => '200', :shop_name => 'さいたま支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_saitama.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0 })
+    data_list.push({ :shop_code => '300', :shop_name => '千葉支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_chiba.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
+    data_list.push({ :shop_code => '900', :shop_name => 'ビル全体', :group_name => '99その他' ,:url => 'map', :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
 
     ##############################
     # 営業所データをハッシュに格納
     ##############################
     grid_data = {}
-    #ActiveRecord::Base.connection.select_all(get_shop_list_sql).each do |rec|
-    ActiveRecord::Base.connection.select_all("select * from property_reports").each do |rec|
+    ActiveRecord::Base.connection.select_all(get_shop_list_sql).each do |rec|
       unless grid_data[rec['shop_code']]
-        
         grid_data[rec['shop_code']] = {
            :shop_code => rec['shop_code'],
            :building_cnt => rec['building_cnt'],
-           :room_cnt => rec['room_cnt'],
+           :room_cnt => rec['shop_room_cnt'],
            
            :biru_type_mn_cnt => rec['biru_type_mn_cnt'],
            :biru_type_bm_cnt => rec['biru_type_bm_cnt'],
@@ -337,84 +74,6 @@ class PropertyController < ApplicationController
            :trust_mente_tyosui_seisou_cnt => rec['trust_mente_tyosui_seisou_cnt'],
            :trust_mente_elevator_hosyu_cnt => rec['trust_mente_elevator_hosyu_cnt'],
            :trust_mente_bouhan_camera_cnt => rec['trust_mente_bouhan_camera_cnt'],
-           
-           :room_type_17010_1 => rec['room_type_17010_1'],
-           :room_type_17010_2 => rec['room_type_17010_2'],
-           :room_type_17010_3 => rec['room_type_17010_3'],
-           :room_type_17010_4 => rec['room_type_17010_4'],
-           :room_type_17010_9 => rec['room_type_17010_9'],
-           :room_type_17015_1 => rec['room_type_17015_1'],
-           :room_type_17015_2 => rec['room_type_17015_2'],
-           :room_type_17015_3 => rec['room_type_17015_3'],
-           :room_type_17015_4 => rec['room_type_17015_4'],
-           :room_type_17015_9 => rec['room_type_17015_9'],
-           :room_type_17020_1 => rec['room_type_17020_1'],
-           :room_type_17020_2 => rec['room_type_17020_2'],
-           :room_type_17020_3 => rec['room_type_17020_3'],
-           :room_type_17020_4 => rec['room_type_17020_4'],
-           :room_type_17020_9 => rec['room_type_17020_9'],
-           :room_type_17025_1 => rec['room_type_17025_1'],
-           :room_type_17025_2 => rec['room_type_17025_2'],
-           :room_type_17025_3 => rec['room_type_17025_3'],
-           :room_type_17025_4 => rec['room_type_17025_4'],
-           :room_type_17025_9 => rec['room_type_17025_9'],
-           :room_type_17030_1 => rec['room_type_17030_1'],
-           :room_type_17030_2 => rec['room_type_17030_2'],
-           :room_type_17030_3 => rec['room_type_17030_3'],
-           :room_type_17030_4 => rec['room_type_17030_4'],
-           :room_type_17030_9 => rec['room_type_17030_9'],
-           :room_type_17035_1 => rec['room_type_17035_1'],
-           :room_type_17035_2 => rec['room_type_17035_2'],
-           :room_type_17035_3 => rec['room_type_17035_3'],
-           :room_type_17035_4 => rec['room_type_17035_4'],
-           :room_type_17035_9 => rec['room_type_17035_9'],
-           :room_type_17099_1 => rec['room_type_17099_1'],
-           :room_type_17099_2 => rec['room_type_17099_2'],
-           :room_type_17099_3 => rec['room_type_17099_3'],
-           :room_type_17099_4 => rec['room_type_17099_4'],
-           :room_type_17099_9 => rec['room_type_17099_9'],
-           :biru_age_0005_1 => rec['biru_age_0005_1'],
-           :biru_age_0005_2 => rec['biru_age_0005_2'],
-           :biru_age_0005_3 => rec['biru_age_0005_3'],
-           :biru_age_0005_4 => rec['biru_age_0005_4'],
-           :biru_age_0005_9 => rec['biru_age_0005_9'],
-           :biru_age_0610_1 => rec['biru_age_0610_1'],
-           :biru_age_0610_2 => rec['biru_age_0610_2'],
-           :biru_age_0610_3 => rec['biru_age_0610_3'],
-           :biru_age_0610_4 => rec['biru_age_0610_4'],
-           :biru_age_0610_9 => rec['biru_age_0610_9'],
-           :biru_age_1115_1 => rec['biru_age_1115_1'],
-           :biru_age_1115_2 => rec['biru_age_1115_2'],
-           :biru_age_1115_3 => rec['biru_age_1115_3'],
-           :biru_age_1115_4 => rec['biru_age_1115_4'],
-           :biru_age_1115_9 => rec['biru_age_1115_9'],
-           :biru_age_1620_1 => rec['biru_age_1620_1'],
-           :biru_age_1620_2 => rec['biru_age_1620_2'],
-           :biru_age_1620_3 => rec['biru_age_1620_3'],
-           :biru_age_1620_4 => rec['biru_age_1620_4'],
-           :biru_age_1620_9 => rec['biru_age_1620_9'],
-           :biru_age_2125_1 => rec['biru_age_2125_1'],
-           :biru_age_2125_2 => rec['biru_age_2125_2'],
-           :biru_age_2125_3 => rec['biru_age_2125_3'],
-           :biru_age_2125_4 => rec['biru_age_2125_4'],
-           :biru_age_2125_9 => rec['biru_age_2125_9'],
-           :biru_age_2630_1 => rec['biru_age_2630_1'],
-           :biru_age_2630_2 => rec['biru_age_2630_2'],
-           :biru_age_2630_3 => rec['biru_age_2630_3'],
-           :biru_age_2630_4 => rec['biru_age_2630_4'],
-           :biru_age_2630_9 => rec['biru_age_2630_9'],
-           :biru_age_3135_1 => rec['biru_age_3135_1'],
-           :biru_age_3135_2 => rec['biru_age_3135_2'],
-           :biru_age_3135_3 => rec['biru_age_3135_3'],
-           :biru_age_3135_4 => rec['biru_age_3135_4'],
-           :biru_age_3135_9 => rec['biru_age_3135_9'],
-           :biru_age_9999_1 => rec['biru_age_9999_1'],
-           :biru_age_9999_2 => rec['biru_age_9999_2'],
-           :biru_age_9999_3 => rec['biru_age_9999_3'],
-           :biru_age_9999_4 => rec['biru_age_9999_4'],
-           :biru_age_9999_9 => rec['biru_age_9999_9'],
-
-           
          }
       end
     end
@@ -436,81 +95,6 @@ class PropertyController < ApplicationController
       :trust_mente_tyosui_seisou_cnt => 0,
       :trust_mente_elevator_hosyu_cnt => 0,
       :trust_mente_bouhan_camera_cnt => 0,
-      :room_type_17010_1	 => 0,
-      :room_type_17010_2	 => 0,
-      :room_type_17010_3	 => 0,
-      :room_type_17010_4	 => 0,
-      :room_type_17010_9	 => 0,
-      :room_type_17015_1	 => 0,
-      :room_type_17015_2	 => 0,
-      :room_type_17015_3	 => 0,
-      :room_type_17015_4	 => 0,
-      :room_type_17015_9	 => 0,
-      :room_type_17020_1	 => 0,
-      :room_type_17020_2	 => 0,
-      :room_type_17020_3	 => 0,
-      :room_type_17020_4	 => 0,
-      :room_type_17020_9	 => 0,
-      :room_type_17025_1	 => 0,
-      :room_type_17025_2	 => 0,
-      :room_type_17025_3	 => 0,
-      :room_type_17025_4	 => 0,
-      :room_type_17025_9	 => 0,
-      :room_type_17030_1	 => 0,
-      :room_type_17030_2	 => 0,
-      :room_type_17030_3	 => 0,
-      :room_type_17030_4	 => 0,
-      :room_type_17030_9	 => 0,
-      :room_type_17035_1	 => 0,
-      :room_type_17035_2	 => 0,
-      :room_type_17035_3	 => 0,
-      :room_type_17035_4	 => 0,
-      :room_type_17035_9	 => 0,
-      :room_type_17099_1	 => 0,
-      :room_type_17099_2	 => 0,
-      :room_type_17099_3	 => 0,
-      :room_type_17099_4	 => 0,
-      :room_type_17099_9	 => 0,
-      :biru_age_0005_1	 => 0,
-      :biru_age_0005_2	 => 0,
-      :biru_age_0005_3	 => 0,
-      :biru_age_0005_4	 => 0,
-      :biru_age_0005_9	 => 0,
-      :biru_age_0610_1	 => 0,
-      :biru_age_0610_2	 => 0,
-      :biru_age_0610_3	 => 0,
-      :biru_age_0610_4	 => 0,
-      :biru_age_0610_9	 => 0,
-      :biru_age_1115_1	 => 0,
-      :biru_age_1115_2	 => 0,
-      :biru_age_1115_3	 => 0,
-      :biru_age_1115_4	 => 0,
-      :biru_age_1115_9	 => 0,
-      :biru_age_1620_1	 => 0,
-      :biru_age_1620_2	 => 0,
-      :biru_age_1620_3	 => 0,
-      :biru_age_1620_4	 => 0,
-      :biru_age_1620_9	 => 0,
-      :biru_age_2125_1	 => 0,
-      :biru_age_2125_2	 => 0,
-      :biru_age_2125_3	 => 0,
-      :biru_age_2125_4	 => 0,
-      :biru_age_2125_9	 => 0,
-      :biru_age_2630_1	 => 0,
-      :biru_age_2630_2	 => 0,
-      :biru_age_2630_3	 => 0,
-      :biru_age_2630_4	 => 0,
-      :biru_age_2630_9	 => 0,
-      :biru_age_3135_1	 => 0,
-      :biru_age_3135_2	 => 0,
-      :biru_age_3135_3	 => 0,
-      :biru_age_3135_4	 => 0,
-      :biru_age_3135_9	 => 0,
-      :biru_age_9999_1	 => 0,
-      :biru_age_9999_2	 => 0,
-      :biru_age_9999_3	 => 0,
-      :biru_age_9999_4	 => 0,
-      :biru_age_9999_9	 => 0,
 
     }
     
@@ -529,81 +113,6 @@ class PropertyController < ApplicationController
       :trust_mente_elevator_hosyu_cnt => 0,
       :trust_mente_bouhan_camera_cnt => 0,
       
-      :room_type_17010_1	 => 0,
-      :room_type_17010_2	 => 0,
-      :room_type_17010_3	 => 0,
-      :room_type_17010_4	 => 0,
-      :room_type_17010_9	 => 0,
-      :room_type_17015_1	 => 0,
-      :room_type_17015_2	 => 0,
-      :room_type_17015_3	 => 0,
-      :room_type_17015_4	 => 0,
-      :room_type_17015_9	 => 0,
-      :room_type_17020_1	 => 0,
-      :room_type_17020_2	 => 0,
-      :room_type_17020_3	 => 0,
-      :room_type_17020_4	 => 0,
-      :room_type_17020_9	 => 0,
-      :room_type_17025_1	 => 0,
-      :room_type_17025_2	 => 0,
-      :room_type_17025_3	 => 0,
-      :room_type_17025_4	 => 0,
-      :room_type_17025_9	 => 0,
-      :room_type_17030_1	 => 0,
-      :room_type_17030_2	 => 0,
-      :room_type_17030_3	 => 0,
-      :room_type_17030_4	 => 0,
-      :room_type_17030_9	 => 0,
-      :room_type_17035_1	 => 0,
-      :room_type_17035_2	 => 0,
-      :room_type_17035_3	 => 0,
-      :room_type_17035_4	 => 0,
-      :room_type_17035_9	 => 0,
-      :room_type_17099_1	 => 0,
-      :room_type_17099_2	 => 0,
-      :room_type_17099_3	 => 0,
-      :room_type_17099_4	 => 0,
-      :room_type_17099_9	 => 0,
-      :biru_age_0005_1	 => 0,
-      :biru_age_0005_2	 => 0,
-      :biru_age_0005_3	 => 0,
-      :biru_age_0005_4	 => 0,
-      :biru_age_0005_9	 => 0,
-      :biru_age_0610_1	 => 0,
-      :biru_age_0610_2	 => 0,
-      :biru_age_0610_3	 => 0,
-      :biru_age_0610_4	 => 0,
-      :biru_age_0610_9	 => 0,
-      :biru_age_1115_1	 => 0,
-      :biru_age_1115_2	 => 0,
-      :biru_age_1115_3	 => 0,
-      :biru_age_1115_4	 => 0,
-      :biru_age_1115_9	 => 0,
-      :biru_age_1620_1	 => 0,
-      :biru_age_1620_2	 => 0,
-      :biru_age_1620_3	 => 0,
-      :biru_age_1620_4	 => 0,
-      :biru_age_1620_9	 => 0,
-      :biru_age_2125_1	 => 0,
-      :biru_age_2125_2	 => 0,
-      :biru_age_2125_3	 => 0,
-      :biru_age_2125_4	 => 0,
-      :biru_age_2125_9	 => 0,
-      :biru_age_2630_1	 => 0,
-      :biru_age_2630_2	 => 0,
-      :biru_age_2630_3	 => 0,
-      :biru_age_2630_4	 => 0,
-      :biru_age_2630_9	 => 0,
-      :biru_age_3135_1	 => 0,
-      :biru_age_3135_2	 => 0,
-      :biru_age_3135_3	 => 0,
-      :biru_age_3135_4	 => 0,
-      :biru_age_3135_9	 => 0,
-      :biru_age_9999_1	 => 0,
-      :biru_age_9999_2	 => 0,
-      :biru_age_9999_3	 => 0,
-      :biru_age_9999_4	 => 0,
-      :biru_age_9999_9	 => 0,
     }
 
     chiba_hash = {
@@ -621,81 +130,6 @@ class PropertyController < ApplicationController
       :trust_mente_elevator_hosyu_cnt => 0,
       :trust_mente_bouhan_camera_cnt => 0,
       
-      :room_type_17010_1	 => 0,
-      :room_type_17010_2	 => 0,
-      :room_type_17010_3	 => 0,
-      :room_type_17010_4	 => 0,
-      :room_type_17010_9	 => 0,
-      :room_type_17015_1	 => 0,
-      :room_type_17015_2	 => 0,
-      :room_type_17015_3	 => 0,
-      :room_type_17015_4	 => 0,
-      :room_type_17015_9	 => 0,
-      :room_type_17020_1	 => 0,
-      :room_type_17020_2	 => 0,
-      :room_type_17020_3	 => 0,
-      :room_type_17020_4	 => 0,
-      :room_type_17020_9	 => 0,
-      :room_type_17025_1	 => 0,
-      :room_type_17025_2	 => 0,
-      :room_type_17025_3	 => 0,
-      :room_type_17025_4	 => 0,
-      :room_type_17025_9	 => 0,
-      :room_type_17030_1	 => 0,
-      :room_type_17030_2	 => 0,
-      :room_type_17030_3	 => 0,
-      :room_type_17030_4	 => 0,
-      :room_type_17030_9	 => 0,
-      :room_type_17035_1	 => 0,
-      :room_type_17035_2	 => 0,
-      :room_type_17035_3	 => 0,
-      :room_type_17035_4	 => 0,
-      :room_type_17035_9	 => 0,
-      :room_type_17099_1	 => 0,
-      :room_type_17099_2	 => 0,
-      :room_type_17099_3	 => 0,
-      :room_type_17099_4	 => 0,
-      :room_type_17099_9	 => 0,
-      :biru_age_0005_1	 => 0,
-      :biru_age_0005_2	 => 0,
-      :biru_age_0005_3	 => 0,
-      :biru_age_0005_4	 => 0,
-      :biru_age_0005_9	 => 0,
-      :biru_age_0610_1	 => 0,
-      :biru_age_0610_2	 => 0,
-      :biru_age_0610_3	 => 0,
-      :biru_age_0610_4	 => 0,
-      :biru_age_0610_9	 => 0,
-      :biru_age_1115_1	 => 0,
-      :biru_age_1115_2	 => 0,
-      :biru_age_1115_3	 => 0,
-      :biru_age_1115_4	 => 0,
-      :biru_age_1115_9	 => 0,
-      :biru_age_1620_1	 => 0,
-      :biru_age_1620_2	 => 0,
-      :biru_age_1620_3	 => 0,
-      :biru_age_1620_4	 => 0,
-      :biru_age_1620_9	 => 0,
-      :biru_age_2125_1	 => 0,
-      :biru_age_2125_2	 => 0,
-      :biru_age_2125_3	 => 0,
-      :biru_age_2125_4	 => 0,
-      :biru_age_2125_9	 => 0,
-      :biru_age_2630_1	 => 0,
-      :biru_age_2630_2	 => 0,
-      :biru_age_2630_3	 => 0,
-      :biru_age_2630_4	 => 0,
-      :biru_age_2630_9	 => 0,
-      :biru_age_3135_1	 => 0,
-      :biru_age_3135_2	 => 0,
-      :biru_age_3135_3	 => 0,
-      :biru_age_3135_4	 => 0,
-      :biru_age_3135_9	 => 0,
-      :biru_age_9999_1	 => 0,
-      :biru_age_9999_2	 => 0,
-      :biru_age_9999_3	 => 0,
-      :biru_age_9999_4	 => 0,
-      :biru_age_9999_9	 => 0,
     }
 
     etc_hash = {
@@ -713,81 +147,6 @@ class PropertyController < ApplicationController
       :trust_mente_elevator_hosyu_cnt => 0,
       :trust_mente_bouhan_camera_cnt => 0,
       
-      :room_type_17010_1	 => 0,
-      :room_type_17010_2	 => 0,
-      :room_type_17010_3	 => 0,
-      :room_type_17010_4	 => 0,
-      :room_type_17010_9	 => 0,
-      :room_type_17015_1	 => 0,
-      :room_type_17015_2	 => 0,
-      :room_type_17015_3	 => 0,
-      :room_type_17015_4	 => 0,
-      :room_type_17015_9	 => 0,
-      :room_type_17020_1	 => 0,
-      :room_type_17020_2	 => 0,
-      :room_type_17020_3	 => 0,
-      :room_type_17020_4	 => 0,
-      :room_type_17020_9	 => 0,
-      :room_type_17025_1	 => 0,
-      :room_type_17025_2	 => 0,
-      :room_type_17025_3	 => 0,
-      :room_type_17025_4	 => 0,
-      :room_type_17025_9	 => 0,
-      :room_type_17030_1	 => 0,
-      :room_type_17030_2	 => 0,
-      :room_type_17030_3	 => 0,
-      :room_type_17030_4	 => 0,
-      :room_type_17030_9	 => 0,
-      :room_type_17035_1	 => 0,
-      :room_type_17035_2	 => 0,
-      :room_type_17035_3	 => 0,
-      :room_type_17035_4	 => 0,
-      :room_type_17035_9	 => 0,
-      :room_type_17099_1	 => 0,
-      :room_type_17099_2	 => 0,
-      :room_type_17099_3	 => 0,
-      :room_type_17099_4	 => 0,
-      :room_type_17099_9	 => 0,
-      :biru_age_0005_1	 => 0,
-      :biru_age_0005_2	 => 0,
-      :biru_age_0005_3	 => 0,
-      :biru_age_0005_4	 => 0,
-      :biru_age_0005_9	 => 0,
-      :biru_age_0610_1	 => 0,
-      :biru_age_0610_2	 => 0,
-      :biru_age_0610_3	 => 0,
-      :biru_age_0610_4	 => 0,
-      :biru_age_0610_9	 => 0,
-      :biru_age_1115_1	 => 0,
-      :biru_age_1115_2	 => 0,
-      :biru_age_1115_3	 => 0,
-      :biru_age_1115_4	 => 0,
-      :biru_age_1115_9	 => 0,
-      :biru_age_1620_1	 => 0,
-      :biru_age_1620_2	 => 0,
-      :biru_age_1620_3	 => 0,
-      :biru_age_1620_4	 => 0,
-      :biru_age_1620_9	 => 0,
-      :biru_age_2125_1	 => 0,
-      :biru_age_2125_2	 => 0,
-      :biru_age_2125_3	 => 0,
-      :biru_age_2125_4	 => 0,
-      :biru_age_2125_9	 => 0,
-      :biru_age_2630_1	 => 0,
-      :biru_age_2630_2	 => 0,
-      :biru_age_2630_3	 => 0,
-      :biru_age_2630_4	 => 0,
-      :biru_age_2630_9	 => 0,
-      :biru_age_3135_1	 => 0,
-      :biru_age_3135_2	 => 0,
-      :biru_age_3135_3	 => 0,
-      :biru_age_3135_4	 => 0,
-      :biru_age_3135_9	 => 0,
-      :biru_age_9999_1	 => 0,
-      :biru_age_9999_2	 => 0,
-      :biru_age_9999_3	 => 0,
-      :biru_age_9999_4	 => 0,
-      :biru_age_9999_9	 => 0,
     }
 
     
@@ -1131,10 +490,7 @@ private
     
     if room_flg then
       strSql = strSql + ",b.name as room_name "
-      strSql = strSql + ",k.code as room_type_code "
-      strSql = strSql + ",k.name as room_type_name "
-      strSql = strSql + ",l.code as room_layout_code "
-      strSql = strSql + ",l.name as room_layout_name "
+      strSql = strSql + ",j.name as room_status "
     end
 
     strSql = strSql + "from buildings a "
@@ -1145,9 +501,6 @@ private
     strSql = strSql + "inner join owners f on d.owner_id = f.id "
     strSql = strSql + "inner join build_types g on a.build_type_id = g.id "
     strSql = strSql + "inner join room_statuses j on b.room_status_id = j.id "
-    strSql = strSql + "inner join room_types k on b.room_type_id = k.id "
-    strSql = strSql + "inner join room_layouts l on b.room_layout_id = l.id "
-    
     strSql = strSql + "left outer join (select * from trust_maintenances where delete_flg = 'f' ) h on h.trust_id = d.id "
     strSql = strSql + "where 1 = 1  "
     strSql = strSql + "and c.code in ( " + shop_list + ") " if shop_list.length > 0
@@ -1186,10 +539,7 @@ private
     
     if room_flg then
       strSql = strSql + ",b.name "
-      strSql = strSql + ",k.code "
-      strSql = strSql + ",k.name "
-      strSql = strSql + ",l.code "
-      strSql = strSql + ",l.name "
+      strSql = strSql + ",j.name "
     end
     
     strSql = strSql + " "
