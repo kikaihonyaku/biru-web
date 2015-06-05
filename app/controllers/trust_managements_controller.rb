@@ -669,7 +669,7 @@ class TrustManagementsController < ApplicationController
     	unless @object_user
 	  		@error_msg = "指定されたユーザーが存在しません。"
       else
-      	if @biru_user.attack_all_search == false && @biru_user.id != @object_user.id
+      	unless check_report_auth(@biru_user, @object_user)
 		  		@error_msg = "自分以外のアタックリストにアクセスすることはできません。"
       	end
       	
@@ -1566,12 +1566,19 @@ def search_init
   
 end
 
-# trust_user_report画面を開くにあたって、アクセス者がログインユーザー当人もしくは権限ユーザーかチェックする
-def check_report_auth(login_user, access_user)
+# trust_user_report画面を開くにあたって、ログインユーザーがアタックリスト保持者当人もしくは権限ユーザーかチェックする
+def check_report_auth(login_user, holder_user)
   
-  return true if login_user.id == access_user.id
+  # ログインユーザーとアクセス先画面のユーザーが同一ならtrue
+  return true if login_user.id == holder_user.id
   
+  # ログインユーザーに特権の権限があればtrue
   return true if login_user.attack_all_search == true
+  
+  # アクセス許可テーブルにログインユーザーが入っていればtrue
+  if TrustAttackPermission.find_by_holder_user_id_and_permit_user_id(holder_user.id, login_user.id)
+    return true
+  end
   
   return false
 end 

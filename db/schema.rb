@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150531004606) do
+ActiveRecord::Schema.define(:version => 20150605204625) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -708,6 +708,13 @@ ActiveRecord::Schema.define(:version => 20150531004606) do
     t.integer  "fluctuate_x"
     t.integer  "fluctuate_y"
     t.integer  "fluctuate_z"
+  end
+
+  create_table "trust_attack_permissions", :force => true do |t|
+    t.integer  "holder_user_id"
+    t.integer  "permit_user_id"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   create_table "trust_attack_state_histories", :force => true do |t|

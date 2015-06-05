@@ -858,6 +858,25 @@ def init_trust_rewinding
   
 end
 
+# 受託アタックリストへの権限設定
+def init_trust_attack_permission
+  arr = []
+  arr.push({:holder=>'6464', :permit=>'5928'})
+  
+  TrustAttackPermission.delete_all
+  arr.each do |obj|
+    holder = BiruUser.find_by_code(obj[:holder])
+    permit = BiruUser.find_by_code(obj[:permit])
+    
+    rec = TrustAttackPermission.new
+    rec.holder_user_id = holder.id
+    rec.permit_user_id = permit.id
+    
+    p holder.name + " : " + permit.name
+    rec.save!
+  end
+end
+
 
 # 物件種別
 def convert_biru_type(num)
@@ -3201,10 +3220,13 @@ end
 #init_approach_kind
 
 # アタックステータス登録
-init_attack_state
+# init_attack_state
 
 # システムアップデート管理
-init_data_update
+# init_data_update
+
+# アタックリスト　個別アクセス権限設定
+init_trust_attack_permission
 
 # 社員マスタ登録
 # init_biru_user
