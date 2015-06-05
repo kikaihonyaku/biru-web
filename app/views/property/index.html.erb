@@ -178,10 +178,15 @@
 </script>
 
 
-<div style="padding:50px 80px 10px 80px;">
+<div style="padding:10px 80px 10px 80px;">
 	
+	<% if @neighborhood_flg %>
+	  <h2>主要駅徒歩１５分圏内　管理物件情報</h2>
+	<% else %>
+	  <h2>管理物件情報</h2>
+	<% end %>
 	
-	最終更新日：<%= @data_update.update_datetime %>&nbsp;<br/>※営業所をクリックすると詳細画面に飛びます。管理方式B以上を表示しています。
+	最終更新日：<%= @data_update.update_datetime %>&nbsp;&nbsp;※営業所をクリックすると詳細画面に飛びます。管理方式B以上を表示しています。
 	<div id="div_dummy_02" style="width:100%;height:90%;">
 		<table id="building_table"></table>
 		<div id = "building_pager"></div>

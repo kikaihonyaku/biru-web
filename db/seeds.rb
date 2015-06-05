@@ -3051,6 +3051,7 @@ def regist_trust_maintenance_all
   str_sql = str_sql + "SELECT "
   str_sql = str_sql + " MTITCD "
   str_sql = str_sql + ",MTENO "
+  str_sql = str_sql + ",MTSBCD "
   str_sql = str_sql + ",SBNM "
   str_sql = str_sql + ",PRICE "
   str_sql = str_sql + "FROM V_定期メンテナンス工事 "
@@ -3068,13 +3069,13 @@ def regist_trust_maintenance_all
 	      
 	      trust_maintenance.trust_id = trust.id
 	      trust_maintenance.idx = rec['MTENO']
-	      trust_maintenance.code = itcd
+	      trust_maintenance.code = rec['MTSBCD'].to_i.to_s
 	      trust_maintenance.name = rec['SBNM']
 	      trust_maintenance.price = rec['PRICE']
 	      trust_maintenance.delete_flg = false
 	      
 	      trust_maintenance.save!
-	      p trust_maintenance.code + ' ' + trust_maintenance.name
+	      p trust_maintenance.code.to_s + ' ' + trust_maintenance.name
 	      cnt = cnt + 1
       	  
       else
@@ -3166,10 +3167,8 @@ end
 
 # 受託の月報を生成します
 def generate_trust_attack_month_report(month, trust_user)
-    
   app_con = TrustManagementsController.new
   app_con.generate_report_info(month, trust_user)
-  
 end
 
 
@@ -3234,7 +3233,12 @@ init_data_update
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150320.csv"))
 
 #regist_oneself(Rails.root.join( "tmp", "imp_data_20150419.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20150520.csv"))
 
+############################
+# 定期メンテナンス登録
+############################
+# regist_trust_maintenance_all
 
 
 # データの登録(他社)
@@ -3245,56 +3249,31 @@ init_data_update
 # bulk_owner_regist(1, Rails.root.join( "tmp", "attack_kasi_20140623.csv"))
 
 ###########################
-# アタックリストの登録
-###########################
-#reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "01_01_souka.csv")) # 草加 松本
-#reg_attack_owner_building('6487', '草加新田営業所', Rails.root.join( "tmp", "01_02_shinden.csv")) # 草加新田　氏家
-# reg_attack_owner_building('5952', '北千住営業所', Rails.root.join( "tmp", "01_02_kitasenju.csv")) # 北千住営業所　山口
-#reg_attack_owner_building('6464', '南越谷営業所', Rails.root.join( "tmp", "01_04_minami_kosigaya.csv")) # 南越谷　猪原
-#reg_attack_owner_building('6406', '越谷営業所', Rails.root.join( "tmp", "01_05_koshigaya.csv")) # 越谷　末吉
-#reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "01_07_kitakoshigaya.csv")) # 北越谷　赤坂
-#reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "akasaka_add.csv")) # 北越谷　赤坂
-#reg_attack_owner_building('5684', 'せんげん台営業所', Rails.root.join( "tmp", "01_08_sengendai.csv")) # せんげん台　帰山
-#reg_attack_owner_building('6461', '戸田公園営業所', Rails.root.join( "tmp", "02_01_todakoenn.csv")) # 戸田公園 中野主任
-#reg_attack_owner_building('7844', '戸田営業所', Rails.root.join( "tmp", "02_02_toda.csv")) # 戸田　辻社員’
-####reg_attack_owner_building('6338', '川口営業所', Rails.root.join( "tmp", "02_04_kawaguchi.csv")) # 川口営業所　鈴木
-####reg_attack_owner_building('5313', '与野営業所', Rails.root.join( "tmp", "02_05_yono.csv")) # 与野営業所　宮川
-#reg_attack_owner_building('5473', '東浦和営業所', Rails.root.join( "tmp", "02_07_higashi_urawa.csv")) # 東浦和 小泉主任
-#reg_attack_owner_building('5841', '戸塚安行営業所', Rails.root.join( "tmp", "02_09_totukaangyo.csv")) # 戸塚安行 下地社員
-#reg_attack_owner_building('5841', '戸塚安行営業所', Rails.root.join( "tmp", "02_09_totukaangyo_02.csv")) # 戸塚安行 下地社員
-# 千葉支店 市橋主任
-#reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "03_01_matudo.csv"))
-#reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "03_02_kitamatudo.csv"))
-#reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "03_03_minaminagareyama.csv"))
-#reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "03_04_kasiwa.csv"))
-
-
-###########################
 # アタックリストの登録(2nd)
 ###########################
 # 松本
-#reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "アタックリスト20150422_01草加.csv"))
-#reg_attack_owner_building('6365', '北千住営業所', Rails.root.join( "tmp", "アタックリスト20150422_03北千住.csv"))
-#reg_attack_owner_building('6365', '竹ノ塚営業所', Rails.root.join( "tmp", "アタックリスト20150422_09竹ノ塚.csv"))
+#reg_attack_owner_building('6365', '草加営業所', Rails.root.join( "tmp", "アタックリスト20150508_松本_01草加.csv"))
+#reg_attack_owner_building('6365', '北千住営業所', Rails.root.join( "tmp", "アタックリスト20150508_松本_03北千住.csv"))
+#reg_attack_owner_building('6365', '竹ノ塚営業所', Rails.root.join( "tmp", "アタックリスト20150508_松本_09竹ノ塚.csv"))
 
 # 猪原
-# reg_attack_owner_building('6464', '草加新田営業所', Rails.root.join( "tmp", "アタックリスト20150422_02新田.csv"))
-# reg_attack_owner_building('6464', '南越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_04南越谷.csv"))
+# reg_attack_owner_building('6464', '草加新田営業所', Rails.root.join( "tmp", "アタックリスト20150430_猪原_02新田.csv"))
+# reg_attack_owner_building('6464', '南越谷営業所', Rails.root.join( "tmp", "アタックリスト20150430_猪原_04南越谷.csv"))
 
 # 赤坂
-# reg_attack_owner_building('6425', '越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_05越谷.csv"))
-# reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "アタックリスト20150422_06北越谷.csv"))
+# reg_attack_owner_building('6425', '越谷営業所', Rails.root.join( "tmp", "アタックリスト20150430_赤坂_05越谷.csv"))
+# reg_attack_owner_building('6425', '北越谷営業所', Rails.root.join( "tmp", "アタックリスト20150430_赤坂_06北越谷.csv"))
 
 # 池ノ谷
-# reg_attack_owner_building('7811', 'せんげん台営業所', Rails.root.join( "tmp", "アタックリスト20150422_07せんげん台.csv"))
-# reg_attack_owner_building('7811', '春日部営業所', Rails.root.join( "tmp", "アタックリスト20150422_08春日部.csv"))
+# reg_attack_owner_building('7811', 'せんげん台営業所', Rails.root.join( "tmp", "アタックリスト20150519_池ノ谷_07せんげん台.csv"))
+# reg_attack_owner_building('7811', '春日部営業所', Rails.root.join( "tmp", "アタックリスト20150519_池ノ谷_08春日部.csv"))
 
 # 宮川
 # reg_attack_owner_building('5313', '戸田公園営業所', Rails.root.join( "tmp", "アタックリスト20150422_11戸田公園.csv"))
 # reg_attack_owner_building('5313', '戸田営業所', Rails.root.join( "tmp", "アタックリスト20150422_12戸田.csv"))
 # reg_attack_owner_building('5313', '武蔵浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_13武蔵浦和.csv"))
 # reg_attack_owner_building('5313', '与野営業所', Rails.root.join( "tmp", "アタックリスト20150422_14与野.csv"))
-# reg_attack_owner_building('5928', '浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_15浦和.csv"))
+# reg_attack_owner_building('5313', '浦和営業所', Rails.root.join( "tmp", "アタックリスト20150422_15浦和.csv"))
 # 
 # # 斉藤
 # reg_attack_owner_building('5518', '川口営業所', Rails.root.join( "tmp", "アタックリスト20150422_16川口.csv"))
@@ -3303,16 +3282,11 @@ init_data_update
 # reg_attack_owner_building('5518', '戸塚安行営業所', Rails.root.join( "tmp", "アタックリスト20150422_19戸塚安行.csv"))
 # 
 # # 市橋
-# reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150422_21松戸.csv"))
-# reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150422_22北松戸.csv"))
-# reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150422_23南流山.csv"))
-# reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150422_24柏.csv"))
+#reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_市橋_21松戸.csv"))
+#reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_市橋_22北松戸.csv"))
+#reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150502_市橋_23南流山.csv"))
+#reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150502_市橋_24柏.csv"))
 
-# reg_attack_owner_building('4917', '松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_21松戸.csv"))
-# reg_attack_owner_building('4917', '北松戸営業所', Rails.root.join( "tmp", "アタックリスト20150502_22北松戸.csv"))
-# reg_attack_owner_building('4917', '南流山営業所', Rails.root.join( "tmp", "アタックリスト20150502_23南流山.csv"))
-# reg_attack_owner_building('4917', '柏営業所', Rails.root.join( "tmp", "アタックリスト20150501_24柏.csv"))
- 
 
 # 柴田
 #reg_attack_owner_building('5928', '草加新田営業所', Rails.root.join( "tmp", "アタックリスト20150422_02新田.csv"))
@@ -3350,6 +3324,7 @@ init_data_update
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201502.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201503.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201504.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201505.csv"))
 
 ###########################
 # 業績分析(空室)
@@ -3369,8 +3344,8 @@ init_data_update
 #regist_vacant_room("201501", Rails.root.join( "tmp", "vacant_201501.csv"))
 #regist_vacant_room("201502", Rails.root.join( "tmp", "vacant_201502.csv"))
 #regist_vacant_room("201503", Rails.root.join( "tmp", "vacant_201503.csv"))
-# regist_vacant_room("201504", Rails.root.join( "tmp", "vacant_201504.csv"))
-
+#regist_vacant_room("201504", Rails.root.join( "tmp", "vacant_201504.csv"))
+#regist_vacant_room("201505", Rails.root.join( "tmp", "vacant_201505.csv"))
 
 ###########################
 # 賃貸借契約登録
@@ -3382,10 +3357,6 @@ init_data_update
 ###########################
 # create_work_renters_rooms
 
-############################
-# 定期メンテナンス登録
-############################
-# regist_trust_maintenance_all
 
 ############################
 # 管理受託巻き直し更新
@@ -3401,6 +3372,7 @@ init_data_update
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('7811'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5313'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('5518'))
+
 #generate_trust_attack_month_report('201504', BiruUser.find_by_code('4917'))
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
 #generate_trust_attack_month_report('201506', BiruUser.find_by_code('4917'))

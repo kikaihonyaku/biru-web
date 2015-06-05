@@ -24,6 +24,7 @@
 			 "営業所",
 			 "管理棟数",
 			 "巡回清掃",
+			 "消防設備",
 			 "給水設備点検",
 			 "貯水槽清掃",
 			 "エレベータ保守点検",
@@ -36,8 +37,8 @@
 	  	  {name:"group_name", index:"group_name", align:"center",classes:"no_class"}
 		 ,{name:"shop_name", index:"shop_name", align:"center",classes:"no_class"}
 		 ,{name:"building_cnt", index:"building_cnt", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
-
 		 ,{name:"trust_mente_junkai_seisou_cnt", index:"trust_mente_junkai_seisou_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:false}
+		 ,{name:"trust_mente_syoubou_setubi_cnt", index:"trust_mente_syoubou_setubi_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:false}
 		 ,{name:"trust_mente_kyusui_setubi_cnt", index:"trust_mente_kyusui_setubi_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:false}
 		 ,{name:"trust_mente_tyosui_seisou_cnt", index:"trust_mente_tyosui_seisou_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:false}
 		 ,{name:"trust_mente_elevator_hosyu_cnt", index:"trust_mente_elevator_hosyu_cnt", width:100, align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}', hidden:false}
@@ -155,13 +156,13 @@
 //						
 //  					 }
 //  			 });
-//
+
 			 			
  	        table_div.jqGrid('setGroupHeaders', {
  	          useColSpanStyle: true,
  	          groupHeaders:[
  	            //{startColumnName: 'biru_type_mn_cnt', numberOfColumns: 5, titleText: '<em>棟数内訳</em>'},
- 	            {startColumnName: 'trust_mente_junkai_seisou_cnt', numberOfColumns: 5, titleText: '<em>建物メンテナンス</em>'},
+ 	            {startColumnName: 'trust_mente_junkai_seisou_cnt', numberOfColumns: 6, titleText: '<em>建物メンテナンス</em>'},
 				
  	          ]
  	        });			
@@ -175,13 +176,15 @@
 </script>
 
 
-<div style="padding:50px 80px 10px 80px;">
+<div style="padding:10px 80px 10px 80px;">
 	
+	<% if @room_all_flg %>
+	  <h2>Ｂ管理 かつ ４戸以上管理のアパート・マンション（≒一棟管理）かつ１５平米以上　</h2>
+	<% else %>
+	  <h2>管理方式Ｂ以上の物件を表示</h2>
+	<% end %>
 	
-	最終更新日：<%= @data_update.update_datetime %>&nbsp;※営業所をクリックすると詳細画面に飛びます。<br/>
-  # アパート・マンションのみ
-  # １棟管理のみ（＝戸数が4戸以上）
-  # 150平米以上
+	最終更新日：<%= @data_update.update_datetime %>&nbsp;&nbsp;※営業所をクリックすると詳細画面に飛びます。
 	<div id="div_dummy_02" style="width:100%;height:90%;">
 		<table id="building_table"></table>
 		<div id = "building_pager"></div>

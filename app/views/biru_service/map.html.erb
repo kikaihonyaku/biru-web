@@ -72,6 +72,12 @@ function change_biru_icon(type){
 			build_arr[item].setIcon(build_arr[item].trust_mente_junkai_seisou );
   		};
 
+	} else if( type == "syoubou_setubi") {
+		// 消防設備
+		for(var item in build_arr){
+			build_arr[item].setIcon(build_arr[item].trust_mente_syoubou_setubi );
+  		};
+
 	} else if( type == "kyusui_setubi") {
 		// 給水設備
 		for(var item in build_arr){
@@ -193,15 +199,15 @@ function get_icon_biru_age(age){
   var icon;
 
   if(0<= age && age <= 1){
-      icon ='marker_purple.png';
-  }else if( 2 <= age && age <= 5){
       icon = 'marker_blue.png';
-  }else if( 6 <= age && age <= 10){
+  }else if( 2 <= age && age <= 5){
       icon ='marker_green.png';
-  }else if( 11 <= age && age <= 20){
+  }else if( 6 <= age && age <= 10){
       icon ='marker_yellow.png';
-  }else if( 21 <= age && age <= 30){
+  }else if( 11 <= age && age <= 20){
       icon ='marker_orange.png';
+  }else if( 21 <= age && age <= 30){
+      icon ='marker_purple.png';
   }else if( 31 <= age && age <= 40){
       icon ='marker_red.png';
   }else if( 41 <= age ){
@@ -427,6 +433,7 @@ function getCoords(position) {
           ,kanri_room_num  : get_icon_kanri_room_num(building.room_cnt)
 
 		,trust_mente_junkai_seisou  : get_icon_teiki_mente(building.trust_mente_junkai_seisou)
+		,trust_mente_syoubou_setubi  : get_icon_teiki_mente(building.trust_mente_syoubou_setubi)
 		,trust_mente_kyusui_setubi  : get_icon_teiki_mente(building.trust_mente_kyusui_setubi)
 		,trust_mente_tyosui_seisou  : get_icon_teiki_mente(building.trust_mente_tyosui_seisou)
 		,trust_mente_elevator_hosyu  : get_icon_teiki_mente(building.trust_mente_elevator_hosyu)
@@ -626,6 +633,7 @@ function getCoords(position) {
 			  "空室数",
 		 	  "空室割合(%)",
 			  "巡回清掃",
+			  "消防設備",
 			  "給水設備",
 			  "貯水槽清掃",
 			  "エレベータ点検",
@@ -652,6 +660,7 @@ function getCoords(position) {
 		 , {name:"free_par",  index:"free_par",  width:70,  align:"center",  classes:"no_class", searchoptions:{ sopt:['eq']}}
 		 
 		 , {name:"trust_mente_junkai_seisou",  index:"trust_mente_junkai_seisou",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
+		 , {name:"trust_mente_syoubou_setubi",  index:"trust_mente_syoubou_setubi",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
 		 , {name:"trust_mente_kyusui_setubi",  index:"trust_mente_kyusui_setubi",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
 		 , {name:"trust_mente_tyosui_seisou",  index:"trust_mente_tyosui_seisou",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
 		 , {name:"trust_mente_elevator_hosyu",  index:"trust_mente_elevator_hosyu",  width:70,  align:"center",  classes:"no_class", formatter:'select', editoptions:{value:"0:×;1:○"}, stype: 'select', searchoptions:{ sopt:['eq'], value: ":;1:○;0:×" }}
@@ -727,7 +736,7 @@ function getCoords(position) {
    	  			jQuery("#building_table").navGrid('#building_pager',{
  				        edit:false, add:false, del:false, search:false
  				      }).navButtonAdd('#building_pager', {
- 				        caption:"ファイル出力(建物単位)",  position:"last",  onClickButton: function(){
+ 				        caption:"ファイル出力(部屋単位)",  position:"last",  onClickButton: function(){
  			            // 送信
  			            document.frm_out2csv.submit();
 
@@ -777,6 +786,7 @@ function getCoords(position) {
 						 "築年数" => "age",
 						 "戸数"=>"num",
 						 "巡回清掃"=>"junkai_seisou",
+						 "消防設備"=>"syoubou_setubi",
 						 "給水設備"=>"kyusui_setubi",
 						 "貯水槽清掃"=>"tyosui_seisou",
 						 "エレベータ点検"=>"elevator_hosyu",
@@ -860,7 +870,7 @@ function getCoords(position) {
 			        <li>
 			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" >基本メニュー</span>
 					</li>
-			        <li><%= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();' %></li>
+			        <li><%= link_to "一覧へ戻る",  {:action=>'index' + @room_all_params}, :onclick=>'javascript:screen_block();' %></li>
 			    </ul>
 			</div>
 			

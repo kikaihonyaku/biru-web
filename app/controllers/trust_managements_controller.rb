@@ -112,8 +112,6 @@ class TrustManagementsController < ApplicationController
               
       when '0040', '0045' then
         ########## TEL・TEL会話 ###########
-        tel_num_call = tel_num_call + 1
-  	
       	# ＤＭの反響だった時
         if rec.code == '0040'
     			tel_num_call = tel_num_call + 1

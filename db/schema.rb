@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150530064234) do
+ActiveRecord::Schema.define(:version => 20150531004606) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -97,6 +97,8 @@ ActiveRecord::Schema.define(:version => 20150530064234) do
     t.integer  "biru_user_id"
     t.string   "hash_key"
     t.string   "proprietary_company"
+    t.boolean  "neighborhood_flg",     :default => false
+    t.boolean  "room_all_flg",         :default => false
   end
 
   add_index "buildings", ["attack_code"], :name => "index_buildings_on_attack_code"

@@ -78,12 +78,18 @@ BiruWeb::Application.routes.draw do
   get "repairs/index" ,:as => :repairs
 
 
-  get "biru_service/index" ,:as => :biru_service
-  get "property/index" ,:as => :property
+  get "biru_service/index(/:room_all)" => 'biru_service#index'  ,:as => :biru_service
+  get "biru_service/map(/:room_all)" => 'biru_service#map'
+  
+  get "property/index(/:neighborhood)" => 'property#index' ,:as => :property
+  get "property/map(/:neighborhood)" => 'property#map'
+  
+  
   get "trust_rewinding/index" ,:as => :trust_rewinding
 
   get "renters/index(/:sakimono)" => 'renters#index' ,:as => :renters
   
+
   match "renters/update_all", :as =>:renters_update_all
   get "renters/pictures/:id" => "renters#pictures" , :as => :renters_pictures
 
@@ -94,6 +100,7 @@ BiruWeb::Application.routes.draw do
   get "managements/index", :as => :managements
   get "trust_managements/index", :as => :trust_managements
   get "trust_managements/trust_user_report", :as => :trust_user_report
+  get "trust_managements/owner_building_list", :as => :owner_building_list
   
   get "building_rooms/index", :as =>:building_rooms
 

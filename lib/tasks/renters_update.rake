@@ -1,4 +1,4 @@
-﻿# -*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 require 'csv'
 require 'kconv'
@@ -88,9 +88,9 @@ namespace :biruweb do
 	  start_idx = 1
 	  
     if sakimono_flg
-      mode = "&torihiki_mode=5,6"
+      mode = "&torihiki_mode=6"
     else
-      mode = "&torihiki_mode=1,2,3,4"
+      mode = "&torihiki_mode=1,2,3,4,5"
     end
     
 	  loop do
@@ -108,7 +108,7 @@ namespace :biruweb do
 	    break unless ret_status
 	    break if ret_status.text == "0"
       
-      break if start_idx > 50 
+      #break if start_idx > 50 
 
 	    # 次の取得の準備
 	    start_idx = start_idx + get_cnt

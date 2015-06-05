@@ -4,6 +4,8 @@ require 'csv'
 # 資産(建物）を表示するコントローラ
 class PropertyController < ApplicationController
 
+	before_filter :neighborhood_filter
+
   # 物件種別のiconを変更する時のコントローラ
   def change_biru_icon
     p 'パラメータ ' + params[:disp_type].to_s
@@ -43,20 +45,20 @@ class PropertyController < ApplicationController
       end
       
       data_list.push({
-        :shop_code => shop.code, :shop_name => shop.name, :group_name => group_name ,:url => 'map?stcd=' + shop.code, :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0
+        :shop_code => shop.code, :shop_name => shop.name, :group_name => group_name ,:url => 'map' + @neighborhood_params + '?stcd=' + shop.code, :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0
       })
     end
     
-    data_list.push({ :shop_code => '100', :shop_name => '東武支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_tobu.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
-    data_list.push({ :shop_code => '200', :shop_name => 'さいたま支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_saitama.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0 })
-    data_list.push({ :shop_code => '300', :shop_name => '千葉支店', :group_name => '00支店' ,:url => 'map?stcd=' + arr_chiba.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
-    data_list.push({ :shop_code => '900', :shop_name => 'ビル全体', :group_name => '99その他' ,:url => 'map', :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
+    data_list.push({ :shop_code => '100', :shop_name => '東武支店', :group_name => '00支店' ,:url => 'map' + @neighborhood_params + '?stcd=' + arr_tobu.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
+    data_list.push({ :shop_code => '200', :shop_name => 'さいたま支店', :group_name => '00支店' ,:url => 'map' + @neighborhood_params + '?stcd=' + arr_saitama.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0 })
+    data_list.push({ :shop_code => '300', :shop_name => '千葉支店', :group_name => '00支店' ,:url => 'map' + @neighborhood_params + '?stcd=' + arr_chiba.join(','), :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
+    data_list.push({ :shop_code => '900', :shop_name => 'ビル全体', :group_name => '99その他' ,:url => 'map' + @neighborhood_params + '?all=99', :building_cnt => 0 ,:room_cnt => 0, :biru_type_mn_cnt =>0, :biru_type_bm_cnt=>0, :biru_type_ap_cnt => 0, :biru_type_kdt_cnt=>0, :biru_type_etc_cnt=>0, :trust_mente_junkai_seisou_cnt=>0, :trust_mente_kyusui_setubi_cnt=>0, :trust_mente_tyosui_seisou_cnt=>0, :trust_mente_elevator_hosyu_cnt=>0, :trust_mente_bouhan_camera_cnt=>0})
 
     ##############################
     # 営業所データをハッシュに格納
     ##############################
     grid_data = {}
-    ActiveRecord::Base.connection.select_all(get_shop_list_sql).each do |rec|
+    ActiveRecord::Base.connection.select_all(get_shop_list_sql(@neighborhood_flg)).each do |rec|
       unless grid_data[rec['shop_code']]
         grid_data[rec['shop_code']] = {
            :shop_code => rec['shop_code'],
@@ -297,7 +299,7 @@ class PropertyController < ApplicationController
           
     grid_data = []
     
-    ActiveRecord::Base.connection.select_all(get_biru_list_sql(@shop_where)).each do |rec|
+    ActiveRecord::Base.connection.select_all(get_biru_list_sql(@shop_where, false, @neighborhood_flg)).each do |rec|
       
       ####################
       # 地図で使う物件情報
@@ -416,7 +418,7 @@ class PropertyController < ApplicationController
     # end
 
     # csvデータ作成
-    data = ActiveRecord::Base.connection.select_all(get_biru_list_sql(params[:shop_list], true))
+    data = ActiveRecord::Base.connection.select_all(get_biru_list_sql(params[:shop_list], true, @neighborhood_flg))
     
     keys = [ "shop_name", "building_code", "building_name", "manage_type_name", "build_type_name", "room_name", "room_status"]
     
@@ -434,9 +436,13 @@ class PropertyController < ApplicationController
   
 private
   # 自社管理（B以上）の物件を戸数単位で営業所別に表示する
+  # アパート・マンションのみ
+  # １棟管理のみ（＝戸数が4戸以上）
+  # 150平米以上
   
   # room_flg : 部屋単位の出力をする
-  def get_biru_list_sql(shop_list, room_flg = false)
+  # neighborhood : trueの時、近隣のみ出力
+  def get_biru_list_sql(shop_list, room_flg = false, neighborhood = false)
     
     strSql = ""
     strSql = strSql + "select "
@@ -504,6 +510,9 @@ private
     strSql = strSql + "left outer join (select * from trust_maintenances where delete_flg = 'f' ) h on h.trust_id = d.id "
     strSql = strSql + "where 1 = 1  "
     strSql = strSql + "and c.code in ( " + shop_list + ") " if shop_list.length > 0
+    
+    strSql = strSql + "and a.neighborhood_flg = 't' " if neighborhood # SQLServerは1
+    
     strSql = strSql + "and a.delete_flg = 'f' "
     strSql = strSql + "and b.delete_flg = 'f' "
     strSql = strSql + "and d.delete_flg = 'f' "
@@ -547,7 +556,7 @@ private
     return strSql
   end
   
-  def get_shop_list_sql
+  def get_shop_list_sql(neighborhood_flg = false)
     strSql = ""
     strSql = strSql + "SELECT "
     strSql = strSql + "shop_id "
@@ -571,10 +580,23 @@ private
     strSql = strSql + ",SUM(room_status_occupancy) as room_status_occupancy_sum "
     strSql = strSql + ",SUM(room_status_etc) as room_status_etc_sum "
     
-    strSql = strSql + "FROM (" + get_biru_list_sql('') + ") X "
+    strSql = strSql + "FROM (" + get_biru_list_sql('', false, neighborhood_flg) + ") X "
     strSql = strSql + "GROUP BY shop_id, shop_name, shop_code "
     
     return strSql
+  end
+  
+  # 近隣のチェック
+  def neighborhood_filter
+  	
+    # 近隣物件(駅１５分圏内)か確認する
+    @neighborhood_flg = false
+    @neighborhood_params = ''
+    if params[:neighborhood] == 'neighborhood'
+      @neighborhood_flg = true
+      @neighborhood_params = '/neighborhood'
+    end
+  	
   end
   
 end

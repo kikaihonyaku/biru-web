@@ -193,15 +193,15 @@ function get_icon_biru_age(age){
   var icon;
 
   if(0<= age && age <= 1){
-      icon ='marker_purple.png';
-  }else if( 2 <= age && age <= 5){
       icon = 'marker_blue.png';
-  }else if( 6 <= age && age <= 10){
+  }else if( 2 <= age && age <= 5){
       icon ='marker_green.png';
-  }else if( 11 <= age && age <= 20){
+  }else if( 6 <= age && age <= 10){
       icon ='marker_yellow.png';
-  }else if( 21 <= age && age <= 30){
+  }else if( 11 <= age && age <= 20){
       icon ='marker_orange.png';
+  }else if( 21 <= age && age <= 30){
+      icon ='marker_purple.png';
   }else if( 31 <= age && age <= 40){
       icon ='marker_red.png';
   }else if( 41 <= age ){
@@ -860,7 +860,7 @@ function getCoords(position) {
 			        <li>
 			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" >基本メニュー</span>
 					</li>
-			        <li><%= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();' %></li>
+			        <li><%= link_to "一覧へ戻る",  {:action=>'index' + @neighborhood_params}, :onclick=>'javascript:screen_block();' %></li>
 			    </ul>
 			</div>
 			

@@ -730,7 +730,12 @@ function htmlEscape(str) {
 			        <li>
 			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top" style="color:white;font-weight:lighter">基本メニュー</span>
 					</li>
+					
+						<% if @sakimono_flg %>
+			        <li><%= link_to "一覧へ戻る",  {:action=>'index/sakimono'}, :onclick=>'javascript:screen_block();' %></li>
+						<% else %>
 			        <li><%= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();' %></li>
+						<% end %>
 			    </ul>
 			</div>
 			
