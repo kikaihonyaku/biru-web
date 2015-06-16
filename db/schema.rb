@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150605204625) do
+ActiveRecord::Schema.define(:version => 20150616230742) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -283,11 +283,11 @@ ActiveRecord::Schema.define(:version => 20150605204625) do
     t.integer  "owner_id"
     t.date     "approach_date"
     t.integer  "approach_kind_id"
-    t.string   "content"
+    t.text     "content",          :limit => 255
     t.integer  "biru_user_id"
-    t.boolean  "delete_flg",       :default => false
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.boolean  "delete_flg",                      :default => false
+    t.datetime "created_at",                                         :null => false
+    t.datetime "updated_at",                                         :null => false
   end
 
   add_index "owner_approaches", ["approach_date"], :name => "index_owner_approaches_on_approach_date"
