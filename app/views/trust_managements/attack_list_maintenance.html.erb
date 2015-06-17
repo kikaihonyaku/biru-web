@@ -26,7 +26,7 @@
 			,fotter_name:'owner_pager'
 			,div_name:'owner_div'
 			,caption:'貸主一覧'
-			,event_type:30
+			,event_type:99
 			,shrinkFit:true
 			,multiselect:false
 		};
@@ -58,9 +58,9 @@
 			,fotter_name:'building_pager'
 			,div_name:'building_div'
 			,caption:'物件一覧'
-			,event_type:30
+			,event_type:99
 			,shrinkFit:true
-			,multiselect:false
+			,multiselect:true
 		};
 
 		$(function(){
@@ -132,7 +132,7 @@
 			,fotter_name:'trust_pager'
 			,div_name:'trust_div'
 			,caption:'アタックリスト'
-			,event_type:30
+			,event_type:99
 			,shrinkFit:true
 			,multiselect:true
 		};
@@ -169,32 +169,31 @@
 			alert("紐付ける貸主を選択してください。");
 			return false;
 		}
-
-
-
+		
 		//--------------------------
 		// 物件の現在の選択行を取得
 		//--------------------------
-		var building_row = $("#building_table").jqGrid('getGridParam', 'selrow');
+		var building_list = "";
 		var building_row_data = $('#building_table').getRowData()
-
-		// 行IDを取得
-		var building_ids = $("#building_table").jqGrid('getDataIDs');
-		for(var building_i=0; building_i< building_ids.length; building_i++){
-			if(building_row == building_ids[building_i]){
-				break;
-			}
-		}
-
-		if( building_i < building_ids.length ){
-			document.create_trust_form.building_id.value = building_row_data[building_i].id
-		} else {
-			alert("紐付ける物件を選択してください。");
+		var arr = jQuery("#building_table").getGridParam('selarrrow');
+		if(arr.length == 0 ){
+			alert('紐付ける物件を選択してください。');
 			return false;
 		}
 		
-		document.create_trust_form.submit();
+		for(var i = 0 in arr){
+			
+			if(building_list == ""){
+				building_list = $('#building_table').getRowData(arr[i]).id;
+			}
+			else{
+				building_list = building_list + ',' + $('#building_table').getRowData(arr[i]).id;
+			}
+			
+		}
 
+		document.create_trust_form.building_ids.value = building_list
+		document.create_trust_form.submit();
 		
 		return false;
 	}
@@ -245,7 +244,7 @@
 	<%= form_tag( {:action=>'attack_list_add'}, {:name=>'create_trust_form'}) do %>
 		<%= hidden_field_tag :sid, @biru_trust_user.id %>
 		<%= hidden_field_tag :owner_id, '' %>
-		<%= hidden_field_tag :building_id, '' %>
+		<%= hidden_field_tag :building_ids, '' %>
 		
 		<%= submit_tag '▼ 貸主と物件の紐付けを作成 ▼', {:class=>'btn', :onClick=>'javascript:create_trust();return false;'} %>
 	<% end %>

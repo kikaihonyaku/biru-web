@@ -1273,27 +1273,41 @@ class TrustManagementsController < ApplicationController
   def attack_list_add
     
     # 指定された貸主CD、建物CD
-    building_id = params[:building_id]
+    building_ids = params[:building_ids]
     owner_id = params[:owner_id]
     biru_user_id = params[:sid]
     
-    trust = Trust.unscoped.find_by_owner_id_and_building_id_and_biru_user_id(building_id, owner_id, biru_user_id )
-    if trust
-      trust.delete_flg = false
-      flash[:notice] = 'すでに削除済みとして登録されていたアタックリストを復活しました。'
-    else
-      trust = Trust.new
-      trust.building_id = building_id
-      trust.owner_id = owner_id
-      trust.delete_flg = false
+    reg_building_name = []
+    
+    # 選択された建物に対して委託の紐付けを行う。
+    building_ids.split(",").each do |building_id|
       
-      trust.biru_user_id = biru_user_id
-	  	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外      
+      trust = Trust.unscoped.find_by_owner_id_and_building_id_and_biru_user_id(building_id, owner_id, biru_user_id )
+      if trust
+        trust.delete_flg = false
+        reg_building_name.push(Building.find(building_id).name)
+      else
+        trust = Trust.new
+        trust.building_id = building_id
+        trust.owner_id = owner_id
+        trust.delete_flg = false
       
-      flash[:notice] = "貸主：" + Owner.find(owner_id).name + '  　建物：' + Building.find(building_id).name + '　をアタックリストに追加しました。'
+        trust.biru_user_id = biru_user_id
+  	  	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外      
+      
+        reg_building_name.push(Building.find(building_id).name)
+      end
+
+      flash[:notice] = "貸主：" + Owner.find(owner_id).name + '  　建物：'
+      reg_building_name.each do |building_nm|
+        flash[:notice] = flash[:notice] + '【' + building_nm + '】、'
+      end
+      flash[:notice] = flash[:notice] + '　を【Dランク】で追加しました。'
+    
+      trust.save!
+      
     end
     
-    trust.save!
     redirect_to :action => 'attack_list_maintenance', :sid=> params[:sid] 
   end
   
