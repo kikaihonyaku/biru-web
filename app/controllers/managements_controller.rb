@@ -252,44 +252,6 @@ class ManagementsController < ApplicationController
     redirect_to :action=>'popup_building', :id=>@trust.building_id
   end
   
-  # 貸主情報画面から委託契約の更新
-  def popup_owner_trust_update
-    
-    pri_trust_attack_update
-    redirect_to :action=>'popup_owner', :id=>@trust.owner_id
-  end
-  
-  def pri_trust_attack_update
-    
-    @trust = Trust.find(params[:trust][:id])
-    
-    # 指定された年月のbefore/afterの登録を行う
-    history = TrustAttackStateHistory.find_or_create_by_trust_id_and_month(@trust.id, params[:month])
-    history.trust_id = @trust.id
-    history.month = params[:month]
-    history.attack_state_from_id = params[:before_attack_state_id]
-    history.attack_state_to_id = params[:trust][:attack_state_id]
-    
-    history.room_num = params[:room_num]
-    history.manage_type_id = params[:history][:manage_type]
-    
-    # 自他区分を設定
-    if params[:history][:oneself] == 'yourself'
-      history.trust_oneself = false
-    elsif params[:history][:oneself]  == 'oneself'
-      history.trust_oneself = true
-    else
-      history.trust_oneself = nil
-    end
-    
-    history.save!
-    
-    # 指定された年月が登録済み履歴の中で最新だった時、委託のランクも更新
-    max_month =  TrustAttackStateHistory.where("trust_id = ?", @trust.id ).maximum("month")
-    if params[:month] == max_month.to_s
-      @trust.update_attributes(params[:trust])
-    end
-  end
 
   def index
 

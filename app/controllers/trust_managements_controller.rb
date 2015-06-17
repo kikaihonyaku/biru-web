@@ -273,6 +273,47 @@ class TrustManagementsController < ApplicationController
 
   end  
   
+  
+  # 貸主情報画面から委託契約（見込みランク）の更新
+  def popup_owner_trust_update
+    
+    pri_trust_attack_update(params[:trust][:id],  params[:month], params[:before_attack_state_id], params[:trust][:attack_state_id], params[:room_num], params[:history][:manage_type], params[:history][:oneself])
+    redirect_to :action=>'popup_owner', :controller=>'managements',  :id=>@trust.owner_id
+  end
+  
+  def pri_trust_attack_update(trust_id, month, before_attack_state_id, after_attack_state_id, room_num, manage_type_id, onself_type)
+    
+    @trust = Trust.find(trust_id)
+    
+    # 指定された年月のbefore/afterの登録を行う
+    history = TrustAttackStateHistory.find_or_create_by_trust_id_and_month(@trust.id, month)
+    history.trust_id = @trust.id
+    history.month = month
+    history.attack_state_from_id = before_attack_state_id
+    history.attack_state_to_id = after_attack_state_id
+    
+    history.room_num = room_num
+    history.manage_type_id = manage_type_id
+    
+    # 自他区分を設定
+    if onself_type == 'yourself'
+      history.trust_oneself = false
+    elsif onself_type  == 'oneself'
+      history.trust_oneself = true
+    else
+      history.trust_oneself = nil
+    end
+    
+    history.save!
+    
+    # 指定された年月が登録済み履歴の中で最新だった時、委託のランクも更新
+    max_month =  TrustAttackStateHistory.where("trust_id = ?", @trust.id ).maximum("month")
+    if month == max_month.to_s
+      @trust.attack_state_id = after_attack_state_id
+      @trust.save!
+    end
+  end
+  
 
   #def get_trust_data()
   def get_trust_sql(object_user, rank_list, order_flg)
@@ -1305,6 +1346,10 @@ class TrustManagementsController < ApplicationController
       flash[:notice] = flash[:notice] + '　を【Dランク】で追加しました。'
     
       trust.save!
+      
+      
+      # Dランクで履歴に登録
+      pri_trust_attack_update(trust.id, get_cur_month, AttackState.find_by_code("X").id, AttackState.find_by_code("D").id, 0, nil, nil)
       
     end
     
