@@ -3226,7 +3226,7 @@ end
 # init_data_update
 
 # アタックリスト　個別アクセス権限設定
-init_trust_attack_permission
+# init_trust_attack_permission
 
 # 社員マスタ登録
 # init_biru_user

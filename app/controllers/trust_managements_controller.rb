@@ -185,12 +185,19 @@ class TrustManagementsController < ApplicationController
         
         # 成約になった物件は、当月のみ集計対象
         if trust_attack_history.month.to_s == month.to_s
-          # 受託実績戸数を入力
-          if trust_attack_history.trust_oneself == true
-            trust_num_oneself = trust_num_oneself + trust_attack_history.room_num
-          else
-            trust_num = trust_num + trust_attack_history.room_num
+          
+          # B管理以上が集計対象
+          if ['3','4','5','6','7','8','9'].include?(trust_attack_history.manage_type.code) 
+            
+            # 自社・他社の判定
+            if trust_attack_history.trust_oneself == true
+              trust_num_oneself = trust_num_oneself + trust_attack_history.room_num
+            else
+              trust_num = trust_num + trust_attack_history.room_num
+            end
+            
           end
+          
         end
         
       else
