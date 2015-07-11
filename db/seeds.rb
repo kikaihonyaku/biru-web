@@ -1755,7 +1755,11 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
 	      imp.building_address = (address_first).strip
 			end
       
-      imp.building_address = Moji.han_to_zen(imp.building_address)
+      tmp_address = Moji.han_to_zen(imp.building_address)
+      tmp_address = tmp_address.address.tr("０-９", "0-9")
+      tmp_address = tmp_address.gsub("－", "-")
+      imp.building_address = tmp_address
+      
 
       # imp.building_nm = row[9]
       imp.building_nm = Moji.han_to_zen(row[9].strip)
@@ -1772,7 +1776,11 @@ def reg_attack_owner_building(biru_user_code, shop_name, filename)
       imp.owner_honorific_title = row[20]
       imp.owner_kana = row[21]
       imp.owner_postcode = row[22]
-      imp.owner_address = Moji.han_to_zen((row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]).strip)
+      tmp_address = Moji.han_to_zen((row[23] + ' ' + row[24] + ' ' + row[25] + ' ' + row[26]).strip)
+      tmp_address = tmp_address.address.tr("０-９", "0-9")
+      tmp_address = tmp_address.gsub("－", "-")
+      imp.owner_address = tmp_address
+      
       imp.owner_tel = row[27]
       
       # 現管理会社、募集会社、サブリース
@@ -3191,6 +3199,46 @@ def generate_trust_attack_month_report(month, trust_user)
 end
 
 
+# 家主の住所で丁目と番地の間に空白があると郵便されないのでそれを変換
+def city_block_convert
+  
+  Owner.where('biru_user_id is not null').each do |owner|
+
+    str = owner.address.tr("０-９", "0-9")
+    str = str.gsub("－", "-")
+    
+    # もし丁目が空白だったら　例「高萩市本町2　42」=>「高萩市 本町2-42」
+    if str =~ /[0-9][\s|　][0-9]/
+      num = str =~ /[0-9][\s|　][0-9]/
+      str[num+1] = "-"
+      p owner.address + "　＝＞　" + str
+    end
+    
+    # ハッシュ再計算
+    app_con = ApplicationController.new
+    owner_hash = app_con.conv_code_owner(owner.biru_user_id.to_s, owner.address, owner.name)
+    
+    # 住所再設定
+    owner.address = str
+    owner.hash_key = owner_hash
+    owner.save!
+    
+  end
+  
+  
+  # str = "aaaa０bb".tr("０-９", "0-9")
+  #
+  # if str =~ /[0-9][\s|　]/
+  #   p str + " 一致"
+  # else
+  #
+  #   p str + " 不一致"
+  # end
+  
+  
+end
+
+
 ########################
 # マスタ登録
 ########################
@@ -3399,3 +3447,7 @@ end
 #generate_trust_attack_month_report('201505', BiruUser.find_by_code('4917'))
 #generate_trust_attack_month_report('201506', BiruUser.find_by_code('4917'))
 
+############################
+#データメンテ
+############################
+city_block_convert
