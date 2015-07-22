@@ -1091,12 +1091,14 @@ class TrustManagementsController < ApplicationController
    
    @report.trust_attack_month_report_actions.each do |action_rec|
    
-   
+     no_dm = true # 2015.07.22 DMだったら地図に出さないようにする。
+     
      case action_rec.approach_kind_code
      when '0010', '0020' # 訪問
        icon = '/assets/marker_btn_blue.png'
      when '0030', '0035' # ＤＭ
        icon = '/assets/marker_btn_green.png'
+       no_dm = false
      when '0040', '0045' # 電話
        icon = '/assets/marker_btn_orange.png'
      when '0025' # 提案
@@ -1110,10 +1112,13 @@ class TrustManagementsController < ApplicationController
          :id=>action_rec.owner_id, :name=>action_rec.owner_name, :latitude=>action_rec.owner_latitude, :longitude=>action_rec.owner_longitude, :icon=>icon
      }
    
-     unless check_owner[approach_owner[:id]]
-       approach_owners.push(approach_owner)
-       check_owner[approach_owner[:id]] = true
-     end     
+     # 2015.07.22 DM以外を地図のアイコン表示
+     if no_dm
+       unless check_owner[approach_owner[:id]]
+         approach_owners.push(approach_owner)
+         check_owner[approach_owner[:id]] = true
+       end     
+     end
    
      # アプローチ種別が面談・電話会話・DM反響・提案の時のみ行動詳細に表示
      case action_rec.approach_kind_code
