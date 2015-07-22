@@ -2,6 +2,7 @@
 
 require 'kconv'
 require 'thinreports'
+require 'csv'
 
 class TrustManagementsController < ApplicationController
   
@@ -1301,7 +1302,7 @@ class TrustManagementsController < ApplicationController
     gon.buildings = ActiveRecord::Base.connection.select_all(get_buildings_sql(@biru_trust_user))    
     
     # 建物の一覧を取得
-    gon.owners = ActiveRecord::Base.connection.select_all(get_owners_sql(@biru_trust_user))    
+    gon.owners = ActiveRecord::Base.connection.select_all(get_owners_sql(@biru_trust_user, false))    
     
     # 委託契約の一覧を取得
     gon.trusts = ActiveRecord::Base.connection.select_all(get_trust_sql(@biru_trust_user, "", true))
@@ -1309,6 +1310,40 @@ class TrustManagementsController < ApplicationController
     
     # layoutでヘッダを非表示
     @header_hidden = true
+  end
+
+  # アタックリスト一括メンテナンス
+  def attack_list_maintenance_bulk
+    @biru_trust_user = BiruUser.find(params[:sid])
+    @header_hidden = true # ヘッダを非表示にする
+  end
+  
+  # アタックリスト一括メンテナンス　貸主出力
+  def attack_list_maintenance_bulk_owner_csv
+    
+    @biru_trust_user = BiruUser.find(params[:sid])
+    @header_hidden = true # ヘッダを非表示にする
+    data = ActiveRecord::Base.connection.select_all(get_owners_sql(@biru_trust_user, true))
+    
+    #-------------
+    # CSV出力
+    #-------------
+    output_path = Rails.root.join( "tmp", "owner_list_.csv")
+    
+    header = ["attack_code", "dm", "name", "honorific_title", "kana", "postcode", "address", "tel", "memo" ]
+    csv_data = CSV.generate("", :headers => header, :write_headers => true) do |csv|
+      data.each do |line|
+        csv << line
+      end
+    end
+    
+    # 文字コード変換
+    send_data csv_data, :filename=>'owner_list.csv'
+    
+    # render 'attack_list_maintenance_bulk'
+  end
+  
+  def download
   end
   
   def attack_list_add
@@ -1437,17 +1472,39 @@ def get_owner_show(owner_id)
   
 end
 
-def get_owners_sql(object_user)
-  sql = ""
-  sql = sql + "SELECT id "
-  sql = sql + ", a.attack_code as code "
-  sql = sql + ", a.name "
-  sql = sql + ", a.address "
-  sql = sql + ", a.memo "
-  sql = sql + "FROM owners a "
-  sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
-  sql = sql + "AND a.delete_flg = 'f' "
-  sql = sql + "ORDER BY updated_at DESC "
+# bulk=> true:個別メンテ画面用, false:一括用
+def get_owners_sql(object_user, bulk)
+  
+  if bulk
+    
+    sql = ""
+    sql = sql + "SELECT id "
+    sql = sql + ", a.attack_code "
+    sql = sql + ", case a.dm_delivery  when 't' then '○' when 'f' then '×' else 'aa' end as dm "
+    sql = sql + ", a.name "
+    sql = sql + ", a.honorific_title "
+    sql = sql + ", a.kana "
+    sql = sql + ", a.postcode "
+    sql = sql + ", a.address "
+    sql = sql + ", a.tel "
+    sql = sql + ", a.memo "
+    sql = sql + "FROM owners a "
+    sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
+    sql = sql + "AND a.delete_flg = 'f' "
+    sql = sql + "ORDER BY updated_at DESC "
+    
+  else
+    sql = ""
+    sql = sql + "SELECT id "
+    sql = sql + ", a.attack_code as code "
+    sql = sql + ", a.name "
+    sql = sql + ", a.address "
+    sql = sql + ", a.memo "
+    sql = sql + "FROM owners a "
+    sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
+    sql = sql + "AND a.delete_flg = 'f' "
+    sql = sql + "ORDER BY updated_at DESC "
+  end
   
 end
 

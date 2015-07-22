@@ -861,6 +861,11 @@ function win_attack_list_maintenance(user_id){
     window.open('/trust_managements/attack_list_maintenance?sid=' + user_id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes");
 }
 
+function win_attack_list_maintenance_bulk(user_id){
+    window.open('/trust_managements/attack_list_maintenance_bulk?sid=' + user_id   , "", "width=500,height=1000,resizable=yes,scrollbars=yes");
+}
+
+
 function screen_block(){
   //$.blockUI({ message: '検索中…しばらくお待ちください'});
   $('#body-contents').block({
