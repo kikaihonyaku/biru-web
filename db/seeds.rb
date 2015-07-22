@@ -899,48 +899,6 @@ def convert_shop(num)
 
 end
 
-# geocoding
-# force:強制的にgeocodingを行う。
-def biru_geocode(biru, force)
-	msg = ""
-  begin
-  	
-    # 住所が空白のみだったらそもそもgeocodeを行わない
-    if biru.address.gsub(" ", "").gsub("　", "").length == 0
-      msg = "住所が空白のみなのでスキップ "
-      raise # 例外発生させrescueへ飛ばす
-    end
-
-    skip_flg = biru.gmaps
-    skip_flg = false if force
-
-    unless skip_flg
-      gmaps_ret = Gmaps4rails.geocode(biru.address)
-      biru.latitude = gmaps_ret[0][:lat]
-      biru.longitude = gmaps_ret[0][:lng]
-      biru.gmaps = true
-
-#      if biru.code
-#        p format("%05d",biru.code) + ':' + biru.name + ':' + biru.address
-#      else
-#        p format("%05d",biru.attack_code) + ':' + biru.name + ':' + biru.address
-#      end
-    end
-  rescue => e
-    if biru.name.nil? or biru.address.nil?
-      p e
-    else
-      p e
-    end
-
-	# エラー処理
-    biru.gmaps = false
-    biru.delete_flg = true
-    
-  end
-  
-  return msg
-end
 
 # type: 1=自社 2=他社 を初期化します
 def before_imp_init(type)

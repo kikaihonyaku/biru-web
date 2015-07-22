@@ -862,7 +862,7 @@ function win_attack_list_maintenance(user_id){
 }
 
 function win_attack_list_maintenance_bulk(user_id){
-    window.open('/trust_managements/attack_list_maintenance_bulk?sid=' + user_id   , "", "width=500,height=1000,resizable=yes,scrollbars=yes");
+    window.open('/trust_managements/attack_list_maintenance_bulk?sid=' + user_id   , "", "width=500,height=500,resizable=yes,scrollbars=yes");
 }
 
 

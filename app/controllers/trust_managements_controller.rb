@@ -1345,10 +1345,130 @@ class TrustManagementsController < ApplicationController
     # 文字コード変換
     send_data csv_data, :filename=>'owner_list.csv'
     
-    # render 'attack_list_maintenance_bulk'
   end
   
-  def download
+  # アタックリスト一括メンテナンス　取込み
+  def attack_list_maintenance_bulk_owner_input
+    
+    @biru_trust_user = BiruUser.find(params[:sid])
+    @header_hidden = true # ヘッダを非表示にする
+    
+    
+    app_con = ApplicationController.new
+    csv_text = params[:upload_file].read
+    
+    data = []
+
+    #文字列をUTF-8に変換
+    cnt = 0
+    CSV.parse(Kconv.toutf8(csv_text)) do |row|
+      
+      if cnt == 0
+        #---------------------------------------
+        # 1行目の時はフォーマットチェック
+        #---------------------------------------
+        res, msg = format_check_owner(row)
+        unless res
+          flash[:danger] = msg
+          break
+        end
+      else
+        #---------------------------------------
+        # 2行目以降であればデータ登録
+        #---------------------------------------
+        
+        # ハッシュを生成
+        name = Moji.han_to_zen(row[2].strip)
+        address = Moji.han_to_zen((row[6].strip).tr("０-９", "0-9").gsub("－", "-"))
+        hash = app_con.conv_code_owner(@biru_trust_user.id.to_s, address, name)
+        dm = row[1]
+        honorific_title = row[3]
+        kana = row[4]
+        postcode = row[5]
+        tel = row[7]
+        memo = row[8]
+        
+        
+        # もしアタックコードがあれば、そこから現状のデータを取得
+        if row[0] != nil  && row[0].length > 0
+          id = row[0][2,10].to_i
+          owner = Owner.where("biru_user_id = " + @biru_trust_user.id.to_s ).where("id = " + id.to_s).first
+          unless owner
+            
+            # もしアタックコードが指定されていながらそのコードが存在しなければエラー
+            flash[:danger] =  "登録エラー  " + cnt.to_s + "行目の　アタックCD:" + row[0] + "は存在しません"
+            break
+          end
+          
+        else
+          
+          # なければハッシュから検索　それでもなければ新規作成
+          owner = Owner.unscoped.find_or_create_by_hash_key(hash)
+          
+          # IDを発番する為にsaveするが、その為にはgeocodeしている必要があるのでここで実施
+          owner.address = address
+          biru_geocode(owner, true)
+          
+  	      owner.save!
+    			owner.attack_code = "OA%06d"%owner.id # 貸主idをattack_codeとする
+          owner.save!
+
+        end
+        
+        owner.hash_key = hash
+  			owner.name = name
+        owner.kana = kana
+  			owner.honorific_title = honorific_title
+  			owner.tel = tel
+  			owner.biru_user_id = @biru_trust_user.id.to_s
+        
+        if dm == '○'
+          owner.dm_delivery = true
+        else
+          owner.dm_delivery = false
+        end
+        
+  			owner.postcode = postcode
+        if owner.address != address
+          # 住所が違っていた時のみgeocodeもかける
+          
+          owner.address = address
+          
+          # geocode
+          biru_geocode(owner, true)
+        end
+        
+        owner.save!
+        
+      end
+
+      cnt = cnt + 1
+    end
+    
+    unless flash[:danger]
+      # エラーが発生していない時は登録メッセージを設定
+      flash[:notice] = cnt.to_s + "件が処理されました。"
+    end
+    
+    render 'attack_list_maintenance_bulk'
+    
+  end
+  
+  # owner一括取り込み　フォーマットチェック
+  def format_check_owner(row)
+    
+    return false, "1列目が「attack_code」ではありません。" unless row[0] == 'attack_code'
+    return false, "2列目が「dm」ではありません。" unless row[1] == 'dm'
+    return false, "3列目が「name」ではありません。" unless row[2] == 'name'
+    return false, "4列目が「honorific_title」ではありません。" unless row[3] == 'honorific_title'
+    return false, "5列目が「kana」ではありません。" unless row[4] == 'kana'
+    return false, "6列目が「postcode」ではありません。" unless row[5] == 'postcode'
+    return false, "7列目が「address」ではありません。" unless row[6] == 'address'
+    return false, "8列目が「tel」ではありません。" unless row[7] == 'tel'
+    return false, "9列目が「memo」ではありません。" unless row[8] == 'memo'
+    
+    return true, ""
+    
   end
   
   def attack_list_add

@@ -1,4 +1,17 @@
-メンテナンステスト
+<% if flash[:notice] %>
+	<div class="alert alert-info alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	  <%= flash[:notice] %>
+	</div>
+<% end %>
+
+<% if flash[:danger] %>
+	<div class="alert alert-danger alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	  <%= flash[:danger] %>
+	</div>
+<% end %>
+
 <div style="padding-bottom:10px;">&nbsp;</div>
 
 <div class="modal-dialog">
@@ -13,12 +26,10 @@
   
 		  <div class="modal-body">
 	  	
-			<%= form_tag( {:action=>'owner_building_list'},{:name=>'trust_search'} ) do %>
+			<%= form_tag( {:action=>'attack_list_maintenance_bulk_owner_input'}, {multipart: true}  ) do %>
 				<%= hidden_field_tag :sid,  @biru_trust_user.id %>
-				<input type="file" id="file" style="display:none;" onchange="$('#fake_input_file').val($(this).val())">
-				<input id="fake_input_file" readonly type="text" value=""  onClick="$('#file').click();">
-				<input type="button" value="ファイル選択" onClick="$('#file').click();">
-				<%= submit_tag '取り込み' , :class=>"btn btn-sm btn-primary", :style=>"margin-left:20px;" %>
+				<%= submit_tag '取り込み' , :class=>"btn btn-sm btn-primary", :style=>"float:right;margin-right:10px;" %>
+				<%= file_field_tag :upload_file %>
 			<% end %>
 
 		  </div>
@@ -31,21 +42,20 @@
 	<div class="modal-content">
 
 		  <div class="modal-header">
-			<%= form_tag( {:action=>'owner_building_list'},{:name=>'trust_search'} ) do %>
+			<%= form_tag( {:action=>''},{:name=>'trust_search'} ) do %>
 				<%= hidden_field_tag :sid,  @biru_trust_user.id %>
-			    <h4 class="modal-title" >物件メンテナンス<%= submit_tag 'ファイルに出力' , :class=>"btn btn-sm btn-success", :style=>"margin-left:20px;" %>　</h4>
+			    <h4 class="modal-title" >物件メンテナンス<%= submit_tag 'ファイルに出力' , :class=>"btn btn-sm btn-success", :style=>"margin-left:20px;margin-right:20px;", :onClick=>'javascript:alert("まだ未実装です");return false;' %>　</h4>
 			<% end %>
 		  </div>
   
 		  <div class="modal-body">
-	  	
-			<%= form_tag( {:action=>'owner_building_list'},{:name=>'trust_search'} ) do %>
+			  
+			<%= form_tag( {:action=>''}, {multipart: true}  ) do %>
 				<%= hidden_field_tag :sid,  @biru_trust_user.id %>
-				<input type="file" id="file" style="display:none;" onchange="$('#fake_input_file').val($(this).val())">
-				<input id="fake_input_file" readonly type="text" value=""  onClick="$('#file').click();">
-				<input type="button" value="ファイル選択" onClick="$('#file').click();">
-				<%= submit_tag '取り込み' , :class=>"btn btn-sm btn-success", :style=>"margin-left:20px;" %>
+				<%= submit_tag '取り込み' , :class=>"btn btn-sm btn-success", :style=>"float:right;margin-right:10px;", :onClick=>'javascript:alert("まだ未実装です");return false;' %>
+				<%= file_field_tag :upload_file %>
 			<% end %>
+	  	
 
 		  </div>
 
