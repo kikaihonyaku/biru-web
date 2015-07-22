@@ -1,5 +1,5 @@
   <legend style="padding:20px;padding-botom:10px;">
-	  <%= @owner.name + " " + @owner.honorific_title %>
+	  <%= @owner.name + " " + @owner.honorific_title if @owner.honorific_title %>
 	  <% if @owner.biru_user %>
 		  &nbsp;&nbsp;<span style="font-size:medium;text-aling:right">（担当：<%= @owner.biru_user.name %>）</span>
 	  <% end %>
@@ -9,11 +9,11 @@
 	<tr>
 		<td style="vertical-align:top;padding-left:20px;">
 			<div style="border-width:3px; border-style:solid; border-color:silver;">
-			  <div id="pop_map_canvas" style="width:500px;height:470px;"></div>
+			  <div id="pop_map_canvas" style="width:500px;height:400px;"></div>
 			</div>
 			
 		</td>
-		<td style="vertical-align:top;padding-left:20px;padding-right:20px;" >
+		<td style="vertical-align:top;padding-left:20px;padding-right:20px;width:500px;" >
 
 			<div class="table-responsive panel panel-default">
 				<table class="table table-bordered">
@@ -53,7 +53,26 @@
 				</table>
 			</div>
 						
-			<div class="table-responsive panel panel-default">
+			<%= form_for(@owner, :url=>{:action=>'popup_owner_update', :controller=>'managements', :id=>@owner}, :html=>{:class=>"form-horizontal"}) do |f|%>
+			
+			
+				<div style="clear:both;margin-top:10px;">
+					<%= f.text_area :memo,  :size => "8x6", :class=>"form-control", :placeholder=>'メモ'  %>
+				</div>
+			
+				<div style="padding-top:10px;">
+					DM発送&nbsp;&nbsp;あり&nbsp;<%= f.radio_button 'dm_delivery', true %>
+					&nbsp;&nbsp;なし&nbsp;<%= f.radio_button 'dm_delivery', false %>
+					<%= f.submit '更新', :class=>"btn btn-sm btn-primary print-none", :style=>"margin-left:80px;"%>
+				</div>
+			
+			<% end %>
+			
+		</td>
+	</tr>
+</table>
+
+			<div style="padding:30px 20px 0px 20px">
 				<table class="table table-bordered table-condensed">
 			      <thead>
 			        <tr>
@@ -73,7 +92,7 @@
 						  
 					        <tr>
 					          <td><a href="javascript:win_building(<%= building.id %>);"><%= building.name %></a></td>
-					          <td><%= building.address.truncate(12) %></td>
+					          <td><%= building.address %></td>
 							  
 							  <% if building.shop %>
 							  	<td><%= building.shop.name %></td>
@@ -83,7 +102,7 @@
 							  
 							  <!--  ここでは現時点で最新の見込み状態を表示する -->
 							  <% if attack_state_current %>
-							  	<td><a data-toggle="modal" href="#myModal_<%= building.id.to_s %>"  ><%= attack_state_current.name.truncate(10) %></a></td>
+							  	<td><a data-toggle="modal" href="#myModal_<%= building.id.to_s %>"  ><%= attack_state_current.name %></a></td>
 							  <% else %>
 							  	<td><a data-toggle="modal" href="#myModal_<%= building.id.to_s %>"  >未設定</a></td>
 							  <% end %>
@@ -170,7 +189,7 @@
 							      </div>
 							      <div class="modal-footer">
 							        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-							        <%= f.submit '登録', :class => 'btn btn-primary' %>
+							        <%= f.submit '登録', :class => 'btn btn-primary btn-sm' %>
 							      </div>
 								<% end %>
 				  
@@ -183,26 +202,7 @@
 			      </tbody>
 			    </table>
 			</div>
-			<%= form_for(@owner, :url=>{:action=>'popup_owner_update', :controller=>'managements', :id=>@owner}, :html=>{:class=>"form-horizontal"}) do |f|%>
-			
-			<div>
-				DM発送&nbsp;&nbsp;あり&nbsp;<%= f.radio_button 'dm_delivery', true %>
-				&nbsp;&nbsp;なし&nbsp;<%= f.radio_button 'dm_delivery', false %>
-			</div>
-			
-			<div style="clear:both;margin-top:10px;">
-				<%= f.text_area :memo,  :size => "5x3", :class=>"form-control", :placeholder=>'メモ'  %>
-			</div>
-			
-			<div style="padding-top:10px;text-align:center;float:left;">
-				<%= f.submit '更新', :class=>"btn btn-primary print-none" %>
-			</div>
-			
-			<% end %>
-			
-		</td>
-	</tr>
-</table>
+
 
 	<div style="clear:both;margin-top:50px;">
 
@@ -216,18 +216,18 @@
 					<tr>
 						<td><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:120px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
 						<td><%= f.input :approach_kind_id, label: '種別', collection: ApproachKind.order(:sequence), prompt: "--", :input_html => {:style=>'width:100px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
-						<td><%= f.submit '登録', :class => 'btn-primary', :style=>'margin-left:20px;' %></td>
+						<td><%= f.submit '登録', :class => 'btn btn-primary btn-sm', :style=>'margin-left:20px;' %></td>
 					</tr>
 				</table>
 				<div style="margin-left:30px;margin-top:10px;">
-					<%= f.text_area :content, label: '内容', placeholder: 'アプローチ内容をいれてください', :size => "110x4" %>
+					<%= f.text_area :content, label: '内容', placeholder: 'アプローチ内容をいれてください', :size => "115x4" %>
 				</div>
 		
 				<%#= f.input :approach_date, label: '日付', as: :datepicker %>
 			<% end %>
 		</div>
 
-		<div style="padding-left:20px;padding-right:20px;margin-top:20px;width:950px;">
+		<div style="padding-left:20px;padding-right:20px;margin-top:20px;width:1000px;">
 			<%= grid(@owner_approaches) do |g|
 		 		g.column name: '' do |obj| link_to('削除',{:controller=>'managements', :action=>'owner_approach_delete', :id=>obj.id.to_s, :owner_id=>@owner.id.to_s}, :confirm => "削除します。よろしいですか？", :class=>'print-none') end
 		 		g.column name: 'アプローチ日' do |obj| obj.approach_date if obj.approach_date end
