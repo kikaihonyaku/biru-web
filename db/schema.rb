@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150616230742) do
+ActiveRecord::Schema.define(:version => 20150724143825) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -240,8 +240,6 @@ ActiveRecord::Schema.define(:version => 20150616230742) do
   add_index "lease_contracts", ["building_id"], :name => "index_lease_contracts_on_building_id"
   add_index "lease_contracts", ["room_id"], :name => "index_lease_contracts_on_room_id"
 
-<<<<<<< Local Changes
-=======
   create_table "lines", :force => true do |t|
     t.string   "code"
     t.string   "name"
@@ -333,6 +331,10 @@ ActiveRecord::Schema.define(:version => 20150616230742) do
     t.integer  "biru_user_id"
     t.string   "hash_key"
     t.string   "kana"
+    t.boolean  "dm_ptn_1",        :default => false
+    t.boolean  "dm_ptn_2",        :default => false
+    t.boolean  "dm_ptn_3",        :default => false
+    t.boolean  "dm_ptn_4",        :default => false
   end
 
   add_index "owners", ["biru_user_id"], :name => "index_owners_on_biru_user_id"
@@ -910,4 +912,3 @@ ActiveRecord::Schema.define(:version => 20150616230742) do
   add_index "work_renters_rooms", ["building_cd"], :name => "index_work_renters_rooms_on_building_cd"
 
 end
->>>>>>> External Changes

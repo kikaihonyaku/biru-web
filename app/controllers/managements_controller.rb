@@ -179,6 +179,12 @@ class ManagementsController < ApplicationController
     @owner.postcode = params[:owner][:postcode]
     @owner.tel = params[:owner][:tel]
     
+    @owner.dm_delivery = params[:owner][:dm_delivery]
+    @owner.dm_ptn_1 = params[:owner][:dm_ptn_1]
+    @owner.dm_ptn_2 = params[:owner][:dm_ptn_2]
+    @owner.dm_ptn_3 = params[:owner][:dm_ptn_3]
+    @owner.dm_ptn_4 = params[:owner][:dm_ptn_4]
+    
     app_con = ApplicationController.new
     @owner.hash_key = app_con.conv_code_owner(@owner.biru_user_id.to_s, @owner.address, @owner.name)
     
