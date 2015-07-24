@@ -161,10 +161,33 @@ class ManagementsController < ApplicationController
   def popup_owner_update
     
     @owner = Owner.find(params[:id])
-    @owner.gmaps = false # 住所の設定をさせる為に設定
     
-    if @owner.update_attributes(params[:owner])
+    # 2015/07/24 登録はハッシュなどを登録するので登録は個別に行う
+    # @owner.gmaps = false # 住所の設定をさせる為に設定
+    # if @owner.update_attributes(params[:owner])
+    # end
+    
+    
+    # アドレスを後の判断に使用するので退避
+    backup_address = @owner.address 
+    
+    # 登録する項目を設定
+    @owner.name = Moji.han_to_zen(params[:owner][:name].strip)
+    @owner.address = Moji.han_to_zen(params[:owner][:address].strip).tr("０-９", "0-9").gsub("－", "-")
+    @owner.kana = params[:owner][:kana]
+    @owner.honorific_title = params[:owner][:honorific_title]
+    @owner.postcode = params[:owner][:postcode]
+    @owner.tel = params[:owner][:tel]
+    
+    app_con = ApplicationController.new
+    @owner.hash_key = app_con.conv_code_owner(@owner.biru_user_id.to_s, @owner.address, @owner.name)
+    
+    # 住所に変更があったらgeocodeで再計算
+    unless @owner.address == backup_address
+      biru_geocode(@owner, true)
     end
+    
+    @owner.save!
 
     # render :action=>'popup_owner', :layout => 'popup'
     redirect_to :action=>'popup_owner', :id=>@owner.id

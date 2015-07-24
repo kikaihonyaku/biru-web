@@ -1402,7 +1402,7 @@ class TrustManagementsController < ApplicationController
           
         else
           
-          # なければハッシュから検索　それでもなければ新規作成
+          # なければハッシュ（＝同一貸主名&住所）から検索　それでもなければ新規作成
           owner = Owner.unscoped.find_or_create_by_hash_key(hash)
           
           # IDを発番する為にsaveするが、その為にはgeocodeしている必要があるのでここで実施
