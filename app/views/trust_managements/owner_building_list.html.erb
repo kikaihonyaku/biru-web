@@ -1225,9 +1225,29 @@ function getCoords(position) {
 	        <h4 class="modal-title" >タックシール出力</h4>
 	      </div>
 
-		<%= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm', :onSubmit=>"return tack_out_go()" }) do %>
-		   <%= hidden_field_tag 'dm_owner_list', ''  %>
+		<%#= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm', :onSubmit=>"return tack_out_go()" }) do %>
+		<%= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm' }) do %>
+			<%= hidden_field_tag 'dm_owner_list', ''  %>
+			<%= hidden_field_tag :sid,  @object_user.id %>
 			<div class="modal-body">
+				見込みランク
+				<div style="padding-bottom:20px;padding-left:20px;padding-top:5px;">
+			       <%= check_box_tag :rank_s %>&nbsp;Ｓランク&nbsp;&nbsp;
+				   <%= check_box_tag :rank_a, {},:checked=>true %>&nbsp;Ａランク&nbsp;&nbsp;
+				   <%= check_box_tag :rank_b, {},:checked=>true %>&nbsp;Ｂランク&nbsp;&nbsp;
+				   <%= check_box_tag :rank_c, {},:checked=>true %>&nbsp;Ｃランク&nbsp;&nbsp;
+				   <%= check_box_tag :rank_d, {},:checked=>true %>&nbsp;Ｄランク&nbsp;&nbsp;
+			   </div>
+
+				出力パターン
+				<div style="padding-bottom:30px;padding-left:20px;padding-top:5px;">
+			       <%= check_box_tag :ptn_1, {},:checked=>true %>&nbsp;パターン１&nbsp;&nbsp;
+				   <%= check_box_tag :ptn_2 %>&nbsp;パターン２&nbsp;&nbsp;
+				   <%= check_box_tag :ptn_3 %>&nbsp;パターン３&nbsp;&nbsp;
+				   <%= check_box_tag :ptn_4 %>&nbsp;パターン４&nbsp;&nbsp;
+			   </div>
+				
+				
 				<div style="padding-bottom:20px;">
 			       <%= radio_button_tag :dm_history, 1, true,  :onclick=>"dm_msg_regist_on(true);" %>&nbsp;DM履歴を残す
 			       &nbsp;&nbsp;&nbsp;

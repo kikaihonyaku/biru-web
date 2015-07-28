@@ -856,7 +856,6 @@ class TrustManagementsController < ApplicationController
   # タックシールを出力する
   def tack_out
 
-    #@selected = params[:g1][:selected]
     @selected = params[:dm_owner_list]
     
     if params[:dm_history] == "1"
@@ -865,24 +864,104 @@ class TrustManagementsController < ApplicationController
       reg_flg = false
     end
     
-    owner_id_arr = []
-#    Trust.where("id in (?)", @selected).each do |trust|
-#      owner = Owner.find(trust.owner_id)
-#      owner_id_arr.push(owner.id) if owner.dm_delivery 
-#    end
+    # owner_id_arr = []
+    #
+    # Owner.where("id in (" + @selected + ")" ).each do |owner|
+    #   owner_id_arr.push(owner.id) if owner.dm_delivery
+    # end
+    #
+    # # 出力対象が１つもないときはエラー
+    # if owner_id_arr.length == 0
+    #   flash[:notice] = '印刷対象のチェックボックスをチェックしてください。'
+    #   redirect_to :action => "index"
     
-    Owner.where("id in (" + @selected + ")" ).each do |owner|
-      owner_id_arr.push(owner.id) if owner.dm_delivery 
+    
+    msg = ""
+    rank_arr = []
+    ptn_str = ""
+    
+    ####################
+    # ランクのチェック
+    ####################
+    rank_arr.push('S') if params[:rank_s]
+    rank_arr.push('A') if params[:rank_a]
+    rank_arr.push('B') if params[:rank_b]
+    rank_arr.push('C') if params[:rank_c]
+    rank_arr.push('D') if params[:rank_d]
+
+    if rank_arr.length == 0
+      msg = msg + '出力対象の見込みランクが未指定です。　　　'
+    end
+    
+    ####################
+    # パターンのチェック
+    ####################
+    if params[:ptn_1]
+      ptn_str = ptn_str + " dm_ptn_1 = 't'" # SQLServerは1
     end
 
-    # 出力対象が１つもないときはエラー
-    if owner_id_arr.length == 0
-      flash[:notice] = '印刷対象のチェックボックスをチェックしてください。'
-      redirect_to :action => "index" 
-    else
+    if params[:ptn_2]
+      p '■■■ '+ ptn_str
+      unless ptn_str == ""
+        ptn_str = ptn_str + " Or "
+      end
+      
+      ptn_str = ptn_str + " dm_ptn_2 = 't'" # SQLServerは2
+    end
 
-      @owners = Owner.where("id in (?)", owner_id_arr)
-      #send_data @owners.to_csv, :filename=>'tack.csv'
+    if params[:ptn_3]
+      unless ptn_str == ""
+        ptn_str = ptn_str + " Or "
+      end
+      
+      ptn_str = ptn_str + " dm_ptn_3 = 't'" # SQLServerは2
+    end
+
+    if params[:ptn_4]
+      unless ptn_str == ""
+        ptn_str = ptn_str + " Or "
+      end
+      
+      ptn_str = ptn_str + " dm_ptn_4 = 't'" # SQLServerは2
+    end
+    
+    if ptn_str == ""
+      msg = msg + '出力対象のパターンが未指定です。　　　'
+    end
+    
+    # パラメータが不正の時はエラーメッセージを表示
+    unless msg == ""
+        flash[:notice] = msg
+        p msg
+        redirect_to :action => "index"
+    else
+      
+      rank_tmp = ""
+      rank_arr.each do |rank|
+        unless rank_tmp == ""
+          rank_tmp = rank_tmp + ","
+        end
+        
+        rank_tmp = rank_tmp + "'" + rank + "'"
+      end
+      
+      str_sql = ""
+      str_sql = str_sql + " SELECT distinct owners.id as owner_id"
+      str_sql = str_sql + " FROM owners inner join trusts on owners.id = trusts.owner_id "
+      str_sql = str_sql + " inner join attack_states on trusts.attack_state_id = attack_states.id "
+      str_sql = str_sql + " where trusts.biru_user_id = " + params[:sid]
+      str_sql = str_sql + " and trusts.delete_flg = 'f'"
+      str_sql = str_sql + " and owners.delete_flg = 'f'"
+      str_sql = str_sql + " and owners.dm_delivery = 't' "
+      str_sql = str_sql + " and attack_states.code in ( " + rank_tmp + ")  "
+      str_sql = str_sql + " and  ( " + ptn_str + ")  "
+      
+      owner_id_arr = []
+      ActiveRecord::Base.connection.select_all(str_sql).each do |rec|
+        owner_id_arr.push(rec['owner_id'])
+      end
+      
+      @owners = Owner.find_all_by_id(owner_id_arr)
   
       # pdfファイルを作成
       #report = ThinReports::Report.create :layout => File.join(Rails.root, 'app/reports', 'pdf_layout.tlf') do |r|
