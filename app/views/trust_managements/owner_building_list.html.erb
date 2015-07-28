@@ -757,7 +757,7 @@ function getCoords(position) {
 		// 列名の定義
 		//var grid_name = ["trust_id", "owner_id", "見込貸主CD", "貸主名", "住所", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "営業所", "担当者"];
 		//var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "住所", "貸主備考", "訪問(留守）", "訪問(在宅）", "DM(発送）", "DM(反響）", "電話(留守）", "電話(会話）", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者"];
-		var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "貸主カナ", "住所", "電話", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者"];
+		var grid_name = ["trust_id", "owner_id", "営業所", "見込ランク", "DM発送可", "見込貸主CD", "貸主名", "貸主カナ", "住所", "電話", "貸主備考", "building_id", "見込建物CD", "建物名", "住所", "建物備考", "現 管理会社", "担当者", "発行1", "発行2", "発行3", "発行4"];
 		
 		// 列属性の定義
 		var grid_model = [
@@ -789,6 +789,11 @@ function getCoords(position) {
 		 ,{name:"building_memo", index:"building_memo", width:400, align:"left", classes:"no_class"}
 		 ,{name:"proprietary_company", index:"proprietary_company", width:200, align:"left", classes:"no_class"}
 		 ,{name:"user_name", index:"user_memo", align:"left", classes:"no_class"}
+		 
+		 ,{name:"owner_dm_ptn_1", index:"owner_dm_ptn_1", width:80, align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":全て;○:○;×:×"}}
+		 ,{name:"owner_dm_ptn_2", index:"owner_dm_ptn_2", width:80, align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":全て;○:○;×:×"}}
+		 ,{name:"owner_dm_ptn_3", index:"owner_dm_ptn_3", width:80, align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":全て;○:○;×:×"}}
+		 ,{name:"owner_dm_ptn_4", index:"owner_dm_ptn_4", width:80, align:"center", classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: ":全て;○:○;×:×"}}
 		];
 		
 		// データの作成
@@ -806,7 +811,12 @@ function getCoords(position) {
 			}else{
 				rec['owner_dm_delivery'] = '×'
 			}
-			
+
+			if(trust_manage.owner_dm_ptn_1 == 't'){ rec['owner_dm_ptn_1'] = '○' }else{ rec['owner_dm_ptn_1'] = '×' }
+			if(trust_manage.owner_dm_ptn_2 == 't'){ rec['owner_dm_ptn_2'] = '○' }else{ rec['owner_dm_ptn_2'] = '×' }
+			if(trust_manage.owner_dm_ptn_3 == 't'){ rec['owner_dm_ptn_3'] = '○' }else{ rec['owner_dm_ptn_3'] = '×' }
+			if(trust_manage.owner_dm_ptn_4 == 't'){ rec['owner_dm_ptn_4'] = '○' }else{ rec['owner_dm_ptn_4'] = '×' }
+
 			rec['owner_name'] = trust_manage.owner_name
 			rec['owner_kana'] = trust_manage.owner_kana
 			rec['owner_address'] = trust_manage.owner_address

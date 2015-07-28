@@ -354,6 +354,12 @@ class TrustManagementsController < ApplicationController
     sql = sql + " , owners.latitude as owner_latitude "
     sql = sql + " , owners.longitude as owner_longitude "
     sql = sql + " , owners.dm_delivery as owner_dm_delivery "
+
+    sql = sql + " , owners.dm_ptn_1 as owner_dm_ptn_1 "
+    sql = sql + " , owners.dm_ptn_2 as owner_dm_ptn_2 "
+    sql = sql + " , owners.dm_ptn_3 as owner_dm_ptn_3 "
+    sql = sql + " , owners.dm_ptn_4 as owner_dm_ptn_4 "
+    
     sql = sql + " , owners.tel as owner_tel "
     sql = sql + " , buildings.id as building_id "
     sql = sql + " , buildings.attack_code as building_attack_code "
@@ -901,7 +907,6 @@ class TrustManagementsController < ApplicationController
     end
 
     if params[:ptn_2]
-      p '■■■ '+ ptn_str
       unless ptn_str == ""
         ptn_str = ptn_str + " Or "
       end
