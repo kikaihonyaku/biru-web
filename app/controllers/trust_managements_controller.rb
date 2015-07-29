@@ -1419,7 +1419,7 @@ class TrustManagementsController < ApplicationController
     #-------------
     output_path = Rails.root.join( "tmp", "owner_list_.csv")
     
-    header = ["attack_code", "dm", "name", "honorific_title", "kana", "postcode", "address", "tel", "memo" ]
+    header = ["貸主CD", "DM発行○×", "貸主名", "敬称", "カナ", "郵便番号", "住所", "電話番号", "メモ", "DM発行パターン１", "DM発行パターン２", "DM発行パターン３", "DM発行パターン４" ]
     csv_data = CSV.generate("", :headers => header, :write_headers => true) do |csv|
       data.each do |line|
         csv << line
@@ -1471,7 +1471,10 @@ class TrustManagementsController < ApplicationController
         postcode = row[5]
         tel = row[7]
         memo = row[8]
-        
+        ptn1 = row[9]
+        ptn2 = row[10]
+        ptn3 = row[11]
+        ptn4 = row[12]
         
         # もしアタックコードがあれば、そこから現状のデータを取得
         if row[0] != nil  && row[0].length > 0
@@ -1506,11 +1509,12 @@ class TrustManagementsController < ApplicationController
   			owner.tel = tel
   			owner.biru_user_id = @biru_trust_user.id.to_s
         
-        if dm == '○'
-          owner.dm_delivery = true
-        else
-          owner.dm_delivery = false
-        end
+        if dm == '○' then owner.dm_delivery = true else owner.dm_delivery = false end
+
+        if ptn1 == '○' then owner.dm_ptn_1 = true else owner.dm_ptn_1 = false end
+        if ptn2 == '○' then owner.dm_ptn_2 = true else owner.dm_ptn_2 = false end
+        if ptn3 == '○' then owner.dm_ptn_3 = true else owner.dm_ptn_3 = false end
+        if ptn4 == '○' then owner.dm_ptn_4 = true else owner.dm_ptn_4 = false end
         
   			owner.postcode = postcode
         if owner.address != address
@@ -1531,7 +1535,7 @@ class TrustManagementsController < ApplicationController
     
     unless flash[:danger]
       # エラーが発生していない時は登録メッセージを設定
-      flash[:notice] = cnt.to_s + "件が処理されました。"
+      flash[:notice] = (cnt-1).to_s + "件が処理されました。"
     end
     
     render 'attack_list_maintenance_bulk'
@@ -1697,6 +1701,10 @@ def get_owners_sql(object_user, bulk)
     sql = sql + ", a.address "
     sql = sql + ", a.tel "
     sql = sql + ", a.memo "
+    sql = sql + ", case a.dm_ptn_1  when 't' then '○' when 'f' then '×' else 'aa' end as dm "
+    sql = sql + ", case a.dm_ptn_2  when 't' then '○' when 'f' then '×' else 'aa' end as dm "
+    sql = sql + ", case a.dm_ptn_3  when 't' then '○' when 'f' then '×' else 'aa' end as dm "
+    sql = sql + ", case a.dm_ptn_4  when 't' then '○' when 'f' then '×' else 'aa' end as dm "
     sql = sql + "FROM owners a "
     sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
     sql = sql + "AND a.delete_flg = 'f' "
