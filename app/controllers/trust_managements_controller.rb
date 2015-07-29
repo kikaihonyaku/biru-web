@@ -719,7 +719,6 @@ class TrustManagementsController < ApplicationController
   	unless params[:sid]
   		@error_msg = "パラメータが不正です。"
     else
-    	
     	@object_user = BiruUser.find(params[:sid].to_i)
     	unless @object_user
 	  		@error_msg = "指定されたユーザーが存在しません。"
@@ -727,23 +726,46 @@ class TrustManagementsController < ApplicationController
       	unless check_report_auth(@biru_user, @object_user)
 		  		@error_msg = "自分以外のアタックリストにアクセスすることはできません。"
       	end
-      	
     	end
-    	
   	end
     
     # 見込みランクの指定
-    rank_arr = ""
+    rank_list = ""
+    
     if params[:rank]
+      # アタックリスト集計表から遷移してきた時
       params[:rank].split(',').each do |value|
         
-        if rank_arr.length > 0
-          rank_arr = rank_arr + ','
+        if rank_list.length > 0
+          rank_list = rank_list + ','
         end
         
-        rank_arr = rank_arr + "'" + value + "'"
-        
+        rank_list = rank_list + "'" + value + "'"
       end
+      
+    else
+      
+      # アタックリスト一覧から再検索してきた時
+      rank_arr = []
+      rank_arr.push('S') if params[:rank_s]
+      rank_arr.push('A') if params[:rank_a]
+      rank_arr.push('B') if params[:rank_b]
+      rank_arr.push('C') if params[:rank_c]
+      rank_arr.push('D') if params[:rank_d]
+      rank_arr.push('W') if params[:rank_w]
+      rank_arr.push('X') if params[:rank_x]
+      rank_arr.push('Y') if params[:rank_y]
+      rank_arr.push('Z') if params[:rank_z]
+      
+      rank_arr.each do |value|
+        
+        if rank_list.length > 0
+          rank_list = rank_list + ','
+        end
+        
+        rank_list = rank_list + "'" + value + "'"
+      end
+      
     end
     
     @combo_shop = jqgrid_combo_shop
@@ -765,7 +787,7 @@ class TrustManagementsController < ApplicationController
       owner_to_buildings = {}
       building_to_owners = {}
       
-      ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user, rank_arr, true)).each do |rec|
+      ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user, rank_list, true)).each do |rec|
         
         #jqgrid用データ
         trust_manages.push(rec)

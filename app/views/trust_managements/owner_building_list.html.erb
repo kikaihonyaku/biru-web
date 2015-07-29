@@ -1014,11 +1014,10 @@ function getCoords(position) {
 			            <span class="toggle ui-jqgrid-view ui-jqgrid-titlebar ui-widget-header ui-corner-top">基本メニュー</span>
 					</li>
 			        </li>
+			        <li><a data-toggle="modal" href="#modal-search">検索条件を変更して再検索</a></li>
 			        <li><a data-toggle="modal" href="#modal-tack">タックシール出力</a></li>
-			        <li><a data-toggle="modal" href="#modal-search">履歴の検索</a></li>
-			        <li><a href="javascript:win_trust_report(<%= @object_user.id %>);">受託月報を表示</a></li>
-			        <li><a href="javascript:win_attack_list_maintenance(<%= @object_user.id %>);">アタックリスト編集（個別）</a></li>
 			        <li><a href="javascript:win_attack_list_maintenance_bulk(<%= @object_user.id %>);">アタックリスト編集（一括）</a></li>
+			        <li><a href="javascript:win_attack_list_maintenance(<%= @object_user.id %>);">アタックリスト編集（個別）</a></li>
 			        <li><a data-toggle="modal" href="#modal-history-regist" onclick="return check_file_api();">履歴の取り込み</a></li>
 			        <li><%= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();' %></li>
 			    </ul>
@@ -1296,16 +1295,31 @@ function getCoords(position) {
 			
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" >履歴による絞込み</h4>
+				<h4 class="modal-title" >条件を指定して再検索</h4>
 			</div>
 
 			<div class="modal-body">
 				
 			  <div style="padding-left:5px;">
 					<table class="attack-search">
-			
+						
 						<tr>
-							<td style="text-align:right;width:150px;vertical-align:top;"><b>訪問リレキ：</b></td>
+							<td style="text-align:right;width:110px;vertical-align:top;"><b>ランク：</b></td>
+							<td>
+						       <%= check_box_tag :rank_s, {},:checked=>true %>&nbsp;Ｓランク&nbsp;&nbsp;
+							   <%= check_box_tag :rank_a, {},:checked=>true %>&nbsp;Ａランク&nbsp;&nbsp;
+							   <%= check_box_tag :rank_b, {},:checked=>true %>&nbsp;Ｂランク&nbsp;&nbsp;
+							   <%= check_box_tag :rank_c, {},:checked=>true %>&nbsp;Ｃランク&nbsp;&nbsp;
+							   <%= check_box_tag :rank_d %>&nbsp;Ｄランク&nbsp;&nbsp;</br>
+							   <%= check_box_tag :rank_w %>&nbsp;Ｗランク&nbsp;&nbsp;
+							   <%= check_box_tag :rank_x %>&nbsp;Ｘランク&nbsp;&nbsp;
+							   <%= check_box_tag :rank_y %>&nbsp;Ｙランク&nbsp;&nbsp;
+							   <%= check_box_tag :rank_z %>&nbsp;Ｚランク&nbsp;&nbsp;
+						   	   </br></br></br>
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align:right;vertical-align:top;"><b>訪問リレキ：</b></td>
 							<td>
 								<table>
 									<tr>
@@ -1324,7 +1338,7 @@ function getCoords(position) {
 						</tr>
 			
 						<tr>
-							<td style="text-align:right;width:150px;vertical-align:top;"><b>ＤＭリレキ：</b></td>
+							<td style="text-align:right;vertical-align:top;"><b>ＤＭリレキ：</b></td>
 							<td>
 								<table>
 									<tr>
@@ -1343,7 +1357,7 @@ function getCoords(position) {
 	
 						</tr>
 						<tr>
-							<td style="text-align:right;width:150px;vertical-align:top;"><b>ＴＥLリレキ：</b></td>
+							<td style="text-align:right;vertical-align:top;"><b>ＴＥLリレキ：</b></td>
 							<td>
 								<table>
 									<tr>
