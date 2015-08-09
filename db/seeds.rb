@@ -862,6 +862,9 @@ end
 def init_trust_attack_permission
   arr = []
   arr.push({:holder=>'6464', :permit=>'5928'})
+  arr.push({:holder=>'5928', :permit=>'5313'})
+  arr.push({:holder=>'5928', :permit=>'6464'})
+  arr.push({:holder=>'5928', :permit=>'4917'})
   
   TrustAttackPermission.delete_all
   arr.each do |obj|
@@ -3232,7 +3235,7 @@ end
 # init_data_update
 
 # アタックリスト　個別アクセス権限設定
-# init_trust_attack_permission
+ init_trust_attack_permission
 
 # 社員マスタ登録
 # init_biru_user
@@ -3408,4 +3411,4 @@ end
 ############################
 #データメンテ
 ############################
-city_block_convert
+# city_block_convert

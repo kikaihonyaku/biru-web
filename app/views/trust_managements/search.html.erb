@@ -1,0 +1,139 @@
+<div style="margin-top:20px;margin-right:20px;text-align:right;">
+	<%= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();', :style=>'text-decoration: underline;' %>
+</div>
+<div class="panel panel-default" style="margin:20px;margin-top:5px;">
+  <div class="panel-heading">
+    <h3 class="panel-title"><i class="fa fa-search"></i>検索条件</h3>
+  </div>
+  <div class="panel-body">
+
+	<%= form_tag({:action=>'search'}, html: { method: :get, class: 'form-horizontal', role: 'form' }) do %>
+
+		<div class="row">
+		<div class="col-sm-6">
+			
+			
+		  <div class="form-group">
+		    <div class="col-sm-12">
+		      <div>
+				  <label><%= check_box_tag :rank_z, true, @search_param[:rank_z] %>&nbsp;&nbsp;Z</label>
+				  &nbsp;
+				  <label><%= check_box_tag :rank_s, true, @search_param[:rank_s] %>&nbsp;&nbsp;S</label>
+				  &nbsp;
+				  <label><%= check_box_tag :rank_a, true, @search_param[:rank_a] %>&nbsp;&nbsp;A</label>
+				  &nbsp;
+				  <label><%= check_box_tag :rank_b, true, @search_param[:rank_b] %>&nbsp;&nbsp;B</label>
+				  &nbsp;
+				  <label><%= check_box_tag :rank_c, true, @search_param[:rank_c] %>&nbsp;&nbsp;C</label>
+				  &nbsp;
+				  <label><%= check_box_tag :rank_d, true, @search_param[:rank_d] %>&nbsp;&nbsp;D</label>
+				  &nbsp;
+				  <label><%= check_box_tag :rank_wxy, true, @search_param[:rank_wxy] %>&nbsp;&nbsp;W〜Y</label>
+				  &nbsp;
+			  </div>
+		    </div>
+		  </div>
+		  
+			
+		  <div class="form-group">
+		    <label class="col-sm-4 control-label" for="">貸主名</label>
+		    <div class="col-sm-8">
+		      <%= text_field_tag :owner_name, @search_param[:owner_name] %>
+		    </div>
+		  </div>
+
+		  <div class="form-group">
+		    <label class="col-sm-4 control-label" for="">物件名</label>
+		    <div class="col-sm-8">
+		      <%= text_field_tag :building_name, @search_param[:building_name] %>
+		    </div>
+		  </div>
+
+		  <div class="form-group">
+		    <label class="col-sm-4 control-label" for="">管理営業所</label>
+		    <div class="col-sm-6">
+		      <%= select_tag :shop_id, options_from_collection_for_select(@shops, :id, :name, @search_param[:shop_id]), :prompt=>'指定なし' %>
+		    </div>
+		  </div>
+
+
+		</div>
+
+		<div class="col-sm-6">
+		  <div class="form-group">
+		    <label class="col-sm-4 control-label" for="">貸主住所</label>
+		    <div class="col-sm-8">
+		      <%= text_field_tag :owner_address, @search_param[:owner_address] %>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label class="col-sm-4 control-label" for="">物件住所</label>
+		    <div class="col-sm-8">
+		      <%= text_field_tag :building_address, @search_param[:building_address] %>
+		    </div>
+		  </div>
+
+		  <div class="form-group">
+		    <label class="col-sm-4 control-label" for="">貸主備考</label>
+		    <div class="col-sm-8">
+		      <%= text_field_tag :owner_memo, @search_param[:owner_memo] %>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label class="col-sm-4 control-label" for="">物件備考</label>
+		    <div class="col-sm-8">
+		      <%= text_field_tag :building_memo, @search_param[:building_memo] %>
+		    </div>
+		  </div>
+		  
+		  <div class="form-group">
+		    <label class="col-sm-4 control-label" for="">受託担当者</label>
+		    <div class="col-sm-8">
+		      <%= select_tag :user_id, options_from_collection_for_select(@biru_users, :id, :name, @search_param[:user_id]), :prompt=>'指定なし' %>
+		    </div>
+		  </div>
+		  
+		</div>
+
+		<div class="col-sm-12 row text-center">
+		  <button class="btn btn-default btn-primary" type="submit"><i class="fa fa-search"></i> 指定した条件で検索する</button>
+		</div>
+
+		</div>
+	<% end %>
+
+  </div>
+</div>
+
+
+
+<div style="margin:20px;">
+
+  <table class="table table-list ">
+  <thead>
+    <tr>
+      <th>貸主名</th>
+      <th>貸主住所</th>
+      <th>建物名</th>
+      <th>建物住所</th>
+      <th>見込みランク</th>
+      <th>管理営業所</th>
+      <th>受託担当者</th>
+    </tr>
+  </thead>
+  <% @trust_manages.each do |trust| %>
+  <tbody>
+  <tr>
+    <td><a href="javascript:win_owner(<%= trust["owner_id"] %>);" style="text-decoration:underline"><%= trust["owner_name"] %></a></td>
+    <td><%= trust["owner_address"] %></td>
+    <td><a href="javascript:win_building(<%= trust["building_id"] %>);" style="text-decoration:underline"><%= trust["building_name"] %></a></td>
+    <td><%= trust["building_address"] %></td>
+    <td><%= trust["attack_states_code"] %></td>
+    <td><%= trust["shop_name"] %></td>
+    <td><%= trust["biru_user_name"] %></td>
+  </tr>
+  </tbody>
+<% end %>
+</table>
+
+</div>

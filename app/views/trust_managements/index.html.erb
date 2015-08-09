@@ -17,7 +17,7 @@
 	}
 
 	function formatter_rank_all(cellValue, options, rowdata, action){
-	    return "<div style='text-align:center;'><a style='text-decoration: underline;' href='/trust_managements/owner_building_list?sid=" + rowdata.biru_user_id + "' onclick='javascript:screen_block();' >" + nvl(cellValue) + "</a></div>";
+	    return "<div style='text-align:center;'><a style='text-decoration: underline;' href='/trust_managements/search?sid=" + rowdata.biru_user_id + "' onclick='javascript:screen_block();' >" + nvl(cellValue) + "</a></div>";
 	}
 
 	function formatter_rank_c_over(cellValue, options, rowdata, action){

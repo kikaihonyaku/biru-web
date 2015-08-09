@@ -7,6 +7,23 @@ require 'csv'
 class TrustManagementsController < ApplicationController
   
   before_filter :search_init, :except => ['trust_user_report']
+  
+  # 受託担当者を規定します
+  def get_trust_members
+    
+    trust_user_hash = {} 
+		trust_user_hash['6365'] = {:name=>'松本', :shop_name => '東武南(A)'}
+		trust_user_hash['6464'] = {:name=>'猪原', :shop_name => '東武南(B)'}
+		trust_user_hash['6425'] = {:name=>'赤坂', :shop_name => '東武北(A)'}
+		trust_user_hash['7811'] = {:name=>'赤坂', :shop_name => '東武北(B)'}
+		trust_user_hash['5313'] = {:name=>'宮川', :shop_name => 'さいたま中央'}
+		trust_user_hash['5518'] = {:name=>'齋藤', :shop_name => 'さいたま東'}
+		trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '千葉支店'}
+		trust_user_hash['5928'] = {:name=>'テスト', :shop_name => 'テスト'}
+    
+    return trust_user_hash
+    
+  end
 
   # 受託行動レポート情報を生成します
   def generate_report_info(month, user)
@@ -272,7 +289,88 @@ class TrustManagementsController < ApplicationController
     
     report.save!
 
-  end  
+  end
+  
+  # 全件検索
+  def search
+    
+    #--------------------------------
+    # 権限によって絞り込める人を定義する
+    #--------------------------------
+    
+    if @biru_user.attack_all_search
+      # すべて検索OKの時は受託担当者すべてを表示
+      trust_user_hash = get_trust_members
+      @biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
+      
+    else
+      
+      # すべての権限ではない時、ログインユーザ自身とアクセスが許可されたユーザーを取得
+      @biru_users = []
+      @biru_users.push(BiruUser.find(@biru_user.id))
+      TrustAttackPermission.find_all_by_holder_user_id(@biru_user.id).each do |permission|
+        @biru_users.push(BiruUser.find(permission.permit_user_id))
+      end
+      
+    end
+    
+    #-------------------
+    # 検索条件初期セット
+    #-------------------
+    @search_param = {}
+    @search_param[:rank_s] = true
+    @search_param[:rank_a] = true
+    @search_param[:rank_b] = true
+    @search_param[:rank_c] = true
+    
+    #--------------------------------
+    # 管理営業所
+    #--------------------------------
+    @shops = Shop.all
+    
+    #----------------
+    # 見込みリスト
+    #----------------
+    rank_arr = []
+    
+    rank_arr.push('Z') if params[:rank_z]
+    rank_arr.push('S') if params[:rank_s]
+    rank_arr.push('A') if params[:rank_a]
+    rank_arr.push('B') if params[:rank_b]
+    rank_arr.push('C') if params[:rank_c]
+    rank_arr.push('D') if params[:rank_d]
+    
+    if params[:rank_wxy] 
+       rank_arr.push('W')
+       rank_arr.push('X')
+       rank_arr.push('Y')
+     end
+    
+    rank_list = ""
+    rank_arr.each do |value| 
+      if rank_list.length > 0
+        rank_list = rank_list + ','
+      end
+      rank_list = rank_list + "'" + value + "'"
+    end
+    
+    if params[:owner_name]
+      
+      @search_param = params
+      
+      if params[:user_id] == ""
+        # 指定なしが選択されている時
+        @trust_manages = ActiveRecord::Base.connection.select_all(get_trust_sql(@biru_users, rank_list, true, params))
+      else
+        # 受託担当者が指定されている時
+        @trust_manages = ActiveRecord::Base.connection.select_all(get_trust_sql(BiruUser.find(params[:user_id].to_s), rank_list, true, params))
+      end
+
+    else
+      @trust_manages = []
+    end
+    
+  end
   
   
   # 貸主情報画面から委託契約（見込みランク）の更新
@@ -317,7 +415,7 @@ class TrustManagementsController < ApplicationController
   
 
   #def get_trust_data()
-  def get_trust_sql(object_user, rank_list, order_flg)
+  def get_trust_sql(object_user, rank_list, order_flg, search_params=nil)
   
     # trustについているdelete_flg の　default_scopeの副作用で、biru_usersのLEFT_OUTER_JOINが効かなくなっている？（空白のものは出てこない・・）なのでそうであればINNER JOINでつないでしまう（2014/07/15）
     #trust_data = Trust.joins(:building => :shop ).joins(:owner).joins(:manage_type).joins("LEFT OUTER JOIN biru_users on trusts.biru_user_id = biru_users.id").where("owners.code is null")
@@ -416,8 +514,7 @@ class TrustManagementsController < ApplicationController
     if rank_list.length > 0
       sql = sql + " AND  attack_states.code IN (" + rank_list + ") "
     end
-  
-  
+    
   #  # ログインユーザーが支店長権限があればすべての物件を表示。そうでなければ受託担当者の管理する物件のみを表示する。
   #  unless @biru_user.attack_all_search 
   #    #trust_data = trust_data.where('trusts.biru_user_id = ?', @biru_user.id)
@@ -429,9 +526,54 @@ class TrustManagementsController < ApplicationController
     else
     	sql = sql + " AND trusts.biru_user_id = " + biru_user_id + " "
     end
+    
+    
+    #----------------------------------#
+    # 検索条件が指定されている時の絞り込み①
+    #----------------------------------#
+    if search_params
+      
+      # 貸主名
+      if search_params[:owner_name].length > 0
+      	sql = sql + " AND owners.name like '%" + search_params[:owner_name].gsub("'","").gsub(";","") + "%' "
+      end
+
+      # 物件名
+      if search_params[:building_name].length > 0
+      	sql = sql + " AND buildings.name like '%" + search_params[:building_name].gsub("'","").gsub(";","") + "%' "
+      end
+
+
+      # 貸主住所
+      if search_params[:owner_address].length > 0
+      	sql = sql + " AND owners.address like '%" + search_params[:owner_address].gsub("'","").gsub(";","") + "%' "
+      end
+
+      # 建物住所
+      if search_params[:building_address].length > 0
+      	sql = sql + " AND buildings.address like '%" + search_params[:building_address].gsub("'","").gsub(";","") + "%' "
+      end
+
+
+      # 貸主メモ
+      if search_params[:owner_memo].length > 0
+      	sql = sql + " AND owners.memo like '%" + search_params[:owner_memo].gsub("'","").gsub(";","") + "%' "
+      end
+
+      # 建物メモ
+      if search_params[:building_memo].length > 0
+      	sql = sql + " AND buildings.memo like '%" + search_params[:building_memo].gsub("'","").gsub(";","") + "%' "
+      end
+      
+      if search_params[:shop_id].to_s.length > 0
+      	sql = sql + " AND shops.id = " + search_params[:shop_id] + " "
+      end
+      
+    end
+    
 
     #----------------------------------#
-    # 検索条件が指定されている時の絞り込み
+    # 検索条件が指定されている時の絞り込み②
     #----------------------------------#
   
     arr_exist = []
@@ -607,15 +749,7 @@ class TrustManagementsController < ApplicationController
     user_list = []
     
     # 受託担当者のリスト
-    trust_user_hash = {} 
-		trust_user_hash['6365'] = {:name=>'松本', :shop_name => '東武南(A)'}
-		trust_user_hash['6464'] = {:name=>'猪原', :shop_name => '東武南(B)'}
-		trust_user_hash['6425'] = {:name=>'赤坂', :shop_name => '東武北(A)'}
-		trust_user_hash['7811'] = {:name=>'池ノ谷', :shop_name => '東武北(B)'}
-		trust_user_hash['5313'] = {:name=>'宮川', :shop_name => 'さいたま中央'}
-		trust_user_hash['5518'] = {:name=>'齋藤', :shop_name => 'さいたま東'}
-		trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '千葉支店'}
-		trust_user_hash['5928'] = {:name=>'柴田', :shop_name => 'テスト'}
+    trust_user_hash = get_trust_members
 
     # ユーザーを取得
     biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
