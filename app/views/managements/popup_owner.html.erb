@@ -304,14 +304,26 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h4 class="modal-title" id="myModalLabel">ドキュメント一覧</h4>
       </div>
+	  
+<script type="text/javascript">
+	function document_submit(){
 
-		<%= form_tag({:action=>'popup_owner_documents_regist'}, {:multipart => true }) do %>
+		if ($("#doc_file").val() === ''){
+			alert('ファイル名を指定してください');
+			return false;
+		}
+		
+		return true;
+	}
+</script>	  
+
+		<%= form_tag({:action=>'popup_owner_documents_regist'}, {:multipart => true ,:id => 'popup_owner_documents_regist_form'}) do %>
 			<%= hidden_field_tag :owner_id, @owner.id %>
 			<div style="padding:10px;">
 				<table style="border-style: none;">
 					<tr>
 						<td><%= file_field_tag :doc_file %></td>
-						<td><%= submit_tag '登録' %></td>
+						<td><%= submit_tag '登録', :onclick=>('return document_submit();') %></td>
 					</tr>
 				</table>
 			</div>
