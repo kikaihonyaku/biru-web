@@ -152,8 +152,6 @@ class ManagementsController < ApplicationController
       end
     end
     
-    
-      
     render :layout => 'popup'
   end
 
@@ -193,6 +191,7 @@ class ManagementsController < ApplicationController
       biru_geocode(@owner, true)
     end
     
+    
     @owner.save!
 
     # render :action=>'popup_owner', :layout => 'popup'
@@ -218,7 +217,6 @@ class ManagementsController < ApplicationController
   
   # アプローチリレキを削除する
   def owner_approach_delete
-    p params
     owner_approach = OwnerApproach.find(params[:id].to_i)
     owner_approach.delete_flg = true
     owner_approach.save!
@@ -240,6 +238,33 @@ class ManagementsController < ApplicationController
       gon.buildings = buildings
       
     end
+  end
+  
+  
+  # ファイル保存
+  def popup_owner_documents_regist
+    
+    @owner = Owner.find(params[:owner_id])
+    
+    document = Document.new
+    document.owner_id = @owner.id
+    document.biru_user_id = @biru_user.id
+    
+    file = params[:doc_file]
+    document.file_name = file.original_filename
+  
+    # パス存在チェック。無ければ作成
+    path = "public/documents/owner/" + sprintf("%08d", @owner.id)
+    FileUtils.mkdir_p(path) unless FileTest.exist?(path)
+  
+    # ファイルをコピー
+    File.open( path + "/#{document.file_name}", 'wb') { |f|
+      f.write(file.read)
+    }
+    
+    document.save!
+    
+    redirect_to :action=>'popup_owner', :id=>@owner.id
   end
 
   # 建物情報確認用のwindowを表示する。
@@ -336,7 +361,6 @@ class ManagementsController < ApplicationController
     end
 
     render 'index'
-
 
   end
 
@@ -455,7 +479,6 @@ class ManagementsController < ApplicationController
     if tmp_buildings
       buildings_to_gon(tmp_buildings)
     end
-    
 
     render 'index'
 

@@ -6,6 +6,7 @@ class Owner < ActiveRecord::Base
 
   belongs_to :biru_user
   has_many :trusts
+  has_many :documents
 
   # デフォルトスコープを定義
   default_scope where(:delete_flg => false)
@@ -29,6 +30,7 @@ class Owner < ActiveRecord::Base
         csv << owner.attributes.values_at(*column_names)
       end
     end
-  end  
-
+  end
+  
+  
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150724143825) do
+ActiveRecord::Schema.define(:version => 20150816110159) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -151,6 +151,16 @@ ActiveRecord::Schema.define(:version => 20150724143825) do
   end
 
   add_index "depts", ["busyo_id"], :name => "index_depts_on_busyo_id"
+
+  create_table "documents", :force => true do |t|
+    t.integer  "owner_id"
+    t.integer  "building_id"
+    t.string   "file_name"
+    t.integer  "biru_user_id"
+    t.boolean  "delete_flg",   :default => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
+  end
 
   create_table "employes", :force => true do |t|
     t.string   "code"
