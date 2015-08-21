@@ -118,6 +118,8 @@ BiruWeb::Application.routes.draw do
   match "managements/bulk_search_file", :as => :bulk_search_file
   match "managements/bulk_search_text", :as => :bulk_search_text
   
+  get "managements/popup_owner_documents_download/:document_id" => 'managements#popup_owner_documents_download', :as => :popup_owner_documents_download
+  
   # trust_management
   get "trust_managements/owner_show/:id" => 'trust_managements#owner_show' , :as => :owner_show
   get "trust_managements/building_show/:id" => 'trust_managements#building_show', :as => :building_show

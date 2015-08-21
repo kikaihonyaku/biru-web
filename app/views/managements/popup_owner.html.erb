@@ -68,7 +68,7 @@
 						</tr>
 						<tr>
 							<td style="text-align:right;">添付書類</td>
-							<td><a data-toggle="modal" href="#modal-owner-document">xx件</a></td>
+							<td><a data-toggle="modal" href="#modal-owner-document"><%= @owner.documents.count %>件</a></td>
 						</tr>
 
 					</tbody>
@@ -341,7 +341,7 @@
 		        <tbody>
 					<% @owner.documents.each do |doc| %>
 						<tr>
-							<td><%= doc.file_name %></td>
+							<td><%=link_to doc.file_name, popup_owner_documents_download_path(doc.id) %></td>
 							<td><%= doc.biru_user.name if doc.biru_user %></td>
 							<td><%= doc.updated_at %></td>
 						</tr>

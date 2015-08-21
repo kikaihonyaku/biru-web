@@ -266,6 +266,22 @@ class ManagementsController < ApplicationController
     
     redirect_to :action=>'popup_owner', :id=>@owner.id
   end
+  
+  # ファイルダウンロード
+  def popup_owner_documents_download
+    
+    @doc = Document.find(params[:document_id])
+
+    hash = Rails.application.routes.recognize_path(request.referrer)
+    if hash[:action] != 'popup_owner'
+      raise "遷移もとが不正です。" + hash[:action] 
+    end
+      
+    path = "public/documents/owner/" + sprintf("%08d", @doc.owner.id) + '/' + @doc.file_name
+    
+    stat = File::stat(path)
+    send_file(path, :filename => @doc.file_name, :length => stat.size)    
+  end
 
   # 建物情報確認用のwindowを表示する。
   def popup_building
