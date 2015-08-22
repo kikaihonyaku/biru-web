@@ -251,6 +251,11 @@ class ManagementsController < ApplicationController
     document.biru_user_id = @biru_user.id
     
     file = params[:doc_file]
+    
+    if file.size > 100.megabyte
+      raise "ファイルサイズが100MBを超えています。" 
+    end
+    
     document.file_name = file.original_filename
   
     # パス存在チェック。無ければ作成
