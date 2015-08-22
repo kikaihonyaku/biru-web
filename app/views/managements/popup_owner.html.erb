@@ -139,6 +139,27 @@
 										document.getElementById(disp_id).style.display = "none";
 									}
 								}
+								
+								function rank_submit_check(){
+									obj = document.getElementById('trust_attack_state_id');
+
+									// ランクZの時、必須項目の入力チェックを行う
+									if(obj.options[obj.selectedIndex].value == <%= AttackState.find_by_code('Z').id.to_s %>){
+										
+										if($('#room_num').val() == ''){
+											alert('契約戸数を設定してください');
+											return false;
+										};
+										
+										if($('#history_manage_type').children(':selected').val() == ''){
+											alert('管理方式を選択してください');
+											return false;
+										}
+										
+									}
+									
+									return true;
+								}
 							</script>
 							
 							<!-- ランクアップ編集画面（モーダルダイアログ ） -->
@@ -208,7 +229,7 @@
 							      </div>
 							      <div class="modal-footer">
 							        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-							        <%= f.submit '登録', :class => 'btn btn-primary btn-sm' %>
+							        <%= f.submit '登録', :class => 'btn btn-primary btn-sm', :onclick=>'return rank_submit_check();' %>
 							      </div>
 								<% end %>
 				  
