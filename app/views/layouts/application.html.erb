@@ -21,6 +21,8 @@
     <%#= stylesheet_link_tag "jquery-ui", :media => "all" %>
     <%= stylesheet_link_tag "jqtree", :media => "all" %>
 	
+	
+	
 	<!-- bootstrapで印刷時にULRリンクがでる処理の取り消し -->
     <style type="text/css">
 		@media print {
@@ -70,6 +72,11 @@
     <% if content_for?(:header) %>
       <%= yield :header %>
     <% end %>
+	
+    <% if content_for?(:slick_grid) %>
+      <%= yield :slick_grid %>
+    <% end %>
+	
 
   </head>
   <body>
