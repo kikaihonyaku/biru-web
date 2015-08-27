@@ -646,7 +646,7 @@ class TrustManagementsController < ApplicationController
           kinds = ApproachKind.find_all_by_code(['0030','0035'])
       	  sql = sql + " AND owners.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
         end
-    end
+      end
 
     
     end
