@@ -112,41 +112,40 @@
 <% end %>
 
 <script>
+
+	function formatter(row, cell, value, columnDef, dataContext) {
+	    return value;
+	}
+
   var grid;
   var columns = [
-    {id: "title", name: "Title", field: "title"},
-    {id: "duration", name: "Duration", field: "duration"},
-    {id: "%", name: "% Complete", field: "percentComplete"},
-    {id: "start", name: "Start", field: "start"},
-    {id: "finish", name: "Finish", field: "finish"},
-    {id: "effort-driven", name: "Effort Driven", field: "effortDriven"}
+    {id: "owner_name_link", name: "貸主名", field: "owner_name_link", minWidth: 200, formatter: formatter},
+    {id: "owner_tel", name: "電話番号", field: "owner_tel", minWidth: 100},
+    {id: "owner_memo", name: "貸主メモ", field: "owner_memo", minWidth: 200},
+    {id: "owner_address", name: "貸主住所", field: "owner_address", minWidth: 300},
+    {id: "building_name", name: "建物名", field: "building_name", minWidth: 200},
+    {id: "attack_states_code", name: "ランク", field: "attack_states_code", minWidth: 50},
+    {id: "shop_name", name: "営業所", field: "shop_name", minWidth: 200},
+    {id: "biru_user_name", name: "担当者", field: "biru_user_name", minWidth: 200}
   ];
 
   var options = {
     enableCellNavigation: true,
-    enableColumnReorder: false
+    enableColumnReorder: false,
+	  forceFitColumns: false
   };
 
   $(function () {
-    var data = [];
-    for (var i = 0; i < 500; i++) {
-      data[i] = {
-        title: "Task " + i,
-        duration: "5 days",
-        percentComplete: Math.round(Math.random() * 100),
-        start: "01/01/2009",
-        finish: "01/05/2009",
-        effortDriven: (i % 5 == 0)
-      };
-    }
 
-    grid = new Slick.Grid("#myGrid", data, columns, options);
+    grid = new Slick.Grid("#myGrid", gon.trust_manages, columns, options);
   })
 </script>
   
 <div style="margin:20px;">
-	<div id="myGrid" style="width:100%;height:500px;"></div>
+	<div id="myGrid" style="width:100%;height:500px;border: 1px solid gray;outline: 0;"></div>
 </div>
+
+<!--
   
 <div style="margin:20px;">
 
@@ -162,19 +161,21 @@
       <th>受託担当者</th>
     </tr>
   </thead>
-  <% @trust_manages.each do |trust| %>
+  
+  <%# @trust_manages.each do |trust| %>
   <tbody>
   <tr>
-    <td><a href="javascript:win_owner(<%= trust["owner_id"] %>);" style="text-decoration:underline"><%= trust["owner_name"] %></a></td>
-    <td><%= trust["owner_address"] %></td>
-    <td><a href="javascript:win_building(<%= trust["building_id"] %>);" style="text-decoration:underline"><%= trust["building_name"] %></a></td>
-    <td><%= trust["building_address"] %></td>
-    <td><%= trust["attack_states_code"] %></td>
-    <td><%= trust["shop_name"] %></td>
-    <td><%= trust["biru_user_name"] %></td>
+    <td><a href="javascript:win_owner(<%#= trust["owner_id"] %>);" style="text-decoration:underline"><%#= trust["owner_name"] %></a></td>
+    <td><%#= trust["owner_address"] %></td>
+    <td><a href="javascript:win_building(<%#= trust["building_id"] %>);" style="text-decoration:underline"><%#= trust["building_name"] %></a></td>
+    <td><%#= trust["building_address"] %></td>
+    <td><%#= trust["attack_states_code"] %></td>
+    <td><%#= trust["shop_name"] %></td>
+    <td><%#= trust["biru_user_name"] %></td>
   </tr>
   </tbody>
-<% end %>
+<%# end %>
 </table>
+-->
 
 </div>

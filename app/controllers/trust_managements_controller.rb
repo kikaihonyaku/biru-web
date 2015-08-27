@@ -370,6 +370,8 @@ class TrustManagementsController < ApplicationController
       @trust_manages = []
     end
     
+    gon.trust_manages = @trust_manages
+    
   end
   
   
@@ -452,6 +454,8 @@ class TrustManagementsController < ApplicationController
     sql = sql + " , owners.latitude as owner_latitude "
     sql = sql + " , owners.longitude as owner_longitude "
     sql = sql + " , owners.dm_delivery as owner_dm_delivery "
+    
+    sql = sql + " , '<a href=''javascript:win_owner(' || owners.id || ');'' style=""text-decoration:underline"">' || owners.name || '</a>' as owner_name_link" 
 
     sql = sql + " , owners.dm_ptn_1 as owner_dm_ptn_1 "
     sql = sql + " , owners.dm_ptn_2 as owner_dm_ptn_2 "
