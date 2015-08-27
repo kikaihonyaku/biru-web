@@ -691,7 +691,8 @@ class TrustManagementsController < ApplicationController
 
   	# 複数指定
   	if order_flg
-      sql = sql + " ORDER BY buildings.id asc"
+      #sql = sql + " ORDER BY buildings.id asc"
+      sql = sql + " ORDER BY owners.id asc"
     end
 
     sql
