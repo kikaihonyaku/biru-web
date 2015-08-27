@@ -254,7 +254,7 @@
 	
 				<table>
 					<tr>
-						<td><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:120px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
+						<td><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:120px;margin-left:0px;padding-left:0px;vertical-align:middle', :value=>Date.today.strftime('%Y/%m/%d')  } %></td>
 						<td><%= f.input :approach_kind_id, label: '種別', collection: ApproachKind.order(:sequence), prompt: "--", :input_html => {:style=>'width:100px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
 						<td><%= f.submit '登録', :class => 'btn btn-primary btn-sm', :style=>'margin-left:20px;' %></td>
 					</tr>
