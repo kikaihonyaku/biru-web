@@ -779,13 +779,10 @@ class TrustManagementsController < ApplicationController
 				rec['rank_d'] = report.rank_d
 		    rec['rank_all'] = report.rank_all
         
-        
-        
 				rec['rank_c_over'] = nz(report.rank_s) + nz(report.rank_a) + nz(report.rank_b) + nz(report.rank_c) 
 				rec['rank_d_over'] = nz(report.rank_s) + nz(report.rank_a) + nz(report.rank_b) + nz(report.rank_c) + nz(report.rank_d)
 		    rec['rank_etc'] = nz(report.rank_w) + nz(report.rank_x) + nz(report.rank_y) + nz(report.rank_z)
         
-
 		  else
 		    
 				rec['biru_user_id'] = 1.to_s
@@ -841,16 +838,7 @@ class TrustManagementsController < ApplicationController
     rank_list = ""
     @disp_search = false
     
-    if params[:rank]
-      # アタックリスト集計表から遷移してきた時
-      params[:rank].split(',').each do |value|
-        
-        if rank_list.length > 0
-          rank_list = rank_list + ','
-        end
-        
-        rank_list = rank_list + "'" + value + "'"
-      end
+    unless params[:owner_name]
       
       
       ###############################################

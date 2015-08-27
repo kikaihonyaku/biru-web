@@ -1286,8 +1286,8 @@ function getCoords(position) {
 	
 	<!-- 検索ダイアログの表示 -->
 	<div class="modal fade" id="modal-search" tabindex="-1" role="dialog" aria-labelledby="modal-search-label" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content" style="width:980px;">
+	  <div class="modal-dialog" style="width:980px;">
+	    <div class="modal-content">
 
 			<%= form_tag( {:action=>'owner_building_list'},{:name=>'trust_search'} ) do %>
 			<%= hidden_field_tag :sid,  @object_user.id %>
