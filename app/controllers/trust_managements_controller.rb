@@ -294,40 +294,6 @@ class TrustManagementsController < ApplicationController
   # 全件検索
   def search
     
-    #--------------------------------
-    # 権限によって絞り込める人を定義する
-    #--------------------------------
-    
-    if @biru_user.attack_all_search
-      # すべて検索OKの時は受託担当者すべてを表示
-      trust_user_hash = get_trust_members
-      @biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
-      
-    else
-      
-      # すべての権限ではない時、ログインユーザ自身とアクセスが許可されたユーザーを取得
-      @biru_users = []
-      @biru_users.push(BiruUser.find(@biru_user.id))
-      TrustAttackPermission.find_all_by_holder_user_id(@biru_user.id).each do |permission|
-        @biru_users.push(BiruUser.find(permission.permit_user_id))
-      end
-      
-    end
-    
-    #-------------------
-    # 検索条件初期セット
-    #-------------------
-    @search_param = {}
-    @search_param[:rank_s] = true
-    @search_param[:rank_a] = true
-    @search_param[:rank_b] = true
-    @search_param[:rank_c] = true
-    
-    #--------------------------------
-    # 管理営業所
-    #--------------------------------
-    @shops = Shop.all
-    
     #----------------
     # 見込みリスト
     #----------------
@@ -854,21 +820,25 @@ class TrustManagementsController < ApplicationController
   def owner_building_list
   	
   	# 権限チェック。権限がない人は自分の物件しか見れない
-  	unless params[:sid]
-  		@error_msg = "パラメータが不正です。"
-    else
-    	@object_user = BiruUser.find(params[:sid].to_i)
-    	unless @object_user
-	  		@error_msg = "指定されたユーザーが存在しません。"
-      else
-      	unless check_report_auth(@biru_user, @object_user)
-		  		@error_msg = "自分以外のアタックリストにアクセスすることはできません。"
-      	end
-    	end
-  	end
+    # unless params[:sid]
+    #   @error_msg = "パラメータが不正です。"
+    #     else
+    #       @object_user = BiruUser.find(params[:sid].to_i)
+    #       unless @object_user
+    #         @error_msg = "指定されたユーザーが存在しません。"
+    #       else
+    #         unless check_report_auth(@biru_user, @object_user)
+    #       @error_msg = "自分以外のアタックリストにアクセスすることはできません。"
+    #         end
+    #       end
+    # end
+    
+    # 2015/08/27 update ログインユーザーが該当する物件にアクセスできるようにする。
+    @object_user = @biru_user
     
     # 見込みランクの指定
     rank_list = ""
+    @disp_search = false
     
     if params[:rank]
       # アタックリスト集計表から遷移してきた時
@@ -881,7 +851,17 @@ class TrustManagementsController < ApplicationController
         rank_list = rank_list + "'" + value + "'"
       end
       
+      
+      ###############################################
+      # 再検索させるように、初期表示のヒットは０件にする。
+      ###############################################
+      rank_list = '999'
+      @disp_search = true
+      param_tmp = nil
     else
+      
+      param_tmp = params
+      @search_param = params
       
       # アタックリスト一覧から再検索してきた時
       rank_arr = []
@@ -908,6 +888,7 @@ class TrustManagementsController < ApplicationController
     
     @combo_shop = jqgrid_combo_shop
     
+    
     # 検索条件にエラーが存在しないとき
     if @error_msg.size == 0
       
@@ -925,7 +906,17 @@ class TrustManagementsController < ApplicationController
       owner_to_buildings = {}
       building_to_owners = {}
       
-      ActiveRecord::Base.connection.select_all(get_trust_sql(@object_user, rank_list, true)).each do |rec|
+      
+      
+      if params[:user_id] == nil or params[:user_id] == ""
+        # 指定なしが選択されている時
+        search_user = @biru_users
+      else
+        # 受託担当者が指定されている時
+        search_user = BiruUser.find(params[:user_id].to_s)
+      end
+      
+      ActiveRecord::Base.connection.select_all(get_trust_sql(search_user, rank_list, true, param_tmp)).each do |rec|
         
         #jqgrid用データ
         trust_manages.push(rec)
@@ -1903,64 +1894,44 @@ end
 # 検索条件を初期化します。
 def search_init
   
-#  if params[:main_person]
-#    @main_person = params[:main_person][:name]
-#  end
+  #--------------------------------
+  # 権限によって絞り込める人を定義する
+  #--------------------------------
   
-  #---------------
-  # ダイレクトメール
-  #---------------
-  # @dm = {}
-  # @dm[:all] = false
-  # @dm[:only] = false
-  # @dm[:not_only] = false
-  #
-  # if params[:dm]
-  #   @dm[params[:dm].to_sym] = true
-  # else
-  #   @dm[:all] = true
-  # end
-  #
-  # #---------------
-  # # 物件ランク
-  # #---------------
-  # @rank = {}
-  # @rank[:all] = false
-  # @rank[:only] = false
-  #
-  # if params[:rank]
-  #   @rank[params[:rank].to_sym] = true
-  # else
-  #   @rank[:all] = true
-  # end
-  #
-  # #---------------
-  # # 物件ランク指定
-  # #---------------
-  # @rank_kind = {}
-  #
-  # if params[:rank_kind]
-  #   if params[:rank_kind][:s] then @rank_kind[:s] = true else @rank_kind[:s] = false end
-  #   if params[:rank_kind][:a] then @rank_kind[:a] = true else @rank_kind[:a] = false end
-  #   if params[:rank_kind][:b] then @rank_kind[:b] = true else @rank_kind[:b] = false end
-  #   if params[:rank_kind][:c] then @rank_kind[:c] = true else @rank_kind[:c] = false end
-  #   if params[:rank_kind][:d] then @rank_kind[:d] = true else @rank_kind[:d] = false end
-  #   if params[:rank_kind][:z] then @rank_kind[:z] = true else @rank_kind[:z] = false end
-  # else
-  #   @rank_kind[:s] = false
-  #   @rank_kind[:a] = false
-  #   @rank_kind[:b] = false
-  #   @rank_kind[:c] = false
-  #   @rank_kind[:d] = false
-  #   @rank_kind[:z] = false
-  # end
-  
+  if @biru_user.attack_all_search
+    # すべて検索OKの時は受託担当者すべてを表示
+    trust_user_hash = get_trust_members
+    @biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
+  else
+    # すべての権限ではない時、ログインユーザ自身とアクセスが許可されたユーザーを取得
+    @biru_users = []
+    @biru_users.push(BiruUser.find(@biru_user.id))
+    TrustAttackPermission.find_all_by_holder_user_id(@biru_user.id).each do |permission|
+      @biru_users.push(BiruUser.find(permission.permit_user_id))
+    end
+  end
   
   #---------------
   # エラーメッセージ
   #---------------
   @error_msg = []
   
+
+  #-------------------
+  # 検索条件初期セット
+  #-------------------
+  @search_param = {}
+  @search_param[:rank_s] = true
+  @search_param[:rank_a] = true
+  @search_param[:rank_b] = true
+  @search_param[:rank_c] = true
+  
+  #--------------------------------
+  # 管理営業所
+  #--------------------------------
+  @shops = Shop.all
+
+
   #---------------
   # 訪問リレキ
   #---------------

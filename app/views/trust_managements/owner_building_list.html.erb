@@ -990,7 +990,6 @@ function getCoords(position) {
 		
 	}
 	
-
 </script>
 
 
@@ -1288,7 +1287,7 @@ function getCoords(position) {
 	<!-- 検索ダイアログの表示 -->
 	<div class="modal fade" id="modal-search" tabindex="-1" role="dialog" aria-labelledby="modal-search-label" aria-hidden="true">
 	  <div class="modal-dialog">
-	    <div class="modal-content">
+	    <div class="modal-content" style="width:980px;">
 
 			<%= form_tag( {:action=>'owner_building_list'},{:name=>'trust_search'} ) do %>
 			<%= hidden_field_tag :sid,  @object_user.id %>
@@ -1298,85 +1297,147 @@ function getCoords(position) {
 				<h4 class="modal-title" >条件を指定して再検索</h4>
 			</div>
 
-			<div class="modal-body">
+			<div class="modal-body panel-body">
 				
-			  <div style="padding-left:5px;">
-					<table class="attack-search">
-						
-						<tr>
-							<td style="text-align:right;width:110px;vertical-align:top;"><b>ランク：</b></td>
-							<td>
-						       <%= check_box_tag :rank_s, {},:checked=>true %>&nbsp;Ｓランク&nbsp;&nbsp;
-							   <%= check_box_tag :rank_a, {},:checked=>true %>&nbsp;Ａランク&nbsp;&nbsp;
-							   <%= check_box_tag :rank_b, {},:checked=>true %>&nbsp;Ｂランク&nbsp;&nbsp;
-							   <%= check_box_tag :rank_c, {},:checked=>true %>&nbsp;Ｃランク&nbsp;&nbsp;
-							   <%= check_box_tag :rank_d %>&nbsp;Ｄランク&nbsp;&nbsp;</br>
-							   <%= check_box_tag :rank_w %>&nbsp;Ｗランク&nbsp;&nbsp;
-							   <%= check_box_tag :rank_x %>&nbsp;Ｘランク&nbsp;&nbsp;
-							   <%= check_box_tag :rank_y %>&nbsp;Ｙランク&nbsp;&nbsp;
-							   <%= check_box_tag :rank_z %>&nbsp;Ｚランク&nbsp;&nbsp;
-						   	   </br></br></br>
-							</td>
-						</tr>
-						<tr>
-							<td style="text-align:right;vertical-align:top;"><b>訪問リレキ：</b></td>
-							<td>
-								<table>
-									<tr>
-										<td>
-											<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-											<!-- <label><%= radio_button_tag 'history_visit', 'not_exist', @history_visit[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp; -->
-											<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-											<div style="padding-bottom:30px;">
-												（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-											</div>
-										</td>
+		<div class="row">
+			<div class="col-sm-6">
 			
-									</tr>
-								</table>
-							</td>
-						</tr>
-			
-						<tr>
-							<td style="text-align:right;vertical-align:top;"><b>ＤＭリレキ：</b></td>
-							<td>
-								<table>
-									<tr>
-										<td>
-											<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-											<!-- <label><%= radio_button_tag 'history_dm', 'not_exist', @history_dm[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp; -->
-											<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-											<div style="padding-bottom:30px;">
-								（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-											</div>
-										</td>
-			
-									</tr>
-								</table>
-							</td>
-	
-						</tr>
-						<tr>
-							<td style="text-align:right;vertical-align:top;"><b>ＴＥLリレキ：</b></td>
-							<td>
-								<table>
-									<tr>
-										<td>
-											<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
-											<!-- <label><%= radio_button_tag 'history_tel', 'not_exist', @history_tel[:not_exist]  %>&nbsp;履歴なし</label>&nbsp;&nbsp; -->
-											<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
-											<div style="padding-bottom:30px;">
-											（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
-											</div>
-										</td>
-			
-									</tr>
-								</table>
-							</td>
-						</tr>
-					</table>
+			  <div class="form-group">
+			    <div class="col-sm-12">
+			      <div>
+					  <label><%= check_box_tag :rank_z, true, @search_param[:rank_z] %>&nbsp;&nbsp;Z</label>
+					  &nbsp;
+					  <label><%= check_box_tag :rank_s, true, @search_param[:rank_s] %>&nbsp;&nbsp;S</label>
+					  &nbsp;
+					  <label><%= check_box_tag :rank_a, true, @search_param[:rank_a] %>&nbsp;&nbsp;A</label>
+					  &nbsp;
+					  <label><%= check_box_tag :rank_b, true, @search_param[:rank_b] %>&nbsp;&nbsp;B</label>
+					  &nbsp;
+					  <label><%= check_box_tag :rank_c, true, @search_param[:rank_c] %>&nbsp;&nbsp;C</label>
+					  &nbsp;
+					  <label><%= check_box_tag :rank_d, true, @search_param[:rank_d] %>&nbsp;&nbsp;D</label>
+					  &nbsp;
+					  <label><%= check_box_tag :rank_wxy, true, @search_param[:rank_wxy] %>&nbsp;&nbsp;W〜Y</label>
+					  &nbsp;
+				  </div>
+			    </div>
 			  </div>
+		  
+			
+			  <div class="form-group">
+			    <label class="col-sm-4 control-label" for="">貸主名</label>
+			    <div class="col-sm-8">
+			      <%= text_field_tag :owner_name, @search_param[:owner_name] %>
+			    </div>
+			  </div>
+
+			  <div class="form-group">
+			    <label class="col-sm-4 control-label" for="">物件名</label>
+			    <div class="col-sm-8">
+			      <%= text_field_tag :building_name, @search_param[:building_name] %>
+			    </div>
+			  </div>
+
+			  <div class="form-group">
+			    <label class="col-sm-4 control-label" for="">管理営業所</label>
+			    <div class="col-sm-8">
+			      <%= select_tag :shop_id, options_from_collection_for_select(@shops, :id, :name, @search_param[:shop_id]), :prompt=>'指定なし' %>
+			    </div>
+			  </div>
+
+			</div>
+
+			<div class="col-sm-6">
 				
+			  <div class="form-group">
+			    <label class="col-sm-4 control-label" for="">貸主住所</label>
+			    <div class="col-sm-8">
+			      <%= text_field_tag :owner_address, @search_param[:owner_address] %>
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label class="col-sm-4 control-label" for="">物件住所</label>
+			    <div class="col-sm-8">
+			      <%= text_field_tag :building_address, @search_param[:building_address] %>
+			    </div>
+			  </div>
+
+			  <div class="form-group">
+			    <label class="col-sm-4 control-label" for="">貸主備考</label>
+			    <div class="col-sm-8">
+			      <%= text_field_tag :owner_memo, @search_param[:owner_memo] %>
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label class="col-sm-4 control-label" for="">物件備考</label>
+			    <div class="col-sm-8">
+			      <%= text_field_tag :building_memo, @search_param[:building_memo] %>
+			    </div>
+			  </div>
+		  
+			  <div class="form-group">
+			    <label class="col-sm-4 control-label" for="">受託担当者</label>
+			    <div class="col-sm-8">
+			      <%= select_tag :user_id, options_from_collection_for_select(@biru_users, :id, :name, @search_param[:user_id]), :prompt=>'指定なし' %>
+			    </div>
+			  </div>
+		  
+			</div>
+
+
+		</div>
+
+		<div class="row">
+			
+			<div class="col-sm-8">
+				<div class="form-group">
+					<label class="col-sm-2" for="">訪問リレキ</label>
+					<div class="col-sm-10">
+									<label><%= radio_button_tag 'history_visit', 'all' ,@history_visit[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+									<label><%= radio_button_tag 'history_visit', 'exist', @history_visit[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+										（&nbsp;&nbsp;<%= text_field_tag 'history_visit_from', @history_visit_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_visit_to', @history_visit_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-4">
+			</div>
+		</div>
+		
+		
+		<div class="row">
+			
+			<div class="col-sm-8">
+				<div class="form-group">
+					<label class="col-sm-2" for="">ＤＭリレキ</label>
+					<div class="col-sm-10">
+									<label><%= radio_button_tag 'history_dm', 'all' ,@history_dm[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+									<label><%= radio_button_tag 'history_dm', 'exist', @history_dm[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+						（&nbsp;&nbsp;<%= text_field_tag 'history_dm_from', @history_dm_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_dm_to', @history_dm_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-4">
+			</div>
+			
+		</div>
+		<div class="row">
+			
+			<div class="col-sm-8">
+				<div class="form-group">
+					<label class="col-sm-2" for="">ＴＥLリレキ</label>
+					<div class="col-sm-10">
+									<label><%= radio_button_tag 'history_tel', 'all' ,@history_tel[:all]  %>&nbsp;すべて</label>&nbsp;&nbsp;
+									<label><%= radio_button_tag 'history_tel', 'exist', @history_tel[:exist] %>&nbsp;履歴あり</label>&nbsp;&nbsp;
+									（&nbsp;&nbsp;<%= text_field_tag 'history_tel_from', @history_tel_from, :size=>10, :style=>'text-align:center;' %>&nbsp;〜&nbsp;<%= text_field_tag 'history_tel_to', @history_tel_to, :size=>10, :style=>'text-align:center;' %>&nbsp;&nbsp;）
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-sm-4">
+			</div>
+			
+		</div>
+						
 			</div>
 
 			<div class="modal-footer">
@@ -1419,7 +1480,13 @@ function getCoords(position) {
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
-	
+
+	<% if @disp_search %>
+	<%# 最初の検索の時のみ、検索フォームを表示させる %>
+	<script type="text/javascript">
+		$('#modal-search').modal('show');
+	</script>
+	<% end %>
 	
 	<!-- リスト出力用 -->
 	<%= form_tag({:action=>'csv_out'}, {:method=>'post', :name=>'frm_out2csv' }) do %>
