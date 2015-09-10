@@ -84,6 +84,7 @@ BiruWeb::Application.routes.draw do
   get "property/index(/:neighborhood)" => 'property#index' ,:as => :property
   get "property/map(/:neighborhood)" => 'property#map'
   
+  get "property/search" => 'property#search' ,:as => :property_search
   
   get "trust_rewinding/index" ,:as => :trust_rewinding
 

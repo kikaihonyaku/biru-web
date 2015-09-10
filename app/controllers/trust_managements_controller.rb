@@ -1879,14 +1879,17 @@ def get_buildings_sql(object_user)
   sql = sql + "ORDER BY updated_at DESC "
 end
 
-
 # 検索条件を初期化します。
 def search_init
-  
+
+  #--------------------------------
+  # 検索条件の共通部分を呼び出します。
+  #--------------------------------
+  search_init_common
+
   #--------------------------------
   # 権限によって絞り込める人を定義する
   #--------------------------------
-  
   if @biru_user.attack_all_search
     # すべて検索OKの時は受託担当者すべてを表示
     trust_user_hash = get_trust_members
@@ -1899,130 +1902,11 @@ def search_init
       @biru_users.push(BiruUser.find(permission.permit_user_id))
     end
   end
-  
-  #---------------
-  # エラーメッセージ
-  #---------------
-  @error_msg = []
-  
 
-  #-------------------
-  # 検索条件初期セット
-  #-------------------
-  @search_param = {}
   @search_param[:rank_s] = true
   @search_param[:rank_a] = true
   @search_param[:rank_b] = true
   @search_param[:rank_c] = true
-  
-  #--------------------------------
-  # 管理営業所
-  #--------------------------------
-  @shops = Shop.all
-
-
-  #---------------
-  # 訪問リレキ
-  #---------------
-  @history_visit = {}
-  @history_visit[:all] = false
-  @history_visit[:exist] = false
-  @history_visit[:not_exist] = false
-  
-  if params[:history_visit]
-    @history_visit[params[:history_visit].to_sym] = true
-  else
-    @history_visit[:all] = true
-  end
-  
-  @history_visit_from = '1900/01/01'
-  @history_visit_to = '3000/01/01'
-  
-  if params[:history_visit_from]
-    @history_visit_from =  params[:history_visit_from]
-    
-    unless date_check(@history_visit_from)
-      @error_msg.push('訪問リレキ(FROM)に不正な日付が入力されました。')
-    end
-    
-  end
-  
-  if params[:history_visit_to]
-    @history_visit_to =  params[:history_visit_to]
-    
-    unless date_check(@history_visit_to)
-      @error_msg.push('訪問リレキ(TO)に不正な日付が入力されました。')
-    end
-  end
-
-  #---------------------
-  # ダイレクトメールリレキ
-  #---------------------
-  @history_dm = {}
-  @history_dm[:all] = false
-  @history_dm[:exist] = false
-  @history_dm[:not_exist] = false
-  
-  if params[:history_dm]
-    @history_dm[params[:history_dm].to_sym] = true
-  else
-    @history_dm[:all] = true
-  end
-  
-  @history_dm_from = '1900/01/01'
-  @history_dm_to = '3000/01/01'
-  
-  if params[:history_dm_from]
-    @history_dm_from =  params[:history_dm_from] 
-    
-    unless date_check(@history_dm_from)
-      @error_msg.push('ＤＭリレキ(FROM)に不正な日付が入力されました。')
-    end
-  end
-  
-  if params[:history_dm_to]
-    @history_dm_to =  params[:history_dm_to]
-    
-    unless date_check(@history_dm_to)
-      @error_msg.push('ＤＭリレキ(TO)に不正な日付が入力されました。')
-    end
-    
-  end
-
-  #---------------
-  # 電話リレキ
-  #---------------
-  @history_tel = {}
-  @history_tel[:all] = false
-  @history_tel[:exist] = false
-  @history_tel[:not_exist] = false
-  
-  if params[:history_tel]
-    @history_tel[params[:history_tel].to_sym] = true
-  else
-    @history_tel[:all] = true
-  end
-  
-  @history_tel_from = '1900/01/01'
-  @history_tel_to = '3000/01/01'
-  
-  if params[:history_tel_from]
-    @history_tel_from =  params[:history_tel_from]
-    
-    unless date_check(@history_tel_from)
-      @error_msg.push('ＴＥＬリレキ(FROM)に不正な日付が入力されました。')
-    end
-    
-  end
-  
-  if params[:history_tel_to]
-    @history_tel_to =  params[:history_tel_to]
-    
-    unless date_check(@history_tel_to)
-      @error_msg.push('ＴＥＬリレキ(TO)に不正な日付が入力されました。')
-    end
-    
-  end
   
 end
 
@@ -2096,5 +1980,7 @@ def report_rank_regist(month_report, trust_attack_history, start_date, end_date)
   attack_rank.save!
 
 end
+
+
 
 end

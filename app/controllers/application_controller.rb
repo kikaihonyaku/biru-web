@@ -385,7 +385,123 @@ class ApplicationController < ActionController::Base
     end
     result
   end
-
   
+  
+  # 検索条件の共通部品
+  def search_init_common
+
+    @error_msg = []
+    @search_param = {}
+  
+    #--------------------------------
+    # 管理営業所
+    #--------------------------------
+    @shops = Shop.all
+
+
+    #---------------
+    # 訪問リレキ
+    #---------------
+    @history_visit = {}
+    @history_visit[:all] = false
+    @history_visit[:exist] = false
+    @history_visit[:not_exist] = false
+  
+    if params[:history_visit]
+      @history_visit[params[:history_visit].to_sym] = true
+    else
+      @history_visit[:all] = true
+    end
+  
+    @history_visit_from = '1900/01/01'
+    @history_visit_to = '3000/01/01'
+  
+    if params[:history_visit_from]
+      @history_visit_from =  params[:history_visit_from]
+    
+      unless date_check(@history_visit_from)
+        @error_msg.push('訪問リレキ(FROM)に不正な日付が入力されました。')
+      end
+    
+    end
+  
+    if params[:history_visit_to]
+      @history_visit_to =  params[:history_visit_to]
+    
+      unless date_check(@history_visit_to)
+        @error_msg.push('訪問リレキ(TO)に不正な日付が入力されました。')
+      end
+    end
+
+    #---------------------
+    # ダイレクトメールリレキ
+    #---------------------
+    @history_dm = {}
+    @history_dm[:all] = false
+    @history_dm[:exist] = false
+    @history_dm[:not_exist] = false
+  
+    if params[:history_dm]
+      @history_dm[params[:history_dm].to_sym] = true
+    else
+      @history_dm[:all] = true
+    end
+  
+    @history_dm_from = '1900/01/01'
+    @history_dm_to = '3000/01/01'
+  
+    if params[:history_dm_from]
+      @history_dm_from =  params[:history_dm_from] 
+    
+      unless date_check(@history_dm_from)
+        @error_msg.push('ＤＭリレキ(FROM)に不正な日付が入力されました。')
+      end
+    end
+  
+    if params[:history_dm_to]
+      @history_dm_to =  params[:history_dm_to]
+    
+      unless date_check(@history_dm_to)
+        @error_msg.push('ＤＭリレキ(TO)に不正な日付が入力されました。')
+      end
+    
+    end
+
+    #---------------
+    # 電話リレキ
+    #---------------
+    @history_tel = {}
+    @history_tel[:all] = false
+    @history_tel[:exist] = false
+    @history_tel[:not_exist] = false
+  
+    if params[:history_tel]
+      @history_tel[params[:history_tel].to_sym] = true
+    else
+      @history_tel[:all] = true
+    end
+  
+    @history_tel_from = '1900/01/01'
+    @history_tel_to = '3000/01/01'
+  
+    if params[:history_tel_from]
+      @history_tel_from =  params[:history_tel_from]
+    
+      unless date_check(@history_tel_from)
+        @error_msg.push('ＴＥＬリレキ(FROM)に不正な日付が入力されました。')
+      end
+    
+    end
+  
+    if params[:history_tel_to]
+      @history_tel_to =  params[:history_tel_to]
+    
+      unless date_check(@history_tel_to)
+        @error_msg.push('ＴＥＬリレキ(TO)に不正な日付が入力されました。')
+      end
+    
+    end
+    
+  end
 
 end

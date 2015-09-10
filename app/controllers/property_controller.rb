@@ -5,11 +5,28 @@ require 'csv'
 class PropertyController < ApplicationController
 
 	before_filter :neighborhood_filter
+  before_filter :search_init, :only => ['search']
+  
 
   # 物件種別のiconを変更する時のコントローラ
   def change_biru_icon
-    p 'パラメータ ' + params[:disp_type].to_s
+    # p 'パラメータ ' + params[:disp_type].to_s
     @biru_icon = params[:disp_type]
+  end
+  
+  # 検索画面を表示します
+  def search
+    
+    if params[:owner_name]
+      @search_param = params
+      @biru_list = ActiveRecord::Base.connection.select_all(get_biru_list_sql("", false, @neighborhood_flg, params ))
+    else
+      @biru_list = nil
+    end
+    
+    gon.biru_list = @biru_list
+    
+    
   end
   
   def index
@@ -442,7 +459,7 @@ private
   
   # room_flg : 部屋単位の出力をする
   # neighborhood : trueの時、近隣のみ出力
-  def get_biru_list_sql(shop_list, room_flg = false, neighborhood = false)
+  def get_biru_list_sql(shop_list, room_flg = false, neighborhood = false, search_params=nil)
     
     strSql = ""
     strSql = strSql + "select "
@@ -462,6 +479,7 @@ private
     strSql = strSql + ",c.icon as shop_icon "
     
     strSql = strSql + ",f.id as owner_id "
+    strSql = strSql + " , '<a href=''javascript:win_owner(' || f.id || ');'' style=""text-decoration:underline"">' || f.name || '</a>' as owner_name_link" 
     strSql = strSql + ",f.code as owner_code "
     strSql = strSql + ",f.name as owner_name "
     strSql = strSql + ",f.address as owner_address "
@@ -469,6 +487,7 @@ private
     strSql = strSql + ",f.longitude as owner_longitude "
     
     strSql = strSql + ",d.id as trust_id "
+    strSql = strSql + ",d.code as trust_code "
     strSql = strSql + ",e.name as manage_type_name "
     strSql = strSql + ",e.icon as manage_type_icon "
     
@@ -512,6 +531,132 @@ private
     strSql = strSql + "and c.code in ( " + shop_list + ") " if shop_list.length > 0
     
     strSql = strSql + "and a.neighborhood_flg = 't' " if neighborhood # SQLServerは1
+    
+
+    # 検索条件が設定されていた時
+    if search_params
+      
+      # 貸主名
+      if search_params[:owner_name].length > 0
+      	strSql = strSql + " AND f.name like '%" + search_params[:owner_name].gsub("'","").gsub(";","") + "%' "
+      end
+
+      # 物件名
+      if search_params[:building_name].length > 0
+      	strSql = strSql + " AND a.name like '%" + search_params[:building_name].gsub("'","").gsub(";","") + "%' "
+      end
+
+
+      # 貸主住所
+      if search_params[:owner_address].length > 0
+      	strSql = strSql + " AND f.address like '%" + search_params[:owner_address].gsub("'","").gsub(";","") + "%' "
+      end
+
+      # 建物住所
+      if search_params[:building_address].length > 0
+      	strSql = strSql + " AND a.address like '%" + search_params[:building_address].gsub("'","").gsub(";","") + "%' "
+      end
+
+
+      # 貸主メモ
+      if search_params[:owner_memo].length > 0
+      	strSql = strSql + " AND f.memo like '%" + search_params[:owner_memo].gsub("'","").gsub(";","") + "%' "
+      end
+
+      # 建物メモ
+      if search_params[:building_memo].length > 0
+      	strSql = strSql + " AND a.memo like '%" + search_params[:building_memo].gsub("'","").gsub(";","") + "%' "
+      end
+      
+      if search_params[:shop_id].to_s.length > 0
+      	strSql = strSql + " AND c.id = " + search_params[:shop_id] + " "
+      end
+
+    
+    
+      #----------------
+      # 管理方式リスト
+      #----------------
+      manage_type_arr = []
+      manage_type_arr.push('1') if params[:manage_type_i] # 一般
+      manage_type_arr.push('2') if params[:manage_type_a] # A管理
+      manage_type_arr.push('3') if params[:manage_type_b] # B管理
+      manage_type_arr.push('6') if params[:manage_type_d] # D管理
+      manage_type_arr.push('10') if params[:manage_type_g] # 業務君
+      manage_type_arr.push('7') if params[:manage_type_s] # 総務君
+      manage_type_arr.push('8') if params[:manage_type_t] # 特有賃
+    
+      manage_list = ""
+      manage_type_arr.each do |value| 
+        if manage_list.length > 0
+          manage_list = manage_list + ','
+        end
+        manage_list = manage_list + "'" + value + "'"
+      end
+      
+      if manage_list.length > 0
+        strSql = strSql + "and e.code In (" + manage_list + ") "
+      end
+      
+      #----------------------------------#
+      # 検索条件が指定されている時の絞り込み②
+      #----------------------------------#
+  
+      arr_exist = []
+      arr_exist.push(99999)
+      filter_exist_flg = false
+
+      arr_not_exist = []
+      arr_not_exist.push(99999)
+      filter_not_exist_flg = false
+    
+      # 訪問リレキのチェック
+      if @history_visit
+      
+        unless @history_visit[:all]
+      
+          if @history_visit[:exist]
+            kinds = ApproachKind.find_all_by_code(['0010', '0020'])
+        	  strSql = strSql + " AND f.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_visit_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_visit_to).strftime("%Y-%m-%d") + "') "
+          end
+    
+        end
+      
+      end
+  
+  
+
+      # DMリレキのチェック
+      if @history_dm
+      
+        unless @history_dm[:all]
+    
+          if @history_dm[:exist]
+            kinds = ApproachKind.find_all_by_code(['0030','0035'])
+        	  strSql = strSql + " AND f.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_dm_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_dm_to).strftime("%Y-%m-%d") + "') "
+          end
+        end
+
+    
+      end
+  
+      # TELリレキのチェック
+      if @history_tel
+        unless @history_tel[:all]
+          
+          if @history_tel[:exist]
+            kinds = ApproachKind.find_all_by_code(['0040','0045'])
+        	  strSql = strSql + " AND f.id IN ( select owner_id from owner_approaches where delete_flg = 'f' and approach_kind_id In ( " + kinds.map{ |kind| kind.id }.join(',') +  " ) and approach_date between '" + Date.parse(@history_tel_from).strftime("%Y-%m-%d") + "' and  '" + Date.parse(@history_tel_to).strftime("%Y-%m-%d") + "') "
+          end
+        end
+      
+      end
+    
+      
+
+      
+      
+    end
     
     strSql = strSql + "and a.delete_flg = 'f' "
     strSql = strSql + "and b.delete_flg = 'f' "
@@ -598,5 +743,45 @@ private
     end
   	
   end
+  
+  
+  # 検索条件を初期化します。
+  def search_init
+
+    # 検索条件の共通部分を呼び出します。
+    search_init_common
+
+    # #--------------------------------
+    # # 権限によって絞り込める人を定義する
+    # #--------------------------------
+    # if @biru_user.attack_all_search
+    #   # すべて検索OKの時は受託担当者すべてを表示
+    #   trust_user_hash = get_trust_members
+    #   @biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
+    # else
+    #   # すべての権限ではない時、ログインユーザ自身とアクセスが許可されたユーザーを取得
+    #   @biru_users = []
+    #   @biru_users.push(BiruUser.find(@biru_user.id))
+    #   TrustAttackPermission.find_all_by_holder_user_id(@biru_user.id).each do |permission|
+    #     @biru_users.push(BiruUser.find(permission.permit_user_id))
+    #   end
+    # end
+
+    # @search_param[:rank_s] = true
+    # @search_param[:rank_a] = true
+    # @search_param[:rank_b] = true
+    # @search_param[:rank_c] = true
+
+  
+    # 管理方式
+    @search_param[:manage_type_i] = false # 一般
+    @search_param[:manage_type_a] = false # A管理
+    @search_param[:manage_type_b] = true  # B管理
+    @search_param[:manage_type_d] = true  # D管理
+    @search_param[:manage_type_g] = true  # 業務君
+    @search_param[:manage_type_s] = true  # 総務君
+    @search_param[:manage_type_t] = false # 特優賃
+    
+  end  
   
 end

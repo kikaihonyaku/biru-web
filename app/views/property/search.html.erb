@@ -1,5 +1,5 @@
 <div style="margin-top:20px;margin-right:20px;text-align:right;">
-	<%= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();', :style=>'text-decoration: underline;' %>
+	<%#= link_to "一覧へ戻る",  {:action=>'index'}, :onclick=>'javascript:screen_block();', :style=>'text-decoration: underline;' %>
 </div>
 <div class="panel panel-default" style="margin:20px;margin-top:5px;">
   <div class="panel-heading">
@@ -35,14 +35,17 @@
 
   var grid;
   var columns = [
+    {id: "shop_name", name: "営業所", field: "shop_name", minWidth: 100},
+    {id: "trust_code", name: "管理委託CD", field: "trust_code", minWidth: 35},
+    {id: "manage_type_name", name: "管理方式", field: "manage_type_name", minWidth: 30},
+    {id: "building_code", name: "建物CD", field: "building_code", minWidth: 30},
+    {id: "building_name", name: "建物名", field: "building_name", minWidth: 200},
+    {id: "building_address", name: "建物住所", field: "building_address", minWidth: 200},
+	  
+    {id: "owner_code", name: "貸主CD", field: "owner_code", minWidth: 30},
     {id: "owner_name_link", name: "貸主名", field: "owner_name_link", minWidth: 200, formatter: formatter},
-    {id: "owner_tel", name: "電話番号", field: "owner_tel", minWidth: 100},
     {id: "owner_memo", name: "貸主メモ", field: "owner_memo", minWidth: 200},
     {id: "owner_address", name: "貸主住所", field: "owner_address", minWidth: 300},
-    {id: "building_name", name: "建物名", field: "building_name", minWidth: 200},
-    {id: "attack_states_code", name: "ランク", field: "attack_states_code", minWidth: 50},
-    {id: "shop_name", name: "営業所", field: "shop_name", minWidth: 200},
-    {id: "biru_user_name", name: "担当者", field: "biru_user_name", minWidth: 200}
   ];
 
   var options = {
@@ -54,7 +57,7 @@
 
   $(function () {
 
-    grid = new Slick.Grid("#myGrid", gon.trust_manages, columns, options);
+    grid = new Slick.Grid("#myGrid", gon.biru_list, columns, options);
   })
 </script>
   

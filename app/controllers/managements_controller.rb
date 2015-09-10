@@ -507,7 +507,7 @@ class ManagementsController < ApplicationController
 
   # 物件種別のiconを変更する時のコントローラ
   def change_biru_icon
-    p 'パラメータ ' + params[:disp_type].to_s
+    # p 'パラメータ ' + params[:disp_type].to_s
     @biru_icon = params[:disp_type]
   end
 
