@@ -221,7 +221,7 @@
 	<div style="padding-top:10px;">
         <%= link_to "検索条件を指定して検索",  {:action=>'search'}, :onclick=>'javascript:screen_block();',  :class=>"btn btn-primary", :style=>"color:white"  %>
         <%= link_to "地図一覧から検索",  {:action=>'owner_building_list'}, :onclick=>'javascript:screen_block();',  :class=>"btn btn-success", :style=>"color:white"  %>
-        <%= link_to "貸主メンテナンス",  {:action=>''}, :onclick=>'alert("この機能はまだ使えません");return false;',  :class=>"btn btn-info", :style=>"color:white" %>
+        <%= link_to "貸主メンテナンス",  {:action=>''}, :onclick=>'javascript:win_popup_owner_create();return false;',  :class=>"btn btn-info", :style=>"color:white" %>
 	</div>
 	<div class="table-responsive panel panel-default" style="margin-top:20px;width:300px;float:left">
 		<table class="table table-bordered table-condensed" >

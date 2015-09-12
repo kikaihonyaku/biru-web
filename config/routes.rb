@@ -122,6 +122,7 @@ BiruWeb::Application.routes.draw do
   get "managements/popup_owner_documents_download/:document_id" => 'managements#popup_owner_documents_download', :as => :popup_owner_documents_download
   
   get "trust_managements/popup_owner_buildings/:owner_id" => 'trust_managements#popup_owner_buildings', :as => :popup_owner_buildings
+  get "trust_managements/popup_owner_create" => "trust_managements#popup_owner_create", :as => :popup_owner_create
   
   # trust_management
   get "trust_managements/owner_show/:id" => 'trust_managements#owner_show' , :as => :owner_show

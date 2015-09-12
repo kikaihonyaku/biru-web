@@ -1,0 +1,96 @@
+<% if flash[:notice] %>
+	<div class="alert alert-info alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	  <%= flash[:notice] %>
+	</div>
+<% end %>
+
+<% if flash[:danger] %>
+	<div class="alert alert-danger alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	  <%= flash[:danger] %>
+	</div>
+<% end %>
+
+<div class="row" style="padding:20px;padding-bottom:0px;">
+  <div class="col-lg-12">
+    <div class="well">
+        <%= form_tag(popup_owner_create_path) do %>
+
+          <%= text_field_tag 'owner_name', @search_owner_name, :placeholder=>'貸主名' %>
+          <%= text_field_tag 'owner_kana', @search_owner_kana, :placeholder=>'カナ' %>
+          <%= text_field_tag 'owner_address', @search_owner_address, :placeholder=>'貸主住所' %>
+          <%= text_field_tag 'owner_tel', @search_owner_tel, :placeholder=>'電話番号' %>
+
+            <%= submit_tag "検索", :class=>'btn btn-primary', :id=>'building-search', :onclick=>'javascript:screen_block();'  %>
+			<a data-toggle="modal" href="#modal-owner-new" class="btn  btn-primary" style="text-decoration: none;">貸主新規登録</a>
+
+        <% end %>
+
+    </div>
+  </div>
+</div>
+<!-- モーダルダイアログ -->
+<div class="modal fade" id="modal-owner-new" tabindex="-1" role="dialog" aria-labelledby="modal-owner-new-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+	<%#= simple_form_for :trust, :url=>{:controller => :managements, :action => :popup_owner_trust_update }, :html=>{class: 'form-horizontal'} do |f| %>
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">貸主新規作成</h4>
+      </div>
+
+	<%= simple_form_for :owner, :url=>{:action => :owner_regist} do |f| %>
+		<div class="modal-body">
+			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
+			<%= f.input :name, label: '貸主名',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :kana, label: 'カナ',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :honorific_title, label: '敬称',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :postcode, label: '郵便番号',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :address, label: '住所',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :tel, label: '電話番号',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :memo, label: '備考',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+	   
+		</div>
+		<div class="modal-footer">
+			<%= f.submit '登録', :class=>"btn btn-default", :style=>"margin:0" %>
+		</div>
+	<% end %>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<script>
+	function formatter(row, cell, value, columnDef, dataContext) {
+	    return value;
+	}
+
+  var grid;
+  var columns = [
+    {id: "owner_name", name: "貸主名", field: "owner_name", minWidth: 200, formatter: formatter},
+    {id: "owner_kana", name: "カナ", field: "owner_kana", minWidth: 200, formatter: formatter},
+    {id: "owner_address", name: "貸主住所", field: "owner_address", minWidth: 300},
+    {id: "owner_tel", name: "電話番号", field: "owner_tel", minWidth: 200},
+    {id: "biru_user_name", name: "登録者", field: "biru_user_name", minWidth: 200},
+  ];
+
+  var options = {
+    enableCellNavigation: true,
+    enableColumnReorder: false,
+	  forceFitColumns: false
+	  
+  };
+
+  $(function () {
+
+    grid = new Slick.Grid("#myGrid", gon.owner_list, columns, options);
+  })
+</script>
+  
+<div style="margin:20px;margin-top:0px;padding-top:0px;">
+	<div id="myGrid" style="width:100%;height:500px;border: 1px solid gray;outline: 0;"></div>
+</div>

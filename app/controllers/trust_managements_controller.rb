@@ -25,6 +25,42 @@ class TrustManagementsController < ApplicationController
     
   end
   
+  # アタックリストで貸主を新規作成します
+  def popup_owner_create
+    
+    if params[:owner_name]
+      
+      # ログインユーザーに紐づく検索可能ユーザーを指定
+      @biru_users = get_attack_list_search_users(@biru_user)
+      owner_list = Owner.joins(:biru_user).where("biru_user_id in (?)", @biru_users ).select("'<a href=''javascript:win_owner( ' || owners.id || ');'' style=""text-decoration:underline"">' || owners.name || '</a>' as owner_name, owners.kana as owner_kana, owners.address as owner_address,  owners.tel as owner_tel, biru_users.name as biru_user_name")
+      
+      if params[:owner_name].length > 0
+        owner_list = owner_list.where("owners.name like '%" + params[:owner_name] + "%'")
+      end
+
+      if params[:owner_kana] && params[:owner_kana].length > 0
+        owner_list = owner_list.where("owners.kana like '%" + params[:owner_kana] + "%'")
+      end
+      
+      if params[:owner_address] && params[:owner_address].length > 0
+        owner_list = owner_list.where("owners.address like '%" + params[:owner_address] + "%'")
+      end
+      
+      if params[:owner_tel] && params[:owner_tel].length > 0
+        owner_list = owner_list.where("owners.tel like '%" + params[:owner_tel] + "%'")
+      end
+      
+      gon.owner_list = owner_list
+      @search_owner_name = params[:owner_name]
+      @search_owner_kana = params[:owner_kana]
+      @search_owner_address = params[:owner_address]
+      @search_owner_tel = params[:owner_tel]
+      
+    end
+    
+    @header_hidden = true
+  end
+  
   # アタックリストの貸主に建物を紐付けるための検索画面を表示します。
   def popup_owner_buildings
   
@@ -1883,7 +1919,10 @@ class TrustManagementsController < ApplicationController
       #flash[:danger] = "貸主の登録に失敗しました。存在する住所なのかを確認してください。"
 
     end
-    redirect_to :action => 'attack_list_maintenance', :sid=> params[:owner][:biru_user_id] 
+    # redirect_to :action => 'attack_list_maintenance', :sid=> params[:owner][:biru_user_id] 
+    #     redirect_to :action => "popup_owner_create?owner_name=#{params[:owner][:owner_name]}&owner_address=#{params[:owner][:owner_address] }"
+
+    redirect_to :action => 'popup_owner_create', :owner_name=> params[:owner][:name], :owner_address=>params[:owner][:address] 
   end
   
   
