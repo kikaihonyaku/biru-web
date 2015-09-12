@@ -865,6 +865,14 @@ function win_attack_list_maintenance_bulk(user_id){
     window.open('/trust_managements/attack_list_maintenance_bulk?sid=' + user_id   , "", "width=500,height=500,resizable=yes,scrollbars=yes");
 }
 
+// 委託CDの紐付けを行います
+function trust_create(owner_id, building_id, biru_user_id){
+	if(window.confirm('紐付けを行います。よろしいですか？')){
+		location.href = '/trust_managements/create_trust?owner_id=' + owner_id + '&building_id=' + building_id + '&biru_user_id=' + biru_user_id
+	}
+	
+}
+
 
 function screen_block(){
   //$.blockUI({ message: '検索中…しばらくお待ちください'});

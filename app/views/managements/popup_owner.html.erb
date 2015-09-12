@@ -92,7 +92,7 @@
 </table>
 
 			<div style="padding:30px 20px 0px 20px">
-				<table class="table table-bordered table-condensed">
+				<table class="table table-bordered table-condensed" style="padding-bottom:0px;margin-bottom:3px;">
 			      <thead>
 			        <tr>
 			          <th class="active">建物名</th>
@@ -241,6 +241,7 @@
 					  
 			      </tbody>
 			    </table>
+				<div style="text-align:right;margin-right:10px;"><%= link_to '建物追加', popup_owner_buildings_path(@owner.id) %></div>
 			</div>
 
 

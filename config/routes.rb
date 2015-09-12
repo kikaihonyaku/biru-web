@@ -113,13 +113,15 @@ BiruWeb::Application.routes.draw do
   get "login/logout", :as => :logout
   
 
-#  get "managements/popup_owner/:id" => 'managements#popup_owner', :as =>:popup_owner
+  get "managements/popup_owner/:id" => 'managements#popup_owner', :as =>:popup_owner
   get "/recruitments/search_around", :as =>:search_around
 
   match "managements/bulk_search_file", :as => :bulk_search_file
   match "managements/bulk_search_text", :as => :bulk_search_text
   
   get "managements/popup_owner_documents_download/:document_id" => 'managements#popup_owner_documents_download', :as => :popup_owner_documents_download
+  
+  get "trust_managements/popup_owner_buildings/:owner_id" => 'trust_managements#popup_owner_buildings', :as => :popup_owner_buildings
   
   # trust_management
   get "trust_managements/owner_show/:id" => 'trust_managements#owner_show' , :as => :owner_show

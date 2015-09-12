@@ -1,0 +1,123 @@
+<% if flash[:notice] %>
+	<div class="alert alert-info alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	  <%= flash[:notice] %>
+	</div>
+<% end %>
+
+<% if flash[:danger] %>
+	<div class="alert alert-danger alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	  <%= flash[:danger] %>
+	</div>
+<% end %>
+  <legend style="padding:20px;padding-botom:10px;">
+	  <%= @owner.name + " " + @owner.honorific_title if @owner.honorific_title %>
+		  &nbsp;&nbsp;<span style="font-size:medium;text-aling:right">（<%= link_to '詳細へ戻る' ,popup_owner_path(@owner.id), :style=>'text-decoration:underline' %>）</span>
+  </legend>
+  
+  
+<div style="padding:10px 20px 0px 20px">
+	<table class="table table-bordered table-condensed" style="padding-bottom:0px;margin-bottom:10px;">
+      <thead>
+        <tr>
+          <th class="active">建物名</th>
+          <th class="active">住所</th>
+          <th class="active">管理営業所</th>
+        </tr>
+      </thead>
+      <tbody>
+		  <% @buildings.each do | building | %>
+			  
+		        <tr>
+					<td><%= building.name %></td>
+					<td><%= building.address %></td>
+					<td><%= building.shop.name %></td>
+				  
+		        </tr>
+			<% end %>
+				
+      </tbody>
+    </table>
+</div>
+
+<div class="row" style="padding:20px;padding-bottom:0px;">
+  <div class="col-lg-12">
+    <div class="well">
+        <%= form_tag(popup_owner_buildings_path(@owner.id)) do %>
+
+          <%= text_field_tag 'building_name', @search_building_name, :placeholder=>'建物名' %>
+          <%= text_field_tag 'building_address', @search_building_address, :placeholder=>'建物住所' %>
+          <%= hidden_field_tag 'owner_id', @owner.id %>
+
+            <%= submit_tag "検索", :class=>'btn btn-primary', :id=>'building-search', :onclick=>'javascript:screen_block();'  %>
+			<a data-toggle="modal" href="#modal-building-new" class="btn  btn-primary" style="text-decoration: none;">建物新規登録</a>
+
+        <% end %>
+
+    </div>
+  </div>
+</div>
+
+<!-- モーダルダイアログ -->
+<div class="modal fade" id="modal-building-new" tabindex="-1" role="dialog" aria-labelledby="modal-building-new-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">建物新規作成</h4>
+      </div>
+
+	<%= simple_form_for :building, :url=>{:action => :building_regist, :owner_id=>@owner.id } do |f| %>
+		<div class="modal-body">
+			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
+			<%= f.input :name, label: '建物名',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :address, label: '住所',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :shop_id, label: '営業所', collection: Shop.find(:all), prompt: "--", :input_html => {:class=>'form-control' } %>
+			<%= f.input :room_num, label: '部屋数',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%#= f.input :build_type_id, label: '建物種別', collection: BuildType.find(:all), prompt: "--", :input_html => {:class=>'form-control' } %>
+			<%= f.input :memo, label: '備考',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+
+	   
+		</div>
+		<div class="modal-footer">
+			<%= f.submit '登録', :class=>"btn btn-default", :style=>"margin:0" %>
+		</div>
+	<% end %>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<script>
+	function formatter(row, cell, value, columnDef, dataContext) {
+	    return value;
+	}
+
+  var grid;
+  var columns = [
+    {id: "building_name", name: "建物名", field: "building_name", minWidth: 200, formatter: formatter},
+    {id: "building_address", name: "建物住所", field: "building_address", minWidth: 300},
+    {id: "shop_name", name: "営業所", field: "shop_name", minWidth: 200},
+    {id: "biru_user_name", name: "登録者", field: "biru_user_name", minWidth: 200},
+  ];
+
+  var options = {
+    enableCellNavigation: true,
+    enableColumnReorder: false,
+	  forceFitColumns: false
+	  
+  };
+
+  $(function () {
+
+    grid = new Slick.Grid("#myGrid", gon.building_list, columns, options);
+  })
+</script>
+  
+<div style="margin:20px;margin-top:0px;padding-top:0px;">
+	<div id="myGrid" style="width:100%;height:500px;border: 1px solid gray;outline: 0;"></div>
+</div>

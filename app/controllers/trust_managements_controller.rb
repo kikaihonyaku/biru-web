@@ -24,6 +24,72 @@ class TrustManagementsController < ApplicationController
     return trust_user_hash
     
   end
+  
+  # アタックリストの貸主に建物を紐付けるための検索画面を表示します。
+  def popup_owner_buildings
+  
+    @owner = Owner.find(params[:owner_id])
+  
+    if @owner.trusts
+      @buildings = []
+      
+      @owner.trusts.each do |trust|
+        @buildings.push(trust.building) if trust.building
+      end
+      # gon.buildings = buildings
+      
+    end
+  
+  
+    if params[:building_name]
+      # 検索条件が存在した時、検索
+    
+      # ログインユーザーに紐づく検索可能ユーザーを指定
+      @biru_users = get_attack_list_search_users(@biru_user)
+    
+      building_list = Building.joins(:biru_user).joins(:shop).where("biru_user_id in (?)", @biru_users ).select("'<a href=''javascript:trust_create( #{@owner.id}, ' || buildings.id || ',#{@biru_user.id});'' style=""text-decoration:underline"">' || buildings.name || '</a>' as building_name, buildings.address as building_address, shops.name as shop_name, biru_users.name as biru_user_name")
+      
+      if params[:building_name].length > 0
+        building_list = building_list.where("buildings.name like '%" + params[:building_name] + "%'")
+      end
+
+      if params[:building_address] && params[:building_address].length > 0
+        building_list = building_list.where("buildings.address like '%" + params[:building_address] + "%'")
+      end
+            
+      gon.building_list = building_list
+      @search_building_name = params[:building_name]
+      @search_building_address = params[:building_address]
+      
+    end
+  
+    @header_hidden = true
+  end
+  
+  
+  # biru_userからアタックリストで検索できるユーザーを取得し、biru_usersへ格納します。
+  def get_attack_list_search_users(biru_user)
+
+    #--------------------------------
+    # 権限によって絞り込める人を定義する
+    #--------------------------------
+    if biru_user.attack_all_search
+      # すべて検索OKの時は受託担当者すべてを表示
+      trust_user_hash = get_trust_members
+      biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
+    else
+      # すべての権限ではない時、ログインユーザ自身とアクセスが許可されたユーザーを取得
+      biru_users = []
+      biru_users.push(BiruUser.find(biru_user.id))
+      TrustAttackPermission.find_all_by_holder_user_id(biru_user.id).each do |permission|
+        biru_users.push(BiruUser.find(permission.permit_user_id))
+      end
+    end
+    
+    return biru_users
+    
+  end
+  
 
   # 受託行動レポート情報を生成します
   def generate_report_info(month, user)
@@ -1744,6 +1810,49 @@ class TrustManagementsController < ApplicationController
     redirect_to :action => 'attack_list_maintenance', :sid=> params[:sid] 
   end
   
+  
+  # 委託契約の紐付けを行います。
+  def create_trust
+    
+    # 指定された貸主CD、建物CD
+    building_id = params[:building_id]
+    owner_id = params[:owner_id]
+    biru_user_id = params[:biru_user_id]
+    
+    reg_building_name = []
+    
+    # 選択された建物に対して委託の紐付けを行う。
+
+    trust = Trust.unscoped.find_by_owner_id_and_building_id_and_biru_user_id(building_id, owner_id, biru_user_id )
+    if trust
+      trust.delete_flg = false
+      reg_building_name.push(Building.find(building_id).name)
+    else
+      trust = Trust.new
+      trust.building_id = building_id
+      trust.owner_id = owner_id
+      trust.delete_flg = false
+
+      trust.biru_user_id = biru_user_id
+    	trust.manage_type_id = ManageType.find_by_code('99').id # 管理外      
+
+      reg_building_name.push(Building.find(building_id).name)
+    end
+
+    flash[:notice] = "貸主：" + Owner.find(owner_id).name + '  　建物：'
+    reg_building_name.each do |building_nm|
+      flash[:notice] = flash[:notice] + '【' + building_nm + '】、'
+    end
+    flash[:notice] = flash[:notice] + '　を【Dランク】で追加しました。'
+    trust.save!
+
+    # Dランクで履歴に登録
+    pri_trust_attack_update(trust.id, get_cur_month, AttackState.find_by_code("X").id, AttackState.find_by_code("D").id, 0, nil, nil)
+    
+    redirect_to :action => 'popup_owner_buildings', :owner_id => owner_id
+  end
+  
+  
   # 貸主登録
   def owner_regist
     @owner = Owner.new(params[:owner])
@@ -1800,7 +1909,9 @@ class TrustManagementsController < ApplicationController
     rescue => e
       flash[:danger] = e.to_s
     end
-    redirect_to :action => 'attack_list_maintenance', :sid=> params[:building][:biru_user_id] 
+    #redirect_to :action => 'attack_list_maintenance', :sid=> params[:building][:biru_user_id] 
+    redirect_to :action => 'popup_owner_buildings', :building_name=> @building.name, :owner_id=>params[:owner_id]
+    
   end
   
     
@@ -1882,26 +1993,11 @@ end
 # 検索条件を初期化します。
 def search_init
 
-  #--------------------------------
   # 検索条件の共通部分を呼び出します。
-  #--------------------------------
   search_init_common
 
-  #--------------------------------
-  # 権限によって絞り込める人を定義する
-  #--------------------------------
-  if @biru_user.attack_all_search
-    # すべて検索OKの時は受託担当者すべてを表示
-    trust_user_hash = get_trust_members
-    @biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
-  else
-    # すべての権限ではない時、ログインユーザ自身とアクセスが許可されたユーザーを取得
-    @biru_users = []
-    @biru_users.push(BiruUser.find(@biru_user.id))
-    TrustAttackPermission.find_all_by_holder_user_id(@biru_user.id).each do |permission|
-      @biru_users.push(BiruUser.find(permission.permit_user_id))
-    end
-  end
+  # 検索対象湯ユーザーを取得します
+  @biru_users = get_attack_list_search_users(@biru_user)
 
   @search_param[:rank_s] = true
   @search_param[:rank_a] = true
@@ -1980,7 +2076,6 @@ def report_rank_regist(month_report, trust_attack_history, start_date, end_date)
   attack_rank.save!
 
 end
-
 
 
 end
