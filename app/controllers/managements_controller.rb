@@ -354,7 +354,8 @@ class ManagementsController < ApplicationController
     search_result_init(2) # 貸主を初期表示
 
     # 元データを取得
-    tmp_owners = Owner.joins(:trusts => :building).scoped
+    tmp_owners = Owner.oneself.scoped
+    tmp_owners = tmp_owners.joins(:trusts => :building).scoped
 
     # 貸主名の絞り込み
     word = params[:owner_name]

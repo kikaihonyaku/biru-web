@@ -10,6 +10,8 @@ class Owner < ActiveRecord::Base
 
   # デフォルトスコープを定義
   default_scope where(:delete_flg => false)
+  scope :oneself , -> { where(:attack_code => nil )}
+  
 
   def gmaps4rails_address
    "#{self.address}"
