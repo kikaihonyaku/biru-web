@@ -27,14 +27,15 @@
         </tr>
       </thead>
       <tbody>
-		  <% @buildings.each do | building | %>
+		  <% @owner.trusts.each do | trust | %>
 			  
+			  	<% if trust.building %>
 		        <tr>
-					<td><%= building.name %></td>
-					<td><%= building.address %></td>
-					<td><%= building.shop.name %></td>
-				  
+					<td><%= link_to trust.building.name, 'javascript:trust_delete(' + trust.id.to_s + ',' + @biru_user.id.to_s +  ');', :style=>"text-decoration:underline"  %></td>
+					<td><%= trust.building.address %></td>
+					<td><%= trust.building.shop.name %></td>
 		        </tr>
+				<% end %>
 			<% end %>
 				
       </tbody>

@@ -875,8 +875,15 @@ function trust_create(owner_id, building_id, biru_user_id){
 	if(window.confirm('紐付けを行います。よろしいですか？')){
 		location.href = '/trust_managements/create_trust?owner_id=' + owner_id + '&building_id=' + building_id + '&biru_user_id=' + biru_user_id
 	}
-	
 }
+
+// 委託CDの紐付け解除を行います。
+function trust_delete(trust_id, biru_user_id){
+	if(window.confirm('指定の物件の紐付け解除を行います。よろしいですか？')){
+		location.href = '/trust_managements/delete_trust?trust_id=' + trust_id + '&biru_user_id=' + biru_user_id
+	}
+}
+
 
 
 function screen_block(){

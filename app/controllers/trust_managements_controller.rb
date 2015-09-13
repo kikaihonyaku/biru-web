@@ -55,7 +55,8 @@ class TrustManagementsController < ApplicationController
       @search_owner_kana = params[:owner_kana]
       @search_owner_address = params[:owner_address]
       @search_owner_tel = params[:owner_tel]
-      
+    else
+      gon.owner_list = []
     end
     
     @header_hidden = true
@@ -69,10 +70,9 @@ class TrustManagementsController < ApplicationController
     if @owner.trusts
       @buildings = []
       
-      @owner.trusts.each do |trust|
-        @buildings.push(trust.building) if trust.building
-      end
-      # gon.buildings = buildings
+      # @owner.trusts.each do |trust|
+      #   @buildings.push(trust.building) if trust.building
+      # end
       
     end
   
@@ -97,6 +97,8 @@ class TrustManagementsController < ApplicationController
       @search_building_name = params[:building_name]
       @search_building_address = params[:building_address]
       
+    else
+      gon.building_list = []
     end
   
     @header_hidden = true
@@ -1877,7 +1879,7 @@ class TrustManagementsController < ApplicationController
 
     flash[:notice] = "貸主：" + Owner.find(owner_id).name + '  　建物：'
     reg_building_name.each do |building_nm|
-      flash[:notice] = flash[:notice] + '【' + building_nm + '】、'
+      flash[:notice] = flash[:notice] + '【' + building_nm + '】'
     end
     flash[:notice] = flash[:notice] + '　を【Dランク】で追加しました。'
     trust.save!
@@ -1886,6 +1888,17 @@ class TrustManagementsController < ApplicationController
     pri_trust_attack_update(trust.id, get_cur_month, AttackState.find_by_code("X").id, AttackState.find_by_code("D").id, 0, nil, nil)
     
     redirect_to :action => 'popup_owner_buildings', :owner_id => owner_id
+  end
+  
+  # 紐付けの解除を行います。
+  def delete_trust
+    trust = Trust.find(params[:trust_id])
+    flash[:notice] = '貸主：' + trust.owner.name + ' から ' +  trust.building.name + ' を削除しました。'
+    
+    trust.delete_flg = true
+    trust.save!
+    
+    redirect_to :action => 'popup_owner_buildings', :owner_id => trust.owner.id
   end
   
   
@@ -1911,6 +1924,7 @@ class TrustManagementsController < ApplicationController
       @owner.hash_key = hash
       @owner.save!
       @owner.attack_code = "OA%06d"%@owner.id
+      @owner.dm_ptn_1 = true
       @owner.save!
       
       flash[:notice] = "貸主：" + params[:owner][:name] + '  を貸主一覧に追加しました。'
@@ -1922,7 +1936,7 @@ class TrustManagementsController < ApplicationController
     # redirect_to :action => 'attack_list_maintenance', :sid=> params[:owner][:biru_user_id] 
     #     redirect_to :action => "popup_owner_create?owner_name=#{params[:owner][:owner_name]}&owner_address=#{params[:owner][:owner_address] }"
 
-    redirect_to :action => 'popup_owner_create', :owner_name=> params[:owner][:name], :owner_address=>params[:owner][:address] 
+    redirect_to :action => 'popup_owner_create', :owner_name=> @owner.name, :owner_address=>@owner.address 
   end
   
   
