@@ -241,7 +241,9 @@
 					  
 			      </tbody>
 			    </table>
-				<div style="text-align:right;margin-right:10px;"><%= link_to '建物追加', popup_owner_buildings_path(@owner.id) %></div>
+				<% if @owner.attack_code %>
+					<div style="text-align:right;margin-right:10px;" class="print-none"><%= link_to '【建物追加】', popup_owner_buildings_path(@owner.id), :style=>'text-decoration:none' %></div>
+				<% end %>
 			</div>
 
 
