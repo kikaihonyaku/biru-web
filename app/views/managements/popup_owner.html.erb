@@ -257,7 +257,7 @@
 	
 				<table>
 					<tr>
-						<td><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'date', :style=>'width:120px;margin-left:0px;padding-left:0px;vertical-align:middle', :value=>Date.today.strftime('%Y/%m/%d')  } %></td>
+						<td><div class="input-append date"><%= f.input :approach_date, label:'日付', placeholder: 'yyyy/mm/dd', :input_html => {:type => 'text', :style=>'width:100px;', :id=>'reg-date', :value=>Date.today.strftime('%Y/%m/%d')  } %></div></td>
 						<td><%= f.input :approach_kind_id, label: '種別', collection: ApproachKind.order(:sequence), prompt: "--", :input_html => {:style=>'width:100px;margin-left:0px;padding-left:0px;vertical-align:middle' } %></td>
 						<td><%= f.submit '登録', :class => 'btn btn-primary btn-sm', :style=>'margin-left:20px;' %></td>
 					</tr>
@@ -380,4 +380,12 @@
 </div><!-- /.modal -->
 
 
+<script type="text/javascript">
+$('#reg-date').datepicker({
+	format: "yyyy/mm/dd",
+	language: "ja",
+	autoclose: true,
+	orientation: "top auto"
+});
+</script>
 

@@ -58,3 +58,5 @@ gem 'ruby-hmac' # gmap4railsのgeocodeでビル管理キーを使用するにあ
 gem 'goldiloader'
 
 # gem 'paperclip'
+
+gem 'rails-i18n'

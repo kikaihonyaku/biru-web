@@ -201,18 +201,8 @@ class ManagementsController < ApplicationController
   # アプローチ履歴を登録する
   def owner_approach_regist 
     @owner_approach = OwnerApproach.new(params[:owner_approach])
-    
-    respond_to do |format|
-      if @owner_approach.save
-        format.html { redirect_to :controller=>'managements', :action => 'popup_owner', :id => params[:owner_approach][:owner_id].to_i, notice: 'Book was successfully created.' }
-        format.json { render json: @owner_approach, status: :created, location: @owner_approach }
-      else
-        get_popup_owner_info(params[:owner_approach][:owner_id].to_i)
-        
-        format.html { render action: "popup_owner" }
-        format.json { render json: @owner_approach.errors, status: :unprocessable_entity }
-      end
-    end    
+    @owner_approach.save!
+    redirect_to :controller=>'managements', :action => 'popup_owner', :id => params[:owner_approach][:owner_id].to_i
   end
   
   # アプローチリレキを削除する
