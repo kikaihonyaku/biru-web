@@ -1153,8 +1153,8 @@ function jqgrid_create(col_names, col_model, data_list, jqgrid_opt){
 	  	datatype : "local",            //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
 	  	colNames : col_names,           //列の表示名
 	  	colModel : col_model,   //列ごとの設定
-	  	rowNum : 500,                   //一ページに表示する行数
-	  	rowList : [500, 100000],         //変更可能な1ページ当たりの行数
+	  	rowNum : 100,                   //一ページに表示する行数
+	  	rowList : [100, 100000],         //変更可能な1ページ当たりの行数
 	  	caption : jqgrid_opt.caption,    //ヘッダーのキャプション
 		loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
 			table_div.jqGrid('setGridWidth', div_box.width(), jqgrid_opt.shrinkFit);
@@ -1175,7 +1175,7 @@ function jqgrid_create(col_names, col_model, data_list, jqgrid_opt){
 		   
         },
 	  	pager : jqgrid_opt.fotter_name,              //footerのページャー要素のid
-	  	shrinkToFit : true,　　        //画面サイズに依存せず固定の大きさを表示する設定
+	  	shrinkToFit : false,　　        //画面サイズに依存せず固定の大きさを表示する設定
 		multiselect: jqgrid_opt.multiselect,
 	  	viewrecords: true              //footerの右下に表示する。
 	});

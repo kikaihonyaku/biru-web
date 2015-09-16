@@ -198,6 +198,16 @@ class ManagementsController < ApplicationController
     redirect_to :action=>'popup_owner', :id=>@owner.id
   end
   
+  # オーナー情報の登録をポップアップから行います。
+  def popup_owner_update_memo
+    
+    @owner = Owner.find(params[:id])
+    @owner.memo = params[:owner][:memo]
+    
+    @owner.save!
+    redirect_to :action=>'popup_owner', :id=>@owner.id
+  end  
+  
   # アプローチ履歴を登録する
   def owner_approach_regist 
     @owner_approach = OwnerApproach.new(params[:owner_approach])
@@ -267,10 +277,11 @@ class ManagementsController < ApplicationController
     
     @doc = Document.find(params[:document_id])
 
-    hash = Rails.application.routes.recognize_path(request.referrer)
-    if hash[:action] != 'popup_owner'
-      raise "遷移もとが不正です。" + hash[:action] 
-    end
+    # 2015/08/25 windowsでエラーになるので遷移元チェックをコメントアウト
+    # hash = Rails.application.routes.recognize_path(request.referrer)
+    # if hash[:action] != 'popup_owner'
+    #   raise "遷移もとが不正です。" + hash[:action]
+    # end
       
     path = "public/documents/owner/" + sprintf("%08d", @doc.owner.id) + '/' + @doc.file_name
     

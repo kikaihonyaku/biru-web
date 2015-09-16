@@ -690,6 +690,7 @@ private
     strSql = strSql + " ,a.kanri_room_num"
     strSql = strSql + " ,a.free_num"
     strSql = strSql + " ,a.biru_age"
+    strSql = strSql + " ,d.code"
     
     if room_flg then
       strSql = strSql + ",b.name "

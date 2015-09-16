@@ -14,13 +14,10 @@ class TrustManagementsController < ApplicationController
     trust_user_hash = {} 
 		trust_user_hash['6365'] = {:name=>'松本', :shop_name => '東武南(A)'}
 		trust_user_hash['6464'] = {:name=>'猪原', :shop_name => '東武南(B)'}
-		trust_user_hash['6425'] = {:name=>'赤坂', :shop_name => '東武北(A)'}
-		trust_user_hash['7811'] = {:name=>'赤坂', :shop_name => '東武北(B)'}
+		trust_user_hash['6425'] = {:name=>'赤坂', :shop_name => '東武北'}
 		trust_user_hash['5313'] = {:name=>'宮川', :shop_name => 'さいたま中央'}
 		trust_user_hash['5518'] = {:name=>'齋藤', :shop_name => 'さいたま東'}
-		trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '千葉支店'}
-		trust_user_hash['5928'] = {:name=>'テスト', :shop_name => 'テスト'}
-    
+		trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '千葉支店'}    
     return trust_user_hash
     
   end
@@ -792,7 +789,11 @@ class TrustManagementsController < ApplicationController
     sql = sql + " , attack_states.name  "  
     sql = sql + " , attack_states.code  "  
     sql = sql + " , trusts.biru_user_id  "  
-
+    sql = sql + " , owners.dm_ptn_1 "
+    sql = sql + " , owners.dm_ptn_2 "
+    sql = sql + " , owners.dm_ptn_3 "
+    sql = sql + " , owners.dm_ptn_4 "
+    
   	# 複数指定
   	if order_flg
       #sql = sql + " ORDER BY buildings.id asc"
@@ -948,7 +949,7 @@ class TrustManagementsController < ApplicationController
       ###############################################
       # 再検索させるように、初期表示のヒットは０件にする。
       ###############################################
-      rank_list = '999'
+      rank_list = "'AA'"
       @disp_search = true
       param_tmp = nil
     else
@@ -1663,7 +1664,7 @@ class TrustManagementsController < ApplicationController
     #-------------
     output_path = Rails.root.join( "tmp", "owner_list_.csv")
     
-    header = ["貸主CD", "DM発行○×", "貸主名", "敬称", "カナ", "郵便番号", "住所", "電話番号", "メモ", "DM発行パターン１", "DM発行パターン２", "DM発行パターン３", "DM発行パターン４" ]
+    header = ["attack_code","dm","name","honorific_title","kana","postcode","address","tel","memo","dm_1","dm_2","dm_3","dm_4"]
     csv_data = CSV.generate("", :headers => header, :write_headers => true) do |csv|
       data.each do |line|
         csv << line
@@ -1759,7 +1760,8 @@ class TrustManagementsController < ApplicationController
         if ptn2 == '○' then owner.dm_ptn_2 = true else owner.dm_ptn_2 = false end
         if ptn3 == '○' then owner.dm_ptn_3 = true else owner.dm_ptn_3 = false end
         if ptn4 == '○' then owner.dm_ptn_4 = true else owner.dm_ptn_4 = false end
-        
+          
+        owner.memo = memo
   			owner.postcode = postcode
         if owner.address != address
           # 住所が違っていた時のみgeocodeもかける
@@ -2046,7 +2048,9 @@ end
 # 検索条件を初期化します。
 def search_init
 
+  #-----------------------------
   # 検索条件の共通部分を呼び出します。
+  #-----------------------------
   search_init_common
 
   # 検索対象湯ユーザーを取得します

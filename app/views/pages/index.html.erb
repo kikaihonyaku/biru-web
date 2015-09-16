@@ -18,9 +18,8 @@
 
 
 
-	<h1 style="text-decoration:underline">地図トップメニュー</h1>
 <div class="well" style="margin-top:30px;margin-left:20px;margin-right:20px;height:800px;">
-
+	<h1 style="text-decoration:underline">地図トップメニュー</h1>
 	<h3 style="margin-top:50px;"><%= link_to "・管理物件確認", property_search_path %><span style="font-size:14px;margin-left:10px;">（管理物件一覧を検索します）</span></h3>
 	<p style="padding-left:25px;">営業所集計表からの検索は<%= link_to "こちら", property_path, :style=>'text-decoration:underline;' %></p>
 	<p style="padding-left:25px;">地図全体を表示するバージョンは<%= link_to "こちら", managements_path, :style=>'text-decoration:underline;' %></p>
@@ -30,6 +29,7 @@
 	
 	<h3 style="margin-top:30px;"><%= link_to "・建物管理(定期メンテナンス）", biru_service_path %></h3>
 	<p style="padding-left:25px;">管理物件の定期メンテナンスの情報を表示します。</p>
+	<p style="padding-left:25px;">４戸以上(≒１棟管理)のアパート・マンションで、１５平米以上での集計は<%= link_to "こちら", biru_service_path('room_all'), :style=>'text-decoration:underline;' %></p>
 	
 	<h3 style="margin-top:30px;"><%= link_to "・レンターズ登録状況確認", renters_path %></h3>
 	<p style="padding-left:25px;">レンターズに掲載中の物件(自社）を地図に表示します。先物は<%= link_to "こちら", renters_path('sakimono'), :style=>'text-decoration:underline;' %></p>
