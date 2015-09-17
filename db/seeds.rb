@@ -861,22 +861,77 @@ end
 # 受託アタックリストへの権限設定
 def init_trust_attack_permission
   arr = []
-  arr.push({:holder=>'6464', :permit=>'5928'})
-  arr.push({:holder=>'5928', :permit=>'5313'})
-  arr.push({:holder=>'5928', :permit=>'6464'})
-  arr.push({:holder=>'5928', :permit=>'4917'})
+  # 松本主任
+  arr.push({:holder=>'6365', :permit=>'3695'})
+  arr.push({:holder=>'6365', :permit=>'1692'})
+
+  # 猪原社員
+  arr.push({:holder=>'6464', :permit=>'3695'})
+  arr.push({:holder=>'6464', :permit=>'1692'})
   
+  # 赤坂社員
+  arr.push({:holder=>'6425', :permit=>'4671'})
+  arr.push({:holder=>'6425', :permit=>'1692'})
+  arr.push({:holder=>'6425', :permit=>'5928'})
+  
+  # 池ノ谷社員
+  arr.push({:holder=>'7811', :permit=>'6425'})
+  arr.push({:holder=>'7811', :permit=>'4671'})
+  arr.push({:holder=>'7811', :permit=>'1692'})
+  
+  # 宮川社員
+  arr.push({:holder=>'5313', :permit=>'5134'})
+  arr.push({:holder=>'5313', :permit=>'3705'})
+  arr.push({:holder=>'5313', :permit=>'5518'})
+  
+  arr.push({:holder=>'5313', :permit=>'12117'})
+  arr.push({:holder=>'5313', :permit=>'12579'})
+  arr.push({:holder=>'5313', :permit=>'13823'})
+  arr.push({:holder=>'5313', :permit=>'13884'})
+  arr.push({:holder=>'5313', :permit=>'14030'})
+  arr.push({:holder=>'5313', :permit=>'14139'})
+  arr.push({:holder=>'5313', :permit=>'14322'})
+  
+  # 齋藤社員
+  arr.push({:holder=>'5518', :permit=>'5134'})
+  arr.push({:holder=>'5518', :permit=>'4387'})
+  arr.push({:holder=>'5518', :permit=>'5313'})
+
+  arr.push({:holder=>'5518', :permit=>'12117'})
+  arr.push({:holder=>'5518', :permit=>'12579'})
+  arr.push({:holder=>'5518', :permit=>'13823'})
+  arr.push({:holder=>'5518', :permit=>'13884'})
+  arr.push({:holder=>'5518', :permit=>'14030'})
+  arr.push({:holder=>'5518', :permit=>'14139'})
+  arr.push({:holder=>'5518', :permit=>'14322'})
+  
+  # 市橋主任
+  arr.push({:holder=>'4917', :permit=>'4668'})
+
   TrustAttackPermission.delete_all
   arr.each do |obj|
     holder = BiruUser.find_by_code(obj[:holder])
     permit = BiruUser.find_by_code(obj[:permit])
     
-    rec = TrustAttackPermission.new
-    rec.holder_user_id = holder.id
-    rec.permit_user_id = permit.id
+    if holder && permit
+      rec = TrustAttackPermission.new
+      rec.holder_user_id = holder.id
+      rec.permit_user_id = permit.id
     
-    p holder.name + " : " + permit.name
-    rec.save!
+      p holder.name + " : " + permit.name
+      rec.save!
+      
+    else
+      if holder 
+        p 'holder ' + obj[:holder].to_s + ' none'
+      end
+      
+      if permit 
+        p 'permit ' + obj[:permit].to_s + ' none'
+      end
+
+    end
+    
   end
 end
 

@@ -202,12 +202,26 @@
 		
 </script>
 
-<div style="padding:10px 80px 10px 80px;">
+<% if flash[:notice] %>
+	<div class="alert alert-info alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	  <%= flash[:notice] %>
+	</div>
+<% end %>
+
+<% if flash[:danger] %>
+	<div class="alert alert-danger alert-dismissible" role="alert" style="margin-bottom:0px;" id="alert-block">
+	  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	  <%= flash[:danger] %>
+	</div>
+<% end %>
+
+<div style="margin:30px 40px 10px 40px;">
 	
 	<div id="div_dummy_02" style="width:100%;height:90%;">
 		
 		<div><h2>管理受託　活動報告</h2></div>
-		<div style="padding-bottom:5px">
+		<div style="padding-bottom:5px;padding-top:10px;">
 			<%= form_tag({:action => :index}, {:name => 'yyyymm', :onchange=>'javascript:screen_block();'}) do %>
 				<%= select_tag(:month, options_for_select(@calender, @month),  :onchange=>"javascript:dropsort();") %>
 				<span style="padding-left:100px;text-align:right">最終更新日：<%= @data_update.update_datetime if @data_update %></span>
@@ -218,45 +232,138 @@
 		<div id="building_pager"></div>
 	</div>
 
+
+
 	<div style="padding-top:10px;">
-        <%= link_to "検索条件を指定して検索",  {:action=>'search'}, :onclick=>'javascript:screen_block();',  :class=>"btn btn-primary", :style=>"color:white"  %>
-        <%= link_to "地図一覧から検索",  {:action=>'owner_building_list'}, :onclick=>'javascript:screen_block();',  :class=>"btn btn-primary", :style=>"color:white"  %>
+        <%= link_to "検索（一覧表）",  {:action=>'search'}, :onclick=>'javascript:screen_block();',  :class=>"btn btn-primary", :style=>"color:white"  %>
+        <%= link_to "検索（地図）",  {:action=>'owner_building_list'}, :onclick=>'javascript:screen_block();',  :class=>"btn btn-primary", :style=>"color:white"  %>
+<a data-toggle="modal" href="#modal-tack" class="btn btn-info"  style="color:white">DMタックシール</a>
         <%= link_to "貸主メンテナンス",  {:action=>''}, :onclick=>'javascript:win_popup_owner_create();return false;',  :class=>"btn btn-info", :style=>"color:white" %>
-        <%#= link_to "一括登録",  {:action=>''}, :onclick=>'javascript:win_attack_list_maintenance_bulk(' + @biru_user.id.to_s + ');return false;',  :class=>"btn btn-info", :style=>"color:white" %>
 		
 	</div>
-	<div class="table-responsive panel panel-default" style="margin-top:20px;width:300px;float:left">
-		<table class="table table-bordered table-condensed" >
-	      <thead>
-	        <tr>
-	          <th class="active">ランク</th>
-	        </tr>
-	      </thead>
-	      <tbody>
-	        <% AttackState.all.each do |status| %>
-	        <tr>
-	          <td><%= status.name %></td>
-	        </tr>
-	        <% end %>
-	      </tbody>
-	    </table>
-	</div>
-	<div class="table-responsive panel panel-default" style="margin-top:20px;margin-left:20px;width:600px;float:left">
-		<table class="table table-bordered table-condensed" >
-	      <thead>
-	        <tr>
-	          <th class="active">連絡事項</th>
-	        </tr>
-	      </thead>
-	      <tbody>
-	        <tr>
-	          <td style="height:250px;">
-				  <div style="pading-left:5px;">・地図検索、一覧検索ボタンを追加しました。</div>
-				  <div style="pading-left:5px;">・ファイル保存機能を追加しました。</div>
-				  <div style="pading-left:5px;">・管理受託活動報告一覧のレイアウトを修正しました。</div>
-			  </td>
-	        </tr>
-	      </tbody>
-	    </table>
-	</div>
+	
+
 </div>
+
+	<!-- モーダルダイアログ -->
+	<div class="modal fade" id="modal-tack" tabindex="-1" role="dialog" aria-labelledby="modal-tack-label" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	        <h4 class="modal-title" >タックシール出力</h4>
+	      </div>
+		<%= form_tag({:action=>'tack_out'}, {:method=>'post', :name=>'tack_frm' }) do %>
+			<%= hidden_field_tag 'dm_owner_list', ''  %>
+			<%= hidden_field_tag :sid,  @biru_user.id %>
+			<div class="modal-body">
+				見込みランク
+				<div style="padding-bottom:20px;padding-left:20px;padding-top:5px;">
+			       <%= check_box_tag :rank_s %>&nbsp;Ｓランク&nbsp;&nbsp;
+				   <%= check_box_tag :rank_a, {},:checked=>true %>&nbsp;Ａランク&nbsp;&nbsp;
+				   <%= check_box_tag :rank_b, {},:checked=>true %>&nbsp;Ｂランク&nbsp;&nbsp;
+				   <%= check_box_tag :rank_c, {},:checked=>true %>&nbsp;Ｃランク&nbsp;&nbsp;
+				   <%= check_box_tag :rank_d, {},:checked=>true %>&nbsp;Ｄランク&nbsp;&nbsp;
+			   </div>
+
+				出力パターン
+				<div style="padding-bottom:30px;padding-left:20px;padding-top:5px;">
+			       <%= check_box_tag :ptn_1, {},:checked=>true %>&nbsp;パターン１&nbsp;&nbsp;
+				   <%= check_box_tag :ptn_2 %>&nbsp;パターン２&nbsp;&nbsp;
+				   <%= check_box_tag :ptn_3 %>&nbsp;パターン３&nbsp;&nbsp;
+				   <%= check_box_tag :ptn_4 %>&nbsp;パターン４&nbsp;&nbsp;
+			   </div>
+				
+				
+				<div style="padding-bottom:20px;">
+			       <%= radio_button_tag :dm_history, 1, true,  :onclick=>"dm_msg_regist_on(true);" %>&nbsp;DM履歴を残す
+			       &nbsp;&nbsp;&nbsp;
+			       <%= radio_button_tag :dm_history, 0, false, :onclick=>"dm_msg_regist_on(false);" %>&nbsp;DM履歴を残さない
+			   </div>
+				<div>
+			       <label class="string optional control-label" for="tack_out_date">発行日</label>
+				   <%= text_field_tag 'dm_out_date', Date.today.strftime("%Y-%m-%d"), :type=>'date' , :class=>'form-control', :style=>'width:180px;' %>
+
+
+			       <label class="string optional control-label" for="dm_discription" style="margin-top:20px;">ＤＭ履歴の内容（送付するＤＭの概要など）</label>
+				   <%= text_field_tag 'dm_out_msg', '', :class=>'form-control', :style=>'width:300px;'  %>
+				   
+			       <label class="string optional control-label" for="dm_discription" style="margin-top:20px;">宛名ラベル用紙種類</label>
+				   <%= select_tag 'dm_tack_kind', options_for_select([["A-ONE 21面用", "pdf_layout_a_one_21.tlf"], ["PLUS ME-505T", "pdf_layout_plus_me505t.tlf"]]), :class=>'form-control', :style=>'width:150px;' %>
+				   
+				</div>
+			</div>
+			<div class="modal-footer">
+			<%= submit_tag 'タックシールを出力' ,:class=>"btn btn-default", :style=>"margin:0", :onclick=>"return tack_out_go();" %>
+			</div>
+		<% end %>
+
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+	<script type="text/javascript">
+		function dm_msg_regist_on(msg_flg){
+			var curfrm = document.tack_frm;
+		
+			if(msg_flg == true){
+				curfrm.dm_out_date.disabled = false;
+				curfrm.dm_out_date.style.backgroundColor="";
+				curfrm.dm_out_msg.disabled = false;
+				curfrm.dm_out_msg.style.backgroundColor="";
+			}else{
+				curfrm.dm_out_date.disabled = true;
+				curfrm.dm_out_date.style.backgroundColor="gray";
+				curfrm.dm_out_msg.disabled = true;
+				curfrm.dm_out_msg.style.backgroundColor="gray";
+			}
+		
+		}
+
+		// タックシール用のpdfを出力します
+		function tack_out_go(){
+
+			// DM発行リレキがONの時、日付とメッセージが正しく登録されているか確認
+			if(document.tack_frm.dm_history.value == 1){
+				if(document.tack_frm.dm_out_date.value.length == 0){
+					alert('リレキに残す日付を設定してください。');
+					return false;
+				}
+			
+				if(document.tack_frm.dm_out_msg.value.length == 0){
+					alert('リレキに残すメッセージを設定してください。');
+					return false;
+				}
+			}
+		
+			// DM発行リレキに応じて出力
+			if(document.tack_frm.dm_history.value == 1){
+				if(window.confirm('ＤＭ発行リレキに登録します。よろしいですか？\n\n※DM出力フラグがOFF・またはランクがD未満は出力対象外です')){
+				}else{
+					return false;
+				}
+			
+			}else{
+				if(window.confirm('リレキに保存されません。よろしいですか？\n\n※DM出力フラグがOFF・またはランクがD未満は出力対象外です')){
+				}else{
+					return false;
+				}
+			
+			}
+			
+			return true;
+		}
+
+		jQuery("#tack_new").trigger("click");
+	
+	
+		$('#dp2').datepicker({
+			format: 'dd/mm/yyyy',
+			language: 'ja',
+			autoclose: true,
+			clearBtn: true,
+		});
+		
+	</script>
+	

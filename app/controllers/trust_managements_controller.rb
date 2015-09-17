@@ -1181,8 +1181,7 @@ class TrustManagementsController < ApplicationController
     
     # パラメータが不正の時はエラーメッセージを表示
     unless msg == ""
-        flash[:notice] = msg
-        p msg
+        flash[:danger] = "DMタックシール出力エラー：" + msg
         redirect_to :action => "index"
     else
       
