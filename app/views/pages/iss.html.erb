@@ -1,0 +1,39 @@
+
+<script type="text/javascript">
+$(function(){
+	window.name = "iss_redirect_page";
+	
+	// 閉じるウィンドウ名を渡す。
+	<% if @ridirect_type == :owner %>
+		javascript:win_owner(<%= @id %>, window.name);
+	<% elsif @ridirect_type == :building %>
+		javascript:win_building(<%= @id %>, window.name);
+	<% end %>
+		
+});
+</script>
+
+
+<style type="text/css">
+	body {  
+	    text-align: center;  
+	}
+	
+	.main {  
+	    width: 100%;  
+	    border: 0px;
+	}  
+	.main div   {  
+	    width: 40%;  
+	    border: 1px solid #3399FF;  
+	    margin: 0 auto;  
+	}	
+	
+</style>
+
+<div class="main">
+	
+	<div style="margin-top:300px;padding:50px;">
+		<%= @str %>
+	</div>
+</div>

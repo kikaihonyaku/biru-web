@@ -837,37 +837,57 @@ function init_map(user_id, search_bar_disp_flg){
   return mapCanvas;
 }
 
-function win_owner(id) {
-  window.open('/managements/popup_owner/' + id   , "", "width=1000,height=1000,resizable=yes,scrollbars=yes");
+// 引数 close_windowは未指定でもOK
+function win_owner(id, close_window) {
+  var str_url;
+  
+  if(close_window == null){
+  	str_url = '/managements/popup_owner/' + id
+  }else{
+  	str_url = '/managements/popup_owner/' + id + '?close=' + close_window
+  }
+  
+  window.open(str_url   , "", "width=1000,height=1000,resizable=yes,scrollbars=yes,location=no");
 }
+
 
 function win_popup_owner_create() {
-  window.open('/trust_managements/popup_owner_create'  , "", "width=1000,height=1000,resizable=yes,scrollbars=yes");
+  window.open('/trust_managements/popup_owner_create'  , "", "width=1000,height=1000,resizable=yes,scrollbars=yes,location=no");
 }
 
 
-function win_building(id){
-  window.open('/managements/popup_building/' + id   , "", "width=1000,height=850,resizable=yes,scrollbars=yes");
+function win_building(id, close_window){
+
+  var str_url;
+
+  if(close_window == null){
+  	str_url = '/managements/popup_building/' + id
+  }else{
+  	str_url = '/managements/popup_building/' + id + '?close=' + close_window
+  }
+
+  window.open(str_url   , "", "width=1000,height=1000,resizable=yes,scrollbars=yes,location=no");
+
 }
 
 function win_user(id){
-  window.open('/trust_managements/trust_user_report?sid=' + id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes");
+  window.open('/trust_managements/trust_user_report?sid=' + id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes,location=no");
 }
 
 function win_picture(id){
-  window.open('/renters/pictures?id=' + id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes");
+  window.open('/renters/pictures?id=' + id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes,location=no");
 }
 
 function win_trust_report(user_id, month){
-    window.open('/trust_managements/trust_user_report?sid=' + user_id + '&month=' + month , "", "width=1500,height=1100,resizable=yes,scrollbars=yes");
+    window.open('/trust_managements/trust_user_report?sid=' + user_id + '&month=' + month , "", "width=1500,height=1100,resizable=yes,scrollbars=yes,location=no");
 }
 
 function win_attack_list_maintenance(user_id){
-    window.open('/trust_managements/attack_list_maintenance?sid=' + user_id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes");
+    window.open('/trust_managements/attack_list_maintenance?sid=' + user_id   , "", "width=1000,height=1500,resizable=yes,scrollbars=yes,location=no");
 }
 
 function win_attack_list_maintenance_bulk(user_id){
-    window.open('/trust_managements/attack_list_maintenance_bulk?sid=' + user_id   , "", "width=500,height=500,resizable=yes,scrollbars=yes");
+    window.open('/trust_managements/attack_list_maintenance_bulk?sid=' + user_id   , "", "width=500,height=500,resizable=yes,scrollbars=yes,location=no");
 }
 
 // 委託CDの紐付けを行います

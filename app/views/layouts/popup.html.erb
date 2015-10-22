@@ -233,6 +233,16 @@
     google.maps.event.addDomListener(window, "load", initialize);
 	
 	</script>
+	
+	
+	<%# （呼び出し元の）ウィンドウ名が指定されていたらそのウィンドウをクローズする %>
+	<% if @close_window_name != "" %>
+		<script type="text/javascript">
+			$(function(){
+				window.open('about:blank','<%= @close_window_name %>').close();
+			});
+		</script>
+	<% end %>
 
   </head>
   <body>

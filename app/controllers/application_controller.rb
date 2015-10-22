@@ -119,6 +119,13 @@ class ApplicationController < ActionController::Base
 
   # ログイン認証を行います。
   def check_logined
+    
+    # 呼び出し元のウィンドウクローズチェック
+    if params[:close] 
+      @close_window_name = params[:close]
+    else
+      @close_window_name = ""
+    end
 
     url_param_delete = false
      

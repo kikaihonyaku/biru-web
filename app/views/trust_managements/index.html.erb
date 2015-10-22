@@ -235,10 +235,10 @@
 
 
 	<div style="padding-top:10px;">
-        <%= link_to "検索（一覧表）",  {:action=>'search'}, :onclick=>'javascript:screen_block();',  :class=>"btn btn-primary", :style=>"color:white"  %>
+        <%= link_to "検索（一覧）",  {:action=>'search'}, :onclick=>'javascript:screen_block();',  :class=>"btn btn-primary", :style=>"color:white"  %>
         <%= link_to "検索（地図）",  {:action=>'owner_building_list'}, :onclick=>'javascript:screen_block();',  :class=>"btn btn-primary", :style=>"color:white"  %>
 <a data-toggle="modal" href="#modal-tack" class="btn btn-info"  style="color:white">DMタックシール</a>
-        <%= link_to "貸主メンテナンス",  {:action=>''}, :onclick=>'javascript:win_popup_owner_create();return false;',  :class=>"btn btn-info", :style=>"color:white" %>
+        <%= link_to "貸主登録・編集",  {:action=>''}, :onclick=>'javascript:win_popup_owner_create();return false;',  :class=>"btn btn-info", :style=>"color:white" %>
 		
 	</div>
 	

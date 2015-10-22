@@ -77,15 +77,28 @@ input[type=&quot;password&quot;] {
   -moz-box-shadow: 0px 8px 6px #e3e3e3;
   box-shadow: 0px 8px 6px #e3e3e3;
   border: solid #f5fdff 4px;
+  
+  
+  /* 以下、グラデーションの指定 */
   background: -webkit-gradient(linear, 0 0, 0 100%, from(#5C6566), to(#5C6566));
   background: -moz-linear-gradient(top, #61c7e0, #418da8);
-  }
+  
+  /* ie7*/
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#5C6566', endColorstr='#5C6566'); /* IE5.5以上 */
+  
+  /* ie8,ie9*/
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#5C6566', endColorstr='#5C6566', GradientType=0)";
+ 
+  /* IE10 */  
+  background: -ms-linear-gradient(left,  #5C6566,  #5C6566);
+  
+}
 .submit input:hover{
   background: #37a4bf;
  }
 </style>
 
-<div id="form">
+<div id="form" style="margin-top:150px;">
 	<p class="form-title">ビル管理　Webシステム</p>
 <%= form_tag :action => 'auth' do %>
     <p>社員番号</p>

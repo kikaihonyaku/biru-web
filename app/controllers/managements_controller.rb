@@ -98,6 +98,7 @@ class ManagementsController < ApplicationController
 
   # オーナー情報確認用のwindowを表示します。
   def popup_owner
+    
     get_popup_owner_info(params[:id])
     @cur_month = get_month(Date.today)
     
@@ -279,7 +280,7 @@ class ManagementsController < ApplicationController
 
     # 2015/08/25 windowsでエラーになるので遷移元チェックをコメントアウト
     # hash = Rails.application.routes.recognize_path(request.referrer)
-    # if hash[:action] != 'popup_owner'
+    # if hash[:action] != 'owner'
     #   raise "遷移もとが不正です。" + hash[:action]
     # end
       
