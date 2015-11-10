@@ -350,8 +350,8 @@ function createMarker_trust_report(opts, open_flg){
  		var grid_name_approach = [
 			  "貸主ID",
 			  "アプローチ種別",
-			  "貸主名",
 			  "アプローチ日",
+			  "貸主名",
 			  "内容",
 		];
 		
@@ -360,9 +360,9 @@ function createMarker_trust_report(opts, open_flg){
 		var grid_model_approach = [
 		  {name:"owner_id",  index:"owner_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
    		 , {name:"approach_kind",  index:"approach_kind",  width:50,  align:"center",  classes:"no_class", stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_approach_kinds %>" }}
-  		 , {name:"owner_name",  index:"owner_name",  width:70,  align:"center",  classes:"no_class"}
   		 , {name:"approach_date",  index:"approach_date",  width:50,  align:"center",  classes:"no_class"}
-  		 , {name:"approach_content",  index:"approach_content",  width:100,   align:"left",  classes:"no_class"}
+  		 , {name:"owner_name",  index:"owner_name",  width:100,  align:"center",  classes:"no_class"}
+  		 , {name:"approach_content",  index:"approach_content",  width:400,   align:"left",  classes:"no_class"}
 		];
 
 		// その他の設定
@@ -399,30 +399,7 @@ function createMarker_trust_report(opts, open_flg){
 			// フィルタにあるものだけ絞り込み
 			jQuery("#building_table_approach").navGrid('#building_pager_approach',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_approach',{
 			        caption:"", position:"first", onClickButton: function(){
-						 
-						// マーカー非表示
-						for(var item in owner_arr){
-						    owner_arr[item].set("visible", false);
-						 };
-						 
-						for(var item in build_arr){
-						    build_arr[item].set("visible", false);
-						 };
-						 
-						 //var bounds = new google.maps.LatLngBounds();
-						 var table_div = $('#building_table_approach');
-						 var row_data = table_div.getRowData();
-						 
-						 for(var j in  row_data){
-							
-							 owner = owner_arr[row_data[j].owner_id];
-							 if(owner != null){
-	 							 owner.set("visible", true);
-								 
-							 }
-							 
-						 }
-						 
+						map_disp_approach();
 					 }
 				 });
 		});
@@ -463,6 +440,7 @@ function createMarker_trust_report(opts, open_flg){
  		};
 		
  		$(function(){
+			
  			jqgrid_create(grid_name_rank,  grid_model_rank,  gon.grid_data_rank,  jqgrid_opt_rank);
 			
  			// 非表示を解除
@@ -485,34 +463,63 @@ function createMarker_trust_report(opts, open_flg){
  			// フィルタにあるものだけ絞り込み
  			jQuery("#building_table_rank").navGrid('#building_pager_rank',{ edit:false,add:false,del:false,search:false }).navButtonAdd('#building_pager_rank',{
  			        caption:"", position:"first", onClickButton: function(){
-						 
-						// マーカー非表示
-						for(var item in owner_arr){
-						    owner_arr[item].set("visible", false);
-						 };
-						 
-						for(var item in build_arr){
-						    build_arr[item].set("visible", false);
-						 };
-						 
- 						 //var bounds = new google.maps.LatLngBounds();
- 						 var table_div = $('#building_table_rank');
- 						 var row_data = table_div.getRowData();
-						 
- 						 for(var j in  row_data){
-							
- 							 building = build_arr[row_data[j].building_id];
- 							 if(building != null){
- 	 							 building.set("visible", true);
-								 
- 							 }
-							 
- 						 }
-						 
+						map_disp_rank();
  					 }
  				 });
+				 
+				 
  		});
- 	 }	
+ 	 }
+	 
+	 function map_disp_approach(){
+	 	// マーカー非表示
+	 	for(var item in owner_arr){
+	 	    owner_arr[item].set("visible", false);
+	 	 };
+	 
+	 	for(var item in build_arr){
+	 	    build_arr[item].set("visible", false);
+	 	 };
+	 
+	 	 //var bounds = new google.maps.LatLngBounds();
+	 	 var table_div = $('#building_table_approach');
+	 	 var row_data = table_div.getRowData();
+	 
+	 	 for(var j in  row_data){
+		
+	 		 owner = owner_arr[row_data[j].owner_id];
+	 		 if(owner != null){
+	 			 owner.set("visible", true);
+			 
+	 		 }
+		 
+	 	 }
+	 }
+	 
+	 function map_disp_rank(){
+		for(var item in owner_arr){
+		    owner_arr[item].set("visible", false);
+		 };
+		 
+		for(var item in build_arr){
+		    build_arr[item].set("visible", false);
+		 };
+		 
+		 //var bounds = new google.maps.LatLngBounds();
+		 var table_div = $('#building_table_rank');
+		 var row_data = table_div.getRowData();
+		 
+		 for(var j in  row_data){
+			
+			 building = build_arr[row_data[j].building_id];
+			 if(building != null){
+				 building.set("visible", true);
+				 
+			 }
+			 
+		 }
+	 }
+	 
 	 
 </script>
 
@@ -536,16 +543,18 @@ function createMarker_trust_report(opts, open_flg){
 						<td style="font-weight:bold;text-align:center">計画</td>
 						<td style="font-weight:bold;text-align:center">実績</td>
 						<td style="font-weight:bold;text-align:center">達成率</td>
+						<td style="font-weight:bold;text-align:center">有効率</td>
 						<td style="font-weight:bold;text-align:center"><a data-toggle="modal" href="#myModal"  >翌月度の計画</a></td>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td style="text-align:center;"><%= image_tag('marker_btn_blue.png') %></td>
-						<td style="text-align:center;">訪問（うち在宅）</td>
+						<td style="text-align:center;">訪問（うち面談）</td>
 						<td style="text-align:center;"><%= if @report.visit_plan then @report.visit_plan else '-' end %></td>
 						<td style="text-align:center;"><%= @report.visit_num_all %>&nbsp;&nbsp;(<%= @report.visit_num_meet %>)</td>
 						<td style="text-align:center;"><%= disp_growth_rate(@report.visit_plan, @report.visit_num_all) %></td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.visit_num_all, @report.visit_num_meet) %></td>
 						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_visit then @biru_user_monthly_next.trust_plan_visit else '-' end %></td>
 					
 					</tr>
@@ -554,16 +563,18 @@ function createMarker_trust_report(opts, open_flg){
 						<td style="text-align:center;">ＤＭ（うち反響）</td>
 						<td style="text-align:center;"><%= if @report.dm_plan then @report.dm_plan else '-' end %></td>
 						<td style="text-align:center;"><%= @report.dm_num_send %>&nbsp;&nbsp;(<%= @report.dm_num_recv %>)</td>
-						<td style="text-align:center;"><%= disp_growth_rate(@report.dm_plan, @report.visit_num_all) %></td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.dm_plan, @report.dm_num_send) %></td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.dm_num_send, @report.dm_num_recv) %></td>
 						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_dm then @biru_user_monthly_next.trust_plan_dm else '-' end %></td>
 					
 					</tr>
 					<tr>
 						<td style="text-align:center;"><%= image_tag('marker_btn_orange.png') %></td>
-						<td style="text-align:center;">ＴＥＬ（うち応対）</td>
+						<td style="text-align:center;">ＴＥＬ（うち会話）</td>
 						<td style="text-align:center;"><%= if @report.tel_plan then @report.tel_plan else '-' end %></td>
 						<td style="text-align:center;"><%= @report.tel_num_call %>&nbsp;&nbsp;(<%= @report.tel_num_talk %>)</td>
 						<td style="text-align:center;"><%= disp_growth_rate(@report.tel_plan, @report.tel_num_call) %></td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.tel_num_call, @report.tel_num_talk) %></td>
 						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_tel then @biru_user_monthly_next.trust_plan_tel else '-' end %></td>
 					
 					</tr>
@@ -573,6 +584,7 @@ function createMarker_trust_report(opts, open_flg){
 						<td style="text-align:center;"><%= if @report.suggestion_plan then @report.suggestion_plan else '-' end %></td>
 						<td style="text-align:center;"><%= @report.suggestion_num %></td>
 						<td style="text-align:center;"><%= disp_growth_rate(@report.suggestion_plan, @report.suggestion_num) %></td>
+						<td style="text-align:center;">-</td>
 						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_suggestion then @biru_user_monthly_next.trust_plan_suggestion else '-' end %></td>
 					</tr>
 					<tr>
@@ -581,6 +593,7 @@ function createMarker_trust_report(opts, open_flg){
 						<td style="text-align:center;"><%= if @report.trust_plan then @report.trust_plan else '-' end %></td>
 						<td style="text-align:center;"><%= @report.trust_num %>&nbsp;&nbsp;(<%= @report.trust_num_jisya %>)</td>
 						<td style="text-align:center;"><%= disp_growth_rate(@report.trust_plan, @report.trust_num) %></td>
+						<td style="text-align:center;"><%= disp_growth_rate(@report.trust_num, @report.trust_num_jisya) %></td>
 						<td style="text-align:center;"><%= if @biru_user_monthly_next.trust_plan_contract then @biru_user_monthly_next.trust_plan_contract else '-' end %></td>
 					</tr>
 				</tbody>
@@ -588,7 +601,7 @@ function createMarker_trust_report(opts, open_flg){
 		</div>
 	
 
-		<div style="float:left;">
+		<div style="float:left;margin-bottom:30px;">
 			<table class="table table-bordered">
 				<thead>
 					<tr class="active">
@@ -637,18 +650,18 @@ function createMarker_trust_report(opts, open_flg){
 			
 	</div>
 
-	<div style="clear:both" class="print-none">
-			<div id="div_dummy_approach" style="height:250px;float:left;width:45%">
-				<h4>今月度の行動詳細（面談・提案・DM反響・TEL会話）</h4>
+	<div style="clear:both;" class="print-none">
+			<div id="div_dummy_approach" style="height:130px;width:98%;" >
+				<h4>今月度の行動詳細（面談・提案・DM反響・TEL会話）&nbsp;&nbsp;<%= link_to "地図に反映",  '', :onclick=>'map_disp_approach();return false;',  :class=>"btn btn-primary btn-sm", :style=>"color:white;text-decoration:none"  %></h4>        
+
 				<table id="building_table_approach"></table>
 				<div id = "building_pager_approach"></div>
 			</div>
-			<div id="div_dummy_rank" style="height:250px;float:left;margin-left:20px;width:45%">
-				<h4>今月のランクC以上　または　ランクが変動したもの</h4>
+			<div id="div_dummy_rank" style="height:130px;width:98%;margin-top:135px;" >
+				<h4>今月のランクC以上　または　ランクが変動したもの&nbsp;&nbsp;<%= link_to "地図に反映",  '', :onclick=>'map_disp_rank();return false;',  :class=>"btn btn-primary btn-sm", :style=>"color:white;text-decoration:none"  %></h4>
 				<table id="building_table_rank"></table>
 				<div id = "building_pager_rank"></div>
 			</div>
-			
 	</div>
 	
 </div>

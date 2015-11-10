@@ -1417,7 +1417,7 @@ class TrustManagementsController < ApplicationController
    approach_owners = []
    check_owner = {}
    
-   @report.trust_attack_month_report_actions.each do |action_rec|
+   @report.trust_attack_month_report_actions.order('approach_date desc').each do |action_rec|
    
      no_dm = true # 2015.07.22 DMだったら地図に出さないようにする。
      
