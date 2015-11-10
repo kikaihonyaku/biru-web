@@ -364,6 +364,12 @@ def init_biru_type(prefix)
   type_arr.push({:name=>'工場倉庫', :code=>'01070', :icon=> prefix + '/assets/marker_gray.png'})
   type_arr.push({:name=>'定期借地権', :code=>'01085', :icon=> prefix + '/assets/marker_gray.png'})
   type_arr.push({:name=>'その他', :code=>'01998', :icon=> prefix + '/assets/marker_white.png'})
+  
+  # 2015.11.10 add
+  type_arr.push({:name=>'駐車場', :code=>'01075', :icon=> prefix + '/assets/marker_white.png'})
+  type_arr.push({:name=>'借家', :code=>'01080', :icon=> prefix + '/assets/marker_white.png'})
+  type_arr.push({:name=>'不明', :code=>'01999', :icon=> prefix + '/assets/marker_white.png'})
+  
 
   type_arr.each do |obj|
     biru_type = BuildType.find_or_create_by_code(obj[:code])
@@ -419,7 +425,12 @@ def init_room_type
     type_arr.push({:name=>'工場', :code=>'17055'})
     type_arr.push({:name=>'倉庫', :code=>'17060'})
     type_arr.push({:name=>'工場倉庫', :code=>'17065'})
-
+    
+    # 2015.11.10 add
+    type_arr.push({:name=>'駐車場', :code=>'17070'})
+    type_arr.push({:name=>'その他', :code=>'17998'})
+    type_arr.push({:name=>'不明', :code=>'17999'})
+    
     type_arr.each do |obj|
       room_type = RoomType.find_or_create_by_code(obj[:code])
       room_type.code = obj[:code]
@@ -3266,13 +3277,13 @@ end
 #init_shop
 
 # 物件種別登録
-#init_biru_type('/biruweb')
+init_biru_type('/biruweb')
 
 # 管理方式登録
 #init_manage_type('/biruweb')
 
 # 部屋種別登録
-#init_room_type
+init_room_type
 
 # 部屋間取登録
 #init_room_layout

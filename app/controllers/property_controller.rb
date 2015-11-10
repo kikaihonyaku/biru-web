@@ -19,7 +19,15 @@ class PropertyController < ApplicationController
     
     if params[:owner_name]
       @search_param = params
-      @biru_list = ActiveRecord::Base.connection.select_all(get_biru_list_sql("", false, @neighborhood_flg, params ))
+      
+      # 駐車場 除外フラグ
+      parking_except = true
+      if params[:parking_search]
+        # もし駐車場を含むチェックが入っていたら、除外フラグをOFFにする
+        parking_except = false
+      end
+      
+      @biru_list = ActiveRecord::Base.connection.select_all(get_biru_list_sql("", false, @neighborhood_flg, params, parking_except ))
     else
       @biru_list = nil
     end
@@ -459,7 +467,9 @@ private
   
   # room_flg : 部屋単位の出力をする
   # neighborhood : trueの時、近隣のみ出力
-  def get_biru_list_sql(shop_list, room_flg = false, neighborhood = false, search_params=nil)
+  # search_params : 検索条件の指定
+  # parking_except : 駐車場を除外する
+  def get_biru_list_sql(shop_list, room_flg = false, neighborhood = false, search_params=nil, parking_except=true)
     
     strSql = ""
     strSql = strSql + "select "
@@ -526,12 +536,20 @@ private
     strSql = strSql + "inner join owners f on d.owner_id = f.id "
     strSql = strSql + "inner join build_types g on a.build_type_id = g.id "
     strSql = strSql + "inner join room_statuses j on b.room_status_id = j.id "
+    strSql = strSql + "inner join room_types k on b.room_type_id = k.id "
+    
     strSql = strSql + "left outer join (select * from trust_maintenances where delete_flg = 'f' ) h on h.trust_id = d.id "
     strSql = strSql + "where 1 = 1  "
     strSql = strSql + "and c.code in ( " + shop_list + ") " if shop_list.length > 0
     
     strSql = strSql + "and a.neighborhood_flg = 't' " if neighborhood # SQLServerは1
     
+    # 駐車場・その他を除く
+    if parking_except
+      strSql = strSql + "and k.code != '17070' " # 駐車場
+      strSql = strSql + "and k.code != '17998' " # その他
+      strSql = strSql + "and k.code != '17999' " # 不明
+    end
 
     # 検索条件が設定されていた時
     if search_params
@@ -570,9 +588,7 @@ private
       
       if search_params[:shop_id].to_s.length > 0
       	strSql = strSql + " AND c.id = " + search_params[:shop_id] + " "
-      end
-
-    
+      end  
     
       #----------------
       # 管理方式リスト
@@ -661,7 +677,6 @@ private
     strSql = strSql + "and a.delete_flg = 'f' "
     strSql = strSql + "and b.delete_flg = 'f' "
     strSql = strSql + "and d.delete_flg = 'f' "
-    strSql = strSql + "and e.code in (3,4,5,6,9, 7,8,10) "
     strSql = strSql + "group by a.id "
     strSql = strSql + ",a.code"
     strSql = strSql + ",a.name"
@@ -781,7 +796,9 @@ private
     @search_param[:manage_type_d] = true  # D管理
     @search_param[:manage_type_g] = true  # 業務君
     @search_param[:manage_type_s] = true  # 総務君
-    @search_param[:manage_type_t] = false # 特優賃
+    @search_param[:manage_type_t] = true # 特優賃
+    
+    @search_param[:parking_search] = true # 駐車場を含める
     
   end  
   

@@ -47,13 +47,13 @@
 			      <%= text_field_tag :owner_memo, @search_param[:owner_memo] %>
 			    </div>
 			  </div>
+			  
 			  <div class="form-group">
 			    <label class="col-sm-4 control-label" for="">物件備考</label>
 			    <div class="col-sm-8">
 			      <%= text_field_tag :building_memo, @search_param[:building_memo] %>
 			    </div>
-			  </div>
-			  
+			  </div>			  
 			  
 			  <div class="form-group">
   			    <label class="col-sm-4 control-label" for="">管理方式</label>
@@ -77,6 +77,12 @@
 			    </div>
 			  </div>
 			  
+			  <div class="form-group">
+			    <label class="col-sm-4 control-label" for="">駐車場・その他</label>
+			    <div class="col-sm-8">
+				  <label><%= check_box_tag :parking_search, true, @search_param[:parking_search] %>&nbsp;&nbsp;含む</label>
+			    </div>
+			  </div>
 		  
 		  
 			</div>

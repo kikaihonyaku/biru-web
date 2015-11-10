@@ -5,10 +5,12 @@ $(function(){
 	
 	// 閉じるウィンドウ名を渡す。
 	<% if @ridirect_type == :owner %>
-		javascript:win_owner(<%= @id %>, window.name);
+		javascript:win_owner(<%= @id %>, window.name );
 	<% elsif @ridirect_type == :building %>
-		javascript:win_building(<%= @id %>, window.name);
+		javascript:win_building(<%= @id %>, window.name );
 	<% end %>
+		
+//window.open('about:blank','_self').close();
 		
 });
 </script>
