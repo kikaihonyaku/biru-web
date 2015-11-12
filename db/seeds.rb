@@ -3266,6 +3266,22 @@ def city_block_convert
 end
 
 
+def init_selectively_postcode
+  
+  arr = []
+  arr.push({:postcode=>'318-0033'})
+  arr.push({:postcode=>'111-2222'})
+  
+  arr.each do |obj|
+    post = SelectivelyPostcode.find_or_create_by_postcode(obj[:postcode])
+    post.postcode = obj[:postcode]
+    post.save!
+    p post
+  end
+  
+end
+
+
 ########################
 # マスタ登録
 ########################
@@ -3277,13 +3293,13 @@ end
 #init_shop
 
 # 物件種別登録
-init_biru_type('/biruweb')
+# init_biru_type('/biruweb')
 
 # 管理方式登録
 #init_manage_type('/biruweb')
 
 # 部屋種別登録
-init_room_type
+# init_room_type
 
 # 部屋間取登録
 #init_room_layout
@@ -3301,7 +3317,7 @@ init_room_type
 # init_data_update
 
 # アタックリスト　個別アクセス権限設定
- init_trust_attack_permission
+# init_trust_attack_permission
 
 # 社員マスタ登録
 # init_biru_user
@@ -3311,6 +3327,9 @@ init_room_type
 
 # 受託巻き直し対象データ
 # init_trust_rewinding
+
+# 重点実施エリアの郵便番号登録
+init_selectively_postcode
 
 ########################
 # 地図管理物件登録
@@ -3478,3 +3497,5 @@ init_room_type
 #データメンテ
 ############################
 # city_block_convert
+
+

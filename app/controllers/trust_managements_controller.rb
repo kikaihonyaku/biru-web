@@ -80,7 +80,7 @@ class TrustManagementsController < ApplicationController
       # ログインユーザーに紐づく検索可能ユーザーを指定
       @biru_users = get_attack_list_search_users(@biru_user)
     
-      building_list = Building.joins(:biru_user).joins(:shop).where("biru_user_id in (?)", @biru_users ).select("'<a href=''javascript:trust_create( #{@owner.id}, ' || buildings.id || ',#{@biru_user.id});'' style=""text-decoration:underline"">' || buildings.name || '</a>' as building_name, buildings.address as building_address, shops.name as shop_name, biru_users.name as biru_user_name")
+      building_list = Building.joins(:biru_user).joins(:shop).where("biru_user_id in (?)", @biru_users ).select("'<a href=''javascript:trust_create( #{@owner.id}, ' || buildings.id || ',#{@biru_user.id});'' style=""text-decoration:underline"">' || buildings.name || '</a>' as building_name, buildings.address as building_address, shops.name as shop_name, biru_users.name as biru_user_name, selectively_flg as selectively  ")
       
       if params[:building_name].length > 0
         building_list = building_list.where("buildings.name like '%" + params[:building_name] + "%'")
@@ -112,6 +112,7 @@ class TrustManagementsController < ApplicationController
       # すべて検索OKの時は受託担当者すべてを表示
       trust_user_hash = get_trust_members
       biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
+      biru_users << BiruUser.find(@biru_user)
     else
       # すべての権限ではない時、ログインユーザ自身とアクセスが許可されたユーザーを取得
       biru_users = []
@@ -1953,6 +1954,11 @@ class TrustManagementsController < ApplicationController
       if Building.find_by_hash_key(hash)
         raise "この名前・住所は建物一覧にすでに存在します。"
       end
+      
+      if SelectivelyPostcode.find_by_postcode(@building.postcode) 
+        @building.selectively_flg = true
+      end
+      
       
       @building.hash_key = hash
       @building.save!

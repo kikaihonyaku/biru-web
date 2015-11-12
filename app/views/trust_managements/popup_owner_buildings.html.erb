@@ -23,7 +23,8 @@
         <tr>
           <th class="active">建物名</th>
           <th class="active">住所</th>
-          <th class="active">管理営業所</th>
+          <th class="active">管轄営業所</th>
+          <th class="active">重点エリア</th>
         </tr>
       </thead>
       <tbody>
@@ -34,6 +35,11 @@
 					<td><%= link_to trust.building.name, 'javascript:trust_delete(' + trust.id.to_s + ',' + @biru_user.id.to_s +  ');', :style=>"text-decoration:underline"  %></td>
 					<td><%= trust.building.address %></td>
 					<td><%= trust.building.shop.name %></td>
+					<% if trust.building.selectively_flg %>
+						<td>●</td>
+					<% else %>
+						<td>-</td>
+					<% end %>
 		        </tr>
 				<% end %>
 			<% end %>
@@ -74,6 +80,7 @@
 		<div class="modal-body">
 			<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
 			<%= f.input :name, label: '建物名',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+			<%= f.input :postcode, label: '郵便番号（xxx-xxxx）',  :input_html => {:class=>'form-control', :style=>'width:100px;'} %>
 			<%= f.input :address, label: '住所',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
 			<%= f.input :shop_id, label: '営業所', collection: Shop.find(:all), prompt: "--", :input_html => {:class=>'form-control' } %>
 			<%= f.input :room_num, label: '部屋数',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
@@ -103,6 +110,7 @@
     {id: "building_name", name: "建物名", field: "building_name", minWidth: 200, formatter: formatter},
     {id: "building_address", name: "建物住所", field: "building_address", minWidth: 300},
     {id: "shop_name", name: "営業所", field: "shop_name", minWidth: 200},
+    {id: "selectively", name: "重点エリア", field: "selectively", minWidth: 200},
     {id: "biru_user_name", name: "登録者", field: "biru_user_name", minWidth: 200},
   ];
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151111042824) do
+ActiveRecord::Schema.define(:version => 20151112010942) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -577,6 +577,12 @@ ActiveRecord::Schema.define(:version => 20151111042824) do
   add_index "rooms", ["room_status_id"], :name => "index_rooms_on_room_status_id"
   add_index "rooms", ["room_type_id"], :name => "index_rooms_on_room_type_id"
   add_index "rooms", ["trust_id"], :name => "index_rooms_on_trust_id"
+
+  create_table "selectively_postcodes", :force => true do |t|
+    t.string   "postcode"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "shops", :force => true do |t|
     t.string  "code"

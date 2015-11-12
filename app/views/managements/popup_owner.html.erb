@@ -97,11 +97,11 @@
 			          <th class="active">建物名</th>
 			          <th class="active">住所</th>
 					  <% if @owner.attack_code %>
-				          <th class="active">現管理会社</th>
+				          <th class="active" style="text-align:center">現管理会社</th>
 					  <% end %>
-			          <th class="active">管轄営業所</th>
+			          <th class="active" style="text-align:center">管轄営業所</th>
 					  <% if @owner.attack_code %>
-				          <th class="active">重点エリア</th>
+				          <th class="active" style="text-align:center">重点</th>
 					  <% end %>
 			          <th class="active">見込ランク</th>
 			        </tr>
@@ -130,7 +130,7 @@
 							  
 							  <% if @owner.attack_code %>
 							  	  <% if building.selectively_flg %>
-		 					          <td style="text-align:center;">重</td>
+		 					          <td style="text-align:center;">●</td>
 								  <% else %>
 		 					          <td style="text-align:center;">-</td>
 								  <% end %>
