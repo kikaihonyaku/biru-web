@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150816110159) do
+ActiveRecord::Schema.define(:version => 20151111042824) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -99,6 +99,8 @@ ActiveRecord::Schema.define(:version => 20150816110159) do
     t.string   "proprietary_company"
     t.boolean  "neighborhood_flg",     :default => false
     t.boolean  "room_all_flg",         :default => false
+    t.string   "postcode"
+    t.boolean  "selectively_flg",      :default => false
   end
 
   add_index "buildings", ["attack_code"], :name => "index_buildings_on_attack_code"

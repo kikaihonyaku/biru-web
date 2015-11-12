@@ -96,7 +96,13 @@
 			        <tr>
 			          <th class="active">建物名</th>
 			          <th class="active">住所</th>
-			          <th class="active">管理営業所</th>
+					  <% if @owner.attack_code %>
+				          <th class="active">現管理会社</th>
+					  <% end %>
+			          <th class="active">管轄営業所</th>
+					  <% if @owner.attack_code %>
+				          <th class="active">重点エリア</th>
+					  <% end %>
 			          <th class="active">見込ランク</th>
 			        </tr>
 			      </thead>
@@ -112,11 +118,24 @@
 					          <td><a href="javascript:win_building(<%= building.id %>);"><%= building.name %></a></td>
 					          <td><%= building.address %></td>
 							  
+							  <% if @owner.attack_code %>
+	 					          <td style="text-align:center;"><%= building.proprietary_company %></td>
+							  <% end %>
+							  
 							  <% if building.shop %>
-							  	<td><%= building.shop.name %></td>
+							  	<td style="text-align:center;"><%= building.shop.name %></td>
 							  <% else %>
 							  	<td></td>
 							  <% end %>
+							  
+							  <% if @owner.attack_code %>
+							  	  <% if building.selectively_flg %>
+		 					          <td style="text-align:center;">重</td>
+								  <% else %>
+		 					          <td style="text-align:center;">-</td>
+								  <% end %>
+							  <% end %>
+							  
 							  
 							  <!--  ここでは現時点で最新の見込み状態を表示する -->
 							  <% if attack_state_current %>
