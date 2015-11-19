@@ -3276,7 +3276,6 @@ def init_selectively_postcode
     post = SelectivelyPostcode.find_or_create_by_postcode(obj[:postcode])
     post.postcode = obj[:postcode]
     post.save!
-    p post
   end
   
 end
@@ -3293,13 +3292,13 @@ end
 #init_shop
 
 # 物件種別登録
-# init_biru_type('/biruweb')
+init_biru_type('/biruweb')
 
 # 管理方式登録
 #init_manage_type('/biruweb')
 
 # 部屋種別登録
-# init_room_type
+init_room_type
 
 # 部屋間取登録
 #init_room_layout
@@ -3317,7 +3316,7 @@ end
 # init_data_update
 
 # アタックリスト　個別アクセス権限設定
-# init_trust_attack_permission
+ init_trust_attack_permission
 
 # 社員マスタ登録
 # init_biru_user

@@ -856,18 +856,8 @@ function win_popup_owner_create() {
 }
 
 
-function win_building(id, close_window){
-
-  var str_url;
-
-  if(close_window == null){
-  	str_url = '/managements/popup_building/' + id
-  }else{
-  	str_url = '/managements/popup_building/' + id + '?close=' + close_window
-  }
-
-  window.open(str_url   , "", "width=1000,height=1000,resizable=yes,scrollbars=yes,location=no");
-
+function win_building(id){
+  window.open('/managements/popup_building/' + id   , "", "width=1000,height=850,resizable=yes,scrollbars=yes");
 }
 
 function win_user(id){
@@ -1190,7 +1180,7 @@ function jqgrid_create(col_names, col_model, data_list, jqgrid_opt){
 		   }else if(jqgrid_opt.event_type == 30){
 			   link_owner_click(table_div.getRowData(id).owner_id);
 		   }else if(jqgrid_opt.event_type == 31){
-			   link_building_click(table_div.getRowData(id).building_id);
+			   link_building_click(table_div.getRowData(id).renters_building_id);
 		   }
 		   
         },

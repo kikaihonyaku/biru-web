@@ -14,9 +14,53 @@ namespace :biruweb do
 	
 	task :renters_update => :environment  do
 		
-    renters_update_exec(false)
-    renters_update_exec(true)
+		begin
+	    p "■■レンターズ自社 開始■■" + Time.now.strftime('%Y%m%d%H%M%S')
+	    renters_update_exec(false)
+	    p "■■レンターズ自社 終了■■" + Time.now.strftime('%Y%m%d%H%M%S')
+	    p "■■レンターズ他社 開始■■" + Time.now.strftime('%Y%m%d%H%M%S')
+	    renters_update_exec(true)
+	    p "■■レンターズ他社 終了■■" + Time.now.strftime('%Y%m%d%H%M%S')
+			
+		rescue => e
+		  p e.message + " " + Time.now.strftime('%Y/%m/%d %H:%M:%S')
+		end
 	end
+  
+  task :renters_test => :environment do
+		begin
+	    p "■■レンターズ自社 開始■■" + Time.now.strftime('%Y%m%d%H%M%S')
+	    renters_update_exec(false)
+	    p "■■レンターズ自社 終了■■" + Time.now.strftime('%Y%m%d%H%M%S')
+    rescue => e
+		  p e.message + " " + Time.now.strftime('%Y/%m/%d %H:%M:%S')
+    end
+  end
+	
+	task :renters_reflect_task => :environment  do
+    renters_reflect('B20151114021945', true)
+	end
+  
+  task :generate_report_task => :environment do
+    generate_report(false)
+  end
+    
+end
+
+	# 強制実行用	
+#	task :renters_update_force => :environment do
+#		
+#		
+#    renters_reflect("B20150606021819", true)
+#    p 'データ反映完了'
+#
+#    # 次回実行日の反映
+#		@data_update = DataUpdateTime.find_by_code("315")
+#    @data_update.update_datetime = Time.now
+#    @data_update.save!
+##    @data_update.next_start_date = next_start_date
+#		
+#	end
   
   # 自社のレンターズアップデート
   def renters_update_exec(sakimono)
@@ -25,13 +69,18 @@ namespace :biruweb do
       # 他社の時
       @data_update = DataUpdateTime.find_by_code("315")
       sakimono_flg = "'t'"
-      next_start_date = Date.today.next_week(:wednesday) # 翌水曜日
+      #next_start_date = Date.today.next_week(:wednesday) # 翌水曜日
+      #next_start_date = Date.today.next_day(2)
+      next_start_date = Date.today.next_day(1)
       
     else
       # 自社の時
       @data_update = DataUpdateTime.find_by_code("310")
       sakimono_flg = "'f'"
-      next_start_date = Date.today.next_week(:tuesday) # 翌火曜日
+      #next_start_date = Date.today.next_week(:tuesday) # 翌火曜日
+      #next_start_date = Date.today.next_day(2)
+      next_start_date = Date.today.next_day(1)
+
     end
     
     # 次回実行日が未来だったら実行しない（空白だったら即時実行）
@@ -43,11 +92,12 @@ namespace :biruweb do
     end
     
     
+    
     # 実行日を設定
     batch_cd = Time.now.strftime('%Y%m%d%H%M%S')
     @data_update.start_datetime = Time.now
     @data_update.update_datetime = nil
-    @data_update.next_start_date = nil # 一度次回実行日を初期化
+    # @data_update.next_start_date = nil # 一度次回実行日を初期化  # 2015/10/28 削除
     @data_update.biru_user_id = 1
     @data_update.save!
 
@@ -61,9 +111,13 @@ namespace :biruweb do
     p 'ワークデータ取得完了'
 
     # ワークデータが無事取得できたら初期化
-	  RentersBuilding.unscoped.joins(:renters_rooms).where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't'") # SQLServerは1
-	  RentersRoom.unscoped.where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't'") # SQLServerは1
-	  RentersRoomPicture.unscoped.joins(:renters_room).where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't'") # SQLServerは1
+    p '初期化開始（建物）'
+	  RentersBuilding.unscoped.joins(:renters_rooms).where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't' ") # SQLServerは1
+    p '初期化開始（部屋）'
+	  RentersRoom.unscoped.where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't' ") # SQLServerは1
+    p '初期化開始（写真）'
+	  RentersRoomPicture.unscoped.joins(:renters_room).where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't' ") # SQLServerは1
+    p '初期化（部屋）'
     p '初期化完了'
 
 		# レンターズデータへ反映
@@ -107,8 +161,6 @@ namespace :biruweb do
 	    ret_status = doc.elements['results/results_returned']
 	    break unless ret_status
 	    break if ret_status.text == "0"
-      
-      #break if start_idx > 50 
 
 	    # 次の取得の準備
 	    start_idx = start_idx + get_cnt
@@ -117,7 +169,7 @@ namespace :biruweb do
 	    
 	    # 配列がなくなるまで建物・部屋を作成
 	    doc.elements.each_with_index('results/room') do |room, i|
-	      p room.elements['room_cd'].text
+	      # p room.elements['room_cd'].text
 	      
 	      # レンターズ 部屋情報の取得
 	      work_renters_room = WorkRentersRoom.create
@@ -241,9 +293,9 @@ namespace :biruweb do
 	      #work_renters_room.picture_num = picture_num
 	      #work_renters_room.save!
 	      
-	      if work_renters_room.building_name
-	        p work_renters_room.building_name + ' ' + picture_num.to_s + "枚登録"
-	      end
+	      #if work_renters_room.building_name
+	      #  p work_renters_room.building_name + ' ' + picture_num.to_s + "枚登録"
+	      #end
 	    end
 	  end
 	end
@@ -349,12 +401,271 @@ namespace :biruweb do
 				picture.save!
 	    end
 	  end
+    
+  	###########################
+  	# 表示テーブルの作成
+  	###########################
+    generate_report(sakimono_flg)
+    
 	end
 
-	###########################
-	# レンターズデータ取得
-	###########################
-	# create_work_renters_rooms
 
 
+# 実際に使用するレポートの生成
+def generate_report(sakimono_flg)
+
+	# renters_reportの初期化
+  if sakimono_flg
+    RentersReport.unscoped.where("sakimono_flg= 't' ").update_all("delete_flg = 't' ")
+  else
+    RentersReport.unscoped.where("sakimono_flg= 'f' ").update_all("delete_flg = 't' ")
+  end
+  
+  # renters_reportデータへ反映
+  
+  p '出力'
+  ActiveRecord::Base.connection.select_all(get_renters_sql(false, "", sakimono_flg)).each do |rec|
+    
+    report = RentersReport.unscoped.find_or_create_by_renters_room_id(rec['room_code'])
+    
+    report.renters_room_id = rec['renters_room_id']
+    report.renters_building_id = rec['renters_building_id']
+    report.store_code = rec['store_code']
+    report.store_name = rec['store_name']
+    report.building_code = rec['building_code']
+    report.latitude = rec['latitude']
+    report.longitude = rec['longitude']
+    report.real_building_name = rec['real_building_name']
+    report.real_room_no = rec['real_room_no']
+    report.vacant_div = rec['vacant_div']
+    report.enter_ym = rec['enter_ym']
+    report.address = rec['address']
+    report.room_code = rec['room_code']
+    report.notice_a = rec['notice_a']
+    report.notice_b = rec['notice_b']
+    report.notice_c = rec['notice_c']
+    report.notice_d = rec['notice_d']
+    report.notice_e = rec['notice_e']
+    report.notice_f = rec['notice_f']
+    report.notice_g = rec['notice_g']
+    report.notice_h = rec['notice_h']
+    report.madori_renters_madori = rec['J00']
+    report.gaikan_renters_gaikan = rec['T00']
+    report.naikan_renters_kitchen = rec['J03']
+    report.naikan_renters_toilet = rec['J05']
+    report.naikan_renters_bus = rec['J04']
+    report.naikan_renters_living = rec['J01']
+    report.naikan_renters_washroom = rec['J06']
+    report.naikan_renters_porch = rec['J02']
+    report.naikan_renters_scenery = rec['J07']
+    report.naikan_renters_equipment = rec['J08']
+    report.naikan_renters_etc = rec['J09']
+    report.gaikan_etc_renters_entrance = rec['T04']
+    report.gaikan_etc_renters_common_utility = rec['T06']
+    report.gaikan_etc_renters_raising_trees = rec['T05']
+    report.gaikan_etc_renters_parking = rec['T11']
+    report.gaikan_etc_renters_etc = rec['T08']
+    report.gaikan_etc_renters_layout = rec['T03']
+    report.syuuhen_renters_syuuhen = rec['T01']
+		report.renters_all = report.madori_renters_madori + report.gaikan_renters_gaikan + report.naikan_renters_kitchen + report.naikan_renters_toilet + report.naikan_renters_bus + report.naikan_renters_living + report.naikan_renters_washroom + report.naikan_renters_porch + report.naikan_renters_scenery + report.naikan_renters_equipment + report.naikan_renters_etc + report.gaikan_etc_renters_entrance + report.gaikan_etc_renters_common_utility + report.gaikan_etc_renters_raising_trees + report.gaikan_etc_renters_parking + report.gaikan_etc_renters_etc + report.gaikan_etc_renters_layout + report.syuuhen_renters_syuuhen
+
+    #-------------------
+		# スーモ枚数カウント
+    #-------------------
+		
+    # 間取り図
+		report.suumo_madori = report.madori_renters_madori
+		if report.suumo_madori > 1
+			report.suumo_madori = 1
+    end
+		
+    # 外観
+		report.suumo_gaikan = report.gaikan_renters_gaikan
+		if report.suumo_gaikan > 2
+			report.suumo_gaikan = 2
+    end
+				
+    # 内観
+		report.suumo_naikan = (report.naikan_renters_kitchen + report.naikan_renters_toilet + report.naikan_renters_bus + report.naikan_renters_living + report.naikan_renters_washroom +  report.naikan_renters_porch + report.naikan_renters_scenery + report.naikan_renters_equipment + report.naikan_renters_etc)
+		if report.suumo_naikan > 9
+			report.suumo_naikan = 9
+    end
+		
+    # 外観その他
+		report.suumo_gaikan_etc = (report.gaikan_etc_renters_entrance + report.gaikan_etc_renters_common_utility + report.gaikan_etc_renters_raising_trees + report.gaikan_etc_renters_parking + report.gaikan_etc_renters_etc + report.gaikan_etc_renters_layout)
+		if report.suumo_gaikan_etc > 2
+			report.suumo_gaikan_etc = 2
+    end
+		
+    # 周辺
+		report.suumo_syuuhen = report.syuuhen_renters_syuuhen
+		if report.suumo_syuuhen > 6
+			report.suumo_syuuhen = 6
+    end
+		
+    # SUUMO合計
+		report.suumo_all = report.suumo_madori + report.suumo_gaikan + report.suumo_naikan + report.suumo_gaikan_etc + report.suumo_syuuhen
+
+    
+    report.sakimono_flg = sakimono_flg
+    report.delete_flg = false
+    report.save!
+    
+    p report
+    
+  end
+  
+  
+  # 
+  
+
+end
+
+# order : 並べ替えの指定
+def get_renters_sql(order, store_list, sakimono_flg)
+  
+  
+  # ,J00 as madori
+  # ,T00 as gaikan
+  # ,J01 + J02 + J03 + J04 + J05 + J06 + J08 + J09 as naikan
+  # ,T03 + T04 + T05 + T06 + T08 + T11 as gaikan_etc
+  # ,T01 as syuuhen
+  # ,J00 + J00 + J01 + J02 + J03 + J04 + J05 + J06 + J07 + J08 + J09 + T00 + T01 + T02 + T03 + T04 + T05 + T06 + T07 + T08 + T09 + T10 + T11 as all_sum
+  
+  
+  strSql = "
+  select
+  renters_room_id
+  ,store_code
+  ,store_name
+  ,room_code 
+  ,real_building_name
+  ,real_room_no
+  ,building_code
+  ,renters_building_id
+  ,vacant_div
+  ,enter_ym
+  ,address
+  ,notice_a
+  ,notice_b
+  ,notice_c
+  ,notice_d
+  ,notice_e
+  ,notice_f
+  ,notice_g
+  ,notice_h
+  ,latitude
+  ,longitude
+  ,J00
+  ,T00
+  ,J01
+  ,J02
+  ,J03
+  ,J04
+  ,J05
+  ,J06
+  ,J08
+  ,J07
+  ,J09
+  ,T03
+  ,T04
+  ,T05
+  ,T06
+  ,T08
+  ,T11
+  ,T01
+  from (
+  select 
+  a.id as renters_room_id
+  ,a.store_code
+  ,a.store_name
+  ,a.room_code 
+  ,a.real_building_name
+  ,a.real_room_no
+  ,a.vacant_div
+  ,a.enter_ym
+  ,a.building_code
+  ,a.notice_a
+  ,a.notice_b
+  ,a.notice_c
+  ,a.notice_d
+  ,a.notice_e
+  ,a.notice_f
+  ,a.notice_g
+  ,a.notice_h
+  ,c.id as renters_building_id
+  ,c.address
+  ,c.latitude
+  ,c.longitude
+  ,COUNT(CASE WHEN b.sub_category_code = 'J00' THEN 1 ELSE NULL END ) AS J00
+  ,COUNT(CASE WHEN b.sub_category_code = 'J01' THEN 1 ELSE NULL END ) AS J01
+  ,COUNT(CASE WHEN b.sub_category_code = 'J02' THEN 1 ELSE NULL END ) AS J02
+  ,COUNT(CASE WHEN b.sub_category_code = 'J03' THEN 1 ELSE NULL END ) AS J03
+  ,COUNT(CASE WHEN b.sub_category_code = 'J04' THEN 1 ELSE NULL END ) AS J04
+  ,COUNT(CASE WHEN b.sub_category_code = 'J05' THEN 1 ELSE NULL END ) AS J05
+  ,COUNT(CASE WHEN b.sub_category_code = 'J06' THEN 1 ELSE NULL END ) AS J06
+  ,COUNT(CASE WHEN b.sub_category_code = 'J07' THEN 1 ELSE NULL END ) AS J07
+  ,COUNT(CASE WHEN b.sub_category_code = 'J08' THEN 1 ELSE NULL END ) AS J08
+  ,COUNT(CASE WHEN b.sub_category_code = 'J09' THEN 1 ELSE NULL END ) AS J09
+  ,COUNT(CASE WHEN b.sub_category_code = 'T00' THEN 1 ELSE NULL END ) AS T00
+  ,COUNT(CASE WHEN b.sub_category_code = 'T01' THEN 1 ELSE NULL END ) AS T01
+  ,COUNT(CASE WHEN b.sub_category_code = 'T02' THEN 1 ELSE NULL END ) AS T02
+  ,COUNT(CASE WHEN b.sub_category_code = 'T03' THEN 1 ELSE NULL END ) AS T03
+  ,COUNT(CASE WHEN b.sub_category_code = 'T04' THEN 1 ELSE NULL END ) AS T04
+  ,COUNT(CASE WHEN b.sub_category_code = 'T05' THEN 1 ELSE NULL END ) AS T05
+  ,COUNT(CASE WHEN b.sub_category_code = 'T06' THEN 1 ELSE NULL END ) AS T06
+  ,COUNT(CASE WHEN b.sub_category_code = 'T07' THEN 1 ELSE NULL END ) AS T07
+  ,COUNT(CASE WHEN b.sub_category_code = 'T08' THEN 1 ELSE NULL END ) AS T08
+  ,COUNT(CASE WHEN b.sub_category_code = 'T09' THEN 1 ELSE NULL END ) AS T09
+  ,COUNT(CASE WHEN b.sub_category_code = 'T10' THEN 1 ELSE NULL END ) AS T10
+  ,COUNT(CASE WHEN b.sub_category_code = 'T11' THEN 1 ELSE NULL END ) AS T11
+  from renters_rooms a 
+  inner join renters_room_pictures b on a.id = b.renters_room_id 
+  inner join renters_buildings c on a.renters_building_id = c.id 
+  where a.delete_flg = 'f'
+  and b.delete_flg = 'f'
+  and c.delete_flg = 'f'
+  "
+  
+  if sakimono_flg
+    strSql = strSql + " and torihiki_mode_sakimono = 't'"
+  else
+    strSql = strSql + " and torihiki_mode_sakimono = 'f'"
+  end
+  
+  if store_list.length > 0
+    strSql = strSql + " and store_code IN (" + store_list + ") "
+  end
+  
+  strSql = strSql + "
+  group by a.id
+  ,a.store_code
+  ,a.store_name
+  ,a.room_code 
+  ,a.real_building_name
+  ,a.real_room_no
+  ,a.vacant_div
+  ,a.enter_ym
+  ,a.building_code
+  ,a.notice_a
+  ,a.notice_b
+  ,a.notice_c
+  ,a.notice_d
+  ,a.notice_e
+  ,a.notice_f
+  ,a.notice_g
+  ,a.notice_h
+  ,c.id
+  ,c.address
+  ,c.latitude
+  ,c.longitude
+  ) x
+  "
+  
+  if order
+    strSql = strSql + " order by building_code"
+  end
+  
+  strSql
+  
 end

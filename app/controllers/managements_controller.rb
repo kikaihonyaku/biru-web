@@ -264,7 +264,7 @@ class ManagementsController < ApplicationController
     FileUtils.mkdir_p(path) unless FileTest.exist?(path)
   
     # ファイルをコピー
-    File.open( path + "/#{document.file_name}", 'wb') { |f|
+    File.open( path + "/#{document.id.to_s}_#{document.file_name}", 'wb') { |f|
       f.write(file.read)
     }
     
@@ -280,7 +280,7 @@ class ManagementsController < ApplicationController
 
     # 2015/08/25 windowsでエラーになるので遷移元チェックをコメントアウト
     # hash = Rails.application.routes.recognize_path(request.referrer)
-    # if hash[:action] != 'owner'
+    # if hash[:action] != 'popup_owner'
     #   raise "遷移もとが不正です。" + hash[:action]
     # end
       

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151112010942) do
+ActiveRecord::Schema.define(:version => 20151115112324) do
 
   create_table "approach_kinds", :force => true do |t|
     t.string  "name"
@@ -150,6 +150,7 @@ ActiveRecord::Schema.define(:version => 20151112010942) do
     t.boolean  "delete_flg", :default => false
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false
+    t.integer  "sort_num"
   end
 
   add_index "depts", ["busyo_id"], :name => "index_depts_on_busyo_id"
@@ -464,6 +465,59 @@ ActiveRecord::Schema.define(:version => 20151112010942) do
     t.datetime "updated_at",             :null => false
   end
 
+  create_table "renters_reports", :force => true do |t|
+    t.integer  "renters_room_id"
+    t.integer  "renters_building_id"
+    t.string   "room_code"
+    t.string   "building_code"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.string   "store_code"
+    t.string   "store_name"
+    t.string   "real_building_name"
+    t.string   "real_room_no"
+    t.string   "vacant_div"
+    t.string   "enter_ym"
+    t.string   "address"
+    t.string   "notice_a"
+    t.string   "notice_b"
+    t.string   "notice_c"
+    t.string   "notice_d"
+    t.string   "notice_e"
+    t.string   "notice_f"
+    t.string   "notice_g"
+    t.string   "notice_h"
+    t.integer  "madori_renters_madori"
+    t.integer  "gaikan_renters_gaikan"
+    t.integer  "naikan_renters_kitchen"
+    t.integer  "naikan_renters_toilet"
+    t.integer  "naikan_renters_bus"
+    t.integer  "naikan_renters_living"
+    t.integer  "naikan_renters_washroom"
+    t.integer  "naikan_renters_porch"
+    t.integer  "naikan_renters_scenery"
+    t.integer  "naikan_renters_equipment"
+    t.integer  "naikan_renters_etc"
+    t.integer  "gaikan_etc_renters_entrance"
+    t.integer  "gaikan_etc_renters_common_utility"
+    t.integer  "gaikan_etc_renters_raising_trees"
+    t.integer  "gaikan_etc_renters_parking"
+    t.integer  "gaikan_etc_renters_etc"
+    t.integer  "gaikan_etc_renters_layout"
+    t.integer  "syuuhen_renters_syuuhen"
+    t.integer  "renters_all"
+    t.integer  "suumo_all"
+    t.integer  "suumo_madori"
+    t.integer  "suumo_gaikan"
+    t.integer  "suumo_naikan"
+    t.integer  "suumo_gaikan_etc"
+    t.integer  "suumo_syuuhen"
+    t.boolean  "sakimono_flg"
+    t.boolean  "delete_flg",                        :default => false
+    t.datetime "created_at",                                           :null => false
+    t.datetime "updated_at",                                           :null => false
+  end
+
   create_table "renters_room_pictures", :force => true do |t|
     t.integer  "renters_room_id"
     t.integer  "idx"
@@ -639,20 +693,20 @@ ActiveRecord::Schema.define(:version => 20151112010942) do
   create_table "trust_attack_month_report_actions", :force => true do |t|
     t.integer  "trust_attack_month_report_id"
     t.integer  "owner_approach_id"
-    t.datetime "created_at",                                      :null => false
-    t.datetime "updated_at",                                      :null => false
+    t.datetime "created_at",                                                     :null => false
+    t.datetime "updated_at",                                                     :null => false
     t.integer  "owner_id"
     t.string   "owner_code"
     t.string   "owner_name"
     t.string   "owner_address"
     t.float    "owner_latitude"
     t.float    "owner_longitude"
-    t.string   "content"
+    t.text     "content",                      :limit => 255
     t.date     "approach_date"
     t.integer  "approach_kind_id"
     t.string   "approach_kind_code"
     t.string   "approach_kind_name"
-    t.boolean  "delete_flg",                   :default => false
+    t.boolean  "delete_flg",                                  :default => false
   end
 
   add_index "trust_attack_month_report_actions", ["owner_approach_id"], :name => ":trust_attack_month_report_owner_approach_pk"

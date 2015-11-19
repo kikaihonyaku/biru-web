@@ -336,12 +336,18 @@ function createMarker_trust_report(opts, open_flg){
 	
 	// resize
     $(window).bind('resize', function () {
-        $('#building_table_approach').setGridWidth($(window).width() * 0.45 )
-        $('#building_pager_approach').setGridWidth($(window).width() * 0.45 )
+        // $('#building_table_approach').setGridWidth($(window).width() * 0.45 )
+        // $('#building_pager_approach').setGridWidth($(window).width() * 0.45 )
 
-        $('#building_table_rank').setGridWidth($(window).width() * 0.45 )
-        $('#building_pager_rank').setGridWidth($(window).width() * 0.45 )
-					
+        // $('#building_table_rank').setGridWidth($(window).width() * 0.45 )
+        // $('#building_pager_rank').setGridWidth($(window).width() * 0.45 )
+		
+
+		// 画面の変更でリサイズする
+        $('#building_table_approach').trigger("reloadGrid");
+        $('#building_table_rank').trigger("reloadGrid");
+
+
     }).trigger('resize');
 	
 

@@ -54,15 +54,15 @@
 		var rooms = gon.rooms[building.id]
 		rooms.forEach(function(room){
 			
-			res = get_rentes_picture_cnt(room.J00, room.T00, room.J01, room.J02, room.J03, room.J04, room.J05, room.J06, room.J07, room.J08, room.J09, room.T03, room.T04, room.T05, room.T06, room.T08, room.T11, room.T01);
+			// res = get_rentes_picture_cnt(room.J00, room.T00, room.J01, room.J02, room.J03, room.J04, room.J05, room.J06, room.J07, room.J08, room.J09, room.T03, room.T04, room.T05, room.T06, room.T08, room.T11, room.T01);
 			
 			sum = room.madori + room.gaikan + room.naikan + room.gaikan_etc + room.syuuhen
 			
 			
-			inner_text = inner_text + '<tr><td><a href="javascript:win_picture(' + room.id + ');">' + room.room_no + '</a></td><td><a href="http://www.rentersnet.jp/bukken/edit?roomAdRoomCd=' + room.room_code + '" target="_blank">' + room.room_code + '</a></td><td><a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + res.renters_all + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + res.suumo_all + '枚</a></td></tr>'
+			inner_text = inner_text + '<tr><td><a href="javascript:win_picture(' + room.id + ');">' + room.real_room_no + '</a></td><td><a href="http://www.rentersnet.jp/bukken/edit?roomAdRoomCd=' + room.room_code + '" target="_blank">' + room.room_code + '</a></td><td><a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + room.renters_all + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + room.suumo_all + '枚</a></td></tr>'
 				  
 
-			suumo_all_summary = suumo_all_summary + res.suumo_all 
+			suumo_all_summary = suumo_all_summary + room.suumo_all 
 			room_cnt = room_cnt + 1;
 				  
 		});
@@ -88,7 +88,7 @@
           position : pos
           , map : mapCanvas
           , icon : '/assets/' + icon_url
-          , shadow : 'assets/msmarker_shadow.png'
+          , shadow : '/assets/msmarker_shadow.png'
           , info_msg : building.name
          // , html : vhtml
           , html : building.name + ' <table class="sample_01" style="margin-top:5px;"><tr><th>号室</th><th>レンターズ</th><th>RSpot</th><th>SUUMO</th></tr>' + inner_text + '</table>' + '<div style="padding-top:0px;margin-top:5px;padding-left:10px;float:left;">' + '  <label><input type="checkbox" onclick="this.blur();this.focus();" onchange="view_disp( this.checked,  ' + building.latitude + ', ' + building.longitude  + '); return false;" />&nbsp;ストリートビュー</label>' +
@@ -190,12 +190,12 @@ function htmlEscape(str) {
 	
 	function init_renters_jqgrid(){
 		// 列名の定義
- 		var grid_name = ["renters_room_id",  "building_id",  "営業所",  "建物名",  "部屋",  "空室状況", "入居区分", "住所",  "room_code", "備考1","備考2","備考3","備考4","備考5","備考6","備考7","備考8", "合計(20)",  "間取り(1)",  "外観(2)",  "内観(9)",  "外観その他(2)",  "周辺(6)", "間取図", "外観", "キッチン", "トイレ", "バス", "居室", "洗面所", "玄関", "景色", "設備", "その他", "エントランス", "共用設備", "植栽", "駐車場", "その他", "配置図", "周辺"];
+ 		var grid_name = ["renters_room_id",  "renters_building_id",  "営業所",  "建物名",  "部屋",  "空室状況", "入居区分", "住所",  "room_code", "備考1","備考2","備考3","備考4","備考5","備考6","備考7","備考8", "合計(20)",  "間取り(1)",  "外観(2)",  "内観(9)",  "外観その他(2)",  "周辺(6)", "間取図", "外観", "キッチン", "トイレ", "バス", "居室", "洗面所", "玄関", "景色", "設備", "その他", "エントランス", "共用設備", "植栽", "駐車場", "その他", "配置図", "周辺"];
 		
 		// 列属性の定義
 		var grid_model = [
 		  {name:"renters_room_id",  index:"renters_room_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
-		 , {name:"building_id",  index:"building_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+		 , {name:"renters_building_id",  index:"renters_building_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
 		 , {name:"store_name",  index:"store_name",  width:80,  align:"center",  classes:"no_class",frozen:true, stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_shop.gsub(/南越谷営業所/, '南越谷本店')  %>" }}
 		 , {name:"real_building_name",  index:"real_building_name",  width:150,  align:"center",  classes:"no_class",frozen:true}
 		 , {name:"real_room_name",  index:"real_room_name",  width:50,  align:"center",  classes:"no_class",frozen:true}
@@ -244,7 +244,7 @@ function htmlEscape(str) {
 		gon.grid_renters_data.forEach(function(renters_data){
 			var rec = {};
 			rec['renters_room_id'] = renters_data.renters_room_id
-			rec['building_id'] = renters_data.building_id
+			rec['renters_building_id'] = renters_data.renters_building_id
 			rec['store_name'] = renters_data.store_name
 			rec['real_building_name'] = renters_data.real_building_name
 			rec['real_room_name'] = renters_data.real_room_no
@@ -252,7 +252,6 @@ function htmlEscape(str) {
 			rec['room_code'] = renters_data.room_code
 			rec['vacant_div'] = renters_data.vacant_div
 			rec['enter_ym'] = renters_data.enter_ym
-			//rec['notice'] = renters_data.notice
 
 			rec['notice_a'] = renters_data.notice_a
 			rec['notice_b'] = renters_data.notice_b
@@ -263,35 +262,33 @@ function htmlEscape(str) {
 			rec['notice_g'] = renters_data.notice_g
 			rec['notice_h'] = renters_data.notice_h
 
-			//tmp = get_suumo_remaining(false,  renters_data.madori,  renters_data.gaikan,  renters_data.naikan,  renters_data.gaikan_etc,  renters_data.syuuhen)
-			res = get_rentes_picture_cnt(renters_data.J00, renters_data.T00, renters_data.J01, renters_data.J02, renters_data.J03, renters_data.J04, renters_data.J05, renters_data.J06, renters_data.J07, renters_data.J08, renters_data.J09, renters_data.T03, renters_data.T04, renters_data.T05, renters_data.T06, renters_data.T08, renters_data.T11, renters_data.T01);
+			// res = get_rentes_picture_cnt(renters_data.J00, renters_data.T00, renters_data.J01, renters_data.J02, renters_data.J03, renters_data.J04, renters_data.J05, renters_data.J06, renters_data.J07, renters_data.J08, renters_data.J09, renters_data.T03, renters_data.T04, renters_data.T05, renters_data.T06, renters_data.T08, renters_data.T11, renters_data.T01);
 			
-			
-			rec['suumo_sum'] = res.suumo_all
-			rec['suumo_madori'] = res.madori_suumo
-			rec['suumo_gaikan'] = res.gaikan_suumo
-			rec['suumo_naikan'] = res.naikan_suumo
-			rec['suumo_gaikan_etc'] = res.gaikan_etc_suumo
-			rec['suumo_syuuhen'] = res.syuuhen_suumo
+			rec['suumo_sum'] = renters_data.suumo_all
+			rec['suumo_madori'] = renters_data.suumo_madori
+			rec['suumo_gaikan'] = renters_data.suumo_gaikan
+			rec['suumo_naikan'] = renters_data.suumo_naikan
+			rec['suumo_gaikan_etc'] = renters_data.suumo_gaikan_etc
+			rec['suumo_syuuhen'] = renters_data.suumo_syuuhen
 
-			rec['madori_renters_madori'] = res.madori_renters_madori
-			rec['gaikan_renters_gaikan'] = res.gaikan_renters_gaikan
-			rec['naikan_renters_kitchen'] = res.naikan_renters_kitchen
-			rec['naikan_renters_toilet'] = res.naikan_renters_toilet
-			rec['naikan_renters_bus'] = res.naikan_renters_bus
-			rec['naikan_renters_living'] = res.naikan_renters_living
-			rec['naikan_renters_washroom'] = res.naikan_renters_washroom
-			rec['naikan_renters_porch'] = res.naikan_renters_porch
-			rec['naikan_renters_scenery'] = res.naikan_renters_scenery
-			rec['naikan_renters_equipment'] = res.naikan_renters_equipment
-			rec['naikan_renters_etc'] = res.naikan_renters_etc
-			rec['gaikan_etc_renters_entrance'] = res.gaikan_etc_renters_entrance
-			rec['gaikan_etc_renters_common_utility'] = res.gaikan_etc_renters_common_utility
-			rec['gaikan_etc_renters_raising_trees'] = res.gaikan_etc_renters_raising_trees
-			rec['gaikan_etc_renters_parking'] = res.gaikan_etc_renters_parking
-			rec['gaikan_etc_renters_etc'] = res.gaikan_etc_renters_etc
-			rec['gaikan_etc_renters_layout'] = res.gaikan_etc_renters_layout
-			rec['syuuhen_renters_syuuhen'] = res.syuuhen_renters_syuuhen
+			rec['madori_renters_madori'] = renters_data.madori_renters_madori
+			rec['gaikan_renters_gaikan'] = renters_data.gaikan_renters_gaikan
+			rec['naikan_renters_kitchen'] = renters_data.naikan_renters_kitchen
+			rec['naikan_renters_toilet'] = renters_data.naikan_renters_toilet
+			rec['naikan_renters_bus'] = renters_data.naikan_renters_bus
+			rec['naikan_renters_living'] = renters_data.naikan_renters_living
+			rec['naikan_renters_washroom'] = renters_data.naikan_renters_washroom
+			rec['naikan_renters_porch'] = renters_data.naikan_renters_porch
+			rec['naikan_renters_scenery'] = renters_data.naikan_renters_scenery
+			rec['naikan_renters_equipment'] = renters_data.naikan_renters_equipment
+			rec['naikan_renters_etc'] = renters_data.naikan_renters_etc
+			rec['gaikan_etc_renters_entrance'] = renters_data.gaikan_etc_renters_entrance
+			rec['gaikan_etc_renters_common_utility'] = renters_data.gaikan_etc_renters_common_utility
+			rec['gaikan_etc_renters_raising_trees'] = renters_data.gaikan_etc_renters_raising_trees
+			rec['gaikan_etc_renters_parking'] = renters_data.gaikan_etc_renters_parking
+			rec['gaikan_etc_renters_etc'] = renters_data.gaikan_etc_renters_etc
+			rec['gaikan_etc_renters_layout'] = renters_data.gaikan_etc_renters_layout
+			rec['syuuhen_renters_syuuhen'] = renters_data.syuuhen_renters_syuuhen
 		
 			grid_data.push(rec);
 			
@@ -331,16 +328,12 @@ function htmlEscape(str) {
 		 
 						 for(var j in  row_data){
 			
-							 building = build_arr[row_data[j].building_id];
+							 building = build_arr[row_data[j].renters_building_id];
 							 if(building != null){
 	 							 building.set("visible", true);
 				 
 							 }
-			 
 						 }
-
-
-						
 					 }
 			 });
 
@@ -450,240 +443,76 @@ function htmlEscape(str) {
 		});
 	}
 	
-	
-// 	// 絞り込み条件grid
-// 	function init_search_jqgrid(){
-// 		
-// 		var col_names = ["部署の絞り込み",  "リンク"];
-// 	
-// 		// 列属性の定義
-// 		var col_model = [
-// 		  {name:"store_name",  index:"store_name",  width:300,  align:"left", classes:"no_class"}
-//  		 , {name:"url",  index:"url",  align:"center",  classes:"no_class",  hidden:true}
-// 		];
-// 		
-// 		// データの作成
-// 		var grid_data = [];
-// 
-// 	    grid_data.push({ url:  'map',  store_name: '全体' }) 
-// 	    grid_data.push({ url:  'map?stcd=335, 336, 339, 334, 340, 337, 338, 667',  store_name: '東武支店' }) 
-// 	    grid_data.push({ url:  'map?stcd=2763, 341, 342, 344, 348, 346, 349, 343, 345',  store_name: 'さいたま支店' }) 
-// 	    grid_data.push({ url:  'map?stcd=352, 347, 351, 350',  store_name: '千葉支店' }) 
-// 	    grid_data.push({ url:  'map?stcd=335',   store_name: '草加' }) 
-// 	    grid_data.push({ url:  'map?stcd=336',   store_name: '草加新田' }) 
-// 	    grid_data.push({ url:  'map?stcd=339',   store_name: '北千住' }) 
-// 	    grid_data.push({ url:  'map?stcd=334',   store_name: '南越谷' }) 
-// 	    grid_data.push({ url:  'map?stcd=340',   store_name: '越谷' }) 
-// 	    grid_data.push({ url:  'map?stcd=337',   store_name: '北越谷' }) 
-// 	    grid_data.push({ url:  'map?stcd=338',   store_name: '春日部' }) 
-// 	    grid_data.push({ url:  'map?stcd=667',   store_name: 'せんげん台' }) 
-// 	    grid_data.push({ url:  'map?stcd=2763', store_name: '戸田公園' }) 
-// 	    grid_data.push({ url:  'map?stcd=341',  store_name: '戸田' }) 
-// 	    grid_data.push({ url:  'map?stcd=342',  store_name: '武蔵浦和' }) 
-// 	    grid_data.push({ url:  'map?stcd=344',  store_name: '与野' }) 
-// 	    grid_data.push({ url:  'map?stcd=348',  store_name: '浦和' }) 
-// 	    grid_data.push({ url:  'map?stcd=346',  store_name: '川口' }) 
-// 	    grid_data.push({ url:  'map?stcd=349',  store_name: '東浦和' }) 
-// 	    grid_data.push({ url:  'map?stcd=343',  store_name: '東川口' }) 
-// 	    grid_data.push({ url:  'map?stcd=345',  store_name: '戸塚安行' }) 
-// 	    grid_data.push({ url:  'map?stcd=352',   store_name: '松戸' }) 
-// 	    grid_data.push({ url:  'map?stcd=347',   store_name: '北松戸' }) 
-// 	    grid_data.push({ url:  'map?stcd=351',   store_name: '南流山' }) 
-// 	    grid_data.push({ url:  'map?stcd=350',   store_name: '柏' }) 
-// 		
-// 		$(function(){
-// 
-// 			var table_div = $('#search_table');
-// 			var div_box = $('#search_div');
-// 
-// 			table_div.jqGrid({
-// 			  	data : grid_data,   //表示したいデータ
-// 			  	datatype : "local",             //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
-// 			  	colNames : col_names,            //列の表示名
-// 			  	colModel : col_model,    //列ごとの設定
-// 			  	rowNum : 100,                    //一ページに表示する行数
-// 				loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
-// 					table_div.jqGrid('setGridWidth',  div_box.width(),  true);
-// 				    table_div.jqGrid('setGridHeight',  div_box.height(),  true);
-// 				}, 
-// 				
-// 			    onSelectRow: function(id) {
-// 				    data = table_div.getRowData(id);
-// 			 		screen_block();
-// 					location.href = location.protocol + '//' + location.host + '/biruweb/renters/' + data.url
-// 				}
-// 			});
-// 			
-// 		});
-// 		
-// 	}
-// 	
-
-
-
-//		$(function(){
-//
-//			var table_div = $('#search_table');
-//			var div_box = $('#search_div');
-//
-//			table_div.jqGrid({
-//			  	data : grid_data,   //表示したいデータ
-//			  	datatype : "local",             //データの種別 他にjsonやxmlも選べます。しかし、私はlocalが推奨です。
-//			  	colNames : col_names,            //列の表示名
-//			  	colModel : col_model,    //列ごとの設定
-//			  	rowNum : 100,                    //一ページに表示する行数
-//				loadComplete : function () {  // 幅の%調整。読み込みが完了したあと指定のdivの幅と高さを%でとってきて設定
-//					table_div.jqGrid('setGridWidth',  div_box.width(),  true);
-//				    table_div.jqGrid('setGridHeight',  div_box.height(),  true);
-//				}, 
-//				
-//			    onSelectRow: function(id) {
-//				    data = table_div.getRowData(id);
-//			 		screen_block();
-//					location.href = location.protocol + '//' + location.host + '/renters/' + data.url
-//				}
-//			});
-//			
-//		});
-//		
 		
-		// resize
-	    $(window).bind('resize', function () {
-	        $('#building_table').setGridWidth($(window).width() - 40 )
-	                    .setGridHeight($(window).height() * 0.4 - 50);
+	// resize
+    $(window).bind('resize', function () {
+        $('#building_table').setGridWidth($(window).width() - 40 )
+                    .setGridHeight($(window).height() * 0.4 - 50);
 
-	        $('#building_pager').setGridWidth($(window).width() - 40 )
-	                    .setGridHeight($(window).height() * 0.4 - 50);
-						
-						
-	    }).trigger('resize');
+        $('#building_pager').setGridWidth($(window).width() - 40 )
+                    .setGridHeight($(window).height() * 0.4 - 50);
+					
+					
+    }).trigger('resize');
 		
-	
-	// suumoのそれぞれの残数をハッシュで返します
-	// cnt_type ture:残数、false:総数
-	// function get_suumo_remaining(cnt_type,  madori,  gaikan,  naikan,  gaikan_etc,  syuuhen){
+	// // レンターズの写真枚数をハッシュに格納します。
+	// function get_rentes_picture_cnt(J00, T00, J01, J02, J03, J04, J05, J06, J07, J08, J09, T03, T04, T05, T06, T08, T11, T01){
 	//
 	// 	res = {};
 	//
-	// 	if(cnt_type == true){
-	// 		// 残数を求めます
-	// 		res.remaining_madori = 1 - madori
-	// 		if(res.remaining_madori < 0){
-	// 			res.remaining_madori = 0;
-	// 		}
+	// 	// レンターズ枚数設定
+	// 	res.madori_renters_madori = J00;
+	// 	res.gaikan_renters_gaikan = T00;
+	// 	res.naikan_renters_kitchen = J03;
+	// 	res.naikan_renters_toilet = J05;
+	// 	res.naikan_renters_bus = J04;
+	// 	res.naikan_renters_living = J01;
+	// 	res.naikan_renters_washroom = J06;
+	// 	res.naikan_renters_porch = J02;
+	// 	res.naikan_renters_scenery = J07;
+	// 	res.naikan_renters_equipment = J08;
+	// 	res.naikan_renters_etc = J09;
+	// 	res.gaikan_etc_renters_entrance = T04;
+	// 	res.gaikan_etc_renters_common_utility = T06;
+	// 	res.gaikan_etc_renters_raising_trees = T05;
+	// 	res.gaikan_etc_renters_parking = T11;
+	// 	res.gaikan_etc_renters_etc = T08;
+	// 	res.gaikan_etc_renters_layout = T03;
+	// 	res.syuuhen_renters_syuuhen = T01;
 	//
-	// 		res.remaining_gaikan = 2 - gaikan
-	// 		if(res.remaining_gaikan < 0){
-	// 			res.remaining_gaikan = 0;
-	// 		}
+	// 	res.renters_all = res.madori_renters_madori + res.gaikan_renters_gaikan + res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom + res.naikan_renters_porch + res.naikan_renters_scenery + res.naikan_renters_equipment + res.naikan_renters_etc + res.gaikan_etc_renters_entrance + res.gaikan_etc_renters_common_utility + res.gaikan_etc_renters_raising_trees + res.gaikan_etc_renters_parking + res.gaikan_etc_renters_etc + res.gaikan_etc_renters_layout + res.syuuhen_renters_syuuhen
 	//
-	// 		res.remaining_naikan = 9 - naikan
-	// 		if(res.remaining_naikan < 0){
-	// 			res.remaining_naikan = 0;
-	// 		}
-	//
-	// 		res.remaining_gaikan_etc = 2 - gaikan_etc
-	// 		if(res.remaining_gaikan_etc < 0){
-	// 			res.remaining_gaikan_etc = 0;
-	// 		}
-	//
-	// 		res.remaining_syuuhen = 6 - syuuhen
-	// 		if(res.remaining_syuuhen < 0){
-	// 			res.remaining_syuuhen = 0;
-	// 		}
-	//
-	// 	} else {
-	//
-	// 		// 現在の枚数を求めます
-	// 		res.remaining_madori = madori
-	// 		if(res.remaining_madori > 1){
-	// 			res.remaining_madori = 1;
-	// 		}
-	//
-	// 		res.remaining_gaikan = gaikan
-	// 		if(res.remaining_gaikan > 2){
-	// 			res.remaining_gaikan = 2;
-	// 		}
-	//
-	// 		res.remaining_naikan = naikan
-	// 		if(res.remaining_naikan > 9){
-	// 			res.remaining_naikan = 9;
-	// 		}
-	//
-	// 		res.remaining_gaikan_etc = gaikan_etc
-	// 		if(res.remaining_gaikan_etc > 2){
-	// 			res.remaining_gaikan_etc = 2;
-	// 		}
-	//
-	// 		res.remaining_syuuhen = syuuhen
-	// 		if(res.remaining_syuuhen > 6){
-	// 			res.remaining_syuuhen = 6;
-	// 		}
+	// 	// スーモ枚数カウント
+	// 	res.madori_suumo = res.madori_renters_madori;
+	// 	if(res.madori_suumo > 1){
+	// 		res.madori_suumo = 1;
 	// 	}
 	//
-	// 	res.remaining_suumo = (res.remaining_madori + res.remaining_gaikan + res.remaining_naikan + res.remaining_gaikan_etc + res.remaining_syuuhen)  // SUMO算数の合計
+	// 	res.gaikan_suumo = res.gaikan_renters_gaikan;
+	// 	if(res.gaikan_suumo > 2){
+	// 		res.gaikan_suumo = 2;
+	// 	}
+	//
+	// 	res.naikan_suumo = (res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom +  res.naikan_renters_porch + res.naikan_renters_scenery + res.naikan_renters_equipment + res.naikan_renters_etc);
+	// 	if(res.naikan_suumo > 9){
+	// 		res.naikan_suumo = 9;
+	// 	}
+	//
+	// 	res.gaikan_etc_suumo = (res.gaikan_etc_renters_entrance + res.gaikan_etc_renters_common_utility + res.gaikan_etc_renters_raising_trees + res.gaikan_etc_renters_parking + res.gaikan_etc_renters_etc + res.gaikan_etc_renters_layout);
+	// 	if(res.gaikan_etc_suumo > 2){
+	// 		res.gaikan_etc_suumo = 2;
+	// 	}
+	//
+	// 	res.syuuhen_suumo = res.syuuhen_renters_syuuhen;
+	// 	if(res.syuuhen_suumo > 6){
+	// 		res.syuuhen_suumo = 6;
+	// 	}
+	//
+	// 	res.suumo_all = res.madori_suumo + res.gaikan_suumo + res.naikan_suumo + res.gaikan_etc_suumo + res.syuuhen_suumo
 	//
 	// 	return res;
+	//
 	// }
-	
-	// レンターズの写真枚数をハッシュに格納します。
-	function get_rentes_picture_cnt(J00, T00, J01, J02, J03, J04, J05, J06, J07, J08, J09, T03, T04, T05, T06, T08, T11, T01){
-		
-		res = {};
-		
-		// レンターズ枚数設定
-		res.madori_renters_madori = J00;
-		res.gaikan_renters_gaikan = T00;
-		res.naikan_renters_kitchen = J03;
-		res.naikan_renters_toilet = J05;
-		res.naikan_renters_bus = J04;
-		res.naikan_renters_living = J01;
-		res.naikan_renters_washroom = J06;
-		res.naikan_renters_porch = J02;
-		res.naikan_renters_scenery = J07;
-		res.naikan_renters_equipment = J08;
-		res.naikan_renters_etc = J09;
-		res.gaikan_etc_renters_entrance = T04;
-		res.gaikan_etc_renters_common_utility = T06;
-		res.gaikan_etc_renters_raising_trees = T05;
-		res.gaikan_etc_renters_parking = T11;
-		res.gaikan_etc_renters_etc = T08;
-		res.gaikan_etc_renters_layout = T03;
-		res.syuuhen_renters_syuuhen = T01;
-
-		res.renters_all = res.madori_renters_madori + res.gaikan_renters_gaikan + res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom + res.naikan_renters_porch + res.naikan_renters_scenery + res.naikan_renters_equipment + res.naikan_renters_etc + res.gaikan_etc_renters_entrance + res.gaikan_etc_renters_common_utility + res.gaikan_etc_renters_raising_trees + res.gaikan_etc_renters_parking + res.gaikan_etc_renters_etc + res.gaikan_etc_renters_layout + res.syuuhen_renters_syuuhen
-		
-		// スーモ枚数カウント
-		res.madori_suumo = res.madori_renters_madori;
-		if(res.madori_suumo > 1){
-			res.madori_suumo = 1;
-		}
-		
-		res.gaikan_suumo = res.gaikan_renters_gaikan;
-		if(res.gaikan_suumo > 2){
-			res.gaikan_suumo = 2;
-		}
-				
-		res.naikan_suumo = (res.naikan_renters_kitchen + res.naikan_renters_toilet + res.naikan_renters_bus + res.naikan_renters_living + res.naikan_renters_washroom +  res.naikan_renters_porch + res.naikan_renters_scenery + res.naikan_renters_equipment + res.naikan_renters_etc);
-		if(res.naikan_suumo > 9){
-			res.naikan_suumo = 9;
-		}
-		
-		res.gaikan_etc_suumo = (res.gaikan_etc_renters_entrance + res.gaikan_etc_renters_common_utility + res.gaikan_etc_renters_raising_trees + res.gaikan_etc_renters_parking + res.gaikan_etc_renters_etc + res.gaikan_etc_renters_layout);
-		if(res.gaikan_etc_suumo > 2){
-			res.gaikan_etc_suumo = 2;
-		}
-		
-		res.syuuhen_suumo = res.syuuhen_renters_syuuhen;
-		if(res.syuuhen_suumo > 6){
-			res.syuuhen_suumo = 6;
-		}
-		
-		res.suumo_all = res.madori_suumo + res.gaikan_suumo + res.naikan_suumo + res.gaikan_etc_suumo + res.syuuhen_suumo
-
-		return res;
-
-	}
 
 </script>
 
@@ -738,13 +567,6 @@ function htmlEscape(str) {
 						<% end %>
 			    </ul>
 			</div>
-			
-			<!--
-			<div id="search_div" style="width:100%;height:60%;margin-bottom:50px;">
-				<table id="search_table" ></table>
-				<div id="search_pager"></div>
-			</div>
-			-->
 			
 		</div>
 		<div id="panowide" style="width: 100%; height: 0px;float:right;"></div>

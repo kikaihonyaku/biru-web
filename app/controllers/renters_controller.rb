@@ -25,62 +25,31 @@ class RentersController < ApplicationController
     # SUMOハイライト数
     # リンク
     
-    grid_data = {}
-    ActiveRecord::Base.connection.select_all(get_renters_sql(false, "", @sakimono_flg)).each do |rec|
-      
-      # 初めての営業所の時、初期化
-
-      unless grid_data[rec['store_code']]
-        grid_data[rec['store_code']] = {:store_name => rec['store_name'], :summary => 0 ,:suumo_ten => 0, :suumo_full => 0, :url => 'map' }
-      end
-
-      rec_data = grid_data[rec['store_code']]
-      rec_data[:summary] = rec_data[:summary] + 1
-
-      #-----------------
-      # SUMO残数を取得
-      #-----------------
-      
-      # 間取り
-      madori = 1 - rec['J00'].to_i
-      madori = 0  if madori < 0
-
-      # 外観
-      gaikan = 2 - rec['T00'].to_i
-      gaikan = 0 if gaikan < 0
-
-      # 内観
-      naikan = 9 - (rec['J01'].to_i + rec['J02'].to_i + rec['J03'].to_i + rec['J04'].to_i + rec['J05'].to_i + rec['J06'].to_i + rec['J07'].to_i + rec['J08'].to_i + rec['J09'].to_i )
-      naikan = 0 if naikan < 0
-
-      # 外観その他
-      gaikan_etc = 2 - ( rec['T03'].to_i + rec['T04'].to_i + rec['T05'].to_i + rec['T06'].to_i + rec['T08'].to_i + rec['T11'].to_i )
-      gaikan_etc = 0 if gaikan_etc < 0
-
-      # 周辺
-      syuuhen = 6 - rec['T01'].to_i
-      syuuhen = 0 if syuuhen < 0
-          
-      suumo_sum = madori + gaikan + naikan + gaikan_etc + syuuhen
-      if suumo_sum <= 10
-        rec_data[:suumo_ten] = rec_data[:suumo_ten] + 1
-      end
-      
-      # 全合計が０ならば、フルセット対象 
-      if suumo_sum == 0
-        rec_data[:suumo_full] = rec_data[:suumo_full] + 1
-      end
-      
+    # 営業所ごとに集計するSQLを作成
+    strSql = ""
+    strSql = strSql + "SELECT "
+    strSql = strSql + " store_code "
+    strSql = strSql + ",store_name "
+    strSql = strSql + ",COUNT(*) AS summary "
+    strSql = strSql + ",SUM(CASE WHEN suumo_all >= 10 THEN 1 ELSE 0 END ) AS suumo_ten "
+    strSql = strSql + ",SUM(CASE WHEN suumo_all >= 20 THEN 1 ELSE 0 END ) AS suumo_full "
+    strSql = strSql + "FROM renters_reports "
+    strSql = strSql + "WHERE 1 = 1 "
+    strSql = strSql + "AND delete_flg = 'f'  "
+    
+    if @sakimono_flg
+      strSql = strSql + "AND sakimono_flg = 't'  "
+    else
+      strSql = strSql + "AND sakimono_flg = 'f'  "
     end
     
-    # ハッシュを配列に変換
-    # data_list = []
-    # grid_data.keys.each do |store_code|
-    #
-    #   arr = grid_data[store_code]
-    #   arr['store_code'] = store_code
-    #   data_list.push(arr)
-    # end
+    strSql = strSql + "GROUP BY store_code, store_name  "
+    
+    
+    grid_data = {}
+    ActiveRecord::Base.connection.select_all(strSql).each do |rec|
+      grid_data[rec['store_code']] =  {:store_name => rec['store_name'], :summary => rec['summary'] ,:suumo_ten => rec['suumo_ten'], :suumo_full => rec['suumo_full'], :url => 'map' }
+    end
     
     data_list = []
     data_list.push({:store_code =>'335', :summary => 0, :suumo_ten => 0, :suumo_full => 0, :url => 'map?stcd=335' + sakimono_params, :group_name=>'01東武', :store_name =>'草加' }) #草加
@@ -108,7 +77,6 @@ class RentersController < ApplicationController
     data_list.push({:store_code =>'4', :summary => 0, :suumo_ten => 0 ,:suumo_full => 0, :url => 'map?stcd=2763,341,342,344,348,346,349,343,345' + sakimono_params, :group_name=>'00支店', :store_name =>'さいたま支店' }) #さいたま
     data_list.push({:store_code =>'5', :summary => 0, :suumo_ten => 0 ,:suumo_full => 0, :url => 'map?stcd=352,347,351,350' + sakimono_params, :group_name=>'00支店', :store_name =>'千葉支店' }) #千葉
     data_list.push({:store_code =>'9', :summary => 0, :suumo_ten => 0 ,:suumo_full => 0, :url => 'map?all=99' + sakimono_params, :group_name=>'99その他', :store_name =>'ビル全体' })
-
     
     toubu_value = 0
     toubu_suumo_ten = 0
@@ -145,7 +113,7 @@ class RentersController < ApplicationController
       elsif data_hash[:store_name] == 'ビル全体'
         data_hash[:summary] = toubu_value + saitama_value + chiba_value
         data_hash[:suumo_ten] = toubu_suumo_ten + saitama_suumo_ten + chiba_suumo_ten
-        data_hash[:suumo_full] = toubu_suumo + chiba_suumo_ten + chiba_suumo
+        data_hash[:suumo_full] = toubu_suumo + saitama_suumo + chiba_suumo
         
       else
         
@@ -225,74 +193,96 @@ class RentersController < ApplicationController
     if params[:sakimono] == 'true'
       @sakimono_flg = true
     end
-        
-    ActiveRecord::Base.connection.select_all(get_renters_sql(true, shop_where, @sakimono_flg)).each do |rec|
+    
+    #---------------------------
+    # 営業所ごとに集計するSQLを作成
+    #---------------------------
+    strSql = ""
+    strSql = strSql + "SELECT * "
+    strSql = strSql + "FROM renters_reports "
+    strSql = strSql + "WHERE 1 = 1 "
+    strSql = strSql + "AND delete_flg = 'f'  "
+    
+    if @sakimono_flg
+      strSql = strSql + "AND sakimono_flg = 't'  "
+    else
+      strSql = strSql + "AND sakimono_flg = 'f'  "
+    end
+    
+    if shop_where.length > 0
+      strSql = strSql + " and store_code IN (" + shop_where + ") "
+    end
+    
+    strSql = strSql + " order by building_code"
+    
+    ActiveRecord::Base.connection.select_all(strSql).each do |rec|
       
       # gridに表示するデータを取得
       grid_renters_data.push(rec)
       
       # google mapに表示するデータを取得
-      unless tmp_building_code == rec['building_id']
+      unless tmp_building_code == rec['renters_building_id']
         
         # 地図にマッピングする物件を取得
         building = {}
-        building[:id] = rec['building_id']
+        building[:id] = rec['renters_building_id']
         building[:name] = rec['real_building_name']
         building[:address] = rec['address']
         building[:latitude] = rec['latitude']
         building[:longitude] = rec['longitude']
         buildings.push(building)
         
-        rooms[rec['building_id']] = []
-        tmp_building_code = rec['building_id']
+        rooms[rec['renters_building_id']] = []
+        tmp_building_code = rec['renters_building_id']
         
       end
       
-      room = {}
-      room['id'] = rec['renters_room_id']
-      room['room_code'] = rec['room_code']
-      room['room_no'] = rec['real_room_no']
-      room['vacant_div'] = rec['vacant_div']
-      room['enter_ym'] = rec['enter_ym']
-      # room['notice'] = rec['notice']
+      # room = rec
+      # room['renters_room_id'] = rec['renters_room_id']
+      # room['room_code'] = rec['room_code']
+      # room['room_no'] = rec['real_room_no']
+      # room['vacant_div'] = rec['vacant_div']
+      # room['enter_ym'] = rec['enter_ym']
+      #
+      # room['notice_a'] = rec['notice_a']
+      # room['notice_b'] = rec['notice_b']
+      # room['notice_c'] = rec['notice_c']
+      # room['notice_d'] = rec['notice_d']
+      # room['notice_e'] = rec['notice_e']
+      # room['notice_f'] = rec['notice_f']
+      #
+      # room['notice_g'] = rec['notice_g']
+      # room['notice_h'] = rec['notice_h']
+      #
+      # room['suumo_all'] = rec['suumo_all']
+      # room['suumo_madori'] = rec['suumo_madori']
+      # room['suumo_gaikan'] = rec['suumo_gaikan']
+      # room['suumo_naikan'] = rec['suumo_naikan']
+      # room['suumo_gaikan_etc'] = rec['suumo_gaikan_etc']
+      # room['suumo_syuuhen'] = rec['suumo_syuuhen']
+      #
+      # room['madori_renters_madori'] = rec['madori_renters_madori']
+      # room['gaikan_renters_gaikan'] = rec['gaikan_renters_gaikan']
+      # room['naikan_renters_kitchen'] = rec['naikan_renters_kitchen']
+      # room['naikan_renters_toilet'] = rec['naikan_renters_toilet']
+      # room['naikan_renters_bus'] = rec['naikan_renters_bus']
+      # room['naikan_renters_living'] = rec['naikan_renters_living']
+      # room['naikan_renters_washroom'] = rec['naikan_renters_washroom']
+      # room['naikan_renters_porch'] = rec['naikan_renters_porch']
+      # room['naikan_renters_scenery'] = rec['naikan_renters_scenery']
+      # room['naikan_renters_equipment'] = rec['naikan_renters_equipment']
+      # room['naikan_renters_etc'] = rec['naikan_renters_etc']
+      # room['gaikan_etc_renters_entrance'] = rec['gaikan_etc_renters_entrance']
+      # room['gaikan_etc_renters_common_utility'] = rec['gaikan_etc_renters_common_utility']
+      # room['gaikan_etc_renters_raising_trees'] = rec['gaikan_etc_renters_raising_trees']
+      # room['gaikan_etc_renters_parking'] = rec['gaikan_etc_renters_parking']
+      # room['gaikan_etc_renters_etc'] = rec['gaikan_etc_renters_etc']
+      # room['gaikan_etc_renters_layout'] = rec['gaikan_etc_renters_layout']
+      # room['syuuhen_renters_syuuhen'] = rec['syuuhen_renters_syuuhen']
+      #
+      # rooms[rec['renters_building_id']].push(room)
 
-      room['notice_a'] = rec['notice_a']
-      room['notice_b'] = rec['notice_b']
-      room['notice_c'] = rec['notice_c']
-      room['notice_d'] = rec['notice_d']
-      room['notice_e'] = rec['notice_e']
-      room['notice_f'] = rec['notice_f']
-
-      room['notice_g'] = rec['notice_g']
-      room['notice_h'] = rec['notice_h']
-      
-      # room['madori'] = rec['madori']
-      # room['gaikan'] = rec['gaikan']
-      # room['naikan'] = rec['naikan']
-      # room['gaikan_etc'] = rec['gaikan_etc']
-      # room['syuuhen'] = rec['syuuhen']
-      # room['all_sum'] = rec['all_sum']    
-      
-      room['J00'] = rec['J00'] # xxxxx
-      room['T00'] = rec['T00'] # xxxxx
-      room['J01'] = rec['J01'] # xxxxx
-      room['J02'] = rec['J02'] # xxxxx
-      room['J03'] = rec['J03'] # xxxxx
-      room['J04'] = rec['J04'] # xxxxx
-      room['J05'] = rec['J05'] # xxxxx
-      room['J06'] = rec['J06'] # xxxxx
-      room['J07'] = rec['J07'] # xxxxx
-      room['J08'] = rec['J08'] # xxxxx
-      room['J09'] = rec['J09'] # xxxxx
-      room['T03'] = rec['T03'] # xxxxx
-      room['T04'] = rec['T04'] # xxxxx
-      room['T05'] = rec['T05'] # xxxxx
-      room['T06'] = rec['T06'] # xxxxx
-      room['T08'] = rec['T08'] # xxxxx
-      room['T11'] = rec['T11'] # xxxxx
-      room['T01'] = rec['T01'] # xxxxx
-
-      rooms[rec['building_id']].push(room)
+      rooms[rec['renters_building_id']].push(rec)
       
     end
     
@@ -317,155 +307,155 @@ class RentersController < ApplicationController
     send_data str, :filename=>'output.csv'
   end
   
-  # order : 並べ替えの指定
-  def get_renters_sql(order, store_list, sakimono_flg)
-    
-    
-    # ,J00 as madori
-    # ,T00 as gaikan
-    # ,J01 + J02 + J03 + J04 + J05 + J06 + J08 + J09 as naikan
-    # ,T03 + T04 + T05 + T06 + T08 + T11 as gaikan_etc
-    # ,T01 as syuuhen
-    # ,J00 + J00 + J01 + J02 + J03 + J04 + J05 + J06 + J07 + J08 + J09 + T00 + T01 + T02 + T03 + T04 + T05 + T06 + T07 + T08 + T09 + T10 + T11 as all_sum
-    
-    
-    strSql = "
-    select
-    renters_room_id
-    ,store_code
-    ,store_name
-    ,room_code 
-    ,real_building_name
-    ,real_room_no
-    ,building_code
-    ,building_id
-    ,vacant_div
-    ,enter_ym
-    ,address
-    ,notice_a
-    ,notice_b
-    ,notice_c
-    ,notice_d
-    ,notice_e
-    ,notice_f
-    ,notice_g
-    ,notice_h
-    ,latitude
-    ,longitude
-    ,J00
-    ,T00
-    ,J01
-    ,J02
-    ,J03
-    ,J04
-    ,J05
-    ,J06
-    ,J08
-    ,J07
-    ,J09
-    ,T03
-    ,T04
-    ,T05
-    ,T06
-    ,T08
-    ,T11
-    ,T01
-    from (
-    select 
-    a.id as renters_room_id
-    ,a.store_code
-    ,a.store_name
-    ,a.room_code 
-    ,a.real_building_name
-    ,a.real_room_no
-    ,a.vacant_div
-    ,a.enter_ym
-    ,a.building_code
-    ,a.notice_a
-    ,a.notice_b
-    ,a.notice_c
-    ,a.notice_d
-    ,a.notice_e
-    ,a.notice_f
-    ,a.notice_g
-    ,a.notice_h
-    ,c.id as building_id
-    ,c.address
-    ,c.latitude
-    ,c.longitude
-    ,COUNT(CASE WHEN b.sub_category_code = 'J00' THEN 1 ELSE NULL END ) AS J00
-    ,COUNT(CASE WHEN b.sub_category_code = 'J01' THEN 1 ELSE NULL END ) AS J01
-    ,COUNT(CASE WHEN b.sub_category_code = 'J02' THEN 1 ELSE NULL END ) AS J02
-    ,COUNT(CASE WHEN b.sub_category_code = 'J03' THEN 1 ELSE NULL END ) AS J03
-    ,COUNT(CASE WHEN b.sub_category_code = 'J04' THEN 1 ELSE NULL END ) AS J04
-    ,COUNT(CASE WHEN b.sub_category_code = 'J05' THEN 1 ELSE NULL END ) AS J05
-    ,COUNT(CASE WHEN b.sub_category_code = 'J06' THEN 1 ELSE NULL END ) AS J06
-    ,COUNT(CASE WHEN b.sub_category_code = 'J07' THEN 1 ELSE NULL END ) AS J07
-    ,COUNT(CASE WHEN b.sub_category_code = 'J08' THEN 1 ELSE NULL END ) AS J08
-    ,COUNT(CASE WHEN b.sub_category_code = 'J09' THEN 1 ELSE NULL END ) AS J09
-    ,COUNT(CASE WHEN b.sub_category_code = 'T00' THEN 1 ELSE NULL END ) AS T00
-    ,COUNT(CASE WHEN b.sub_category_code = 'T01' THEN 1 ELSE NULL END ) AS T01
-    ,COUNT(CASE WHEN b.sub_category_code = 'T02' THEN 1 ELSE NULL END ) AS T02
-    ,COUNT(CASE WHEN b.sub_category_code = 'T03' THEN 1 ELSE NULL END ) AS T03
-    ,COUNT(CASE WHEN b.sub_category_code = 'T04' THEN 1 ELSE NULL END ) AS T04
-    ,COUNT(CASE WHEN b.sub_category_code = 'T05' THEN 1 ELSE NULL END ) AS T05
-    ,COUNT(CASE WHEN b.sub_category_code = 'T06' THEN 1 ELSE NULL END ) AS T06
-    ,COUNT(CASE WHEN b.sub_category_code = 'T07' THEN 1 ELSE NULL END ) AS T07
-    ,COUNT(CASE WHEN b.sub_category_code = 'T08' THEN 1 ELSE NULL END ) AS T08
-    ,COUNT(CASE WHEN b.sub_category_code = 'T09' THEN 1 ELSE NULL END ) AS T09
-    ,COUNT(CASE WHEN b.sub_category_code = 'T10' THEN 1 ELSE NULL END ) AS T10
-    ,COUNT(CASE WHEN b.sub_category_code = 'T11' THEN 1 ELSE NULL END ) AS T11
-    from renters_rooms a 
-    inner join renters_room_pictures b on a.id = b.renters_room_id 
-    inner join renters_buildings c on a.renters_building_id = c.id 
-    where a.delete_flg = 'f'
-    and b.delete_flg = 'f'
-    and c.delete_flg = 'f'
-    "
-    
-    if sakimono_flg
-      strSql = strSql + " and torihiki_mode_sakimono = 't'"
-    else
-      strSql = strSql + " and torihiki_mode_sakimono = 'f'"
-    end
-    
-    if store_list.length > 0
-      strSql = strSql + " and store_code IN (" + store_list + ") "
-    end
-    
-    strSql = strSql + "
-    group by a.id
-    ,a.store_code
-    ,a.store_name
-    ,a.room_code 
-    ,a.real_building_name
-    ,a.real_room_no
-    ,a.vacant_div
-    ,a.enter_ym
-    ,a.building_code
-    ,a.notice_a
-    ,a.notice_b
-    ,a.notice_c
-    ,a.notice_d
-    ,a.notice_e
-    ,a.notice_f
-    ,a.notice_g
-    ,a.notice_h
-    ,c.id
-    ,c.address
-    ,c.latitude
-    ,c.longitude
-    ) x
-    "
-    
-    if order
-      strSql = strSql + " order by building_code"
-    end
-    
-    strSql
-    
-  end
-  
+  # # # order : 並べ替えの指定
+  # def get_renters_sql(order, store_list, sakimono_flg)
+  #
+  #
+  #   # ,J00 as madori
+  #   # ,T00 as gaikan
+  #   # ,J01 + J02 + J03 + J04 + J05 + J06 + J08 + J09 as naikan
+  #   # ,T03 + T04 + T05 + T06 + T08 + T11 as gaikan_etc
+  #   # ,T01 as syuuhen
+  #   # ,J00 + J00 + J01 + J02 + J03 + J04 + J05 + J06 + J07 + J08 + J09 + T00 + T01 + T02 + T03 + T04 + T05 + T06 + T07 + T08 + T09 + T10 + T11 as all_sum
+  #
+  #
+  #   strSql = "
+  #   select
+  #   renters_room_id
+  #   ,store_code
+  #   ,store_name
+  #   ,room_code
+  #   ,real_building_name
+  #   ,real_room_no
+  #   ,building_code
+  #   ,renters_building_id
+  #   ,vacant_div
+  #   ,enter_ym
+  #   ,address
+  #   ,notice_a
+  #   ,notice_b
+  #   ,notice_c
+  #   ,notice_d
+  #   ,notice_e
+  #   ,notice_f
+  #   ,notice_g
+  #   ,notice_h
+  #   ,latitude
+  #   ,longitude
+  #   ,J00
+  #   ,T00
+  #   ,J01
+  #   ,J02
+  #   ,J03
+  #   ,J04
+  #   ,J05
+  #   ,J06
+  #   ,J08
+  #   ,J07
+  #   ,J09
+  #   ,T03
+  #   ,T04
+  #   ,T05
+  #   ,T06
+  #   ,T08
+  #   ,T11
+  #   ,T01
+  #   from (
+  #   select
+  #   a.id as renters_room_id
+  #   ,a.store_code
+  #   ,a.store_name
+  #   ,a.room_code
+  #   ,a.real_building_name
+  #   ,a.real_room_no
+  #   ,a.vacant_div
+  #   ,a.enter_ym
+  #   ,a.building_code
+  #   ,a.notice_a
+  #   ,a.notice_b
+  #   ,a.notice_c
+  #   ,a.notice_d
+  #   ,a.notice_e
+  #   ,a.notice_f
+  #   ,a.notice_g
+  #   ,a.notice_h
+  #   ,c.id as renters_building_id
+  #   ,c.address
+  #   ,c.latitude
+  #   ,c.longitude
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J00' THEN 1 ELSE NULL END ) AS J00
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J01' THEN 1 ELSE NULL END ) AS J01
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J02' THEN 1 ELSE NULL END ) AS J02
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J03' THEN 1 ELSE NULL END ) AS J03
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J04' THEN 1 ELSE NULL END ) AS J04
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J05' THEN 1 ELSE NULL END ) AS J05
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J06' THEN 1 ELSE NULL END ) AS J06
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J07' THEN 1 ELSE NULL END ) AS J07
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J08' THEN 1 ELSE NULL END ) AS J08
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'J09' THEN 1 ELSE NULL END ) AS J09
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T00' THEN 1 ELSE NULL END ) AS T00
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T01' THEN 1 ELSE NULL END ) AS T01
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T02' THEN 1 ELSE NULL END ) AS T02
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T03' THEN 1 ELSE NULL END ) AS T03
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T04' THEN 1 ELSE NULL END ) AS T04
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T05' THEN 1 ELSE NULL END ) AS T05
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T06' THEN 1 ELSE NULL END ) AS T06
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T07' THEN 1 ELSE NULL END ) AS T07
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T08' THEN 1 ELSE NULL END ) AS T08
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T09' THEN 1 ELSE NULL END ) AS T09
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T10' THEN 1 ELSE NULL END ) AS T10
+  #   ,COUNT(CASE WHEN b.sub_category_code = 'T11' THEN 1 ELSE NULL END ) AS T11
+  #   from renters_rooms a
+  #   inner join renters_room_pictures b on a.id = b.renters_room_id
+  #   inner join renters_buildings c on a.renters_building_id = c.id
+  #   where a.delete_flg = 'f'
+  #   and b.delete_flg = 'f'
+  #   and c.delete_flg = 'f'
+  #   "
+  #
+  #   if sakimono_flg
+  #     strSql = strSql + " and torihiki_mode_sakimono = 't'"
+  #   else
+  #     strSql = strSql + " and torihiki_mode_sakimono = 'f'"
+  #   end
+  #
+  #   if store_list.length > 0
+  #     strSql = strSql + " and store_code IN (" + store_list + ") "
+  #   end
+  #
+  #   strSql = strSql + "
+  #   group by a.id
+  #   ,a.store_code
+  #   ,a.store_name
+  #   ,a.room_code
+  #   ,a.real_building_name
+  #   ,a.real_room_no
+  #   ,a.vacant_div
+  #   ,a.enter_ym
+  #   ,a.building_code
+  #   ,a.notice_a
+  #   ,a.notice_b
+  #   ,a.notice_c
+  #   ,a.notice_d
+  #   ,a.notice_e
+  #   ,a.notice_f
+  #   ,a.notice_g
+  #   ,a.notice_h
+  #   ,c.id
+  #   ,c.address
+  #   ,c.latitude
+  #   ,c.longitude
+  #   ) x
+  #   "
+  #
+  #   if order
+  #     strSql = strSql + " order by building_code"
+  #   end
+  #
+  #   strSql
+  #
+  # end
+  #
   
   def get_all_building
     biru = nil

@@ -24,8 +24,15 @@ module ApplicationHelper
       result += fluctuate.to_s
       
     end
-    
-    
+  end
+  
+  # nilチェック
+  def nil_to_space(obj)
+  	if obj
+  		return obj
+    else
+    	return ''
+    end
   end
 
 end

@@ -12,8 +12,8 @@ class TrustManagementsController < ApplicationController
   def get_trust_members
     
     trust_user_hash = {} 
-		trust_user_hash['6365'] = {:name=>'松本', :shop_name => '東武南(A)'}
-		trust_user_hash['6464'] = {:name=>'猪原', :shop_name => '東武南(B)'}
+		trust_user_hash['6365'] = {:name=>'松本', :shop_name => '東武南'}
+#		trust_user_hash['6464'] = {:name=>'猪原', :shop_name => '東武南(B)'}
 		trust_user_hash['6425'] = {:name=>'赤坂', :shop_name => '東武北'}
 		trust_user_hash['5313'] = {:name=>'宮川', :shop_name => 'さいたま中央'}
 		trust_user_hash['5518'] = {:name=>'齋藤', :shop_name => 'さいたま東'}
@@ -111,6 +111,10 @@ class TrustManagementsController < ApplicationController
     if biru_user.attack_all_search
       # すべて検索OKの時は受託担当者すべてを表示
       trust_user_hash = get_trust_members
+      
+      # 取得したハッシュに自分のIDも追加する
+      trust_user_hash[@biru_user.code.to_s] = {:name=>@biru_user.name, :shop_name=>''}
+      
       biru_users = BiruUser.where("code In ( " + trust_user_hash.keys.map{|code| "'" + code.to_s + "'" }.join(',') + ")")
       biru_users << BiruUser.find(@biru_user)
     else
@@ -306,16 +310,22 @@ class TrustManagementsController < ApplicationController
         # 成約になった物件は、当月のみ集計対象
         if trust_attack_history.month.to_s == month.to_s
           
-          # B管理以上が集計対象
-          if ['3','4','5','6','7','8','9'].include?(trust_attack_history.manage_type.code) 
-            
-            # 自社・他社の判定
-            if trust_attack_history.trust_oneself == true
-              trust_num_oneself = trust_num_oneself + trust_attack_history.room_num
-            else
-              trust_num = trust_num + trust_attack_history.room_num
-            end
-            
+          unless trust_attack_history.manage_type
+          	p '不正な「trust_attack_history.manage_type.code」です。【trust_attack_history.id:' + trust_attack_history.id.to_s + '】'
+	        else
+	          # B管理以上が集計対象
+	          if ['3','4','5','6','7','8','9'].include?(trust_attack_history.manage_type.code) 
+	            
+	            # 自社・他社の判定
+	            if trust_attack_history.trust_oneself == true
+	              trust_num_oneself = trust_num_oneself + trust_attack_history.room_num
+	            else
+	              trust_num = trust_num + trust_attack_history.room_num
+	            end
+	            
+	          end
+          
+          
           end
           
         end
