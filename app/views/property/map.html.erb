@@ -741,11 +741,10 @@ function getCoords(position) {
 		
 		// resize
 	    $(window).bind('resize', function () {
-	        $('#building_table').setGridWidth($(window).width() - 40 )
-	                    .setGridHeight($(window).height() * 0.4 - 50);
-						
-	        $('#building_pager').setGridWidth($(window).width() - 40 )
-	                    .setGridHeight($(window).height() * 0.4 - 50);
+	        //$('#building_table').setGridWidth($(window).width() - 40 ).setGridHeight($(window).height() * 0.4 - 50);
+	        //$('#building_pager').setGridWidth($(window).width() - 40 ).setGridHeight($(window).height() * 0.4 - 50);
+			
+	        $('#building_table').trigger("reloadGrid");
 						
 	    }).trigger('resize');
 	 }	
