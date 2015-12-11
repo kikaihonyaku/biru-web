@@ -122,8 +122,8 @@ class TrustManagementsController < ApplicationController
       # すべての権限ではない時、ログインユーザ自身とアクセスが許可されたユーザーを取得
       biru_users = []
       biru_users.push(BiruUser.find(biru_user.id))
-      TrustAttackPermission.find_all_by_holder_user_id(biru_user.id).each do |permission|
-        biru_users.push(BiruUser.find(permission.permit_user_id))
+      TrustAttackPermission.find_all_by_permit_user_id(biru_user.id).each do |permission|
+        biru_users.push(BiruUser.find(permission.holder_user_id))
       end
     end
     
@@ -2023,10 +2023,10 @@ def get_owners_sql(object_user, bulk)
     sql = sql + ", a.address "
     sql = sql + ", a.tel "
     sql = sql + ", a.memo "
-    sql = sql + ", case a.dm_ptn_1  when 't' then '○' when 'f' then '×' else 'aa' end as dm "
-    sql = sql + ", case a.dm_ptn_2  when 't' then '○' when 'f' then '×' else 'aa' end as dm "
-    sql = sql + ", case a.dm_ptn_3  when 't' then '○' when 'f' then '×' else 'aa' end as dm "
-    sql = sql + ", case a.dm_ptn_4  when 't' then '○' when 'f' then '×' else 'aa' end as dm "
+    sql = sql + ", case a.dm_ptn_1  when 't' then '○' when 'f' then '×' else 'aa' end as dm_1 "
+    sql = sql + ", case a.dm_ptn_2  when 't' then '○' when 'f' then '×' else 'aa' end as dm_2 "
+    sql = sql + ", case a.dm_ptn_3  when 't' then '○' when 'f' then '×' else 'aa' end as dm_3 "
+    sql = sql + ", case a.dm_ptn_4  when 't' then '○' when 'f' then '×' else 'aa' end as dm_4 "
     sql = sql + "FROM owners a "
     sql = sql + "WHERE  biru_user_id = " + object_user.id.to_s + " "
     sql = sql + "AND a.delete_flg = 'f' "
