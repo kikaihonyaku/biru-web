@@ -15,6 +15,12 @@ namespace :biruweb do
 	task :renters_update => :environment  do
 		
 		begin
+			
+		  # 不要データを削除(ワークファイルの削除は、途中で処理落ちた時にワークを再利用したいので、最初に1回行うのみにする）2015.11.16 shibata
+		  WorkRentersRoom.destroy_all
+		  WorkRentersRoomPicture.destroy_all
+		  p '不要データ削除完了'
+			
 	    p "■■レンターズ自社 開始■■" + Time.now.strftime('%Y%m%d%H%M%S')
 	    renters_update_exec(false)
 	    p "■■レンターズ自社 終了■■" + Time.now.strftime('%Y%m%d%H%M%S')
@@ -26,23 +32,16 @@ namespace :biruweb do
 		  p e.message + " " + Time.now.strftime('%Y/%m/%d %H:%M:%S')
 		end
 	end
-  
-  task :renters_test => :environment do
-		begin
-	    p "■■レンターズ自社 開始■■" + Time.now.strftime('%Y%m%d%H%M%S')
-	    renters_update_exec(false)
-	    p "■■レンターズ自社 終了■■" + Time.now.strftime('%Y%m%d%H%M%S')
-    rescue => e
-		  p e.message + " " + Time.now.strftime('%Y/%m/%d %H:%M:%S')
-    end
-  end
 	
 	task :renters_reflect_task => :environment  do
-    renters_reflect('B20151114021945', true)
+		# 自社 false
+		# 他社 true
+    renters_reflect('B20151127014847', true)
 	end
   
   task :generate_report_task => :environment do
     generate_report(false)
+    generate_report(true)
   end
     
 end
@@ -70,16 +69,14 @@ end
       @data_update = DataUpdateTime.find_by_code("315")
       sakimono_flg = "'t'"
       #next_start_date = Date.today.next_week(:wednesday) # 翌水曜日
-      #next_start_date = Date.today.next_day(2)
-      next_start_date = Date.today.next_day(1)
+      next_start_date = Date.today.next_day(2)
       
     else
       # 自社の時
       @data_update = DataUpdateTime.find_by_code("310")
       sakimono_flg = "'f'"
       #next_start_date = Date.today.next_week(:tuesday) # 翌火曜日
-      #next_start_date = Date.today.next_day(2)
-      next_start_date = Date.today.next_day(1)
+      next_start_date = Date.today.next_day(2)
 
     end
     
@@ -101,14 +98,14 @@ end
     @data_update.biru_user_id = 1
     @data_update.save!
 
-    # 不要データを削除
-    WorkRentersRoom.destroy_all
-    WorkRentersRoomPicture.destroy_all
-    p '不要データ削除完了'
-
     # ワークデータの取得
     renters_work_data("B#{batch_cd}", sakimono)
-    p 'ワークデータ取得完了'
+    
+    if sakimono
+	    p 'ワークデータ取得完了  バッチID:B${batch_cd} 他社フラグ:ON' 
+  	else
+	    p 'ワークデータ取得完了  バッチID:B${batch_cd} 他社フラグ:OFF' 
+    end
 
     # ワークデータが無事取得できたら初期化
     p '初期化開始（建物）'
@@ -426,7 +423,7 @@ def generate_report(sakimono_flg)
   p '出力'
   ActiveRecord::Base.connection.select_all(get_renters_sql(false, "", sakimono_flg)).each do |rec|
     
-    report = RentersReport.unscoped.find_or_create_by_renters_room_id(rec['room_code'])
+    report = RentersReport.unscoped.find_or_create_by_room_code(rec['room_code'])
     
     report.renters_room_id = rec['renters_room_id']
     report.renters_building_id = rec['renters_building_id']
@@ -511,7 +508,7 @@ def generate_report(sakimono_flg)
     report.delete_flg = false
     report.save!
     
-    p report
+#    p report
     
   end
   

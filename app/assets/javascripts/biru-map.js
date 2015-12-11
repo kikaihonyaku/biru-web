@@ -1181,6 +1181,8 @@ function jqgrid_create(col_names, col_model, data_list, jqgrid_opt){
 			   link_owner_click(table_div.getRowData(id).owner_id);
 		   }else if(jqgrid_opt.event_type == 31){
 			   link_building_click(table_div.getRowData(id).renters_building_id);
+		   }else if(jqgrid_opt.event_type == 32){
+			   link_building_click(table_div.getRowData(id).building_id);
 		   }
 		   
         },

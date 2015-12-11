@@ -1,20 +1,38 @@
 <% if @sakimono_flg %>
 	<%= stylesheet_link_tag('jquery-themes/pepper-grinder/jquery.ui.theme') %>
 	<% title = 'レンターズ掲載状況（先物）' %>
+	<% sakimono_value = "1" %>
+	<% sakimono_param = "sakimono=true&" %>
 <% else %>
 	<%#= stylesheet_link_tag('jquery-themes/start/jquery-ui') %>
 	<% title = 'レンターズ掲載状況' %>
+	<% sakimono_value = "0" %>
+	<% sakimono_param = "" %>
 <% end %>
 
 <script type="text/javascript">
 	
 	init_jqgrid();
 	
-	// ダブルクリック時のイベント
+	function formatter_link(cellValue, options, rowdata, action){
+
+		// 地図遷移用URL
+		var map_url = location.protocol + '//' + location.host + '/biruweb/renters/map?<%= sakimono_param %>stcd=' + rowdata.url
+
+		// Excel出力用URL
+		// カンマ区切りのパラメータを「stores=xxx&stores=yyy&・・・」の形にする
+		var arr = rowdata.url.split(",");
+		var excel_param = "";
+		for(var i=0; i<arr.length; i++){
+			excel_param += '&stores=' + arr[i]
+		}
+		
+		return "<a style='text-decoration: underline' href='" + map_url  + "'>地図</a>&nbsp;|&nbsp;<a style='text-decoration: underline' href='http://localhost/ReportServer/Pages/ReportViewer.aspx?%2fReport+Parts%2f%e3%83%ac%e3%83%b3%e3%82%bf%e3%83%bc%e3%82%ba%e9%9b%86%e8%a8%88&rs:Command=Render&rs:Format=EXCEL&rc:Parameters=false&report_sakimono=<%= sakimono_value %>" + excel_param  + "' target='_blank' >EXCEL</a>"
+	}
 
 	function init_jqgrid(){
 		// 列名の定義
-		var col_names = ["支店", "営業所", "レンターズ物件掲載数", "SUUMO 10枚以上", "SUUMO 20枚フルセット","リンク"];
+		var col_names = ["支店", "営業所", "レンターズ物件掲載数", "SUUMO 10枚以上", "SUUMO 20枚フルセット", "非表示", "リンク"];
 	
 		// 列属性の定義
 		var col_model = [
@@ -25,6 +43,7 @@
 		 ,{name:"suumo_full", index:"suumo_full", align:"center",classes:"no_class",summaryType:'sum', summaryTpl : '合計 : {0}'}
  		 ,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", hidden:true}
  		 //,{name:"url", index:"map_link", width:200, align:"center", classes:"no_class", formatter: 'link'}
+ 		 ,{name:"link_url", index:"link_url", align:"center", classes:"no_class", formatter:formatter_link}
 		];
 	
 
@@ -68,9 +87,7 @@
 					//alert(location.href);
 					//alert(location.host);
 			 		screen_block();
-					
-					location.href = location.protocol + '//' + location.host + '/renters/' + data.url
-					
+					location.href = location.protocol + '//' + location.host + '/renters/map?<%= sakimono_param %>stcd=' + data.url
 				}
 				
 			});

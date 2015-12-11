@@ -21,14 +21,13 @@ namespace :biruweb do
  	  @data_update.save!
 
 		app_con = TrustManagementsController.new
-		app_con.generate_report_info(month, BiruUser.find_by_code('6365'))
-		app_con.generate_report_info(month, BiruUser.find_by_code('6464'))
-		app_con.generate_report_info(month, BiruUser.find_by_code('6425'))
-		# app_con.generate_report_info(month, BiruUser.find_by_code('7811'))
-		app_con.generate_report_info(month, BiruUser.find_by_code('5313'))
-		app_con.generate_report_info(month, BiruUser.find_by_code('5518'))
-		app_con.generate_report_info(month, BiruUser.find_by_code('4917'))
-		# app_con.generate_report_info(month, BiruUser.find_by_code('5928'))
+		
+#		p app_con.get_trust_members.keys
+		
+		app_con.get_trust_members.keys.each do |key|
+			app_con.generate_report_info(month, BiruUser.find_by_code(key))
+		end
+	
 
  	  # 登録完了日を保存
  	  @data_update.update_datetime = Time.now
