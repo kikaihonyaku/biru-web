@@ -43,7 +43,7 @@ function click_radio(num){
 		   	 <div style="position:absolute; left:450px; top:120px; "><%= image_tag('cursor_right_up.png') %></div>
 		   	 <div style="position:absolute; left:348px; top:355px; "><%= image_tag('cursor_right_down_545.png') %></div>
 			</div>
-			<%= form_for(@building, :url=>{:action=>'popup_building_update', :controller=>'managements', :id=>@building}, :html=>{:class=>"form-horizontal"}) do |f|%>
+			<%= form_for(@building, :url=>{:action=>'popup_building_update_etc', :controller=>'managements', :id=>@building}, :html=>{:class=>"form-horizontal"}) do |f|%>
 			
 				<div style="padding:5px;">※クリックでゴミ置き場作成。ドラッグで移動することができます。</div>
 				<div style="clear:both;">
@@ -67,7 +67,12 @@ function click_radio(num){
 				<table class="table table-bordered">
 					<thead>
 						<tr class="active">
-							<td colspan="2" style="font-weight:bold">物件基本情報（<a href="" onClick="javascript:alert('この機能はまだ使えません');return false;" >編集</a>）</td>
+							<% if @building.code %>
+								<td colspan="2" style="font-weight:bold">物件基本情報（<a href="" onClick="javascript:alert('管理物件の編集は賃貸システムへ行ってください');return false;" >編集</a>）</td>
+							<% else %>
+								<td colspan="2" style="font-weight:bold">物件基本情報（<a data-toggle="modal" href="#modal-building-update"  >編集</a>）</td>
+							<% end%>
+							
 						</tr>
 					</thead>
 					<tbody>
@@ -108,7 +113,7 @@ function click_radio(num){
 							<% if @trust.owner.code %>
 								<thead>
 									<tr class="active">
-										<td colspan="2" style="font-weight:bold">管理委託契約（<a data-toggle="modal" href="#myModal"  >編集</a>）</td>
+										<td colspan="2" style="font-weight:bold">管理委託契約（<a href="" onClick="javascript:alert('この機能はまだ使えません');return false;" >編集</a>）</td>
 									</tr>
 								</thead>
 								<tbody>
@@ -124,7 +129,7 @@ function click_radio(num){
 							<% else %>
 								<thead>
 									<tr class="active">
-										<td colspan="2" style="font-weight:bold">アタック管理情報<!--（<a data-toggle="modal" href="#myModal"  >編集</a>）--></td>
+										<td colspan="2" style="font-weight:bold">アタック管理情報</td>
 									</tr>
 								</thead>
 								<tbody>
@@ -147,30 +152,31 @@ function click_radio(num){
 				</div>
 			<% end %>
 			
-			<!-- モーダルダイアログ -->
-			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<!-- モーダルダイアログ(建物更新) -->
+			<div class="modal fade" id="modal-building-update" tabindex="-1" role="dialog" aria-labelledby="modal-building-update-label" aria-hidden="true">
 			  <div class="modal-dialog">
 			    <div class="modal-content">
-				<%= simple_form_for :trust, :url=>{:controller => :managements, :action => :popup_building_trust_update } do |f| %>
-					
+
 			      <div class="modal-header">
 			        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			        <h4 class="modal-title" id="myModalLabel">委託契約編集</h4>
+			        <h4 class="modal-title" id="myModalLabel">建物更新</h4>
 			      </div>
-				  
-			      <div class="modal-body">
 
-						<%= f.input :id, :as => :hidden, :input_html => {:value => @trust.id } %>
-						<%#= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
-						<%= f.input :attack_state_id, collection: AttackState.all %>
-			       
-			      </div>
-			      <div class="modal-footer">
-			        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-			        <%= f.submit '登録', :class => 'btn btn-primary' %>
-			      </div>
-				<% end %>
-				  
+					<%= simple_form_for :building, :url=>{:action => :popup_building_update, :id=>@building.id}, :html=>{ :class=> 'form-horizontal' } do |f| %>
+						<div class="modal-body">
+							<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
+							<%= f.input :name, label: '建物名',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+							<%= f.input :postcode, label: '郵便番号',  :input_html => {:class=>'form-control', :style=>'width:100px;'} %>
+							<%= f.input :address, label: '住所',  :input_html => {:class=>'form-control', :style=>'width:300px;'} %>
+							<%= f.input :shop_id, label: '営業所', collection: Shop.find(:all), prompt: "--", :input_html => {:class=>'form-control' } %>
+							<%= f.input :room_num, label: '部屋数',  :input_html => {:class=>'form-control', :style=>'width:100px;'} %>
+
+						</div>
+						<div class="modal-footer">
+							<%= f.submit '更新', :class=>"btn btn-default", :style=>"margin:0" %>
+						</div>
+					<% end %>
+
 			    </div><!-- /.modal-content -->
 			  </div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->

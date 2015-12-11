@@ -312,7 +312,7 @@ class ManagementsController < ApplicationController
     
   end
 
-  def popup_building_update
+  def popup_building_update_etc
     @building = Building.find(params[:id])
 
     if @building.update_attributes(params[:building])
@@ -320,6 +320,35 @@ class ManagementsController < ApplicationController
 
     #render :action=>'popup_building', :layout => 'popup'
     redirect_to :action=>'popup_building', :id=>@building.id
+  end
+  
+  
+  def popup_building_update
+    
+    @building = Building.find(params[:id])
+    
+    # アドレスを後の判断に使用するので退避
+    backup_address = @building.address 
+    
+    # 登録する項目を設定
+    @building.name = Moji.han_to_zen(params[:building][:name].strip)
+    @building.address = Moji.han_to_zen(params[:building][:address].strip).tr("０-９", "0-9").gsub("－", "-")
+    @building.postcode = params[:building][:postcode]
+    @building.shop_id = params[:building][:shop_id]
+    @building.room_num = params[:building][:room_num]
+    
+    app_con = ApplicationController.new
+    @building.hash_key = app_con.conv_code_building(@building.biru_user_id.to_s, @building.address, @building.name)
+    
+    # 住所に変更があったらgeocodeで再計算
+    unless @building.address == backup_address
+      biru_geocode(@building, true)
+    end
+    
+    @building.save!
+
+    redirect_to :action=>'popup_building', :id=>@building.id
+    
   end
   
   # 建物情報画面から委託契約の更新
