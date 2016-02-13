@@ -382,6 +382,7 @@ function DispControll(map) {
     strTable = strTable + '<tr><td><label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:15px;"><input type="checkbox" name="dispcheck01" id="circle01Chk" onClick="javascript:disp_shop_01(circle01Chk.checked);" />&nbsp;&nbsp;半径1Km</label></td></tr>'
     strTable = strTable + '<tr><td><label style="font-size:small;margin-bottom:0px;padding-bottom:0px;float:left;margin-left:15px;"><input type="checkbox" name="dispcheck01" id="circle02Chk" onClick="javascript:disp_shop_02(circle02Chk.checked);" />&nbsp;&nbsp;半径2Km</label></td></tr>'
     strTable = strTable + '</table>'
+    strTable = strTable + '<label style="font-size:small;margin-bottom:0px;padding-bottom:0px;clear:both;padding-top:5px;"><input type="checkbox" id="EmphasisAreaChk" onClick="javascript:dips_emphasis(EmphasisAreaChk.checked);" checked/>&nbsp;&nbsp;重点エリア</label>'
 	
     strTable = strTable + '</div>'  
     divA.innerHTML = strTable

@@ -101,6 +101,15 @@ function disp_shop_02(flg){
   };
 }
 
+// 重点エリアの表示・非表示
+function dips_emphasis(flg){
+	if(flg){
+		emphasis_area_layer.setMap(mapCanvas);
+	}else{
+		emphasis_area_layer.setMap(null);
+	}
+}
+
 
 // Infoウィンドウに設定します
 function setInfoWnd(marker, msg){
@@ -621,6 +630,39 @@ function getCoords(position) {
 //        shop_circle02_arr[item].set("visible", circle02Check.checked);
 //      };
 //    });
+
+
+	// 2016/01/31 fusion tableで重点エリアを追加
+	emphasis_area_layer = new google.maps.FusionTablesLayer({
+		query: {
+//			select: 'gml_id',
+//			from: '1VqDlkAxq1jdUErOmmA3RgEVQharcVQdrCGJ6M0uO',
+//			where: "MOJI like '%備後%'"
+
+//			select: 'gml_id',
+//			from: '1AceGQ3pHD4XFYnDN_zzeVV1L-mg3S9zmfU1Qd4h7'
+
+			select: 'gml_id',
+			from: '1yFPDvd4MN2IjLXEIuBnMBds_6aWSJySQ_p8WVckH'
+			
+		},
+		suppressInfoWindows: true
+	});
+
+	
+	emphasis_area_layer.setMap(mapCanvas);
+	
+    infoWndFusion = new google.maps.InfoWindow();
+    google.maps.event.addListener(emphasis_area_layer, "click", function(ftMouseEvent){
+
+      infoWndFusion.close();
+	  infoWndFusion.setPosition(ftMouseEvent.latLng);
+	  infoWndFusion.setMap(mapCanvas);
+      infoWndFusion.setContent(ftMouseEvent.row.POSTCODE.value + "<br/>" + ftMouseEvent.row.GST_NAME.value + " " + ftMouseEvent.row.MOJI.value);
+	  
+
+    });
+
 
 
   } // end initialize

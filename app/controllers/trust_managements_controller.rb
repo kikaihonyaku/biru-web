@@ -18,7 +18,9 @@ class TrustManagementsController < ApplicationController
 #		trust_user_hash['5313'] = {:name=>'宮川', :shop_name => 'さいたま中央'}
 		trust_user_hash['20217'] = {:name=>'南', :shop_name => 'さいたま中央'}
 		trust_user_hash['5518'] = {:name=>'齋藤', :shop_name => 'さいたま東'}
-		trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '千葉支店'}    
+		trust_user_hash['4917'] = {:name=>'市橋', :shop_name => '常磐'}
+		trust_user_hash['6901'] = {:name=>'河上', :shop_name => '常磐'}
+		
     return trust_user_hash
     
   end

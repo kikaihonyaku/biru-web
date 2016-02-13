@@ -112,6 +112,7 @@ BiruWeb::Application.routes.draw do
   get "performances/tenancy_period", :as => :performances_tenancy_period
   get "login/logout", :as => :logout
   
+  get "comments/index", :as => :comments
 
   get "managements/popup_owner/:id" => 'managements#popup_owner', :as =>:popup_owner
   get "/recruitments/search_around", :as =>:search_around

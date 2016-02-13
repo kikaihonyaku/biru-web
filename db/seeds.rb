@@ -879,6 +879,8 @@ def init_trust_attack_permission
   # 松本主任
   arr.push({:holder=>'6365', :permit=>'3695'})
   arr.push({:holder=>'6365', :permit=>'1692'})
+  arr.push({:holder=>'6365', :permit=>'3575'})
+
 
   # 猪原社員
   arr.push({:holder=>'6464', :permit=>'3695'})
@@ -895,22 +897,40 @@ def init_trust_attack_permission
   arr.push({:holder=>'7811', :permit=>'1692'})
   
   # 宮川社員
-  arr.push({:holder=>'5313', :permit=>'5134'})
-  arr.push({:holder=>'5313', :permit=>'3705'})
-  arr.push({:holder=>'5313', :permit=>'5518'})
+#  arr.push({:holder=>'5313', :permit=>'5134'})
+#  arr.push({:holder=>'5313', :permit=>'3705'})
+#  arr.push({:holder=>'5313', :permit=>'5518'})
   
-  arr.push({:holder=>'5313', :permit=>'12117'})
-  arr.push({:holder=>'5313', :permit=>'12579'})
-  arr.push({:holder=>'5313', :permit=>'13823'})
-  arr.push({:holder=>'5313', :permit=>'13884'})
-  arr.push({:holder=>'5313', :permit=>'14030'})
-  arr.push({:holder=>'5313', :permit=>'14139'})
-  arr.push({:holder=>'5313', :permit=>'14322'})
+#  arr.push({:holder=>'5313', :permit=>'12117'})
+#  arr.push({:holder=>'5313', :permit=>'12579'})
+#  arr.push({:holder=>'5313', :permit=>'13823'})
+#  arr.push({:holder=>'5313', :permit=>'13884'})
+#  arr.push({:holder=>'5313', :permit=>'14030'})
+#  arr.push({:holder=>'5313', :permit=>'14139'})
+#  arr.push({:holder=>'5313', :permit=>'14322'})
+
+
+  # 南社員
+  arr.push({:holder=>'20217', :permit=>'5313'})
+  arr.push({:holder=>'20217', :permit=>'5134'})
+  arr.push({:holder=>'20217', :permit=>'3705'})
+  arr.push({:holder=>'20217', :permit=>'5518'})
+  
+  arr.push({:holder=>'20217', :permit=>'12117'})
+  arr.push({:holder=>'20217', :permit=>'12579'})
+  arr.push({:holder=>'20217', :permit=>'13823'})
+  arr.push({:holder=>'20217', :permit=>'13884'})
+  arr.push({:holder=>'20217', :permit=>'14030'})
+  arr.push({:holder=>'20217', :permit=>'14139'})
+  arr.push({:holder=>'20217', :permit=>'14322'})
+
   
   # 齋藤社員
   arr.push({:holder=>'5518', :permit=>'5134'})
   arr.push({:holder=>'5518', :permit=>'4387'})
   arr.push({:holder=>'5518', :permit=>'5313'})
+  arr.push({:holder=>'5518', :permit=>'20217'})
+
 
   arr.push({:holder=>'5518', :permit=>'12117'})
   arr.push({:holder=>'5518', :permit=>'12579'})
@@ -922,6 +942,7 @@ def init_trust_attack_permission
   
   # 市橋主任
   arr.push({:holder=>'4917', :permit=>'4668'})
+  arr.push({:holder=>'4917', :permit=>'6901'})
 
   TrustAttackPermission.delete_all
   arr.each do |obj|
@@ -3314,28 +3335,28 @@ end
 ########################
 
 # 駅マスタ登録
-#init_station
+# init_station
 
 # 営業所登録
 # init_shop
 
 # 物件種別登録
-#init_biru_type('/biruweb')
+# init_biru_type('/biruweb')
 
 # 管理方式登録
-#init_manage_type('/biruweb')
+# init_manage_type('/biruweb')
 
 # 部屋種別登録
-#init_room_type
+# init_room_type
 
 # 部屋間取登録
-#init_room_layout
+# init_room_layout
 
 # 部屋状態登録
-#init_room_status
+# init_room_status
 
 # アプローチ種別登録
-#init_approach_kind
+# init_approach_kind
 
 # アタックステータス登録
 # init_attack_state
@@ -3344,13 +3365,10 @@ end
 # init_data_update
 
 # アタックリスト　個別アクセス権限設定
-#init_trust_attack_permission
+# init_trust_attack_permission
 
 # 社員マスタ登録
 # init_biru_user
-
-# 社員マスタ更新
-# biru_user_update
 
 # 受託巻き直し対象データ
 # init_trust_rewinding
@@ -3381,8 +3399,11 @@ end
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20150720.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20151020.csv"))
 # regist_oneself(Rails.root.join( "tmp", "imp_data_20151120.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20151123.csv"))
 
-regist_oneself(Rails.root.join( "tmp", "imp_data_20151123.csv"))
+# regist_oneself(Rails.root.join( "tmp", "imp_data_20151220.csv"))
+regist_oneself(Rails.root.join( "tmp", "imp_data_20160120.csv"))
+
 
 ############################
 # 定期メンテナンス登録
@@ -3482,6 +3503,9 @@ regist_oneself(Rails.root.join( "tmp", "imp_data_20151123.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201509.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201510.csv"))
 #monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201511.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201512.csv"))
+#monthly_regist(Rails.root.join( "tmp", "monthley_raiten_201601.csv"))
+
 
 ###########################
 # 業績分析(空室)
@@ -3509,6 +3533,9 @@ regist_oneself(Rails.root.join( "tmp", "imp_data_20151123.csv"))
 #regist_vacant_room("201509", Rails.root.join( "tmp", "vacant_201509.csv"))
 #regist_vacant_room("201510", Rails.root.join( "tmp", "vacant_201510.csv"))
 #regist_vacant_room("201511", Rails.root.join( "tmp", "vacant_201511.csv"))
+#regist_vacant_room("201512", Rails.root.join( "tmp", "vacant_201512.csv"))
+
+#regist_vacant_room("201601", Rails.root.join( "tmp", "vacant_201601.csv"))
 
 ###########################
 # 賃貸借契約登録
@@ -3543,3 +3570,6 @@ regist_oneself(Rails.root.join( "tmp", "imp_data_20151123.csv"))
 #データメンテ
 ############################
 #city_block_convert
+
+# 社員マスタ更新
+# biru_user_update

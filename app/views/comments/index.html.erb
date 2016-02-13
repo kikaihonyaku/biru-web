@@ -1,0 +1,29 @@
+	<div style="clear:both;margin-top:50px;">
+
+		<div class="print-none">
+			
+			<%= simple_form_for :comment, :url=>{ :action => :regist}  do |f| %>
+				<%= f.input :code, :as => :hidden, :input_html => {:value => @code } %>
+				<%= f.input :sub_code, :as => :hidden, :input_html => {:value => @sub_code } %>
+				<%= f.input :comment_type, :as => :hidden, :input_html => {:value => @comment_type } %>
+				<%= f.input :biru_user_id, :as => :hidden, :input_html => {:value => @biru_user.id } %>
+	
+				<div style="margin-left:30px;margin-top:10px;">
+					<%= f.text_area :content, label: '内容', placeholder: '内容を入力してください', :size => "115x4", :class =>"required", :required=>"required"  %>
+					<%= f.submit '登録', :class => 'btn btn-primary btn-sm', :style=>'margin-left:20px;' %>
+				</div>
+		
+			<% end %>
+		</div>
+
+		<div style="padding-left:20px;padding-right:20px;margin-top:20px;width:1000px;">
+			<%= grid(@comments) do |g|
+		 		#g.column name: '', :html=>{:style=>'width:50px;'} do |obj| link_to('削除',{:controller=>'managements', :action=>'comments_delete', :id=>obj.id.to_s}, :confirm => "削除します。よろしいですか？", :class=>'print-none') end
+				g.column name: '内容' do |obj| obj.content if obj.content end
+				g.column name: '登録者', :html=>{:style=>'width:120px;'} do |obj| obj.biru_user.name if obj.biru_user end
+				g.column name: '登録日', :html=>{:style=>'width:150px;'} do |obj| obj.created_at if obj.created_at end
+			end
+			%>
+		</div>
+		
+	</div>

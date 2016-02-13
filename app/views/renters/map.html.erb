@@ -59,7 +59,10 @@
 			sum = room.madori + room.gaikan + room.naikan + room.gaikan_etc + room.syuuhen
 			
 			
-			inner_text = inner_text + '<tr><td><a href="javascript:win_picture(' + room.id + ');">' + room.real_room_no + '</a></td><td><a href="http://www.rentersnet.jp/bukken/edit?roomAdRoomCd=' + room.room_code + '" target="_blank">' + room.room_code + '</a></td><td><a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + room.renters_all + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + room.suumo_all + '枚</a></td></tr>'
+			// 2016/02/12 upd-s shibata 写真がでない不具合修正
+			//inner_text = inner_text + '<tr><td><a href="javascript:win_picture(' + room.id + ');">' + room.real_room_no + '</a></td><td><a href="http://www.rentersnet.jp/bukken/edit?roomAdRoomCd=' + room.room_code + '" target="_blank">' + room.room_code + '</a></td><td><a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + room.renters_all + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + room.suumo_all + '枚</a></td></tr>'
+			inner_text = inner_text + '<tr><td><a href="javascript:win_picture(' + room.renters_room_id + ');">' + room.real_room_no + '</a></td><td><a href="http://www.rentersnet.jp/bukken/edit?roomAdRoomCd=' + room.room_code + '" target="_blank">' + room.room_code + '</a></td><td><a href="http://www.roomspot.net/area/room.php?room=' + room.room_code + '" target="_blank">' + room.renters_all + '枚</a></td><td>' + '<a href="http://suumo.jp/jj/chintai/ichiran/FR301FC011/?ar=030&bs=040&kskbn=01&fw=' + building.name + '" target="_blank">' + room.suumo_all + '枚</a></td></tr>'
+			// 2016/02/12 upd-e shibata 写真がでない不具合修正
 				  
 
 			suumo_all_summary = suumo_all_summary + room.suumo_all 

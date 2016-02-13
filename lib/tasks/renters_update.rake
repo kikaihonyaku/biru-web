@@ -33,10 +33,19 @@ namespace :biruweb do
 		end
 	end
 	
+	
+	task :renters_update_jisya => :environment  do
+		begin
+			    renters_update_exec(false)
+		rescue => e
+		  p e.message + " " + Time.now.strftime('%Y/%m/%d %H:%M:%S')
+		end
+	end
+	
 	task :renters_reflect_task => :environment  do
 		# 自社 false
 		# 他社 true
-    renters_reflect('B20151127014847', true)
+    renters_reflect('B20151220015010', false)
 	end
   
   task :generate_report_task => :environment do
@@ -93,7 +102,7 @@ end
     # 実行日を設定
     batch_cd = Time.now.strftime('%Y%m%d%H%M%S')
     @data_update.start_datetime = Time.now
-    @data_update.update_datetime = nil
+    # @data_update.update_datetime = nil
     # @data_update.next_start_date = nil # 一度次回実行日を初期化  # 2015/10/28 削除
     @data_update.biru_user_id = 1
     @data_update.save!
@@ -102,9 +111,9 @@ end
     renters_work_data("B#{batch_cd}", sakimono)
     
     if sakimono
-	    p 'ワークデータ取得完了  バッチID:B${batch_cd} 他社フラグ:ON' 
+	    p "ワークデータ取得完了  バッチID:B#{batch_cd} 他社フラグ:ON" 
   	else
-	    p 'ワークデータ取得完了  バッチID:B${batch_cd} 他社フラグ:OFF' 
+	    p "ワークデータ取得完了  バッチID:B#{batch_cd} 他社フラグ:OFF" 
     end
 
     # ワークデータが無事取得できたら初期化
@@ -113,8 +122,12 @@ end
     p '初期化開始（部屋）'
 	  RentersRoom.unscoped.where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't' ") # SQLServerは1
     p '初期化開始（写真）'
-	  RentersRoomPicture.unscoped.joins(:renters_room).where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't' ") # SQLServerは1
-    p '初期化（部屋）'
+    
+    # 2015/12/04 upd-s なぜかここのアップデートでSQLServerがタイムアウトしてしまうので、初期化ではなくレコード削除するようにしてみる
+    # RentersRoomPicture.unscoped.joins(:renters_room).where("torihiki_mode_sakimono = " + sakimono_flg ).update_all("delete_flg = 't' ") # SQLServerは1
+    RentersRoomPicture.unscoped.joins(:renters_room).where("torihiki_mode_sakimono = " + sakimono_flg ).destroy_all
+    # 2015/12/04 upd-e なぜかここのアップデートでSQLServerがタイムアウトしてしまうので、初期化ではなくレコード削除するようにしてみる
+    
     p '初期化完了'
 
 		# レンターズデータへ反映
@@ -529,7 +542,7 @@ def get_renters_sql(order, store_list, sakimono_flg)
   # ,T01 as syuuhen
   # ,J00 + J00 + J01 + J02 + J03 + J04 + J05 + J06 + J07 + J08 + J09 + T00 + T01 + T02 + T03 + T04 + T05 + T06 + T07 + T08 + T09 + T10 + T11 as all_sum
   
-  
+  # mod 2016.1.21 shibata 画像が1件もなくても登録件数にはカウントするように、pictureを外部結合に変更
   strSql = "
   select
   renters_room_id
@@ -617,10 +630,9 @@ def get_renters_sql(order, store_list, sakimono_flg)
   ,COUNT(CASE WHEN b.sub_category_code = 'T10' THEN 1 ELSE NULL END ) AS T10
   ,COUNT(CASE WHEN b.sub_category_code = 'T11' THEN 1 ELSE NULL END ) AS T11
   from renters_rooms a 
-  inner join renters_room_pictures b on a.id = b.renters_room_id 
+  left outer join renters_room_pictures b on a.id = b.renters_room_id and b.delete_flg = 'f'
   inner join renters_buildings c on a.renters_building_id = c.id 
   where a.delete_flg = 'f'
-  and b.delete_flg = 'f'
   and c.delete_flg = 'f'
   "
   
