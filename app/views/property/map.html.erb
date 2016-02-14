@@ -455,7 +455,7 @@ function getCoords(position) {
       owner_arr[owner.id] = createMarker({
         position : pos
         ,map : mapCanvas
-        ,icon : '/assets/marker_yellow.png'
+        ,icon : '/assets/marker_owner.png'
         ,html : info_msg_owner(owner, owner_to_buildings[owner.id])
         ,visible : false
       });
@@ -615,6 +615,7 @@ function getCoords(position) {
  		var grid_name = [
 			  "trust_id",
 			  "building_id",
+			  "owner_id",
 			  "営業所",
 			  "建物CD",
 			  "建物名",
@@ -639,6 +640,7 @@ function getCoords(position) {
 		// 列属性の定義
 		var grid_model = [
 		  {name:"trust_id",  index:"trust_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
+ 		 , {name:"owner_id",  index:"owner_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
 		 , {name:"building_id",  index:"building_id",  align:"right",  classes:"no_class",  hidden:true,frozen:true}
 		 , {name:"shop_name",  index:"shop_name",  width:50,  align:"center",  classes:"no_class",frozen:true, stype: 'select', searchoptions:{ sopt:['eq'], value: "<%= @combo_shop %>" }}
 		 , {name:"building_code",  index:"building_code",  width:80,  align:"center",  classes:"no_class",frozen:true, searchoptions:{ sopt:['eq']}}
@@ -669,7 +671,7 @@ function getCoords(position) {
 			, fotter_name:'building_pager'
 			, div_name:'div_dummy_02'
 			//, caption:'募集中物件を表示しています'
-			, event_type:32
+			, event_type:33
 			, shrinkFit:true
 			, multiselect:false
 		};

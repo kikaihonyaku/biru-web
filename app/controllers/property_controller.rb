@@ -388,8 +388,9 @@ class PropertyController < ApplicationController
       # 一覧表で使う情報
       ########################
       row_data = {}
-      row_data[:trsut_id] = rec["trust_id"]
+      row_data[:trust_id] = rec["trust_id"]
       row_data[:building_id] = rec["building_id"]
+      row_data[:owner_id] = rec["owner_id"]
       row_data[:shop_name] = rec["shop_name"]
       row_data[:building_code] = rec["building_code"]
       row_data[:building_name] = rec["building_name"]

@@ -507,9 +507,11 @@ function getCoords(position) {
 
       // 貸主かどうかでアタックを決める。
       if( owner.code == null){
-        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
+        // owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7C0033FF"
+		owner_icon = '/assets/marker_owner_attack.png'
       } else {
-        owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
+        // owner_icon = "https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=home%7CFFFF00"
+		owner_icon = '/assets/marker_owner.png'
       }
 
       owner_arr[owner.id] = createMarker({

@@ -1035,6 +1035,25 @@ function link_shop_click(num)
   google.maps.event.trigger(shop_arr[num], "click");
 }
 
+// 貸主とそれに紐づく物件をポリラインで結んだ者を表示します。
+function link_owner_trusts_click(trust_num, building_num, owner_num)
+{
+	// trustに紐づくオーナーを取得
+	trust_arr[trust_num].set("visible", true);
+	build_arr[building_num].set("visible", true);
+	owner_arr[owner_num].set("visible", true);
+	
+    var bounds_local = new google.maps.LatLngBounds();
+    bounds_local.extend(build_arr[building_num].position);
+    bounds_local.extend(owner_arr[owner_num].position);
+    mapCanvas.fitBounds(bounds_local);
+	
+	google.maps.event.trigger(build_arr[building_num], "click");
+	mapCanvas.setZoom(mapCanvas.getZoom()-1);
+}
+
+
+
 function sel_itaku_owner(obj, id){
   obj_value = obj.options[obj.selectedIndex].value;
   if(obj_value == "on"){
@@ -1184,6 +1203,8 @@ function jqgrid_create(col_names, col_model, data_list, jqgrid_opt){
 			   link_building_click(table_div.getRowData(id).renters_building_id);
 		   }else if(jqgrid_opt.event_type == 32){
 			   link_building_click(table_div.getRowData(id).building_id);
+		   }else if(jqgrid_opt.event_type == 33){
+			   link_owner_trusts_click(table_div.getRowData(id).trust_id, table_div.getRowData(id).building_id, table_div.getRowData(id).owner_id);
 		   }
 		   
         },
